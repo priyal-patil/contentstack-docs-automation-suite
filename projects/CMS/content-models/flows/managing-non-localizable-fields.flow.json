@@ -1,0 +1,47 @@
+{
+  "id": "managing-non-localizable-fields",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/managing-non-localizable-fields",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Content Models"
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis"
+    },
+    {
+      "action": "click",
+      "target": "Edit"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Group (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Properties (doc step)"
+    },
+
+    {
+      "action": "click",
+      "target": "Non-localizable (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

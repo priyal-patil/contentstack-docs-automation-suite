@@ -1,0 +1,13 @@
+{
+  "id": "global-part-1",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/global",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": []
+}

@@ -1,0 +1,6 @@
+kind,project,id,source,status,details
+doc_only,CMS,https://www.contentstack.com/docs/developers/create-content-types/about-content-types,https://www.contentstack.com/docs/developers/create-content-types/about-content-types,passed,
+doc_only,CMS,https://www.contentstack.com/docs/developers/create-content-types/single-vs-multiple-content-types,https://www.contentstack.com/docs/developers/create-content-types/single-vs-multiple-content-types,passed,
+doc_only,CMS,https://www.contentstack.com/docs/developers/create-content-types/scenarios-where-editing-a-content-type-is-unsafe,https://www.contentstack.com/docs/developers/create-content-types/scenarios-where-editing-a-content-type-is-unsafe,passed,
+doc_only,CMS,https://www.contentstack.com/docs/developers/create-content-types/json-schema-for-creating-a-content-type,https://www.contentstack.com/docs/developers/create-content-types/json-schema-for-creating-a-content-type,passed,
+doc_only,CMS,https://www.contentstack.com/docs/developers/content-modeling/about-content-modeling/,https://www.contentstack.com/docs/developers/content-modeling/about-content-modeling/,passed,

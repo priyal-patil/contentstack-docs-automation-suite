@@ -1,0 +1,150 @@
+{
+  "id": "manage-labels",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/manage-labels",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models"
+    },
+    {
+      "action": "verify",
+      "target": "Gear (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Gear (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Manage Labels modal (doc step)",
+      "expected": {
+        "labelEquals": "Manage Labels",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "+ New Label (doc step)",
+      "expected": {
+        "labelEquals": "New Label",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Label (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Name (new label doc step)",
+      "expected": {
+        "labelEquals": "name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Name (new label doc step)",
+      "value": "Auto Label {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Label button (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Label button (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Edit label item (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit label item (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit label item (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Name (edit label doc step)",
+      "expected": {
+        "labelEquals": "name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Nest Label Under (edit label doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (edit label doc step)",
+      "value": "Auto Label Updated {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Edit Label button (doc step)",
+      "expected": {
+        "labelEquals": "Edit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Label button (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit label item (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit label item (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Label button (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Label button (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Delete label item (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Delete label item (doc step)"
+    }
+  ]
+}

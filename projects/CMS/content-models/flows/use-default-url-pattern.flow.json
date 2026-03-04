@@ -1,0 +1,35 @@
+{
+  "id": "use-default-url-pattern",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/use-default-url-pattern",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Content Models",
+      "expected": { "within": "Left Navigation" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis"
+    },
+    {
+      "action": "click",
+      "target": "Edit"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "URL (doc step)"
+    }
+  ]
+}

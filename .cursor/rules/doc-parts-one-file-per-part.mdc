@@ -1,0 +1,25 @@
+---
+description: One flow + one selector file per doc part/section
+alwaysApply: true
+---
+
+# One flow and one selector file per doc part/section
+
+When a documentation URL has **multiple parts or sections** (e.g. "Part 1", "Example 1", "Section A"), create **separate flow and selector files per part**. Do **not** combine all parts into a single flow or selector file.
+
+## Required structure
+
+- **Flow:** `projects/<project>/<module>/flows/<id>-part-<N>.flow.json`  
+  Example: `boolean-part-1.flow.json`, `boolean-part-2.flow.json`
+- **Selectors:** `projects/<project>/<module>/selectors/<id>-part-<N>.selectors.ts`  
+  Example: `boolean-part-1.selectors.ts`, `boolean-part-2.selectors.ts`
+
+## Rules
+
+- Each part gets its own **flow JSON** and its own **selector override file**.
+- Part 1 flow contains only steps for Part 1 / Example 1.
+- Part 2 (and later parts) can either:
+  - Be **self-contained** (repeat any prerequisite steps from Part 1 then add Part 2 steps), or
+  - Assume Part 1 was run first (Part 2 starts from “open content type” or equivalent).
+- Reuse **module.selectors.ts** for shared targets (e.g. "Save and Close", field tiles); put only **part-specific** selectors in the part’s selector file.
+- When in doubt, prefer **one file per documented part/section** so each part can be run and maintained independently.

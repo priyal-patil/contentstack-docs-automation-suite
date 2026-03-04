@@ -1,0 +1,47 @@
+{
+  "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+  "brokenLinks": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "brokenUrl": "https://www.contentstack.com/docs/developers/how-to-guides/content-modeling",
+      "anchorText": "model your content",
+      "status": 404,
+      "reason": "404 Not Found"
+    },
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "brokenUrl": "https://www.contentstack.com/docs/content-managers/working-with-entries/create-an-entry",
+      "anchorText": "create an entry",
+      "status": 404,
+      "reason": "404 Not Found"
+    }
+  ],
+  "brokenImages": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "imageUrl": "https://analytics.twitter.com/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2624%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=34fb1c38-f6c5-4d88-bbe5-303de7589f2d&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=c67feb20-ccf7-40ab-8d2c-dfb3a570d529&pt=About%20Content%20Types%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-content-types&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.36",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    },
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "imageUrl": "https://t.co/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2624%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=34fb1c38-f6c5-4d88-bbe5-303de7589f2d&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=c67feb20-ccf7-40ab-8d2c-dfb3a570d529&pt=About%20Content%20Types%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-content-types&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.36",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    }
+  ],
+  "oldLogoDetected": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "imageUrl": "https://images.contentstack.io/v3/assets/blt2d43f51baca745a8/bltb5836b8c327fca68/68c2fdd12607de2a37582f6e/CS_OnlyLogo.webp",
+      "alt": "CS_OnlyLogo.webp"
+    },
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "imageUrl": "https://images.contentstack.io/v3/assets/blt23180bf2502c7444/blt6db93fd5a8ec9eed/5d6516862e65bf281a911f15/Content_type_structure.png",
+      "alt": "Content type structure.png"
+    }
+  ]
+}

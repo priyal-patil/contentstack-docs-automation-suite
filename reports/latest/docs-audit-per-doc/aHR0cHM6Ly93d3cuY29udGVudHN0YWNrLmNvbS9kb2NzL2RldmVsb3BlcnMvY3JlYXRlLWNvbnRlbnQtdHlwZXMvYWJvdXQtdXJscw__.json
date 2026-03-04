@@ -1,0 +1,35 @@
+{
+  "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-urls",
+  "brokenLinks": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-urls",
+      "brokenUrl": "https://www.contentstack.com/docs/content-managers/working-with-entries/create-an-entry",
+      "anchorText": "creating an entry",
+      "status": 404,
+      "reason": "404 Not Found"
+    }
+  ],
+  "brokenImages": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-urls",
+      "imageUrl": "https://t.co/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2630%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=bd6ca373-f1a5-4c37-83d9-8de09071cc9f&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=4706b975-3176-4140-b71d-e139fcbc5a04&pt=About%20URLs%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-urls&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.37",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    },
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-urls",
+      "imageUrl": "https://analytics.twitter.com/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2630%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=bd6ca373-f1a5-4c37-83d9-8de09071cc9f&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=4706b975-3176-4140-b71d-e139fcbc5a04&pt=About%20URLs%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-urls&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.37",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    }
+  ],
+  "oldLogoDetected": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-urls",
+      "imageUrl": "https://images.contentstack.io/v3/assets/blt2d43f51baca745a8/bltb5836b8c327fca68/68c2fdd12607de2a37582f6e/CS_OnlyLogo.webp",
+      "alt": "CS_OnlyLogo.webp"
+    }
+  ]
+}

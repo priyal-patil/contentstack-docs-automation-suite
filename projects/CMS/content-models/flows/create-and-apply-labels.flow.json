@@ -1,0 +1,28 @@
+{
+  "id": "create-and-apply-labels",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/create-and-apply-labels",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models"
+    }
+  ]
+}

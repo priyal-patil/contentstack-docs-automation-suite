@@ -1,0 +1,66 @@
+{
+  "id": "select-extension-app-for-custom-field-only",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/select-extension-app-for-custom-field-only",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Content Models"
+    },
+    {
+      "action": "click",
+      "target": "Create New Content Type"
+    },
+    {
+      "action": "click",
+      "target": "Create New",
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "enter",
+      "target": "Name",
+      "value": "AUTO-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description",
+      "value": "AUTO-{unique}"
+    },
+    {
+      "action": "select",
+      "target": "Type",
+      "value": "Single"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Custom (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Select Extension/Apps (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Select extension (e.g. Color Picker) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)"
+    }
+  ]
+}

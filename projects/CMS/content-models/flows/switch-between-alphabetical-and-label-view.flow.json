@@ -1,0 +1,48 @@
+{
+  "id": "switch-between-alphabetical-and-label-view",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/switch-between-alphabetical-and-label-view",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models"
+    },
+    {
+      "action": "verify",
+      "target": "Content Types"
+    },
+    {
+      "action": "verify",
+      "target": "All Labels (doc step)",
+      "expected": {
+        "labelEquals": "All Labels",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Any label from list (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Any label from list (doc step)"
+    }
+  ]
+}

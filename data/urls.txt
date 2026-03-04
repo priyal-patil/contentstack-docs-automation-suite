@@ -1,0 +1,11 @@
+https://www.contentstack.com/docs/developers/create-content-types/about-content-types
+https://www.contentstack.com/docs/developers/create-content-types/single-vs-multiple-content-types
+https://www.contentstack.com/docs/developers/content-modeling/about-content-modeling/
+https://www.contentstack.com/docs/developers/create-content-types/scenarios-where-editing-a-content-type-is-unsafe
+https://www.contentstack.com/docs/developers/create-content-types/json-schema-for-creating-a-content-type
+https://www.contentstack.com/docs/developers/create-content-types/about-fields
+https://www.contentstack.com/docs/developers/create-content-types/title
+https://www.contentstack.com/docs/developers/create-content-types/url
+https://www.contentstack.com/docs/developers/create-content-types/single-line-textbox
+https://www.contentstack.com/docs/developers/create-content-types/multi-line-textbox
+

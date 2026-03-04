@@ -1,0 +1,49 @@
+{
+  "id": "customize-your-dashboard-view-part-1",
+  "project": "CMS",
+  "module": "stack",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-stack/customize-your-dashboard-view",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Headless CMS",
+      "expected": {
+        "labelEquals": "Headless CMS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "navigate",
+      "target": "https://app.contentstack.com/#!/stacks"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit Dashboard (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ Dashboard Extension (doc step)",
+      "expected": {
+        "labelEquals": "Dashboard Extension",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Done (doc step)"
+    }
+  ]
+}

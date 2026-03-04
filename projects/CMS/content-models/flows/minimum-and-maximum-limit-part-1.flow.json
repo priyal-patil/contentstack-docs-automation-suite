@@ -1,0 +1,28 @@
+{
+  "id": "minimum-and-maximum-limit-part-1",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {"action": "click", "target": "Content Models"},
+    {"action": "verify", "target": "Content Types"},
+    {"action": "click", "target": "New Content Type"},
+    {"action": "click", "target": "Create New", "expected": {"modalTitle": "Create New Content Type"}},
+    {"action": "enter", "target": "Name", "value": "MinMax-Demo-{unique}"},
+    {"action": "enter", "target": "Description", "value": "Min/Max limits demo"},
+    {"action": "click", "target": "Single (Type)"},
+    {"action": "click", "target": "Save and proceed"},
+    {"action": "click", "target": "Insert a field"},
+    {"action": "click", "target": "Single Line Textbox (doc step)"},
+    {"action": "click", "target": "Builder area (dismiss properties)"},
+    {"action": "click", "target": "Properties (Single Line Textbox) (doc step)", "nth": 1},
+    {"action": "click", "target": "Advanced (Single Line Textbox) (doc step)"},
+    {"action": "click", "target": "Multiple (doc step)"},
+    {"action": "enter", "target": "Set Minimum Limit (doc step)", "value": "1"},
+    {"action": "enter", "target": "Set Maximum Limit (doc step)", "value": "5"},
+    {"action": "click", "target": "Save and Close"}
+  ]
+}

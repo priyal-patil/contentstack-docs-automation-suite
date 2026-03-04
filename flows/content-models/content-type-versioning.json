@@ -1,0 +1,15 @@
+{
+  "id": "content-type-versioning",
+  "module": "content-models",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/content-type-versioning",
+  "type": "executable",
+  "steps": [
+    { "action": "click", "target": "Content Models"},
+    { "action": "click", "target": "Open the content type you want to compare." },
+    { "action": "click", "target": "Insert a field" },
+    { "action": "click", "target": "Save" },
+    { "action": "verify", "target": "Compare Versions" },
+    { "action": "click", "target": "Compare Versions" }
+  ]
+}
+

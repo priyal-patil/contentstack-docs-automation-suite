@@ -1,0 +1,10 @@
+url,module,id,project,stage,parts,dom_file
+https://www.contentstack.com/docs/developers/create-content-types/about-labels,content-models,about-labels,CMS,,,
+https://www.contentstack.com/docs/developers/create-content-types/create-and-apply-labels,content-models,create-and-apply-labels,CMS,,,"dom/CMS/content-models/label.html
+dom/CMS/content-models/content-builder.html"
+https://www.contentstack.com/docs/developers/create-content-types/manage-labels,content-models,manage-labels,CMS,,,"dom/CMS/manage-labels.html
+dom/CMS/content-models/content-builder.html"
+https://www.contentstack.com/docs/developers/create-content-types/switch-between-alphabetical-and-label-view,content-models,switch-between-alphabetical-and-label-view,CMS,,,dom/CMS/content-models/content-builder.html
+https://www.contentstack.com/docs/developers/create-content-types/restricted-keywords-for-uids,content-models,restricted-keywords-for-uids,CMS,,,
+https://www.contentstack.com/docs/developers/create-content-types/reference-field-upgradation,content-models,reference-field-upgradation,CMS,,,
+https://www.contentstack.com/docs/developers/create-content-types/limitations-of-content-types,content-models,limitations-of-content-types,CMS,,,

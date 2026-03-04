@@ -1,0 +1,41 @@
+{
+  "id": "leave-a-stack",
+  "project": "CMS",
+  "module": "stack",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-stack/leave-a-stack",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Headless CMS",
+      "expected": {
+        "labelEquals": "Headless CMS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "navigate",
+      "target": "https://app.contentstack.com/#!/stacks"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Leave Stack (doc step)"
+    }
+  ]
+}

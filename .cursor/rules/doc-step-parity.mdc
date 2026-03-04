@@ -1,0 +1,36 @@
+---
+description: Enforce doc-to-app step parity for Contentstack automation flows
+alwaysApply: true
+---
+
+# Doc-to-app step parity (critical)
+
+When creating or updating automation flows based on a documentation URL, the flow must reflect the **exact user actions described in the doc**.
+
+## Non-negotiables
+
+- **Do not invent missing doc steps** to make a flow pass.
+  - Example: If the app requires clicking an **Advanced** tab to reach “Editor Type → Custom”, but the doc does not mention that click, the flow should **fail** at the doc step that becomes impossible and record the reason.
+- **Passing is not the goal** for doc-validation flows; **detecting doc gaps/outdated instructions is**.
+- You may **stabilize selectors** for a doc step (better locator), but you must not add extra UI navigation steps unless the doc explicitly says so.
+- **Label doc-derived steps** in flow JSON with a `"(doc step)"` suffix (e.g., `"Custom (Editor Type) (doc step)"`) so reports clearly distinguish doc steps from allowed generic navigation.
+
+## Allowed “generic” steps (can be implicit)
+
+These can be included even if not repeated in every doc:
+
+- login / select stack / open module page
+- “open the content type/entry” to reach the described screen
+
+Everything else must come from the doc.
+
+## Failure + reporting requirements
+
+When a doc step cannot be executed in the app:
+
+- **Fail the flow** at the first un-executable doc step.
+- Ensure run artifacts clearly show:
+  - **failed step**
+  - **why it failed** (e.g., “doc missing prerequisite step”, “UI label changed”, “permission required”)
+  - **screenshot** (Playwright test artifact)
+

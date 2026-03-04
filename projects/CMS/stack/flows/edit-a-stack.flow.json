@@ -1,0 +1,51 @@
+{
+  "id": "edit-a-stack",
+  "project": "CMS",
+  "module": "stack",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-stack/edit-a-stack",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Headless CMS",
+      "expected": {
+        "labelEquals": "Headless CMS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "navigate",
+      "target": "https://app.contentstack.com/#!/stacks"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (edit stack doc step)",
+      "value": "Auto Stack Updated {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (edit stack doc step)",
+      "value": "Auto stack description updated {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    }
+  ]
+}

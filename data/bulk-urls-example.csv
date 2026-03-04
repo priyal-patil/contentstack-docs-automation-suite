@@ -1,0 +1,2 @@
+url,module,id,project,stage,dom_file,steps_file,selectors_file
+https://www.contentstack.com/docs/developers/create-content-types/boolean,content-models,example-from-csv,CMS,main,dom/example-snippet.html,,

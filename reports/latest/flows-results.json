@@ -1,0 +1,213 @@
+{
+  "config": {
+    "configFile": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/playwright.config.ts",
+    "rootDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "docs-audit",
+        "name": "docs-audit",
+        "testDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/docs-audit\\.spec\\.ts/"
+        ],
+        "timeout": 420000
+      },
+      {
+        "outputDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "crawl",
+        "name": "crawl",
+        "testDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/crawl\\/crawl\\.spec\\.ts/"
+        ],
+        "timeout": 420000
+      },
+      {
+        "outputDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "default",
+        "name": "default",
+        "testDir": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/tests",
+        "testIgnore": [
+          "/docs-audit\\.spec\\.ts/",
+          "/crawl\\/crawl\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 420000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "reports/latest/html"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/latest/flows-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "flows.spec.ts",
+      "file": "flows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Project=CMS Module=content-models Stage=main",
+          "file": "flows.spec.ts",
+          "line": 106,
+          "column": 8,
+          "specs": [
+            {
+              "title": "switch-between-alphabetical-and-label-view",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "default",
+                  "projectName": "default",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13959,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "=================================\n"
+                        },
+                        {
+                          "text": "Executing Flow: switch-between-alphabetical-and-label-view\n"
+                        },
+                        {
+                          "text": "=================================\n"
+                        },
+                        {
+                          "text": "🧪 DEFAULT_STACK from env: PriyalDocsStack\n"
+                        },
+                        {
+                          "text": "✅ Stacks page looks ready via marker: .StackList | URL: https://app.contentstack.com/#!/stacks\n"
+                        },
+                        {
+                          "text": "✅ Clicked configured stack: PriyalDocsStack\n"
+                        },
+                        {
+                          "text": "🔎 Flow.steps type: object\n"
+                        },
+                        {
+                          "text": "🔎 Flow.steps length: \u001b[33m6\u001b[39m\n"
+                        },
+                        {
+                          "text": "🔎 Flow object: {\n  \"id\": \"switch-between-alphabetical-and-label-view\",\n  \"project\": \"CMS\",\n  \"module\": \"content-models\",\n  \"stage\": \"main\",\n  \"source\": \"https://www.contentstack.com/docs/developers/create-content-types/switch-between-alphabetical-and-label-view\",\n  \"type\": \"executable\",\n  \"use\": [\n    \"login\",\n    \"selectStack\"\n  ],\n  \"steps\": [\n    {\n      \"action\": \"verify\",\n      \"target\": \"Content Models\",\n      \"expected\": {\n        \"within\": \"Left Navigation\",\n        \"withinStrict\": true,\n        \"labelEquals\": \"Content Models\",\n        \"labelMatch\": \"contains\"\n      }\n    },\n    {\n      \"action\": \"click\",\n      \"target\": \"Content Models\"\n    },\n    {\n      \"action\": \"verify\",\n      \"target\": \"Content Types\"\n    },\n    {\n      \"action\": \"verify\",\n      \"target\": \"All Labels (doc step)\",\n      \"expected\": {\n        \"labelEquals\": \"All Labels\",\n        \"labelMatch\": \"contains\"\n      }\n    },\n    {\n      \"action\": \"click\",\n      \"target\": \"Any label from list (doc step)\"\n    },\n    {\n      \"action\": \"verify\",\n      \"target\": \"Any label from list (doc step)\"\n    }\n  ]\n}\n"
+                        },
+                        {
+                          "text": "STEP 1/6: {\n  action: \u001b[32m'verify'\u001b[39m,\n  target: \u001b[32m'Content Models'\u001b[39m,\n  expected: {\n    within: \u001b[32m'Left Navigation'\u001b[39m,\n    withinStrict: \u001b[33mtrue\u001b[39m,\n    labelEquals: \u001b[32m'Content Models'\u001b[39m,\n    labelMatch: \u001b[32m'contains'\u001b[39m\n  }\n}\n"
+                        },
+                        {
+                          "text": "STEP 2/6: { action: \u001b[32m'click'\u001b[39m, target: \u001b[32m'Content Models'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "STEP 3/6: { action: \u001b[32m'verify'\u001b[39m, target: \u001b[32m'Content Types'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "STEP 4/6: {\n  action: \u001b[32m'verify'\u001b[39m,\n  target: \u001b[32m'All Labels (doc step)'\u001b[39m,\n  expected: { labelEquals: \u001b[32m'All Labels'\u001b[39m, labelMatch: \u001b[32m'contains'\u001b[39m }\n}\n"
+                        },
+                        {
+                          "text": "STEP 5/6: { action: \u001b[32m'click'\u001b[39m, target: \u001b[32m'Any label from list (doc step)'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "STEP 6/6: { action: \u001b[32m'verify'\u001b[39m, target: \u001b[32m'Any label from list (doc step)'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "✅ Flow completed: switch-between-alphabetical-and-label-view\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:62728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-03-02T11:46:29.798Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "86d6a544053f1eb9f224-da67b367d309b09940f4",
+              "file": "flows.spec.ts",
+              "line": 107,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-02T11:46:28.590Z",
+    "duration": 16634.558,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

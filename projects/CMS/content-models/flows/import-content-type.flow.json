@@ -1,0 +1,20 @@
+{
+  "id": "import-content-type",
+  "project": "CMS",
+  "module": "content-models",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/import-a-content-type",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Content Models", "expected": { "within": "Left Navigation" } },
+    { "action": "click", "target": "Import Content Type" },
+    {
+      "action": "verify",
+      "target": "Choose a file",
+      "expected": { "within": "Modal", "modalTitle": "Import Content Type" }
+    },
+    { "action": "upload", "target": "Choose a file", "value": "./dummyData/sample.json" },
+    { "action": "click", "target": "Import", "expected": { "within": "Modal" } }
+  ]
+}
+

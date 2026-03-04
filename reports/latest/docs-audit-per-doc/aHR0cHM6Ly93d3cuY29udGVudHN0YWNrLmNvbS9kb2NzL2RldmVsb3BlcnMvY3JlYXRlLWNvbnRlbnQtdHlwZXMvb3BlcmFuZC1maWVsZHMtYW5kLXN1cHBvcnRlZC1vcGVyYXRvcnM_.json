@@ -1,0 +1,51 @@
+{
+  "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/operand-fields-and-supported-operators",
+  "brokenLinks": [],
+  "brokenImages": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/operand-fields-and-supported-operators",
+      "imageUrl": "https://analytics.twitter.com/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2630%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=6229d538-70bc-4c92-8b3c-0f8a198eccb2&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=e94694f9-1553-435c-9667-c8718d3ca1b3&pt=Operand%20Fields%20and%20Supported%20Operators%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Foperand-fields-and-supported-operators&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.37",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    },
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/operand-fields-and-supported-operators",
+      "imageUrl": "https://t.co/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2630%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=6229d538-70bc-4c92-8b3c-0f8a198eccb2&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=e94694f9-1553-435c-9667-c8718d3ca1b3&pt=Operand%20Fields%20and%20Supported%20Operators%20%7C%20Contentstack&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Foperand-fields-and-supported-operators&tw_iframe_status=0&txn_id=o1k5x&type=javascript&version=2.3.37",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found"
+    }
+  ],
+  "tableAudit": {
+    "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/operand-fields-and-supported-operators",
+    "tableDetected": true,
+    "tableExistsAndVisible": true,
+    "structure": {
+      "headerRowExists": false,
+      "bodyRowCount": 10,
+      "minBodyRowsMet": true,
+      "columnCountConsistent": true,
+      "columnCount": 2
+    },
+    "headerTexts": [],
+    "accessibility": {
+      "semanticOrAria": true,
+      "headersHaveScopeOrRole": false,
+      "hasCaption": false
+    },
+    "noBrokenLayout": {
+      "tableNotEmpty": true,
+      "noEmptyMessage": true,
+      "noErrorBanner": true
+    },
+    "warnings": []
+  },
+  "oldLogoDetected": [
+    {
+      "docUrl": "https://www.contentstack.com/docs/developers/create-content-types/operand-fields-and-supported-operators",
+      "imageUrl": "https://images.contentstack.io/v3/assets/blt2d43f51baca745a8/bltb5836b8c327fca68/68c2fdd12607de2a37582f6e/CS_OnlyLogo.webp",
+      "alt": "CS_OnlyLogo.webp"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.contentstack.com/docs/developers/create-content-types/boolean",
+    "project": "CMS",
+    "module": "content-models",
+    "id": "example-from-bulk",
+    "stage": "main",
+    "steps": [
+      { "action": "click", "target": "Content Models" },
+      { "action": "verify", "target": "Content Types" },
+      { "action": "click", "target": "New Content Type" }
+    ],
+    "selectors": {
+      "click": {
+        "My Button (doc step)": "[data-test-id=\"my-button\"]"
+      },
+      "input": {
+        "My Input (doc step)": "[data-test-id=\"my-input\"] input"
+      }
+    },
+    "dom": "<div data-test-id=\"cs-field-type-selector\">...</div>"
+  }
+]

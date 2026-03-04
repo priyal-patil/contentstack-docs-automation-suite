@@ -1,0 +1,1013 @@
+{
+  "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-field-properties",
+  "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-field-properties",
+  "pageStatus": 200,
+  "pageRedirected": false,
+  "links": [
+    {
+      "url": "https://www.contentstack.com/docs",
+      "anchorText": "Docs",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platforms/real-time-cdp",
+      "anchorText": "Real-time Data and Insights",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platform",
+      "anchorText": "Platform",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/login",
+      "anchorText": "Login",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/",
+      "anchorText": "(no text)",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platforms/ai",
+      "anchorText": "Agents & Automations",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platforms/omnichannel-personalization",
+      "anchorText": "Omnichannel Personalization",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platforms/launch",
+      "anchorText": "Front-end Hosting",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/resources/report/the-forrester-wave-digital-experience-platforms-q4-2025",
+      "anchorText": "A Strong Performer in The Forrester Wave™: Digital Experience Platforms, Q4 2025",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/roles/leaders",
+      "anchorText": "Digital leaders",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/case-studies",
+      "anchorText": "Customer stories",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/roles/business",
+      "anchorText": "Business users",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions",
+      "anchorText": "Explore Solutions→",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/resources",
+      "anchorText": "Resources center",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/blog",
+      "anchorText": "Blog",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/community",
+      "anchorText": "Community",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/roles/developers",
+      "anchorText": "Developer & IT",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/events",
+      "anchorText": "Events",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/pricing",
+      "anchorText": "Plans",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platforms/headless-cms",
+      "anchorText": "Headless Content Management",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/partners",
+      "anchorText": "Partners",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/marketplace",
+      "anchorText": "Marketplace",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/about",
+      "anchorText": "About us",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/platform-updates",
+      "anchorText": "Product updates",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/try-for-free",
+      "anchorText": "Start free",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/social-responsibility",
+      "anchorText": "Social responsibility",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/contact-us",
+      "anchorText": "Contact",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/press",
+      "anchorText": "Press releases",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/overview",
+      "anchorText": "Overview",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/awards",
+      "anchorText": "Awards",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/request-demo",
+      "anchorText": "Talk to us",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/careers",
+      "anchorText": "Careers",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/personalize",
+      "anchorText": "chevron_rightPersonalize",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/studio",
+      "anchorText": "chevron_rightStudio",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/get-started",
+      "anchorText": "Get Started",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/data-and-insights",
+      "anchorText": "chevron_rightData and Insights",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/set-up-stack",
+      "anchorText": "Set up Stack",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types",
+      "anchorText": "Create Content Types",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-models",
+      "anchorText": "expand_moreCreate Content Models",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/content-modeling",
+      "anchorText": "Content Modeling",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers",
+      "anchorText": "expand_moreDevelopers",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/global-field",
+      "anchorText": "Create Global Field",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/set-up-environments",
+      "anchorText": "Set up Environments",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/fetch-content",
+      "anchorText": "Fetch Content",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/building-websites",
+      "anchorText": "chevron_rightBuilding Websites",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/faqs",
+      "anchorText": "FAQs",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/sdks",
+      "anchorText": "chevron_rightPlatforms & SDKs",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/content-managers",
+      "anchorText": "chevron_rightContent Managers",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/analytics",
+      "anchorText": "Analytics",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/about-fields",
+      "anchorText": "field",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "anchorText": "Content Type",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/placeholder-value",
+      "anchorText": "Placeholder ValueLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/display-name",
+      "anchorText": "Display Name",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/instruction-value",
+      "anchorText": "Instruction ValueLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/default-value",
+      "anchorText": "Default ValueLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/academy",
+      "anchorText": "Academy",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/validation-regex",
+      "anchorText": "Validation (Regex)Learn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/validation-error-message",
+      "anchorText": "Validation Error MessageLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/unique-id",
+      "anchorText": "Unique IDLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/multiple",
+      "anchorText": "MultipleLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/mandatory",
+      "anchorText": "MandatoryLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/help-text",
+      "anchorText": "Help TextLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/show-as-tab",
+      "anchorText": "Show as TabLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/non-localizable",
+      "anchorText": "Non-localizableLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/unique",
+      "anchorText": "UniqueLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/allowed-file-types",
+      "anchorText": "Allowed file type(s)Learn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/changelog",
+      "anchorText": "Changelog",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/managing-non-localizable-fields",
+      "anchorText": "Managing Non-Localizable FieldsLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/set-date-range",
+      "anchorText": "Set date rangeLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/mark-as-title",
+      "anchorText": "Mark as TitleLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/display-type",
+      "anchorText": "Display TypeLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-tokens",
+      "anchorText": "Create Tokens",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/selection-type",
+      "anchorText": "Selection TypeLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/number-of-characters",
+      "anchorText": "Number of Characters",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/limit-for-multiple-choices",
+      "anchorText": "Limit for Multiple ChoicesLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/config-parameter-for-custom-fields-only",
+      "anchorText": "Config Parameter (for Custom Fields only)Learn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/apis",
+      "anchorText": "chevron_rightAPIs",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/referenced-content-type",
+      "anchorText": "Referenced Content TypeLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/allow-images-only",
+      "anchorText": "Allow images onlyLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/select-extension-app-for-custom-field-only",
+      "anchorText": "Select Extension/App (for Custom Field only)Learn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/select-taxonomy",
+      "anchorText": "Select TaxonomyLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/maximum-number-of-terms",
+      "anchorText": "Maximum Number of TermsLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/roi-calculator",
+      "anchorText": "ROI calculator",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/retail",
+      "anchorText": "Retail",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit",
+      "anchorText": "Minimum and Maximum LimitsLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/financial-services",
+      "anchorText": "Financial services",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/technology-industry",
+      "anchorText": "Technology",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/manufacturing",
+      "anchorText": "Manufacturing",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/ecommerce",
+      "anchorText": "E-commerce",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/localization",
+      "anchorText": "Localization",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/personalization",
+      "anchorText": "Personalization",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/file-size-limit",
+      "anchorText": "File size limitLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/portals-knowledge-bases",
+      "anchorText": "Portals and knowledge bases",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/solutions/travel-tourism",
+      "anchorText": "Travel and tourism",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/resources/report",
+      "anchorText": "Insights and analyst reports",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/choice-data-type",
+      "anchorText": "Choice Data TypeLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/resources/webinar",
+      "anchorText": "Webinars",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/podcasts/people-changing-enterprises",
+      "anchorText": "Podcasts",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/customers/experience-awards",
+      "anchorText": "Contentstack Experience Awards",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/add-choices",
+      "anchorText": "Add ChoicesLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/customers/support",
+      "anchorText": "Customer support",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/company/news",
+      "anchorText": "News",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://contentstack.channeltivity.com/Login",
+      "anchorText": "Login",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/ai-prompts",
+      "anchorText": "AI Prompt Library",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.facebook.com/contentstack",
+      "anchorText": "Facebook",
+      "status": 400,
+      "reason": "400 Bad Request",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/support",
+      "anchorText": "Customer support portal",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://discord.com/invite/NyWJ68gdDw",
+      "anchorText": "Discord",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/customer-care",
+      "anchorText": "Customer Care",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/glossary",
+      "anchorText": "Glossary",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.instagram.com/contentstack/#",
+      "anchorText": "Instagram",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/legal",
+      "anchorText": "Legal",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.cookiepro.com/products/cookie-consent/",
+      "anchorText": "(no text)",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": true,
+      "finalUrl": "https://www.onetrust.com/products/cookie-consent/"
+    },
+    {
+      "url": "https://www.contentstack.com/legal/privacy",
+      "anchorText": "Privacy",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/legal/terms-of-service",
+      "anchorText": "Terms",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://x.com/contentstack",
+      "anchorText": "X",
+      "status": 403,
+      "reason": "403 Forbidden",
+      "redirected": false
+    },
+    {
+      "url": "https://www.youtube.com/contentstack",
+      "anchorText": "Youtube",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/partners/solutions",
+      "anchorText": "Find a partner",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://github.com/contentstack",
+      "anchorText": "Github",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.linkedin.com/company/contentstack/",
+      "anchorText": "LinkedIn",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/docs/developers/create-content-types/image-dimension-validation",
+      "anchorText": "Image Dimension ValidationLearn morearrow_forward",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    }
+  ],
+  "images": [
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/blt7d8adced511607bf/68862b1113c22e2bed6eba09/Product_Icons_[dark_mode_only]_(3).svg",
+      "alt": "Headless Content Management",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/blt2e24a315fedaeaf7/68bc10f25f14881bc908b6c2/CS_OnlyLogo.webp?environment=production&width=128&quality=85&format=webp",
+      "alt": "logo",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/blt003296d6a3e3c537/68862c0e14969933fda15c47/Product_Icons_[dark_mode_only]_(7).svg",
+      "alt": "Front-end Hosting",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/blt10173069566edc19/68862bde586c39da5871868c/Product_Icons_[dark_mode_only]_(6).svg",
+      "alt": "Agents & Automations",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/bltaf0f75f803588a43/68862b24efd98eec4c252d27/Product_Icons_[dark_mode_only]_(4).svg",
+      "alt": "Real-time Data and Insights",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/blt2e24a315fedaeaf7/68bc10f25f14881bc908b6c2/CS_OnlyLogo.webp?environment=production&width=64&quality=85&format=webp",
+      "alt": "logo",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt2d43f51baca745a8/bltb5836b8c327fca68/68c2fdd12607de2a37582f6e/CS_OnlyLogo.webp",
+      "alt": "CS_OnlyLogo.webp",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt77d44a06c81b1730/bltec1816913a1e5ece/68862b474ad740e7745a7618/Product_Icons_[dark_mode_only]_(5).svg",
+      "alt": "Omnichannel Personalization",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://cdn.bizible.com/ipv?_biz_r=&_biz_h=-1719904874&_biz_u=3648e9d2033a417ea9f2e8ccbe742382&_biz_l=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-field-properties&_biz_t=1772430966720&_biz_i=Field%20Properties%20%7C%20Edit%20the%20Properties%20of%20a%20Field&_biz_n=0&rnd=406366&cdn_o=a&_biz_z=1772430966720",
+      "alt": "",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://cdn.bizibly.com/u?_biz_u=3648e9d2033a417ea9f2e8ccbe742382&_biz_l=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-field-properties&_biz_t=1772430966721&_biz_i=Field%20Properties%20%7C%20Edit%20the%20Properties%20of%20a%20Field&rnd=479862&cdn_o=a&_biz_z=1772430966721",
+      "alt": "",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/_next/image?url=https%3A%2F%2Fimages.contentstack.io%2Fv3%2Fassets%2Fblt77d44a06c81b1730%2Fblt2e24a315fedaeaf7%2F68bc10f25f14881bc908b6c2%2FCS_OnlyLogo.webp&w=128&q=75",
+      "alt": "logo",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://images.contentstack.io/v3/assets/blt2d43f51baca745a8/blt1f53958dc3cd034c/68c2f9df2607de629f582f54/contentStackDark.svg",
+      "alt": "contentStackDark.svg",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://cdn.bizible.com/u?mapType=mkto&mapValue=id%3A489-WNI-383%26token%3A_mch-contentstack.com-467607d64d3686d6f0c3f778103b8830&_biz_u=3648e9d2033a417ea9f2e8ccbe742382&_biz_l=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-field-properties&_biz_t=1772430968728&_biz_i=Field%20Properties%20%7C%20Edit%20the%20Properties%20of%20a%20Field&_biz_n=1&rnd=371877&cdn_o=a&_biz_z=1772430968728",
+      "alt": "",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://cookie-cdn.cookiepro.com/logos/static/cookiepro_logo.png",
+      "alt": "Company Logo",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://cookie-cdn.cookiepro.com/logos/static/poweredBy_cp_logo.svg",
+      "alt": "Powered by Onetrust",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/_next/image?url=https%3A%2F%2Fimages.contentstack.io%2Fv3%2Fassets%2Fblt77d44a06c81b1730%2Fblt2e24a315fedaeaf7%2F68bc10f25f14881bc908b6c2%2FCS_OnlyLogo.webp&w=64&q=75",
+      "alt": "logo",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/assets/contentStackDark.svg",
+      "alt": "Contentstack",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://analytics.twitter.com/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2624%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=d858dc48-8100-44d0-b333-78d99693b09e&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=e44a4da2-2544-40ff-8d25-f4b106e72709&pt=Field%20Properties%20%7C%20Edit%20the%20Properties%20of%20a%20Field&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-field-properties&tw_iframe_status=0&tw_pid_src=1&twpid=tw.1772430967766.307420781905054850&txn_id=o1k5x&type=javascript&version=2.3.39",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found",
+      "redirected": false
+    },
+    {
+      "url": "https://t.co/1/i/adsct?bci=4&dv=Asia%2FCalcutta%26en-US%26Google%20Inc.%26MacIntel%26127%261280%26720%2610%2624%261280%26720%260%26na&eci=3&event=%7B%7D&event_id=d858dc48-8100-44d0-b333-78d99693b09e&integration=advertiser&p_id=Twitter&p_user_id=0&pl_id=e44a4da2-2544-40ff-8d25-f4b106e72709&pt=Field%20Properties%20%7C%20Edit%20the%20Properties%20of%20a%20Field&tw_document_href=https%3A%2F%2Fwww.contentstack.com%2Fdocs%2Fdevelopers%2Fcreate-content-types%2Fabout-field-properties&tw_iframe_status=0&tw_pid_src=1&twpid=tw.1772430967766.307420781905054850&txn_id=o1k5x&type=javascript&version=2.3.39",
+      "alt": "",
+      "status": 404,
+      "reason": "404 Not Found",
+      "redirected": false
+    },
+    {
+      "url": "https://www.contentstack.com/assets/Vector.svg",
+      "alt": "Contentstack",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": false
+    },
+    {
+      "url": "https://id.rlcdn.com/464526.gif",
+      "alt": "",
+      "status": 200,
+      "reason": "200 HTTP",
+      "redirected": true,
+      "finalUrl": "https://id.rlcdn.com/1000.gif?memo=CI6tHBoNCIPNlM0GEgUI6AcQAEIASgA"
+    }
+  ],
+  "media": [],
+  "summary": {
+    "linksTotal": 120,
+    "linksOk": 118,
+    "linksRedirect": 0,
+    "linksBroken": 0,
+    "imagesTotal": 21,
+    "imagesOk": 19,
+    "imagesBroken": 2,
+    "mediaTotal": 0,
+    "mediaOk": 0,
+    "mediaBroken": 0
+  },
+  "crawledAt": "2026-03-02T05:56:05.734Z"
+}

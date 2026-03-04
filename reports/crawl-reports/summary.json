@@ -1,0 +1,252 @@
+{
+  "generatedAt": "2026-03-02T05:58:37.933Z",
+  "csvPath": "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-ai-automation/data/crawl-urls.csv",
+  "totalUrls": 48,
+  "urls": [
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/content-type-versioning",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/content-type-versioning",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/copy-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/copy-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/create-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/create-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/custom",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/custom",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-content-types",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-field-properties",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-field-properties",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-fields",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/about-fields",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/boolean",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/boolean",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/global",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/global",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/group",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/group",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/group#example-2-survey-form",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/group#example-2-survey-form",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/date",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/date",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/default-value",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/default-value",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/delete-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/delete-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/display-name",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/display-name",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/edit-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/edit-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/export-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/export-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/field-limitations",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/field-limitations",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/file",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/file",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/help-text",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/help-text",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/import-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/import-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/import-prebuilt-content-models",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/import-prebuilt-content-models",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/instruction-value",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/instruction-value",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/json-schema-for-creating-a-content-type",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/json-schema-for-creating-a-content-type",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/link",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/link",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/modular-blocks",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/modular-blocks",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/mandatory",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/mandatory",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/markdown",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/markdown",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit#example-enforcing-or-logic-with-modular-blocks",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/minimum-and-maximum-limit#example-enforcing-or-logic-with-modular-blocks",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/multi-line-textbox",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/multi-line-textbox",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/multiple",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/multiple",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/new-page",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/new-page",
+      "pageStatus": 404
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/number",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/number",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/scenarios-where-editing-a-content-type-is-unsafe",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/scenarios-where-editing-a-content-type-is-unsafe",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/select",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/select",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/single-line-textbox",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/single-line-textbox",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/single-vs-multiple-content-types",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/single-vs-multiple-content-types",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/placeholder-value",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/placeholder-value",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/reference",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/reference",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/rich-text-editor",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/rich-text-editor",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/taxonomy",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/taxonomy",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/title",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/title",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/unique",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/unique",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/unique-id",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/unique-id",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/url",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/url",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/validation-error-message",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/validation-error-message",
+      "pageStatus": 200
+    },
+    {
+      "initialUrl": "https://www.contentstack.com/docs/developers/create-content-types/validation-regex",
+      "pageUrl": "https://www.contentstack.com/docs/developers/create-content-types/validation-regex",
+      "pageStatus": 200
+    }
+  ],
+  "byStatus": {
+    "pageOk": 47,
+    "pageRedirect": 2,
+    "pageError": 1
+  }
+}

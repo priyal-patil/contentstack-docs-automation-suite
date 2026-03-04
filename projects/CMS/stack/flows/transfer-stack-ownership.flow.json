@@ -1,0 +1,46 @@
+{
+  "id": "transfer-stack-ownership",
+  "project": "CMS",
+  "module": "stack",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-stack/transfer-stack-ownership",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Headless CMS",
+      "expected": {
+        "labelEquals": "Headless CMS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "navigate",
+      "target": "https://app.contentstack.com/#!/stacks"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Transfer Ownership (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Recipient Email (doc step)",
+      "value": "owner+{unique}@example.com"
+    }
+  ]
+}
