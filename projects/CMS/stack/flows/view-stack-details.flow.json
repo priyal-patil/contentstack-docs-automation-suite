@@ -10,24 +10,26 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
     },
     {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
     },
     {
       "action": "click",
-      "target": "Any Stack Card (doc step)"
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -48,6 +50,38 @@
         "labelEquals": "Description",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "Stack Owner Email (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Appearance section (doc step)",
+      "expected": {
+        "labelEquals": "Appearance",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Stack Color (settings doc step)",
+      "expected": {
+        "labelEquals": "Stack Color",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Credentials section (doc step)",
+      "expected": {
+        "labelEquals": "API Credentials",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Key (doc step)"
     }
   ]
 }

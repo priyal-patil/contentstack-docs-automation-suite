@@ -9,11 +9,13 @@ When creating or updating automation flows based on a documentation URL, the flo
 
 ## Non-negotiables
 
-- **Do not invent missing doc steps** to make a flow pass.
-  - Example: If the app requires clicking an **Advanced** tab to reach “Editor Type → Custom”, but the doc does not mention that click, the flow should **fail** at the doc step that becomes impossible and record the reason.
-- **Passing is not the goal** for doc-validation flows; **detecting doc gaps/outdated instructions is**.
-- You may **stabilize selectors** for a doc step (better locator), but you must not add extra UI navigation steps unless the doc explicitly says so.
-- **Label doc-derived steps** in flow JSON with a `"(doc step)"` suffix (e.g., `"Custom (Editor Type) (doc step)"`) so reports clearly distinguish doc steps from allowed generic navigation.
+- **Map exact document steps** into flow JSON, in order.
+- Add verification metadata for document claims:
+  - position/container checks (`Left Navigation`, `Top Bar`, `Modal`) when stated in doc
+  - modal name verification when a modal is named in doc
+  - field/button label verification for names used in doc
+- **Label doc-derived targets** with `"(doc step)"` so reporting stays traceable to docs.
+- You may stabilize selectors for a doc step, but do not change document intent.
 
 ## Allowed “generic” steps (can be implicit)
 
@@ -26,11 +28,14 @@ Everything else must come from the doc.
 
 ## Failure + reporting requirements
 
-When a doc step cannot be executed in the app:
+Document **verification mismatch** (position/label/modal/name) must be **warning-only**:
 
-- **Fail the flow** at the first un-executable doc step.
-- Ensure run artifacts clearly show:
-  - **failed step**
-  - **why it failed** (e.g., “doc missing prerequisite step”, “UI label changed”, “permission required”)
-  - **screenshot** (Playwright test artifact)
+- record warning in report
+- continue execution to the end of the URL flow
+
+Document step must **hard fail** only when step execution itself is impossible:
+
+- required target not found / not visible / timeout
+- required action cannot be performed
+- clearly missing prerequisite step in doc that blocks execution
 

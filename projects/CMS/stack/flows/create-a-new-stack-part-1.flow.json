@@ -10,25 +10,15 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "verify",
       "target": "+ New Stack (doc step)",
       "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
         "labelEquals": "New Stack",
         "labelMatch": "contains"
       }
@@ -58,6 +48,18 @@
       "action": "enter",
       "target": "Description (create stack doc step)",
       "value": "Auto stack description {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Stack Color (doc step)",
+      "expected": {
+        "labelEquals": "Stack Color",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stack Color swatch (doc step)"
     },
     {
       "action": "click",

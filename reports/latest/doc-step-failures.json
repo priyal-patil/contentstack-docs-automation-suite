@@ -1,6 +1,20 @@
 {
-  "generatedAt": "2026-03-02T11:46:45.146Z",
+  "generatedAt": "2026-03-04T11:12:25.493Z",
   "description": "Document steps that could not be executed (e.g. element not found). Use this to update the document: fix or add the missing step for the given URL at the given step.",
-  "failedFlows": 0,
-  "failures": []
+  "failedFlows": 1,
+  "failures": [
+    {
+      "documentUrl": "https://www.contentstack.com/docs/developers/set-up-stack/customize-your-dashboard-view",
+      "flowId": "customize-your-dashboard-view-part-1",
+      "stepNumber": 11,
+      "stepIndex": 10,
+      "action": "click",
+      "target": "Remove Recently Modified Assets (doc step)",
+      "errorMessage": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('button[aria-label*=\"Remove\" i]:near(:text(\"Recently Modified Assets\")), [data-test-id*=\"remove\" i]:near(:text(\"Recently Modified Assets\"))').first()\nExpected: visible\nTimeout: 30000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[aria-label*=\"Remove\" i]:near(:text(\"Recently Modified Assets\")), [data-test-id*=\"remove\" i]:near(:text(\"Recently Modified Assets\"))').first()\u001b[22m\n",
+      "step": {
+        "action": "click",
+        "target": "Remove Recently Modified Assets (doc step)"
+      }
+    }
+  ]
 }

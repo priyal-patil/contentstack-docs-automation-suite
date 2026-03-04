@@ -35,7 +35,11 @@ export async function executeFlow(page: Page, flow: any) {
     const step = flow.steps[i];
     console.log(`STEP ${i + 1}/${flow.steps.length}:`, step);
     try {
-      await performAction(page, step, unique, flow);
+      await performAction(page, step, unique, flow, {
+        documentUrl,
+        flowId: flow.id,
+        stepIndex: i,
+      });
       // Pause after "Create New Rule" so user can perform FVR steps manually and capture locators (run with PAUSE_AFTER_CREATE_NEW_RULE=true --headed)
       if (process.env.PAUSE_AFTER_CREATE_NEW_RULE === "true" && step.target === "Create New Rule (doc step)") {
         console.log("⏸️  Pausing for manual steps. Use Playwright Inspector to capture locators. When done, press Resume in the Inspector to finish the run (remaining steps will be skipped).");

@@ -1,13 +1,9 @@
-import { chromium} from "@playwright/test";
+import { chromium, expect } from "@playwright/test";
 import path from "path";
-import dotenv from "dotenv";
 import fs from "fs";
+import { appUrl, loadRuntimeEnv } from "./core/env";
 
-const envCandidates = [path.resolve(process.cwd(), ".env"), path.resolve(__dirname, ".env")];
-const envPath = envCandidates.find((p) => fs.existsSync(p));
-if (!envPath) throw new Error(`.env not found. Looked in: ${envCandidates.join(", ")}`);
-
-dotenv.config({ path: envPath });
+const envPath = loadRuntimeEnv();
 console.log("✅ Loaded .env from:", envPath);
 
 function mustGetEnv(name: string): string {
@@ -26,8 +22,21 @@ export default async () => {
       const hasCookies = Array.isArray(existing?.cookies) && existing.cookies.length > 0;
       const hasOrigins = Array.isArray(existing?.origins) && existing.origins.length > 0;
       if (hasCookies || hasOrigins) {
-        console.log("✅ Reusing existing auth state at:", storagePath);
-        return;
+        // Validate the saved session by opening stacks page once.
+        const browser = await chromium.launch({ headless: true });
+        const context = await browser.newContext({ storageState: storagePath });
+        const page = await context.newPage();
+        await page.goto(appUrl("/#!/stacks"), { waitUntil: "domcontentloaded" });
+        const stillLoggedIn = !/#!\/login/i.test(page.url());
+        await context.close();
+        await browser.close();
+
+        if (stillLoggedIn) {
+          console.log("✅ Reusing existing auth state at:", storagePath);
+          return;
+        }
+
+        console.log("ℹ️ Existing auth state is expired. Performing fresh login.");
       }
     } catch {
       // If auth.json is corrupt, fall through to re-login.
@@ -40,7 +49,7 @@ export default async () => {
   const email = mustGetEnv("CS_EMAIL");
   const password = mustGetEnv("CS_PASSWORD");
 
-  await page.goto("https://app.contentstack.com/#!/login", { waitUntil: "domcontentloaded" });
+  await page.goto(appUrl("/#!/login"), { waitUntil: "domcontentloaded" });
 
   // If already authenticated, Contentstack may redirect away from /#!/login.
   if (!page.url().includes("/#!/login")) {

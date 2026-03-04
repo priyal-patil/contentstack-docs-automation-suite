@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { test } from "@playwright/test";
 import { executeFlow } from "../core/executor";
-import { getDocStepFailures, clearDocStepFailures } from "../core/docStepFailureReporter";
+import { getDocStepFailures, getDocStepWarnings, clearDocStepFailures } from "../core/docStepFailureReporter";
 
 const legacyFlowsDir = path.resolve(__dirname, "../flows");
 const projectsDir = path.resolve(__dirname, "../projects");
@@ -69,9 +69,11 @@ const flows = loadFlows().sort((a, b) => {
 // After all flow tests: write doc-step failures for technical writers (which URL failed at which step, element not found, etc.)
 test.afterAll(() => {
   const failures = getDocStepFailures();
+  const warnings = getDocStepWarnings();
   const reportDir = process.env.REPORT_DIR || path.resolve(__dirname, "../reports/latest");
   if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir, { recursive: true });
   const outPath = path.join(reportDir, "doc-step-failures.json");
+  const warnPath = path.join(reportDir, "doc-step-warnings.json");
   const payload = {
     generatedAt: new Date().toISOString(),
     description:
@@ -90,9 +92,31 @@ test.afterAll(() => {
     })),
   };
   fs.writeFileSync(outPath, JSON.stringify(payload, null, 2), "utf-8");
+  const warningPayload = {
+    generatedAt: new Date().toISOString(),
+    description:
+      "Document verification warnings (position/label/modal/name mismatch). Flow continues to end; use these warnings to improve docs/UI alignment.",
+    warningFlows: warnings.length,
+    warnings: warnings.map((w) => ({
+      documentUrl: w.documentUrl,
+      flowId: w.flowId,
+      stepNumber: w.stepNumber,
+      stepIndex: w.stepIndex,
+      action: w.action,
+      target: w.target,
+      value: w.value,
+      warningMessage: w.warningMessage,
+      step: w.step,
+    })),
+  };
+  fs.writeFileSync(warnPath, JSON.stringify(warningPayload, null, 2), "utf-8");
   if (failures.length > 0) {
     // eslint-disable-next-line no-console
     console.log(`\n📋 Doc-step failures (for technical writers): ${outPath}`);
+  }
+  if (warnings.length > 0) {
+    // eslint-disable-next-line no-console
+    console.log(`\n⚠️ Doc-step warnings (for technical writers): ${warnPath}`);
   }
   clearDocStepFailures();
 });

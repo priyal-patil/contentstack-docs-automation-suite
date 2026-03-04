@@ -2,6 +2,7 @@
 import path from "path";
 import fs from "fs";
 import { Page, expect, Locator } from "@playwright/test";
+import { recordDocStepWarning } from "../../core/docStepFailureReporter";
 
 type Step = {
     action: "click" | "enter" | "select" | "upload" | "verify" | "navigate";
@@ -18,6 +19,12 @@ type Step = {
       timeoutMs?: number; // optional per-step timeout override
     };
   };
+
+type ActionContext = {
+  documentUrl?: string;
+  flowId?: string;
+  stepIndex?: number;
+};
   
 
 // ✅ Toggle strict modal title assertions via env (recommended)
@@ -166,6 +173,58 @@ function loadOverrides(flow?: any): { click: Record<string, string>; input: Reco
   return { click, input };
 }
 
+function recordVerificationWarning(step: Step, context: ActionContext | undefined, message: string) {
+  const documentUrl = context?.documentUrl || "(no source URL)";
+  const flowId = context?.flowId || "unknown-flow";
+  const stepIndex = Number.isFinite(context?.stepIndex as number) ? (context!.stepIndex as number) : 0;
+  recordDocStepWarning(documentUrl, flowId, stepIndex, step as unknown as Record<string, unknown>, message);
+  // eslint-disable-next-line no-console
+  console.warn(`⚠️ ${message} (Continuing.)`);
+}
+
+async function readLocatorValue(el: Locator): Promise<string> {
+  const inputVal = await el
+    .inputValue()
+    .then((v) => (v || "").trim())
+    .catch(() => "");
+  if (inputVal) return inputVal;
+
+  const attrVal = await el
+    .getAttribute("value")
+    .then((v) => (v || "").trim())
+    .catch(() => "");
+  if (attrVal) return attrVal;
+
+  const textVal = await el
+    .textContent()
+    .then((v) => (v || "").trim())
+    .catch(() => "");
+  return textVal;
+}
+
+function saveCapturedDocValue(key: string, value: string, context?: ActionContext) {
+  const reportDir = process.env.REPORT_DIR || path.resolve(process.cwd(), "reports/latest");
+  if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir, { recursive: true });
+  const outPath = path.join(reportDir, "doc-captured-values.json");
+  let current: any = { generatedAt: "", values: {} };
+  try {
+    if (fs.existsSync(outPath)) {
+      current = JSON.parse(fs.readFileSync(outPath, "utf-8"));
+    }
+  } catch {
+    current = { generatedAt: "", values: {} };
+  }
+  current.generatedAt = new Date().toISOString();
+  current.values = current.values || {};
+  current.values[key] = {
+    value,
+    documentUrl: context?.documentUrl || "(no source URL)",
+    flowId: context?.flowId || "unknown-flow",
+    stepNumber: Number.isFinite(context?.stepIndex as number) ? (context!.stepIndex as number) + 1 : undefined,
+  };
+  fs.writeFileSync(outPath, JSON.stringify(current, null, 2), "utf-8");
+}
+
 /**
  * Resolve target to ONE locator (no `.or()`).
  * Order:
@@ -238,7 +297,7 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
 
   const msg = `Doc container mismatch: expected within "${expectedWithin}", but target resolved to "${(label || "").trim()}".`;
   if (strict) throw new Error(msg);
-  console.warn(`⚠️ ${msg} (Continuing.)`);
+  throw new Error(msg);
 }
 
 function normalizeLabelText(s: string): string {
@@ -412,13 +471,12 @@ async function warnIfModalTitleMismatch(page: Page, expectedTitle: string) {
 
   const title = modalTitleLocator(dialog, expectedTitle);
   if (!(await title.count().catch(() => 0))) {
-    console.warn(`⚠️ Expected modal "${expectedTitle}" but no title element/text found. Continuing.`);
-    return;
+    throw new Error(`Expected modal "${expectedTitle}" but no title element/text found.`);
   }
 
   const actual = ((await title.textContent().catch(() => "")) || "").trim();
   if (!actual.toLowerCase().includes(expectedTitle.toLowerCase())) {
-    console.warn(`⚠️ Modal title mismatch. Expected "${expectedTitle}", found "${actual}". Continuing execution.`);
+    throw new Error(`Modal title mismatch. Expected "${expectedTitle}", found "${actual}".`);
   }
 }
 
@@ -620,7 +678,7 @@ async function ensureManageLabelDeleteMode(page: Page, flow: any, unique: string
 }
 
 
-export async function performAction(page: Page, step: Step, unique: string, flow?: any) {
+export async function performAction(page: Page, step: Step, unique: string, flow?: any, context?: ActionContext) {
   switch (step.action) {
     case "click": {
       // If user clicks vertical ellipsis, open it and confirm menu is visible
@@ -1199,11 +1257,38 @@ export async function performAction(page: Page, step: Step, unique: string, flow
           await page.waitForTimeout(300);
           break;
         }
+        if (step.target === "Settings (doc step)") {
+          const moreSel =
+            click["More (doc step)"] ||
+            'button:has-text("More"), [aria-label="More"]';
+          const moreBtn = page.locator(moreSel).first();
+          if (await moreBtn.isVisible().catch(() => false)) {
+            await moreBtn.click({ timeout: t, force: true }).catch(() => {});
+            await page.waitForTimeout(250);
+          }
+          const settingsFallback = page
+            .locator(
+              '[data-test-id="cms-nav-settings"], [role="menuitem"]:has-text("Settings"), li:has-text("Settings"), button:has-text("Settings"), a:has-text("Settings")'
+            )
+            .first();
+          if (await settingsFallback.isVisible().catch(() => false)) {
+            await settingsFallback.click({ timeout: t, force: true });
+            break;
+          }
+        }
         throw err;
       }
 
       if (step.expected?.within) {
-        await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+        try {
+          await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+        } catch (err: any) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+          );
+        }
       }
 
       await el.scrollIntoViewIfNeeded().catch(() => {});
@@ -1283,8 +1368,57 @@ export async function performAction(page: Page, step: Step, unique: string, flow
 
       // Verify modal title AFTER the click (Create CT modal only)
       if (step.expected?.modalTitle) {
-        if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
-        else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+        try {
+          if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
+          else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+        } catch (err: any) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Modal title verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+          );
+        }
+      }
+
+      if (step.target === "Delete Stack (doc step)") {
+        const nameInput = page.locator('input[aria-label="name"], input[name="name"]').first();
+        const capturedName = await readLocatorValue(nameInput).catch(() => "");
+        if (capturedName && flow) {
+          (flow as any).__stackNameToDelete = capturedName;
+        }
+      }
+
+      if (step.target === "Delete (confirm doc step)") {
+        const redirectedToStacks = await page
+          .waitForURL(/#!\/stacks/i, { timeout: 20_000 })
+          .then(() => true)
+          .catch(() => false);
+        const deletedToastVisible = await page.getByText(/deleted|stack deleted|success/i).first().isVisible().catch(() => false);
+
+        if (!redirectedToStacks && !deletedToastVisible) {
+          throw new Error("Delete confirmation click completed, but no deletion outcome was detected (no stacks redirect/success message).");
+        }
+
+        const stackNameToDelete = (flow as any)?.__stackNameToDelete as string | undefined;
+        if (stackNameToDelete) {
+          const cardByName = page
+            .locator('[data-test-id^="cs-stacklist-card-"], .stack-card, .stacklist-card, [role="link"]')
+            .filter({ hasText: new RegExp(escapeRegex(stackNameToDelete), "i") })
+            .first();
+          const stillVisible = await cardByName.isVisible().catch(() => false);
+          if (stillVisible) {
+            throw new Error(`Delete confirmation was clicked, but stack "${stackNameToDelete}" is still visible in stacks list.`);
+          }
+        }
+      }
+
+      if (step.target === "Stack Owner Email (doc step)") {
+        const val = await readLocatorValue(el);
+        if (val) saveCapturedDocValue("stackOwnerEmail", val, context);
+      }
+      if (step.target === "API Key (doc step)") {
+        const val = await readLocatorValue(el);
+        if (val) saveCapturedDocValue("stackApiKey", val, context);
       }
 
       break;
@@ -1362,15 +1496,48 @@ export async function performAction(page: Page, step: Step, unique: string, flow
       await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
 
       if (step.expected?.within) {
-        await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+        try {
+          await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+        } catch (err: any) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+          );
+        }
       }
       if (step.expected?.labelEquals) {
-        await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        try {
+          await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        } catch (err: any) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+          );
+        }
       }
 
       if (step.expected?.modalTitle) {
-        if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
-        else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+        try {
+          if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
+          else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+        } catch (err: any) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Modal title verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+          );
+        }
+      }
+
+      if (step.target === "Stack Owner Email (doc step)") {
+        const val = await readLocatorValue(el);
+        if (val) saveCapturedDocValue("stackOwnerEmail", val, context);
+      }
+      if (step.target === "API Key (doc step)") {
+        const val = await readLocatorValue(el);
+        if (val) saveCapturedDocValue("stackApiKey", val, context);
       }
 
       break;

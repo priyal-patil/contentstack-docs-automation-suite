@@ -10,24 +10,26 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
     },
     {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
     },
     {
       "action": "click",
-      "target": "Any Stack Card (doc step)"
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -39,9 +41,33 @@
     },
     {
       "action": "verify",
-      "target": "Audit Log tab (doc step)",
+      "target": "Audit Date column (doc step)",
       "expected": {
-        "labelEquals": "Audit Log",
+        "labelEquals": "Date",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audit Action column (doc step)",
+      "expected": {
+        "labelEquals": "Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audit Title column (doc step)",
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audit Remote Address column (doc step)",
+      "expected": {
+        "labelEquals": "Remote Address",
         "labelMatch": "contains"
       }
     }

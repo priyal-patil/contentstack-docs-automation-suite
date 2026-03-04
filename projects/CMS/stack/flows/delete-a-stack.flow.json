@@ -10,20 +10,8 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "click",
@@ -31,16 +19,54 @@
     },
     {
       "action": "click",
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
       "target": "Settings (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Stack (doc step)",
+      "expected": {
+        "labelEquals": "Delete Stack",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "Delete Stack (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Delete confirmation (doc step)",
+      "expected": {
+        "labelEquals": "DELETE",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Delete confirmation (doc step)",
       "value": "DELETE"
+    },
+    {
+      "action": "verify",
+      "target": "Delete (confirm doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",

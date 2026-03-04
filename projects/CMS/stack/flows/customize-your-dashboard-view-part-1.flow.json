@@ -10,24 +10,34 @@
   ],
   "steps": [
     {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
       "action": "verify",
-      "target": "Headless CMS",
+      "target": "Dashboard page (doc step)",
       "expected": {
-        "labelEquals": "Headless CMS",
+        "labelEquals": "Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "+ Dashboard Extension (doc step)",
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
+        "labelEquals": "Dashboard Extension",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
-    },
-    {
-      "action": "click",
-      "target": "Any Stack Card (doc step)"
+      "target": "+ Dashboard Extension (doc step)"
     },
     {
       "action": "click",
@@ -35,11 +45,35 @@
     },
     {
       "action": "verify",
-      "target": "+ Dashboard Extension (doc step)",
+      "target": "Add Widgets modal (doc step)",
       "expected": {
-        "labelEquals": "Dashboard Extension",
+        "labelEquals": "Add Widgets",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "New Dashboard Extension (doc step)",
+      "expected": {
+        "labelEquals": "New Dashboard Extension",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Browse Marketplace (doc step)",
+      "expected": {
+        "labelEquals": "Browse Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Dashboard (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Remove Recently Modified Assets (doc step)"
     },
     {
       "action": "click",

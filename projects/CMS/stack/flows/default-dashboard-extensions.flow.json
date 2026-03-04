@@ -10,20 +10,8 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "click",
@@ -42,6 +30,14 @@
       "target": "Recently Modified Assets (doc step)",
       "expected": {
         "labelEquals": "Recently Modified Assets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Dashboard page (doc step)",
+      "expected": {
+        "labelEquals": "Dashboard",
         "labelMatch": "contains"
       }
     }

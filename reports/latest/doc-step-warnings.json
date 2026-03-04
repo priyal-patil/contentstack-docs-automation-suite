@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-03-04T11:12:25.495Z",
+  "description": "Document verification warnings (position/label/modal/name mismatch). Flow continues to end; use these warnings to improve docs/UI alignment.",
+  "warningFlows": 1,
+  "warnings": [
+    {
+      "documentUrl": "https://www.contentstack.com/docs/developers/set-up-stack/customize-your-dashboard-view",
+      "flowId": "customize-your-dashboard-view-part-1",
+      "stepNumber": 4,
+      "stepIndex": 3,
+      "action": "verify",
+      "target": "+ Dashboard Extension (doc step)",
+      "warningMessage": "Position verification mismatch for \"+ Dashboard Extension (doc step)\": Doc container mismatch: expected within \"Top Bar\", but target resolved to \"Add Dashboard Extension\".",
+      "step": {
+        "action": "verify",
+        "target": "+ Dashboard Extension (doc step)",
+        "expected": {
+          "within": "Top Bar",
+          "withinStrict": false,
+          "labelEquals": "Dashboard Extension",
+          "labelMatch": "contains"
+        }
+      }
+    }
+  ]
+}

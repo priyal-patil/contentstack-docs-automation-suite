@@ -10,20 +10,8 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "click",

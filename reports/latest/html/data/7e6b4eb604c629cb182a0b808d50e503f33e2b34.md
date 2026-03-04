@@ -1,0 +1,317 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - navigation [ref=e8]:
+          - generic [ref=e10]:
+            - link "cms" [ref=e12] [cursor=pointer]:
+              - img [ref=e16]
+            - generic [ref=e20]:
+              - generic [ref=e21]:
+                - link "Dashboard" [ref=e23] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/dashboard
+                  - button "Dashboard" [ref=e24]:
+                    - generic [ref=e26]:
+                      - img [ref=e27]
+                      - text: Dashboard
+                - link "Entries" [ref=e30] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/entries
+                  - button "Entries" [ref=e31]:
+                    - generic [ref=e33]:
+                      - img [ref=e34]
+                      - text: Entries
+                - link "Assets" [ref=e37] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/assets
+                  - button "Assets" [ref=e38]:
+                    - generic [ref=e40]:
+                      - img [ref=e41]
+                      - text: Assets
+                - link "Content Models" [ref=e45] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/content-types
+                  - button "Content Models" [ref=e46]:
+                    - generic [ref=e48]:
+                      - img [ref=e49]
+                      - text: Content Models
+                - link "Publish Queue" [ref=e54] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/publish-queue
+                  - button "Publish Queue" [ref=e55]:
+                    - generic [ref=e57]:
+                      - img [ref=e58]
+                      - text: Publish Queue
+                - link "Releases" [ref=e63] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/releases/list
+                  - button "Releases" [ref=e64]:
+                    - generic [ref=e66]:
+                      - img [ref=e67]
+                      - text: Releases
+                - link "Tasks" [ref=e71] [cursor=pointer]:
+                  - /url: /#!/stack/blte84d3835229f378b/my-tasks
+                  - button "Tasks" [ref=e72]:
+                    - generic [ref=e74]:
+                      - img [ref=e75]
+                      - text: Tasks
+              - menu [ref=e79]:
+                - button "aria-button" [ref=e81] [cursor=pointer]:
+                  - generic [ref=e83]:
+                    - img [ref=e84]
+                    - text: More
+        - generic [ref=e91]:
+          - generic "Search" [ref=e93]:
+            - img [ref=e95] [cursor=pointer]
+          - button "Notification" [ref=e98] [cursor=pointer]:
+            - img [ref=e101]
+          - button "Help" [ref=e105]:
+            - img [ref=e107] [cursor=pointer]
+          - button "App Switcher" [ref=e111]:
+            - img [ref=e113] [cursor=pointer]
+          - button "User Profile" [ref=e135]:
+            - generic [ref=e138] [cursor=pointer]: qt
+      - generic [ref=e144] [cursor=pointer]:
+        - img [ref=e146]
+        - generic [ref=e153]: Auto Stack Updated 41e31c0a-...
+    - generic [ref=e157]:
+      - generic [ref=e159]:
+        - generic [ref=e162]:
+          - text: Dashboard
+          - link [ref=e165] [cursor=pointer]:
+            - /url: https://www.contentstack.com/docs/developers/set-up-stack/about-stack-dashboard/
+            - button [ref=e166]:
+              - img [ref=e169]
+        - generic [ref=e173]:
+          - button "Edit Dashboard" [ref=e175] [cursor=pointer]:
+            - img [ref=e178]
+          - button "Add Dashboard Extension" [ref=e180] [cursor=pointer]:
+            - generic [ref=e182]:
+              - img [ref=e183]
+              - text: Dashboard Extension
+          - img [ref=e187] [cursor=pointer]
+      - generic [ref=e192]:
+        - generic [ref=e197]:
+          - heading "What's New?" [level=3] [ref=e199]
+          - generic [ref=e203]: Academy, Reimagined
+          - paragraph [ref=e204]: We’ve reimagined the Academy platform to provide a smoother learning experience.
+          - button "Learn more" [ref=e205]:
+            - button "Learn more" [ref=e207] [cursor=pointer]
+            - img [ref=e208]
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - heading "Contentstack Academy" [level=3] [ref=e217]:
+              - img [ref=e218]
+              - text: Contentstack Academy
+            - heading "Omni-Channel Personalization Demo" [level=6] [ref=e222]:
+              - generic [ref=e225]: Omni-Channel Personalization Demo
+            - paragraph [ref=e226]: Discover a range of learning resources and courses to master Contentstack with Contentstack Academy.
+          - generic [ref=e227]:
+            - button [ref=e228]:
+              - link [ref=e231] [cursor=pointer]:
+                - /url: https://www.contentstack.com/academy/content/omni-channel-personalization-demo
+                - generic [ref=e232]: Learn More
+                - img [ref=e233]
+            - generic [ref=e235]:
+              - button "Previous" [ref=e236]:
+                - generic [ref=e237]:
+                  - img [ref=e238]
+                  - text: Previous
+              - button "Next" [ref=e240]:
+                - generic [ref=e241]:
+                  - text: Next
+                  - img [ref=e242]
+        - generic [ref=e248]:
+          - generic [ref=e249]:
+            - generic [ref=e253]:
+              - img [ref=e254]
+              - textbox "Search" [ref=e257]:
+                - /placeholder: Search help content
+            - heading "Understanding Modular Blocks" [level=6] [ref=e258]:
+              - generic [ref=e261]: Understanding Modular Blocks
+            - paragraph [ref=e262]: Modular Blocks simplify content management with individual updates, fast page creation, and automatic site-wide updates.
+          - generic [ref=e263]:
+            - button "Learn more" [ref=e264]:
+              - generic [ref=e267]: Learn more
+            - generic [ref=e268]:
+              - button "Previous" [ref=e269]:
+                - generic [ref=e270]:
+                  - img [ref=e271]
+                  - text: Previous
+              - button "Next" [ref=e273]:
+                - generic [ref=e274]:
+                  - text: Next
+                  - img [ref=e275]
+        - generic [ref=e281]:
+          - heading "Recently Modified Entries" [level=1] [ref=e282]
+          - generic [ref=e283]:
+            - button "title" [ref=e285]
+            - button "modified at" [ref=e287]
+          - generic [ref=e288] [cursor=pointer]:
+            - link "Test Entry Me Feb 16, 2026 07:42 PM" [ref=e289]:
+              - /url: "#!/stack/blte84d3835229f378b/content-type/test/en-us/entry/blt53c35ecebb8eee78/edit"
+              - generic [ref=e290]:
+                - heading "Test Entry" [level=2] [ref=e292]
+                - generic [ref=e293]:
+                  - heading "Me" [level=2] [ref=e295]:
+                    - generic [ref=e296]: Me
+                  - generic [ref=e298]: Feb 16, 2026 07:42 PM
+            - link "test Me Feb 15, 2026 08:32 PM" [ref=e299]:
+              - /url: "#!/stack/blte84d3835229f378b/content-type/test/en-us/entry/blt78cf6de8b2a2dd9a/edit"
+              - generic [ref=e300]:
+                - heading "test" [level=2] [ref=e302]
+                - generic [ref=e303]:
+                  - heading "Me" [level=2] [ref=e305]:
+                    - generic [ref=e306]: Me
+                  - generic [ref=e308]: Feb 15, 2026 08:32 PM
+            - link "Docss Test Me Feb 10, 2026 06:43 PM" [ref=e309]:
+              - /url: "#!/stack/blte84d3835229f378b/content-type/ct/en-us/entry/blt3cc4bc194cfa204c/edit"
+              - generic [ref=e310]:
+                - heading "Docss Test" [level=2] [ref=e312]
+                - generic [ref=e313]:
+                  - heading "Me" [level=2] [ref=e315]:
+                    - generic [ref=e316]: Me
+                  - generic [ref=e318]: Feb 10, 2026 06:43 PM
+            - link "Test Entry Me Feb 10, 2026 05:16 PM" [ref=e319]:
+              - /url: "#!/stack/blte84d3835229f378b/content-type/ct/en-us/entry/blt728ee2d4a8ac8d54/edit"
+              - generic [ref=e320]:
+                - heading "Test Entry" [level=2] [ref=e322]
+                - generic [ref=e323]:
+                  - heading "Me" [level=2] [ref=e325]:
+                    - generic [ref=e326]: Me
+                  - generic [ref=e328]: Feb 10, 2026 05:16 PM
+            - link "Address Me Feb 10, 2026 03:25 PM" [ref=e329]:
+              - /url: "#!/stack/blte84d3835229f378b/content-type/ct/en-us/entry/bltc9c6005bcfb62767/edit"
+              - generic [ref=e330]:
+                - heading "Address" [level=2] [ref=e332]
+                - generic [ref=e333]:
+                  - heading "Me" [level=2] [ref=e335]:
+                    - generic [ref=e336]: Me
+                  - generic [ref=e338]: Feb 10, 2026 03:25 PM
+        - generic [ref=e343]:
+          - heading "Recently Modified Assets" [level=1] [ref=e344]
+          - generic [ref=e345]:
+            - button "title" [ref=e347]
+            - button "modified at" [ref=e349]
+          - generic [ref=e350] [cursor=pointer]:
+            - link "1Asset1.jpeg 1Asset1.jpeg Me Feb 10, 2026 10:57 AM" [ref=e351]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/bltc7cb2f0e86e9e14e"
+              - generic [ref=e352]:
+                - generic [ref=e354]:
+                  - img "1Asset1.jpeg" [ref=e356]
+                  - heading "1Asset1.jpeg" [level=1] [ref=e358]
+                - generic [ref=e359]:
+                  - heading "Me" [level=2] [ref=e361]:
+                    - generic [ref=e362]: Me
+                  - generic [ref=e364]: Feb 10, 2026 10:57 AM
+            - link "Asset2.jpeg Asset2.jpeg Me Feb 10, 2026 10:57 AM" [ref=e365]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt3c5d42acfb6a608d"
+              - generic [ref=e366]:
+                - generic [ref=e368]:
+                  - img "Asset2.jpeg" [ref=e370]
+                  - heading "Asset2.jpeg" [level=1] [ref=e372]
+                - generic [ref=e373]:
+                  - heading "Me" [level=2] [ref=e375]:
+                    - generic [ref=e376]: Me
+                  - generic [ref=e378]: Feb 10, 2026 10:57 AM
+            - link "AdvanceSearchMa...-10.html Me Feb 06, 2026 01:04 PM" [ref=e379]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt58c206f30fb1e4b3"
+              - generic [ref=e380]:
+                - generic [ref=e382]:
+                  - img [ref=e384]
+                  - heading "AdvanceSearchMa...-10.html" [level=1] [ref=e390]
+                - generic [ref=e391]:
+                  - heading "Me" [level=2] [ref=e393]:
+                    - generic [ref=e394]: Me
+                  - generic [ref=e396]: Feb 06, 2026 01:04 PM
+            - link "Publish_Preview...-08.html Me Feb 06, 2026 01:04 PM" [ref=e397]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt4a6f6dd76a323224"
+              - generic [ref=e398]:
+                - generic [ref=e400]:
+                  - img [ref=e402]
+                  - heading "Publish_Preview...-08.html" [level=1] [ref=e408]
+                - generic [ref=e409]:
+                  - heading "Me" [level=2] [ref=e411]:
+                    - generic [ref=e412]: Me
+                  - generic [ref=e414]: Feb 06, 2026 01:04 PM
+            - link "BranchesWithGlo...Add.html Me Jan 29, 2026 05:56 PM" [ref=e415]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt2702e007bc807f62"
+              - generic [ref=e416]:
+                - generic [ref=e418]:
+                  - img [ref=e420]
+                  - heading "BranchesWithGlo...Add.html" [level=1] [ref=e426]
+                - generic [ref=e427]:
+                  - heading "Me" [level=2] [ref=e429]:
+                    - generic [ref=e430]: Me
+                  - generic [ref=e432]: Jan 29, 2026 05:56 PM
+            - link "default-suite_R...-23.html Me Jan 22, 2026 11:27 AM" [ref=e433]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/bltf3dc52115d931e60"
+              - generic [ref=e434]:
+                - generic [ref=e436]:
+                  - img [ref=e438]
+                  - heading "default-suite_R...-23.html" [level=1] [ref=e444]
+                - generic [ref=e445]:
+                  - heading "Me" [level=2] [ref=e447]:
+                    - generic [ref=e448]: Me
+                  - generic [ref=e450]: Jan 22, 2026 11:27 AM
+            - link "Publish Preview...-49.html Me Jan 22, 2026 11:27 AM" [ref=e451]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/bltd37ad1d013c617c7"
+              - generic [ref=e452]:
+                - generic [ref=e454]:
+                  - img [ref=e456]
+                  - heading "Publish Preview...-49.html" [level=1] [ref=e462]
+                - generic [ref=e463]:
+                  - heading "Me" [level=2] [ref=e465]:
+                    - generic [ref=e466]: Me
+                  - generic [ref=e468]: Jan 22, 2026 11:27 AM
+            - link "Screenshot_2025-12-02_at_3.35.31_PM.png Screenshot_2025...1_PM.png Me Dec 03, 2025 10:54 AM" [ref=e469]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt5e3184c92889899f"
+              - generic [ref=e470]:
+                - generic [ref=e472]:
+                  - img "Screenshot_2025-12-02_at_3.35.31_PM.png" [ref=e474]
+                  - heading "Screenshot_2025...1_PM.png" [level=1] [ref=e476]
+                - generic [ref=e477]:
+                  - heading "Me" [level=2] [ref=e479]:
+                    - generic [ref=e480]: Me
+                  - generic [ref=e482]: Dec 03, 2025 10:54 AM
+            - link "table_image (3).png table_image (3).png Me Jun 26, 2025 12:08 PM" [ref=e483]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blt5690b0f187cb9c02"
+              - generic [ref=e484]:
+                - generic [ref=e486]:
+                  - img "table_image (3).png" [ref=e488]
+                  - heading "table_image (3).png" [level=1] [ref=e490]
+                - generic [ref=e491]:
+                  - heading "Me" [level=2] [ref=e493]:
+                    - generic [ref=e494]: Me
+                  - generic [ref=e496]: Jun 26, 2025 12:08 PM
+            - link "index.html Me Apr 30, 2025 02:12 PM" [ref=e497]:
+              - /url: "#!/stack/blte84d3835229f378b/assets/blte5edc028fb5afa9d"
+              - generic [ref=e498]:
+                - generic [ref=e500]:
+                  - img [ref=e502]
+                  - heading "index.html" [level=1] [ref=e508]
+                - generic [ref=e509]:
+                  - heading "Me" [level=2] [ref=e511]:
+                    - generic [ref=e512]: Me
+                  - generic [ref=e514]: Apr 30, 2025 02:12 PM
+  - dialog [active] [ref=e517]:
+    - generic [ref=e518]:
+      - generic [ref=e519]:
+        - heading "Add Widgets" [level=3] [ref=e521]
+        - img [ref=e525] [cursor=pointer]
+      - generic [ref=e532]:
+        - img [ref=e533]
+        - generic [ref=e536]: No new extensions to add to the dashboard
+        - generic [ref=e538]: All available extensions have been added to your dashboard. You can create new dashboard extensions using Experience Extensions.
+        - generic [ref=e539]:
+          - generic [ref=e540]:
+            - button "Create New Dashboard Extension" [ref=e541] [cursor=pointer]:
+              - generic [ref=e543]:
+                - img [ref=e544]
+                - text: New Dashboard Extension
+            - button "Browse Marketplace" [ref=e546] [cursor=pointer]:
+              - generic [ref=e548]:
+                - img [ref=e549]
+                - text: Browse Marketplace
+          - link [ref=e553] [cursor=pointer]:
+            - /url: https://www.contentstack.com/docs/developers/create-dashboard-widgets/create-a-custom-dashboard-widget/
+            - generic [ref=e554]: Learn more
+```

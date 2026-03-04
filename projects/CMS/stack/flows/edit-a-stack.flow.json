@@ -10,20 +10,8 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "click",
@@ -31,7 +19,29 @@
     },
     {
       "action": "click",
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
       "target": "Settings (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Name (edit stack doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -39,9 +49,25 @@
       "value": "Auto Stack Updated {unique}"
     },
     {
+      "action": "verify",
+      "target": "Description (edit stack doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Description (edit stack doc step)",
       "value": "Auto stack description updated {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",

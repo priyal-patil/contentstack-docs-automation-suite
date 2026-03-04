@@ -10,20 +10,8 @@
   ],
   "steps": [
     {
-      "action": "verify",
-      "target": "Headless CMS",
-      "expected": {
-        "labelEquals": "Headless CMS",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Headless CMS"
-    },
-    {
-      "action": "navigate",
-      "target": "https://app.contentstack.com/#!/stacks"
     },
     {
       "action": "click",
@@ -31,16 +19,58 @@
     },
     {
       "action": "click",
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
       "target": "Settings (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Transfer Ownership (doc step)",
+      "expected": {
+        "labelEquals": "Transfer Ownership",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "Transfer Ownership (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Recipient Email (doc step)",
+      "expected": {
+        "labelEquals": "email",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Recipient Email (doc step)",
       "value": "owner+{unique}@example.com"
+    },
+    {
+      "action": "verify",
+      "target": "Transfer Ownership (confirm doc step)",
+      "expected": {
+        "labelEquals": "Transfer Ownership",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Transfer Ownership (confirm doc step)"
     }
   ]
 }

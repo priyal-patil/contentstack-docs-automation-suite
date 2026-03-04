@@ -1,9 +1,9 @@
 {
-  "id": "leave-a-stack",
+  "id": "customize-your-dashboard-view-part-2",
   "project": "CMS",
   "module": "stack",
   "stage": "main",
-  "source": "https://www.contentstack.com/docs/developers/set-up-stack/leave-a-stack",
+  "source": "https://www.contentstack.com/docs/developers/set-up-stack/customize-your-dashboard-view",
   "type": "executable",
   "use": [
     "login"
@@ -18,46 +18,36 @@
       "target": "Any Stack Card (doc step)"
     },
     {
-      "action": "click",
-      "target": "More (doc step)"
-    },
-    {
       "action": "verify",
-      "target": "Settings (doc step)",
+      "target": "Dashboard page (doc step)",
       "expected": {
-        "within": "Left Navigation",
-        "withinStrict": true,
-        "labelEquals": "Settings",
+        "labelEquals": "Dashboard",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Settings (doc step)"
+      "target": "Edit Dashboard (doc step)"
     },
     {
       "action": "verify",
-      "target": "Leave Stack (doc step)",
+      "target": "Recently Modified Entries (doc step)",
       "expected": {
-        "labelEquals": "Leave Stack",
+        "labelEquals": "Recently Modified Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Recently Modified Assets (doc step)",
+      "expected": {
+        "labelEquals": "Recently Modified Assets",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Leave Stack (doc step)"
-    },
-    {
-      "action": "verify",
-      "target": "Leave Stack (confirm doc step)",
-      "expected": {
-        "labelEquals": "Leave Stack",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "click",
-      "target": "Leave Stack (confirm doc step)"
+      "target": "Done (doc step)"
     }
   ]
 }

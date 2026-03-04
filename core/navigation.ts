@@ -1,11 +1,12 @@
 // core/navigation.ts
 import { Page, expect } from "@playwright/test";
-import dotenv from "dotenv";
+import { appUrl, loadRuntimeEnv } from "./env";
 
-dotenv.config();
+const envPath = loadRuntimeEnv();
+console.log("✅ Loaded .env from:", envPath);
 
-const DASHBOARD_URL = "https://app.contentstack.com/#!/dashboard";
-const STACKS_URL = "https://app.contentstack.com/#!/stacks";
+const DASHBOARD_URL = appUrl("/#!/dashboard");
+const STACKS_URL = appUrl("/#!/stacks");
 
 const HEADLESS_TILE = '[data-test-id="cs-global-dashboard-product-tile-headless-cms"]';
 
