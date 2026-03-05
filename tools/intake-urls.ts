@@ -50,6 +50,8 @@ function inferProject(url: string): "CMS" | "Launch" | "Personalize" | "Unknown"
     u.includes("assets") ||
     u.includes("content-models") ||
     u.includes("content-modeling") ||
+    u.includes("set-up-environments") ||
+    u.includes("environments") ||
     u.includes("/cms") ||
     u.includes("/stack")
   ) {

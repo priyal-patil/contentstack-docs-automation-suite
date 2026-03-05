@@ -15,6 +15,20 @@
     },
     {
       "action": "click",
+      "target": "Stacks (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ New Stack (doc step)",
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
+        "labelEquals": "New Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
       "target": "+ New Stack (doc step)"
     },
     {
@@ -26,9 +40,25 @@
       "target": "Import (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Stack Name (import doc step)",
+      "expected": {
+        "labelEquals": "Stack Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Stack Name (import doc step)",
       "value": "Auto Imported Stack {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Import Sample (doc step)",
+      "expected": {
+        "labelEquals": "Import Sample",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",

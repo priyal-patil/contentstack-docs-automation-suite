@@ -1,0 +1,70 @@
+{
+  "id": "managing-projects-create-project",
+  "project": "AgentOS",
+  "module": "managing-projects",
+  "stage": "main",
+  "source": "https://stag-contentstack-com.contentstackapps.com/docs/agent-os/managing-projects",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project (doc step)",
+      "expected": {
+        "labelEquals": "New Project",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Project (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "New project modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "New project",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Project Name (doc step)",
+      "expected": {
+        "labelEquals": "Project Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Project Name (doc step)",
+      "value": "agentos-project-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "agentos-description-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Tags (doc step)",
+      "value": "automation"
+    },
+    {
+      "action": "click",
+      "target": "Create (doc step)"
+    }
+  ]
+}

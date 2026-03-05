@@ -14,6 +14,10 @@ When creating or updating automation flows based on a documentation URL, the flo
   - position/container checks (`Left Navigation`, `Top Bar`, `Modal`) when stated in doc
   - modal name verification when a modal is named in doc
   - field/button label verification for names used in doc
+- If the doc explicitly says navigation is from **Left Navigation** (or equivalent wording), include an explicit `verify` step for that nav item with:
+  - `"within": "Left Navigation"`
+  - `labelEquals`/`labelMatch`
+  - do not skip this check or replace it with only page-level verification
 - **Label doc-derived targets** with `"(doc step)"` so reporting stays traceable to docs.
 - You may stabilize selectors for a doc step, but do not change document intent.
 

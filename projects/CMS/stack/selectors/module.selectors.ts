@@ -61,10 +61,11 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Import Sample (doc step)":
     'button:has-text("Import Sample"), [aria-label*="Import Sample" i]',
   "Edit Dashboard (doc step)":
-    'button:has-text("Edit Dashboard"), [aria-label*="Edit Dashboard" i]',
+    '[data-test-id="cs-dashboard-edit-enable"], [data-test-id="cs-dashboard-edit"], button:has-text("Edit Dashboard"), [aria-label*="Edit Dashboard" i]',
   "+ Dashboard Extension (doc step)":
     'button:has-text("+ Dashboard Extension"), button:has-text("Dashboard Extension")',
-  "Done (doc step)": 'button:has-text("Done"), [aria-label="Done"]',
+  "Done (doc step)":
+    '[data-test-id="cs-dashboard-edit-disable"], button:has-text("Done"), [aria-label="Done"]',
   "Recently Modified Entries (doc step)":
     '[role="heading"]:has-text("Recently Modified Entries"), h1:has-text("Recently Modified Entries"), h2:has-text("Recently Modified Entries"), h3:has-text("Recently Modified Entries")',
   "Recently Modified Assets (doc step)":

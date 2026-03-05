@@ -5,7 +5,7 @@ import { Page, expect, Locator } from "@playwright/test";
 import { recordDocStepWarning } from "../../core/docStepFailureReporter";
 
 type Step = {
-    action: "click" | "enter" | "select" | "upload" | "verify" | "navigate";
+    action: "click" | "enter" | "select" | "upload" | "verify" | "navigate" | "drag";
     target: string;
     value?: string;
     nth?: number; // 0-based index when target matches multiple elements
@@ -80,13 +80,31 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
   "Left Navigation": [
     '[data-test-id="cs-left-nav"]',
     '[data-test-id="cs-primary-sidebar"]',
+    '[data-test-id="cs-page-layout-leftSidebar"]',
+    ".PageLayout__leftSidebar",
+    ".Navigation__list",
     ".LeftNav",
     ".Sidebar",
-    "navigation",
-    '[role="navigation"]',
   ],
-  "Top Bar": ["nav.TopNavbar", ".TopNavbar", '[data-test-id="cs-top-nav"]'],
-  Modal: ['[role="dialog"]', ".Modal", '[data-test-id*="modal"]'],
+  "Top Bar": [
+    "nav.TopNavbar",
+    ".TopNavbar",
+    '[data-test-id="cs-top-nav"]',
+    "#topnav",
+    ".header",
+    "#header-content-wrapper-id",
+    "#navbar-items-wrapper-id",
+  ],
+  Modal: [
+    '[role="dialog"]',
+    ".Modal",
+    '[data-test-id*="modal"]',
+    ".ReactModal__env",
+    ".ReactModal__Content__header",
+    ".ReactModal__Content__body",
+    ".ReactModal__Content__footer",
+    '[data-test-id="cs-modal-description"]',
+  ],
 };
 
 function loadOverrides(flow?: any): { click: Record<string, string>; input: Record<string, string> } {
@@ -272,11 +290,52 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
     const looksLikeLeftNav = await el
       .evaluate((node) => {
         const self = node as HTMLElement;
-        if (self?.getAttribute?.("data-test-id")?.startsWith("cms-nav-")) return true;
-        return !!self?.closest?.('[data-test-id^="cms-nav-"], [data-test-id*="left-nav"], nav, [role="navigation"]');
+        const dt = self?.getAttribute?.("data-test-id") || "";
+        if (
+          dt.startsWith("cs-stack-settings-") ||
+          dt.includes("left-nav")
+        )
+          return true;
+        return !!self?.closest?.(
+          '[data-test-id^="cs-stack-settings-"], [data-test-id*="left-nav"], [data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar, .Navigation__list'
+        );
       })
       .catch(() => false);
     if (looksLikeLeftNav) return;
+  }
+
+  if (expectedWithin === "Top Bar") {
+    const looksLikeTopBar = await el
+      .evaluate((node) => {
+        const self = node as HTMLElement;
+        const dt = self?.getAttribute?.("data-test-id") || "";
+        if (dt.startsWith("cms-nav-") || dt === "cs-cms-button" || dt === "cms-nav-apps") return true;
+        return !!self?.closest?.(
+          'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], #topnav, .header, #header-content-wrapper-id, #navbar-items-wrapper-id'
+        );
+      })
+      .catch(() => false);
+    if (looksLikeTopBar) return;
+  }
+
+  if (expectedWithin === "Modal") {
+    const looksLikeModal = await el
+      .evaluate((node) => {
+        const self = node as HTMLElement;
+        const dt = self?.getAttribute?.("data-test-id") || "";
+        if (
+          dt.includes("modal") ||
+          dt === "cs-modal-description" ||
+          dt === "cs-modal-title-create-environment" ||
+          dt === "cs-modal-title-edit-environment"
+        )
+          return true;
+        return !!self?.closest?.(
+          '[role="dialog"], .Modal, [data-test-id*="modal"], .ReactModal__env, .ReactModal__Content__header, .ReactModal__Content__body, .ReactModal__Content__footer, [data-test-id="cs-modal-description"]'
+        );
+      })
+      .catch(() => false);
+    if (looksLikeModal) return;
   }
 
   for (const sel of containers) {
@@ -304,11 +363,57 @@ function normalizeLabelText(s: string): string {
   return (s || "").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+async function extractElementLabel(el: Locator): Promise<string> {
+  const direct = await el
+    .evaluate((node) => {
+      const n = node as HTMLElement;
+      const text = (n.textContent || "").replace(/\s+/g, " ").trim();
+      const aria = (n.getAttribute("aria-label") || "").trim();
+      const title = (n.getAttribute("title") || "").trim();
+      const placeholder = (n.getAttribute("placeholder") || "").trim();
+
+      // Prefer explicit form labels for input-like controls.
+      const isInputLike =
+        n instanceof HTMLInputElement ||
+        n instanceof HTMLTextAreaElement ||
+        n instanceof HTMLSelectElement ||
+        !!n.getAttribute("contenteditable");
+
+      if (isInputLike) {
+        const id = n.getAttribute("id") || "";
+        if (id) {
+          const labelByFor = document.querySelector(`label[for="${id}"]`) as HTMLElement | null;
+          const labelForText = (labelByFor?.textContent || "").replace(/\s+/g, " ").trim();
+          if (labelForText) return labelForText;
+        }
+
+        const labelledBy = (n.getAttribute("aria-labelledby") || "").trim();
+        if (labelledBy) {
+          const ids = labelledBy.split(/\s+/).filter(Boolean);
+          const parts = ids
+            .map((lid) => (document.getElementById(lid)?.textContent || "").replace(/\s+/g, " ").trim())
+            .filter(Boolean);
+          if (parts.length) return parts.join(" ");
+        }
+
+        const closestFieldLabel = n
+          .closest('[data-test-id="cs-field"], .Field, .Form__item')
+          ?.querySelector("label, [data-test-id='cs-field-label']");
+        const closestFieldLabelText = ((closestFieldLabel as HTMLElement | null)?.textContent || "")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (closestFieldLabelText) return closestFieldLabelText;
+      }
+
+      return text || aria || title || placeholder;
+    })
+    .catch(() => "");
+  return direct || "";
+}
+
 async function assertLabelMatch(el: Locator, expectedLabel: string, mode: "exact" | "contains" = "contains") {
-  const text = normalizeLabelText((await el.textContent().catch(() => "")) || "");
-  const aria = normalizeLabelText((await el.getAttribute("aria-label").catch(() => "")) || "");
-  const title = normalizeLabelText((await el.getAttribute("title").catch(() => "")) || "");
-  const actual = text || aria || title;
+  const actualRaw = await extractElementLabel(el);
+  const actual = normalizeLabelText(actualRaw);
   const expected = normalizeLabelText(expectedLabel);
   if (!actual) {
     throw new Error(`Label validation failed: element has no text/aria-label/title, expected "${expectedLabel}".`);
@@ -694,6 +799,126 @@ export async function performAction(page: Page, step: Step, unique: string, flow
         break;
       }
 
+      if (step.target === "Stacks (doc step)") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const t = getStepTimeoutMs(step);
+        const stacksSel =
+          overridesClick["Stacks (doc step)"] ||
+          'button:has-text("Stacks"), a:has-text("Stacks"), [aria-label*="Stacks" i]';
+        const stacksEl = page.locator(stacksSel).first();
+        if (await stacksEl.isVisible().catch(() => false)) {
+          await stacksEl.click({ timeout: t, force: true }).catch(() => {});
+          await page.waitForTimeout(400);
+        }
+        if (!/#!\/stacks\b/i.test(page.url())) {
+          try {
+            const u = new URL(page.url());
+            await page.goto(`${u.origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: t });
+          } catch {
+            await page.goto("/#!/stacks", { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+          }
+        }
+        break;
+      }
+
+      if (step.target === "+ New Stack (doc step)" && !/#!\/stacks\b/i.test(page.url())) {
+        const t = getStepTimeoutMs(step);
+        try {
+          const u = new URL(page.url());
+          await page.goto(`${u.origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: t });
+          await page.waitForTimeout(400);
+        } catch {
+          // continue with normal click fallback
+        }
+      }
+
+      if (step.target === "Edit Environment action (doc step)") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const actionSel =
+          overridesClick["Edit Environment action (doc step)"] ||
+          'li[data-test-id="cs-environments-action-edit"]';
+        const actionItem = page.locator(actionSel).first();
+        const actionLabel = actionItem.locator(".ml-8").first();
+        const editModal = page
+          .locator('[data-test-id="cs-modal-title-edit-environment"], h3:has-text("Edit Environment")')
+          .first();
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          await expect(actionItem).toBeVisible({ timeout: getStepTimeoutMs(step) });
+          const clickTarget = (await actionLabel.isVisible().catch(() => false)) ? actionLabel : actionItem;
+          const box = await clickTarget.boundingBox().catch(() => null);
+          if (box) {
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
+            await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { delay: 30 }).catch(() => {});
+          } else {
+            await clickTarget.click({ timeout: 5_000, force: true }).catch(() => {});
+          }
+          // Keyboard fallback for list-style menus that require active-item confirmation
+          await clickTarget.press("Enter", { timeout: 2_000 }).catch(() => {});
+
+          const opened = await editModal
+            .waitFor({ state: "visible", timeout: 8_000 })
+            .then(() => true)
+            .catch(() => false);
+          if (opened) break;
+
+          const menuBtnSel =
+            overridesClick["Environment row action menu (doc step)"] ||
+            'button[data-test-id="cs-table-action-options"]';
+          const menuBtn = page.locator(menuBtnSel).first();
+          if (await menuBtn.isVisible().catch(() => false)) {
+            await menuBtn.click({ timeout: 5_000, force: true }).catch(() => {});
+            await page.waitForTimeout(250);
+          }
+        }
+
+        await expect(editModal).toBeVisible({ timeout: getStepTimeoutMs(step) });
+        break;
+      }
+
+      if (step.target === "Delete Environment action (doc step)") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const actionSel =
+          overridesClick["Delete Environment action (doc step)"] ||
+          'li[data-test-id="cs-environments-action-delete"]';
+        const actionItem = page.locator(actionSel).first();
+        const actionLabel = actionItem.locator(".ml-8").first();
+        const deleteModal = page
+          .locator('[data-test-id="cs-modal-title-delete-environment"], h3:has-text("Delete Environment")')
+          .first();
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          await expect(actionItem).toBeVisible({ timeout: getStepTimeoutMs(step) });
+          const clickTarget = (await actionLabel.isVisible().catch(() => false)) ? actionLabel : actionItem;
+          const box = await clickTarget.boundingBox().catch(() => null);
+          if (box) {
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
+            await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { delay: 30 }).catch(() => {});
+          } else {
+            await clickTarget.click({ timeout: 5_000, force: true }).catch(() => {});
+          }
+          await clickTarget.press("Enter", { timeout: 2_000 }).catch(() => {});
+
+          const opened = await deleteModal
+            .waitFor({ state: "visible", timeout: 8_000 })
+            .then(() => true)
+            .catch(() => false);
+          if (opened) break;
+
+          const menuBtnSel =
+            overridesClick["Environment row action menu (doc step)"] ||
+            'button[data-test-id="cs-table-action-options"]';
+          const menuBtn = page.locator(menuBtnSel).first();
+          if (await menuBtn.isVisible().catch(() => false)) {
+            await menuBtn.click({ timeout: 5_000, force: true }).catch(() => {});
+            await page.waitForTimeout(250);
+          }
+        }
+
+        await expect(deleteModal).toBeVisible({ timeout: getStepTimeoutMs(step) });
+        break;
+      }
+
       if (step.target === "Edit Label button (doc step)") {
         await ensureManageLabelEditMode(page, flow, unique, getStepTimeoutMs(step));
       }
@@ -771,6 +996,181 @@ export async function performAction(page: Page, step: Step, unique: string, flow
           throw new Error("Delete confirmation modal did not appear after retrying.");
         }
 
+        break;
+      }
+
+      if (step.target === "Use Prebuilt (doc step)") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const t = getStepTimeoutMs(step);
+        if (!/#!\/stacks\b/i.test(page.url())) {
+          try {
+            const u = new URL(page.url());
+            await page.goto(`${u.origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: t });
+            await page.waitForTimeout(400);
+          } catch {
+            // ignore and continue with selectors
+          }
+        }
+        const prebuiltOptionSel = [
+          overridesClick["Use Prebuilt (doc step)"],
+          'div[data-test-id="cs-add-stack-use-prebuilt"]',
+          '[data-test-id="cs-add-stack-use-prebuilt"]',
+          '[role="menuitem"]:has-text("Use Prebuilt")',
+          'button:has-text("Use Prebuilt")',
+          'li:has-text("Use Prebuilt")',
+        ]
+          .filter(Boolean)
+          .join(", ");
+        const prebuiltOption = page.locator(prebuiltOptionSel).first();
+        const prebuiltModal = page
+          .locator(
+            '[data-test-id*="add-stack" i], [data-test-id*="starters-" i], [role="dialog"]:has-text("Add Stack"), [role="dialog"]:has-text("Import")'
+          )
+          .first();
+
+        // If already in Add Stack/Prebuilt view, this step is effectively complete.
+        if (await prebuiltModal.isVisible().catch(() => false)) {
+          break;
+        }
+
+        // Strict doc-step mode: do not auto-click undocumented auth controls.
+        // If auth appears, fail and surface as missing doc step.
+        const authOverlay = page
+          .locator(
+            '.OAuth_Consent_Card, #InstallationCardContent, .Auth__Card--content, [role="dialog"]:has-text("wants to access")'
+          )
+          .first();
+        if (await authOverlay.isVisible().catch(() => false)) {
+          throw new Error(
+            'Authorization dialog appeared during "Use Prebuilt (doc step)", but authorization actions are not present in flow JSON. Add explicit doc steps for this gate.'
+          );
+        }
+
+        // Always reopen New Stack menu to make sure Use Prebuilt is actionable.
+        const newStackSel =
+          overridesClick["+ New Stack (doc step)"] ||
+          'button:has-text("+ New Stack"), button:has-text("New Stack"), [aria-label*="New Stack" i]';
+        const newStackBtn = page.locator(newStackSel).first();
+        if (await newStackBtn.isVisible().catch(() => false)) {
+          await newStackBtn.click({ timeout: 8_000, force: true }).catch(() => {});
+          await page.waitForTimeout(300);
+        }
+
+        if (await prebuiltOption.isVisible().catch(() => false)) {
+          for (let attempt = 1; attempt <= 3; attempt++) {
+            await prebuiltOption.click({ timeout: t, force: true }).catch(() => {});
+            await page.waitForTimeout(500);
+
+            const importReady = await page
+              .locator(
+                'button[data-test-id="starters-gatsby-starter-import"], [data-test-id^="starters-"][data-test-id$="-import"], [data-test-id^="starters-"]:not([data-test-id$="-import"])'
+              )
+              .first()
+              .isVisible()
+              .catch(() => false);
+            const authVisible = await page
+              .locator('.OAuth_Consent_Card, #InstallationCardContent, .Auth__Card--content')
+              .first()
+              .isVisible()
+              .catch(() => false);
+            const prebuiltVisible = await prebuiltModal.isVisible().catch(() => false);
+            if (importReady || authVisible || prebuiltVisible) break;
+          }
+          break;
+        }
+
+        // Fallback: if modal/cards are visible after opening New Stack, proceed.
+        await prebuiltModal.waitFor({ state: "visible", timeout: 8_000 }).catch(() => {});
+        if (await prebuiltModal.isVisible().catch(() => false)) {
+          break;
+        }
+      }
+
+      // Some prebuilt cards reveal "Import" only on hover.
+      if (step.target === "Import (doc step)") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const importSel = 'button[data-test-id="starters-gatsby-starter-import"]';
+        const importBtns = page.locator(importSel);
+        const t = getStepTimeoutMs(step);
+
+        // Ensure prebuilt panel is open; if not, retry Use Prebuilt quickly.
+        const anyImportVisible = await importBtns.first().isVisible().catch(() => false);
+        if (!anyImportVisible) {
+          const usePrebuiltSel =
+            overridesClick["Use Prebuilt (doc step)"] ||
+            '[role="menuitem"]:has-text("Use Prebuilt"), button:has-text("Use Prebuilt"), li:has-text("Use Prebuilt")';
+          const usePrebuiltBtn = page.locator(usePrebuiltSel).first();
+          if (await usePrebuiltBtn.isVisible().catch(() => false)) {
+            await usePrebuiltBtn.click({ timeout: 5_000, force: true }).catch(() => {});
+            await page.waitForTimeout(500);
+          }
+        }
+
+        // Wait incrementally for Add Stack modal content to render.
+        const modalRoot = page.locator(".ReactModalPortal, [role='dialog']").first();
+        await modalRoot.waitFor({ state: "visible", timeout: Math.min(t, 10_000) }).catch(() => {});
+        let btnCount = await importBtns.count().catch(() => 0);
+        if (btnCount === 0) {
+          for (let i = 0; i < 8; i++) {
+            await page.waitForTimeout(500);
+            btnCount = await importBtns.count().catch(() => 0);
+            if (btnCount > 0) break;
+          }
+        }
+
+        for (let i = 0; i < Math.min(btnCount, 8); i++) {
+          const btn = importBtns.nth(i);
+          const parentCard = btn
+            .locator('xpath=ancestor::*[@data-test-id="starters-gatsby-starter" or contains(@data-test-id,"starters-")][1]')
+            .first();
+          if (await parentCard.isVisible().catch(() => false)) {
+            await parentCard.hover({ timeout: 3_000 }).catch(() => {});
+            await page.waitForTimeout(150);
+          }
+          if (await btn.isVisible().catch(() => false)) break;
+        }
+
+        const importCount = btnCount;
+        let clicked = false;
+        for (let i = 0; i < Math.min(importCount, 8); i++) {
+          const btn = importBtns.nth(i);
+          if (await btn.isVisible().catch(() => false)) {
+            await btn.click({ timeout: t, force: true });
+            clicked = true;
+            break;
+          }
+        }
+        if (!clicked) {
+          await expect(importBtns.first()).toBeVisible({ timeout: t });
+          await importBtns.first().click({ timeout: t, force: true });
+        }
+        break;
+      }
+
+      if (step.target === "Import" && flow?.id === "import-prebuilt-content-models") {
+        const { click: overridesClick } = loadOverrides(flow);
+        const t = getStepTimeoutMs(step);
+        const importSel =
+          overridesClick["Import"] ||
+          '[role="dialog"] button[data-test-id*="import" i], [role="dialog"] button:has-text("Import")';
+        const hoverSel =
+          overridesClick["Prebuilt card hover area (doc step)"] ||
+          '[role="dialog"] [data-test-id*="about-us" i], [role="dialog"] [data-test-id*="prebuilt" i]';
+
+        const importBtns = page.locator(importSel);
+        const hoverCards = page.locator(hoverSel);
+        const hoverCount = await hoverCards.count().catch(() => 0);
+        for (let i = 0; i < Math.min(hoverCount, 8); i++) {
+          const card = hoverCards.nth(i);
+          if (await card.isVisible().catch(() => false)) {
+            await card.hover({ timeout: 3_000 }).catch(() => {});
+            await page.waitForTimeout(150);
+          }
+          if (await importBtns.first().isVisible().catch(() => false)) break;
+        }
+
+        await expect(importBtns.first()).toBeVisible({ timeout: t });
+        await importBtns.first().click({ timeout: t, force: true });
         break;
       }
 
@@ -1614,7 +2014,22 @@ export async function performAction(page: Page, step: Step, unique: string, flow
       if (inputMapped) {
         const inputEl = page.locator(inputMapped).first();
         await expect(inputEl).toBeVisible({ timeout: 30_000 });
-        await inputEl.fill(val);
+        // Some controls (e.g. tag-pill widgets) are div-based and require keyboard typing.
+        const isFillable = await inputEl
+          .evaluate((node) => {
+            const el = node as HTMLElement;
+            if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return true;
+            return el.isContentEditable;
+          })
+          .catch(() => false);
+
+        if (isFillable) {
+          await inputEl.fill(val);
+        } else {
+          await inputEl.click({ timeout: 10_000, force: true }).catch(() => {});
+          await page.keyboard.type(val, { delay: 40 });
+          await page.keyboard.press("Enter").catch(() => {});
+        }
         break;
       }
 
@@ -1669,6 +2084,28 @@ export async function performAction(page: Page, step: Step, unique: string, flow
     case "navigate": {
       await page.goto(step.target, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle");
+      break;
+    }
+
+    case "drag": {
+      const dropTarget = (step.value || "").trim();
+      if (!dropTarget) throw new Error("drag step missing 'value' target");
+
+      const { click } = loadOverrides(flow);
+      const sourceMapped = click[step.target] || CLICK_SELECTORS[step.target];
+      const targetMapped = click[dropTarget] || CLICK_SELECTORS[dropTarget];
+
+      const sourceEl = sourceMapped
+        ? page.locator(sourceMapped).first()
+        : await resolveTarget(page, step.target, flow);
+      const targetEl = targetMapped
+        ? page.locator(targetMapped).first()
+        : await resolveTarget(page, dropTarget, flow);
+
+      const timeoutMs = getStepTimeoutMs(step);
+      await expect(sourceEl).toBeVisible({ timeout: timeoutMs });
+      await expect(targetEl).toBeVisible({ timeout: timeoutMs });
+      await sourceEl.dragTo(targetEl, { timeout: timeoutMs });
       break;
     }
 

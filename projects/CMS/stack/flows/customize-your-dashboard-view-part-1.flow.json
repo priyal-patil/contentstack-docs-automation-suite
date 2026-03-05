@@ -39,10 +39,7 @@
       "action": "click",
       "target": "+ Dashboard Extension (doc step)"
     },
-    {
-      "action": "click",
-      "target": "Edit Dashboard (doc step)"
-    },
+
     {
       "action": "verify",
       "target": "Add Widgets modal (doc step)",
@@ -69,11 +66,15 @@
     },
     {
       "action": "click",
+      "target": "Close icon"
+    },
+    {
+      "action": "click",
       "target": "Edit Dashboard (doc step)"
     },
     {
       "action": "click",
-      "target": "Remove Recently Modified Assets (doc step)"
+      "target": "Click X"
     },
     {
       "action": "click",

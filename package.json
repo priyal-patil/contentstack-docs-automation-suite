@@ -23,6 +23,8 @@
     "sync:docs-urls": "ts-node scripts/syncDocsUrlsToCsv.ts",
     "add-doc-url": "ts-node scripts/addDocUrlToCsv.ts",
     "test:flows": "playwright test tests/flows.spec.ts",
+    "test:flows:dev14": "ENV_FILE=.env.dev14 FORCE_RELOGIN=true playwright test tests/flows.spec.ts",
+    "test:flows:prod": "FORCE_RELOGIN=true playwright test tests/flows.spec.ts",
     "test:crawl": "playwright test tests/crawl/crawl.spec.ts --project=crawl",
     "crawl": "ts-node scripts/runCrawl.ts",
     "crawl:dashboard": "ts-node scripts/generateCrawlDashboard.ts",

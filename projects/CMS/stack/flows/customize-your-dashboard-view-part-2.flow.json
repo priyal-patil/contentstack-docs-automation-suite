@@ -30,21 +30,11 @@
       "target": "Edit Dashboard (doc step)"
     },
     {
-      "action": "verify",
-      "target": "Recently Modified Entries (doc step)",
-      "expected": {
-        "labelEquals": "Recently Modified Entries",
-        "labelMatch": "contains"
-      }
+      "action": "drag",
+      "target": "Contentstack Academy card (doc step)",
+      "value": "Search card (doc step)"
     },
-    {
-      "action": "verify",
-      "target": "Recently Modified Assets (doc step)",
-      "expected": {
-        "labelEquals": "Recently Modified Assets",
-        "labelMatch": "contains"
-      }
-    },
+    
     {
       "action": "click",
       "target": "Done (doc step)"

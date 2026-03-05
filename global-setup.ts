@@ -63,12 +63,28 @@ export default async () => {
   const emailInput = page.getByLabel(/email/i).first();
   const passInput = page.getByLabel(/password/i).first();
 
-  const emailFallback = page.locator('input[type="email"]').first();
-  const passFallback = page.locator('input[type="password"]').first();
+  const emailFallback = page
+    .locator('input[type="email"], input[name="email"], input#email, [data-test-id="cs-login-email"]')
+    .first();
+  const passFallback = page
+    .locator('input[type="password"], input[name="password"], input#password, [data-test-id="cs-login-password"]')
+    .first();
 
   const emailAlt = page
     .locator('input[name="email"], input[name="username"], input[autocomplete="username"]')
     .first();
+
+  // Some environments land on SSO-first view. Switch to email/password form if needed.
+  if (!(await emailFallback.isVisible().catch(() => false))) {
+    const emailLoginBtn = page
+      .getByRole("button", { name: /log in via email/i })
+      .or(page.getByText(/log in via email/i, { exact: false }))
+      .first();
+    if (await emailLoginBtn.isVisible().catch(() => false)) {
+      await emailLoginBtn.click({ timeout: 15_000 }).catch(() => {});
+      await page.waitForTimeout(400);
+    }
+  }
 
   const emailField = (await emailInput.count())
     ? emailInput

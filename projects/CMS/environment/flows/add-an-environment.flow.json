@@ -1,0 +1,73 @@
+{
+  "id": "add-an-environment",
+  "project": "CMS",
+  "module": "environment",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-environments/add-an-environment",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Environments from left nav (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Environments from left nav (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Environments",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Environments page (doc step)",
+      "expected": {
+        "labelEquals": "Environments",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Environment (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Create Environment modal (doc step)",
+      "expected": {
+        "labelEquals": "Create Environment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Environment Name (doc step)",
+      "value": "env-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Base URL (doc step)",
+      "value": "https://example-{unique}.com"
+    },
+    {
+      "action": "click",
+      "target": "Create Environment (doc step)"
+    }
+  ]
+}
