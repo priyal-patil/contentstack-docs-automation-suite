@@ -1,0 +1,21 @@
+<!--
+  DOM reference: contextual dropdown after opening split Restore on restore taxonomy modal.
+  Source of truth: projects/CMS/trash/selectors/module.selectors.ts
+
+  Restore taxonomy With Content Type Association menu option (doc step):
+    [role="menuitem"]:has-text("Restore with Content Type Association"), li:has-text("Restore with Content Type Association")
+
+  Restore taxonomy Without Content Type Association menu option (doc step):
+    [role="menuitem"]:has-text("Restore without Content Type Association"), li:has-text("Restore without Content Type Association")
+
+  Restore taxonomy With Content Type Association (doc step) (click target):
+    [role="menuitem"]:has-text("Restore with Content Type Association"), button:has-text("Restore with Content Type Association")
+
+  App markup fallbacks (this file):
+    li[data-test-id="cs-dropdown-elements"][title="…"]
+    .Dropdown__menu__list__item .Dropdown__menu__list__item--value
+
+  Term modal equivalent (restore-term-modal.html): "Restore with Entry Association" / "Restore without Entry Association"
+    See keys Restore term With Entry Association menu option / Without / click in module.selectors.ts
+-->
+<div class="button-contextual-dropdown-wrapper"><ul class="Dropdown__menu__list"><li tabindex="0" data-test-id="cs-dropdown-elements" title="Restore with Content Type Association" class="Dropdown__menu__list__item flex-v-center Dropdown__menu__list__item--active "><span class="Dropdown__menu__list__item--value">Restore with Content Type Association</span></li><li tabindex="0" data-test-id="cs-dropdown-elements" title="Restore without Content Type Association" class="Dropdown__menu__list__item flex-v-center  "><span class="Dropdown__menu__list__item--value">Restore without Content Type Association</span></li></ul></div>

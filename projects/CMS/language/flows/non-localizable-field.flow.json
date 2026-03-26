@@ -1,0 +1,73 @@
+{
+  "id": "non-localizable-field",
+  "project": "CMS",
+  "module": "language",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/multilingual-content/non-localizable-field",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Edit (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Group (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Properties (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Advanced (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Non-localizable (doc step)",
+      "expected": {
+        "labelEquals": "Non-localizable",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Non-localizable (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

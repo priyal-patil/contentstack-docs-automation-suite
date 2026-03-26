@@ -13,6 +13,13 @@ function mustGetEnv(name: string): string {
 }
 
 export default async () => {
+  // Reset per-run doc-step JSONL so getDocStepFailures() does not merge failures from earlier Playwright invocations (same 2h window).
+  const reportDir = process.env.REPORT_DIR || path.resolve(process.cwd(), "reports/latest");
+  const docStepWorkerDir = path.join(reportDir, ".doc-step-workers");
+  if (fs.existsSync(docStepWorkerDir)) {
+    fs.rmSync(docStepWorkerDir, { recursive: true, force: true });
+  }
+
   const storagePath = path.resolve(process.cwd(), "auth.json");
 
   // Fast-path: reuse existing auth state unless explicitly forced to re-login.
@@ -26,7 +33,7 @@ export default async () => {
         const browser = await chromium.launch({ headless: true });
         const context = await browser.newContext({ storageState: storagePath });
         const page = await context.newPage();
-        await page.goto(appUrl("/#!/stacks"), { waitUntil: "domcontentloaded" });
+        await page.goto(appUrl("/#!/stacks"), { waitUntil: "commit", timeout: 120_000 });
         const stillLoggedIn = !/#!\/login/i.test(page.url());
         await context.close();
         await browser.close();
@@ -49,9 +56,10 @@ export default async () => {
   const email = mustGetEnv("CS_EMAIL");
   const password = mustGetEnv("CS_PASSWORD");
 
-  await page.goto(appUrl("/#!/login"), { waitUntil: "domcontentloaded" });
+  await page.goto(appUrl("/#!/stacks"), { waitUntil: "commit", timeout: 120_000 });
 
-  // If already authenticated, Contentstack may redirect away from /#!/login.
+  // If already authenticated, /#!/stacks stays in stack context.
+  // If unauthenticated, Contentstack redirects to /#!/login.
   if (!page.url().includes("/#!/login")) {
     await page.context().storageState({ path: storagePath });
     console.log("✅ Saved auth state to:", storagePath);

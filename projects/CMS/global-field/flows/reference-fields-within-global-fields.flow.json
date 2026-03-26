@@ -1,0 +1,269 @@
+{
+  "id": "reference-fields-within-global-fields",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/reference-fields-within-global-fields",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Content Types (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New"
+    },
+    {
+      "action": "enter",
+      "target": "Name",
+      "value": "Author Details-{unique}"
+    },
+    {
+      "action": "click",
+      "target": "Single (Type) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Author Name"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Multi Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Author Address"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "JSON Rich Text Editor (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Author Qualification Details"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Global Field (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Global Field Name (doc step)",
+      "value": "Blog Post-{unique}"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Blog Title"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "JSON Rich Text Editor (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Blog Content"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Reference (doc step)",
+      "expected": {
+        "labelEquals": "Reference",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Reference (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Referenced Content Type selector (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Search content types (doc step)",
+      "value": "Author Details"
+    },
+    {
+      "action": "click",
+      "target": "Author Details content type row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Add Content Type(s) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New"
+    },
+    {
+      "action": "enter",
+      "target": "Name",
+      "value": "Blogs-{unique}"
+    },
+    {
+      "action": "click",
+      "target": "Single (Type) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Blog Header"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "JSON Rich Text Editor (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Blog Footer"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Blog Post global field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

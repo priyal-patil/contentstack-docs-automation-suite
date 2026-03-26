@@ -1,0 +1,47 @@
+{
+  "id": "basic-search",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/basic-search",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search bar dropdown (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Search bar dropdown (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Basic Search dropdown options coverage (doc step)",
+      "expected": {
+        "documentedOptions": [
+          "All (Search within all fields)",
+          "Title (Search within title only)",
+          "URL (Search within url only)",
+          "Specific field (Search within a specific field)"
+        ]
+      }
+    },
+    {
+      "action": "click",
+      "target": "All option (Search within all fields) (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "Smartphone"
+    }
+  ]
+}

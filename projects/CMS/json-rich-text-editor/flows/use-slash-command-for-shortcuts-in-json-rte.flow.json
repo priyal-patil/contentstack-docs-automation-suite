@@ -1,0 +1,192 @@
+{
+  "id": "use-slash-command-for-shortcuts-in-json-rte",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/use-slash-command-for-shortcuts-in-json-rte",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Slash RTE entry {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    { "action": "enter", "target": "JSON RTE type forward slash open menu (doc step)", "value": "" },
+    {
+      "action": "verify",
+      "target": "JSON RTE slash command menu visible (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE slash popover lists all doc command labels (doc step)"
+    },
+    { "action": "enter", "target": "JSON RTE press Escape (doc step)", "value": "" },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /paragraph then body (doc step)",
+      "value": "AUTO-SLASH-PARA dummy paragraph via menu."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-PARA", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h1 then body (doc step)",
+      "value": "AUTO-SLASH-H1 heading one."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H1", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h2 then body (doc step)",
+      "value": "AUTO-SLASH-H2 heading two."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H2", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h3 then body (doc step)",
+      "value": "AUTO-SLASH-H3 heading three."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H3", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor shows h3 for slash heading (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H3", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h4 then body (doc step)",
+      "value": "AUTO-SLASH-H4 heading four."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H4", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h5 then body (doc step)",
+      "value": "AUTO-SLASH-H5 heading five."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H5", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /h6 then body (doc step)",
+      "value": "AUTO-SLASH-H6 heading six."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-H6", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /blockquote then body (doc step)",
+      "value": "AUTO-SLASH-QUOTE blockquote via menu."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-QUOTE", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /code then body (doc step)",
+      "value": "AUTO-SLASH-CODE code block line."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-CODE", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /ordered list then body (doc step)",
+      "value": "AUTO-SLASH-OL ordered item one."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-OL", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /unordered list then body (doc step)",
+      "value": "AUTO-SLASH-UL unordered item one."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-UL", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "JSON RTE slash /divider (doc step)", "value": "" },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /left then body (doc step)",
+      "value": "AUTO-SLASH-LEFT left-aligned sample."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-LEFT", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /center then body (doc step)",
+      "value": "AUTO-SLASH-CENTER centered sample."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-CENTER", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /right then body (doc step)",
+      "value": "AUTO-SLASH-RIGHT right-aligned sample."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-RIGHT", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE slash /justify then body (doc step)",
+      "value": "AUTO-SLASH-JUSTIFY justified sample text."
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE editor contains text (doc step)",
+      "expected": { "labelEquals": "AUTO-SLASH-JUSTIFY", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Save entry from editor (doc step)" }
+  ]
+}

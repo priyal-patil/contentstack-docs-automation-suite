@@ -1,0 +1,48 @@
+{
+  "id": "get-localized-entries",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/get-localized-entries",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Filter icon in Language column (doc step)",
+      "expected": { "labelMatch": "Filter" }
+    },
+    { "action": "click", "target": "Filter icon in Language column (doc step)" },
+    {
+      "action": "verify",
+      "target": "Language dropdown (doc step)",
+      "expected": { "labelMatch": "Language" }
+    },
+    {
+      "action": "verify",
+      "target": "Localized in dropdown (doc step)",
+      "expected": { "labelMatch": "Localized" }
+    },
+    {
+      "action": "verify",
+      "target": "Show localized only toggle (doc step)",
+      "expected": { "labelMatch": "Show localized only" }
+    },
+    {
+      "action": "verify",
+      "target": "Apply button (doc step)",
+      "expected": { "labelMatch": "Apply" }
+    },
+    {
+      "action": "click",
+      "target": "Language option in filter (doc step)"
+    },
+    { "action": "click", "target": "Apply button (doc step)" }
+  ]
+}

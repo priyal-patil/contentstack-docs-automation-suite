@@ -1,0 +1,46 @@
+{
+  "id": "export-an-entry-part-2",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/export-an-entry",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Export from row action (doc step)"
+    }
+  ]
+}
+

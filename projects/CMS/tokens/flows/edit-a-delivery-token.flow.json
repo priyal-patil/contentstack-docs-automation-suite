@@ -1,0 +1,72 @@
+{
+  "id": "edit-a-delivery-token",
+  "project": "CMS",
+  "module": "tokens",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-tokens/edit-a-delivery-token",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Tokens in settings (doc step)",
+      "expected": {
+        "withinStrict": true,
+        "labelEquals": "Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Tokens in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delivery Tokens tab (doc step)",
+      "expected": {
+        "labelEquals": "Delivery Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delivery Tokens tab (doc step)" },
+    { "action": "click", "target": "First delivery token row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create delivery token page marker (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Description input (delivery token doc step)", "value": "APPEND: edited" },
+    { "action": "click", "target": "Save delivery token button (doc step)" },
+    { "action": "click", "target": "Ensure preview token exists (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delivery Token value in edit page (doc step)",
+      "expected": {
+        "labelEquals": "Delivery Token",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Preview Token value in edit page (doc step)",
+      "expected": {
+        "labelEquals": "Preview Token",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

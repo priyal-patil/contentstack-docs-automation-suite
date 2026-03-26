@@ -1,0 +1,42 @@
+{
+  "id": "videos-and-social-embeds",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/videos-and-social-embeds",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Videos social doc entry {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    { "action": "click", "target": "JSON RTE Video toolbar icon (doc step)" },
+    { "action": "verify", "target": "JSON RTE Video modal title (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE Video modal embed input (doc step)",
+      "value": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    },
+    { "action": "click", "target": "JSON RTE Video modal Add button (doc step)" },
+    { "action": "click", "target": "JSON RTE Social Embeds toolbar icon (doc step)" },
+    { "action": "verify", "target": "JSON RTE Social Embeds modal title (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE Social Embeds modal URL input (doc step)",
+      "value": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+    },
+    { "action": "click", "target": "JSON RTE Social Embeds modal Add button (doc step)" }
+  ]
+}

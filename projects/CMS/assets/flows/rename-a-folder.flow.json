@@ -1,0 +1,55 @@
+{
+  "id": "rename-a-folder",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/rename-a-folder",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First folder vertical ellipses (doc step)" },
+    {
+      "action": "verify",
+      "target": "Rename option label (doc step)",
+      "expected": {
+        "labelEquals": "Rename",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Rename option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Rename Folder modal title (doc step)",
+      "expected": {
+        "labelEquals": "Rename Folder",
+        "labelMatch": "contains",
+        "modalTitle": "Rename Folder"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Folder name label (doc step)",
+      "expected": {
+        "labelEquals": "Folder name",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Folder name input (doc step)", "value": "RenamedFolder{unique}" },
+    { "action": "click", "target": "Save (doc step)" }
+  ]
+}
+

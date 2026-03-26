@@ -1,0 +1,47 @@
+{
+  "id": "move-a-folder",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/move-a-folder",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First folder vertical ellipses (doc step)" },
+    {
+      "action": "verify",
+      "target": "Move To option label (doc step)",
+      "expected": {
+        "labelEquals": "Move To",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Move To option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Move To modal title (doc step)",
+      "expected": {
+        "labelEquals": "Move To",
+        "labelMatch": "contains",
+        "modalTitle": "Move To"
+      }
+    },
+    { "action": "click", "target": "Destination folder row (doc step)" },
+    { "action": "click", "target": "Move here (doc step)" }
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "id": "restore-old-asset-version",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/restore-old-asset-version",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Asset row (doc step)" },
+    { "action": "click", "target": "Save (doc step)" },
+    { "action": "click", "target": "First Asset row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Version dropdown (doc step)",
+      "expected": {
+        "within": "Top-right corner",
+        "withinStrict": true,
+        "labelEquals": "Version",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Version dropdown (doc step)" },
+    { "action": "verify", "target": "Version dropdown menu (doc step)", "expected": { "labelEquals": "Version", "labelMatch": "contains" } },
+    { "action": "click", "target": "Second asset version row (doc step)" },
+    { "action": "click", "target": "Save (doc step)" }
+  ]
+}
+

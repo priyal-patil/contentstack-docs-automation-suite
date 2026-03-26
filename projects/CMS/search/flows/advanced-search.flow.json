@@ -1,0 +1,101 @@
+{
+  "id": "advanced-search",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/advanced-search",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Advanced Search button (doc step)",
+      "expected": { "labelEquals": "Advanced Search", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Advanced Search button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Match All Conditions (doc step)",
+      "expected": { "labelEquals": "Match All Conditions", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Content Type or Field label (doc step)",
+      "expected": { "labelEquals": "Content Type or Field", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Operator label (doc step)",
+      "expected": { "labelEquals": "Operator", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Value label (doc step)",
+      "expected": { "labelEquals": "Value", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Remove button in Advanced Search (doc step)",
+      "expected": { "labelEquals": "Remove", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "New Condition button (doc step)",
+      "expected": { "labelEquals": "New Condition", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Reset button in Advanced Search (doc step)",
+      "expected": { "labelEquals": "Reset", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Content Type or Field dropdown (doc step)" },
+    { "action": "click", "target": "Title option in Content Type menu (doc step)" },
+    { "action": "click", "target": "Operator dropdown (doc step)" },
+    { "action": "click", "target": "Contains operator option (doc step)" },
+    {
+      "action": "enter",
+      "target": "Value input in Advanced Search (doc step)",
+      "value": "test"
+    },
+    {
+      "action": "verify",
+      "target": "Search button in Advanced Search (doc step)",
+      "expected": { "labelEquals": "Search", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Search button in Advanced Search (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "verify",
+      "target": "Modify Advanced Search button (doc step)",
+      "expected": { "labelEquals": "Modify Advanced Search", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Modify Advanced Search button (doc step)" },
+    { "action": "click", "target": "New Condition button (doc step)" },
+    {
+      "action": "click",
+      "target": "Remove button in Advanced Search (doc step)",
+      "nth": 0
+    },
+    {
+      "action": "click",
+      "target": "Remove button in Advanced Search (doc step)",
+      "nth": 0
+    },
+    {
+      "action": "verify",
+      "target": "Reset button in Advanced Search (doc step)",
+      "expected": { "labelEquals": "Reset", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Reset button in Advanced Search (doc step)" }
+  ]
+}

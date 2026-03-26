@@ -1,0 +1,181 @@
+{
+  "id": "view-entry-references",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/view-entry-references",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "Ref Parent CT-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (ct create) (doc step)",
+      "value": "Parent content type for entry references"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "Ref Child CT-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (ct create) (doc step)",
+      "value": "Child content type with reference field"
+    },
+    {
+      "action": "click",
+      "target": "Single (Type) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Reference (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Referenced Content Type selector (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Search content types (doc step)",
+      "value": "Ref Parent CT-"
+    },
+    {
+      "action": "click",
+      "target": "Ref Parent CT content type row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Add Content Type(s) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Ref Parent CT row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create Entry (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "Parent Ref Entry {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Ref Child CT row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create Entry (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "Child Ref Entry {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Information icon (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Referenced In section (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "View reference map (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Referenced entry name (doc step)"
+    }
+  ]
+}
+

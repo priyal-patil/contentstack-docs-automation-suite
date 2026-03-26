@@ -1,0 +1,63 @@
+{
+  "id": "account-lockout-policy",
+  "project": "CMS",
+  "module": "security",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/account-lockout-policy",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher icon (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "App Switcher icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Administration in App Switcher (doc step)",
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Administration in App Switcher (doc step)" },
+    {
+      "action": "verify",
+      "target": "Users nav in Administration (doc step)",
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Users nav in Administration (doc step)" },
+    {
+      "action": "verify",
+      "target": "Vertical ellipsis in Action column (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Vertical ellipsis in Action column (doc step)" },
+    {
+      "action": "verify",
+      "target": "Unlock User option (doc step)",
+      "expected": {
+        "labelEquals": "Unlock User",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Unlock User option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Unlock User confirmation modal (doc step)",
+      "expected": {
+        "modalTitle": "Unlock User",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Continue or Proceed in unlock modal (doc step)" }
+  ]
+}

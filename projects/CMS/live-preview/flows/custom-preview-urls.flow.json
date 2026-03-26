@@ -1,0 +1,144 @@
+{
+  "id": "custom-preview-urls",
+  "project": "CMS",
+  "module": "live-preview",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-live-preview/custom-preview-urls",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience from left nav (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience from left nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Visual Experience Preview URL tab (doc step)",
+      "expected": {
+        "labelEquals": "Preview URL",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience Preview URL tab (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "Enable Custom Preview URL toggle label (doc step)",
+      "expected": {
+        "labelEquals": "Enable Custom Preview URL",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Enable Custom Preview URL toggle (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Base URL section label Preview URL (doc step)",
+      "expected": {
+        "labelEquals": "Base URL",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Custom preview first base URL alias input (doc step)",
+      "value": "doc-alias-{unique}",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "Custom preview first base URL pattern input (doc step)",
+      "value": "https://doc-cp-{unique}.example.com",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "URL Path section label (doc step)",
+      "expected": {
+        "labelEquals": "URL Path",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Expand first URL path accordion (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "URL path Path name field label (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "URL path name input (doc step)",
+      "value": "doc-preview-route-{unique}",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "URL path Branch field label (doc step)",
+      "expected": {
+        "labelEquals": "Select the branch(es)",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "URL path Branch dropdown (doc step)", "timeoutMs": 30000 },
+    { "action": "click", "target": "First URL path Branch option (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "URL path All content types option label (doc step)",
+      "expected": {
+        "labelEquals": "All Content Types",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "URL path All content types option (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "URL path Preview URL pattern field label (doc step)",
+      "expected": {
+        "labelEquals": "Preview URL",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "URL path pattern textarea (doc step)",
+      "value": "/blog/{{entry.slug}}/{{entry.title}}/{{entry.uid}}/{{environment}}/{{locale}}/{{branch}}/{{contentTypeUid}}/{{entry.custom_field_id}}/{{entry.author.name}}/{{taxonomy:brand}}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save Preview URL settings (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Save Preview URL settings (doc step)", "timeoutMs": 90000 }
+  ]
+}

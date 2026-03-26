@@ -1,0 +1,160 @@
+{
+  "id": "add-the-global-field-to-content-types",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/add-the-global-field-to-content-types",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Content Type Row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Properties (Global) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties title (doc step)",
+      "expected": {
+        "labelEquals": "Global Properties",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Basic (doc step)",
+      "expected": {
+        "labelEquals": "Basic",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Basic (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties coverage - Basic (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Display Name (global basic) (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Unique ID (global basic) (doc step)",
+      "expected": {
+        "labelEquals": "Unique ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Instruction Value (global basic) (doc step)",
+      "expected": {
+        "labelEquals": "Instruction Value",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Help Text (global basic) (doc step)",
+      "expected": {
+        "labelEquals": "Help Text",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Select Global Field (doc step)",
+      "expected": {
+        "labelEquals": "Select Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Advanced (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties coverage - Advanced (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Multiple (doc step)",
+      "expected": {
+        "labelEquals": "Multiple",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Non-localizable (doc step)",
+      "expected": {
+        "labelEquals": "Non-localizable",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

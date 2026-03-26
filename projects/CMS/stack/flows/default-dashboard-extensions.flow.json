@@ -19,6 +19,14 @@
     },
     {
       "action": "verify",
+      "target": "Dashboard page (doc step)",
+      "expected": {
+        "labelEquals": "Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
       "target": "Recently Modified Entries (doc step)",
       "expected": {
         "labelEquals": "Recently Modified Entries",
@@ -30,14 +38,6 @@
       "target": "Recently Modified Assets (doc step)",
       "expected": {
         "labelEquals": "Recently Modified Assets",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Dashboard page (doc step)",
-      "expected": {
-        "labelEquals": "Dashboard",
         "labelMatch": "contains"
       }
     }

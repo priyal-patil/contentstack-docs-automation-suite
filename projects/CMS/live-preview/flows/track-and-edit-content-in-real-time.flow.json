@@ -1,0 +1,40 @@
+{
+  "id": "track-and-edit-content-in-real-time",
+  "project": "CMS",
+  "module": "live-preview",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/track-and-edit-content-in-real-time",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    { "action": "verify", "target": "Live Preview icon (doc step)" },
+    { "action": "click", "target": "Live Preview icon (doc step)" },
+    { "action": "verify", "target": "Live Preview window (doc step)" },
+    { "action": "click", "target": "Editable content block in preview (doc step)" },
+    {
+      "action": "verify",
+      "target": "Edit button in preview (doc step)",
+      "expected": {
+        "labelEquals": "Edit",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Edit button in preview (doc step)" },
+    { "action": "enter", "target": "First editable field in editor (doc step)", "value": "APPEND: updated-from-live-preview-edit-icon" },
+    { "action": "verify", "target": "Live Preview window (doc step)" }
+  ]
+}

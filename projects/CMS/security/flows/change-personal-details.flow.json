@@ -1,0 +1,42 @@
+{
+  "id": "change-personal-details",
+  "project": "CMS",
+  "module": "security",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/change-personal-details",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "User Profile icon (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "User Profile icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Profile option in dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Profile",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Profile option in dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "Profile section (doc step)",
+      "expected": {
+        "labelEquals": "First Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Company Name input (doc step)",
+      "value": "Test Company"
+    },
+    { "action": "click", "target": "Save button in profile (doc step)" }
+  ]
+}

@@ -1,0 +1,105 @@
+# Nightly (or manual) Documentation Automation: Playwright + unified reports + Slack.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   CS_EMAIL          — Contentstack account email (global-setup login)
+#   CS_PASSWORD       — Contentstack account password
+#
+# Optional:
+#   SLACK_WEBHOOK_URL — Incoming webhook URL for a short summary (pass / warn / fail counts)
+#
+# Artifacts: unified-dashboard.html, master-report.xlsx, unified-report.json, full report folder.
+#
+# To run only from the Actions tab without waiting for cron: "Run workflow".
+
+name: Nightly documentation automation
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:15 UTC daily — adjust or comment out if you only want manual runs
+    - cron: "15 6 * * *"
+
+concurrency:
+  group: docs-automation-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PLAYWRIGHT_HEADLESS: "1"
+  CI: "true"
+  # Isolate this run’s reports (Playwright JSON + unified output)
+  REPORT_DIR: ${{ github.workspace }}/reports/run-${{ github.run_id }}
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright (docs HTTP + docs-audit + flows)
+        id: playwright
+        continue-on-error: true
+        env:
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DOCS_URLS_CSV: ${{ github.workspace }}/data/docs-urls.csv
+        run: |
+          set -euo pipefail
+          mkdir -p "$REPORT_DIR"
+          npx playwright test \
+            tests/docs.spec.ts \
+            tests/docs-audit.spec.ts \
+            tests/flows.spec.ts \
+            --project=default \
+            --project=docs-audit
+
+      - name: Generate unified report
+        if: always()
+        run: npx ts-node scripts/generateUnifiedReport.ts --reportDir "$REPORT_DIR"
+
+      - name: Merge combined CSV (optional)
+        if: always()
+        run: npx ts-node core/report/mergeResults.ts --reportDir "$REPORT_DIR" || true
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-reports-${{ github.run_id }}
+          path: |
+            ${{ env.REPORT_DIR }}/unified-dashboard.html
+            ${{ env.REPORT_DIR }}/master-report.xlsx
+            ${{ env.REPORT_DIR }}/master-report.csv
+            ${{ env.REPORT_DIR }}/unified-report.json
+            ${{ env.REPORT_DIR }}/flows-results.json
+            ${{ env.REPORT_DIR }}/docs-audit-summary.json
+            ${{ env.REPORT_DIR }}/html
+          if-no-files-found: warn
+
+      - name: Slack summary (optional)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+        run: node scripts/ci/slackUnifiedNotify.cjs
+
+      - name: Fail job if Playwright tests failed
+        if: steps.playwright.outcome != 'success'
+        run: |
+          echo "::error::Playwright tests did not succeed (see artifacts and logs)."
+          exit 1

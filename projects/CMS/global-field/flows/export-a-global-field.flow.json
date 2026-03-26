@@ -1,0 +1,74 @@
+{
+  "id": "export-a-global-field",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/export-a-global-field",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "within": "Left Panel",
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis"
+    },
+    {
+      "action": "verify",
+      "target": "Export option (Global Field action) (doc step)",
+      "expected": {
+        "labelEquals": "Export",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Export option (Global Field action) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

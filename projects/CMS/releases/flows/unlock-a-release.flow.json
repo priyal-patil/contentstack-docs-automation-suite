@@ -1,0 +1,46 @@
+{
+  "id": "unlock-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/unlock-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "First release in left nav (doc step)" },
+    { "action": "click", "target": "Hover release row for unlock icon (doc step)" },
+    { "action": "click", "target": "Unlock release icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Unlock Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Unlock Release",
+        "labelEquals": "Unlock Release",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Yes, Proceed button in unlock modal (doc step)",
+      "expected": {
+        "labelEquals": "Yes, Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Yes, Proceed button in unlock modal (doc step)" }
+  ]
+}

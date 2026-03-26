@@ -1,0 +1,56 @@
+{
+  "id": "add-entry-asset-to-a-release-part-2",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/add-entry-asset-to-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Asset row (doc step)" },
+    { "action": "click", "target": "Horizontal see more (asset details) (doc step)" },
+    { "action": "click", "target": "Add to Release from asset more (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add to Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Add to Release",
+        "labelEquals": "Add to Release",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create New Release option in Add to Release modal (doc step)",
+      "expected": { "labelEquals": "Create New Release", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create New Release option in Add to Release modal (doc step)" },
+    { "action": "enter", "target": "Release Name input (doc step)", "value": "{unique25}" },
+    { "action": "click", "target": "Create New Release save icon in Add to Release modal (doc step)" },
+    { "action": "click", "target": "First release row in Add to Release modal (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add for Publishing button in Add to Release modal (doc step)",
+      "expected": { "labelEquals": "Add for Publishing", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add for Unpublishing button in Add to Release modal (doc step)",
+      "expected": { "labelEquals": "Add for Unpublishing", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Add for Publishing button in Add to Release modal (doc step)" }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "import-a-webhook",
+  "project": "CMS",
+  "module": "webhook",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-webhooks/import-a-webhook",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Webhooks (doc step)",
+      "expected": {
+        "labelEquals": "Webhooks",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Webhooks (doc step)" },
+    {
+      "action": "verify",
+      "target": "Import Webhook icon (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Import Webhook icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Import Webhook modal (doc step)",
+      "expected": {
+        "labelEquals": "Import Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Import button in modal (doc step)",
+      "expected": {
+        "labelEquals": "Import",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "upload",
+      "target": "File to import (doc step)",
+      "value": "./dummyData/webhook-import.json"
+    },
+    { "action": "click", "target": "Import button in modal (doc step)" }
+  ]
+}

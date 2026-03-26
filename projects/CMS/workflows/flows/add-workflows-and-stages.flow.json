@@ -1,0 +1,209 @@
+{
+  "id": "add-workflows-and-stages",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/add-workflows-and-stages",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Workflows",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflows tab selected Workflow Settings (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Workflow header button (doc step)",
+      "expected": {
+        "labelEquals": "New Workflow",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Workflow header button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Name label (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow name input (doc step)",
+      "value": "Doc WF {unique}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Description label (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow description input (doc step)",
+      "value": "Doc workflow description for add-workflows-and-stages.",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Scope label (doc step)",
+      "expected": {
+        "labelEquals": "Scope",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow All Content types scope option (doc step)",
+      "expected": {
+        "labelEquals": "All Content types",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow add first stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow first stage Stage name label (doc step)",
+      "expected": {
+        "labelEquals": "Stage name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow first stage name input (doc step)",
+      "value": "Doc Stage One {unique}",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow first stage transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Next available stages All stages label (doc step)",
+      "expected": {
+        "labelEquals": "Next available stages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage All stages option (doc step)",
+      "expected": {
+        "labelEquals": "All stages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users who can move stage All users roles label (doc step)",
+      "expected": {
+        "labelEquals": "Users/roles who can change the entry stage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage All users roles move option (doc step)",
+      "expected": {
+        "labelEquals": "All users/roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users who can edit entry in stage label (doc step)",
+      "expected": {
+        "labelEquals": "Users/roles who can edit the entry in this stage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage All users edit entry option (doc step)",
+      "expected": {
+        "labelEquals": "All users/roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Prevent self-advancement label (doc step)",
+      "expected": {
+        "labelEquals": "Prevent self-advancement",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow add second stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow second stage name input (doc step)",
+      "value": "Doc Stage Two {unique}",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow second stage Done button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow superusers field label (doc step)",
+      "expected": {
+        "labelEquals": "Workflow superuser(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Enable Workflow label (doc step)",
+      "expected": {
+        "labelEquals": "Enable Workflow",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Enable Workflow toggle switch (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow editor Save button label (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow editor Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

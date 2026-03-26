@@ -5,8 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:stable": "PW_WORKERS=1 PW_SLOWMO=200 playwright test",
     "test:ui": "playwright test --ui",
     "test:cms": "playwright test tests/flows.spec.ts -g \"Project=CMS\"",
+    "test:cms:headless:report": "bash scripts/run-cms-headless-report.sh",
+    "report:cms:excel": "ts-node scripts/generateCmsExcelReport.ts",
+    "report:cms:dashboard": "ts-node scripts/generateCmsDashboardHtml.ts",
+    "report:cms:bundle": "ts-node scripts/buildCmsReportBundle.ts",
     "test:cms:content-models": "playwright test tests/flows.spec.ts -g \"Project=CMS Module=content-models\"",
     "test:cms:delete-urls": "playwright test tests/flows.spec.ts -g \"Project=CMS.*Stage=(delete|cleanup)\"",
     "test:launch": "playwright test tests/flows.spec.ts -g \"Project=Launch\"",
@@ -32,6 +37,7 @@
     "test:all": "playwright test tests/docs.spec.ts tests/flows.spec.ts",
     "report:merge": "ts-node core/report/mergeResults.ts",
     "report:dashboard": "ts-node scripts/generateDashboardReport.ts",
+    "report:unified": "ts-node scripts/generateUnifiedReport.ts",
     "test:all-and-report": "npm run sync:docs-urls && playwright test tests/flows.spec.ts tests/docs-audit.spec.ts; npm run report:dashboard",
     "test:all-and-report:notify": "npm run test:all-and-report && open reports/latest/dashboard.html && osascript -e 'display notification \"Dashboard: reports/latest/dashboard.html\" with title \"Automation run finished\"'"
   },
@@ -45,7 +51,8 @@
     "pixelmatch": "^7.1.0",
     "sharp": "^0.34.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "xlsx": "^0.18.5"
   },
   "dependencies": {
     "axios": "^1.13.5",

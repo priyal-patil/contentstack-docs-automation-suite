@@ -1,0 +1,37 @@
+{
+  "id": "remove-entry-asset-from-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/remove-entry-asset-from-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "First release in left nav (doc step)" },
+    { "action": "verify", "target": "Release items table (doc step)" },
+    { "action": "click", "target": "Remove item from release row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Remove button in remove confirmation (doc step)",
+      "expected": {
+        "labelEquals": "Remove",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Remove button in remove confirmation (doc step)" }
+  ]
+}

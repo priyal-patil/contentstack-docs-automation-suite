@@ -1,0 +1,63 @@
+{
+  "id": "delete-an-entry",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/delete-an-entry",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "See more (entry editor) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Delete from see more (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Entry modal (doc step)",
+      "expected": {
+        "modalTitle": "Delete Entry"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete confirm (doc step)"
+    }
+  ]
+}
+

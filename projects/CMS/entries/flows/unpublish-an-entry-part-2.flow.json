@@ -1,0 +1,70 @@
+{
+  "id": "unpublish-an-entry-part-2",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/unpublish-an-entry",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Unpublish from row action (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Unpublish Entry modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "modalTitle": "Unpublish Entry"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Unpublish Environment option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First Unpublish Language option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Now (unpublish) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Unpublish confirm/send (doc step)"
+    }
+  ]
+}
+

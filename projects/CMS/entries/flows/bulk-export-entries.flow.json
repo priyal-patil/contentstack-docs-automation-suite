@@ -1,0 +1,96 @@
+{
+  "id": "bulk-export-entries",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/bulk-export-entries",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First entry checkbox (doc step)" },
+    { "action": "click", "target": "Second entry checkbox (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Export floating button label (doc step)",
+      "expected": {
+        "labelEquals": "Export",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Export in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Export Entries modal title (doc step)",
+      "expected": {
+        "labelEquals": "Export Entries",
+        "labelMatch": "contains",
+        "modalTitle": "Export Entries"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "What to Export label (doc step)",
+      "expected": {
+        "labelEquals": "What to Export",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage Columns label (doc step)",
+      "expected": {
+        "labelEquals": "Manage Columns",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Export Format label (doc step)",
+      "expected": {
+        "labelEquals": "Export Format",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "All selected scope label (doc step)",
+      "expected": {
+        "labelEquals": "All selected",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON format label (doc step)",
+      "expected": {
+        "labelEquals": "JSON",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Export button label (doc step)",
+      "expected": {
+        "labelEquals": "Export",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Export confirm (doc step)" }
+  ]
+}
+

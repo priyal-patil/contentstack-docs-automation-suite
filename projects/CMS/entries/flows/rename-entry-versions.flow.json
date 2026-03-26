@@ -1,0 +1,31 @@
+{
+  "id": "rename-entry-versions",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/rename-entry-versions",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    { "action": "click", "target": "Save (doc step)" },
+    {
+      "action": "verify",
+      "target": "Version icon (doc step)",
+      "expected": {
+        "within": "Top-right corner",
+        "withinStrict": true,
+        "labelEquals": "Version",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Version icon (doc step)" },
+    { "action": "verify", "target": "Version History", "expected": { "labelEquals": "Version History", "labelMatch": "contains" } },
+    { "action": "click", "target": "Second version timeline row (doc step)" },
+    { "action": "click", "target": "Second version rename icon (doc step)" },
+    { "action": "enter", "target": "Version name input (doc step)", "value": "Rename_Version_Name_25ABC" }
+  ]
+}

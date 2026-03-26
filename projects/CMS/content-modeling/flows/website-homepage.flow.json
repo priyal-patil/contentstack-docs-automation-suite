@@ -1,0 +1,73 @@
+{
+  "id": "website-homepage",
+  "project": "CMS",
+  "module": "content-modeling",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/content-modeling/website-homepage",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelMatch": "New" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelMatch": "Use Prebuilt" }
+    },
+    { "action": "click", "target": "Use Prebuilt (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add Content Model (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Add Content Model" }
+    },
+    {
+      "action": "verify",
+      "target": "Website Homepage card (doc step)",
+      "expected": { "within": "Modal" }
+    },
+    { "action": "click", "target": "Website Homepage card (doc step)" },
+    {
+      "action": "verify",
+      "target": "Schema tab (doc step)",
+      "expected": { "labelMatch": "Schema" }
+    },
+    { "action": "click", "target": "Schema tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "Website Homepage schema fields (doc step)",
+      "expected": {
+        "documentedStructure": [
+          ["Title"],
+          ["URL"],
+          ["Page Components"],
+          ["Page Components", "Hero Banner"],
+          ["Page Components", "Hero Banner", "Hero Banner"],
+          ["Page Components", "Section With Buckets"],
+          ["Page Components", "Section"],
+          ["Page Components", "Section With Cards"],
+          ["Page Components", "Section with HTML Code"],
+          ["Page Components", "Our Team"],
+          ["Page Components", "From Blog"],
+          ["Page Components", "Widget"],
+          ["Page Components", "Contact Us"],
+          ["SEO"],
+          ["SEO", "Meta Title"],
+          ["SEO", "Meta Description"],
+          ["SEO", "Meta Keywords"],
+          ["SEO", "Enable Search Indexing"]
+        ],
+        "exactMatch": true
+      }
+    }
+  ]
+}

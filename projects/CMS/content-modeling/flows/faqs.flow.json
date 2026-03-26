@@ -1,0 +1,74 @@
+{
+  "id": "faqs",
+  "project": "CMS",
+  "module": "content-modeling",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/content-modeling/faqs",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelMatch": "New" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelMatch": "Use Prebuilt" }
+    },
+    { "action": "click", "target": "Use Prebuilt (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add Content Model (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Add Content Model" }
+    },
+    {
+      "action": "verify",
+      "target": "FAQs Page card (doc step)",
+      "expected": { "within": "Modal" }
+    },
+    { "action": "click", "target": "FAQs Page card (doc step)" },
+    {
+      "action": "verify",
+      "target": "Schema tab (doc step)",
+      "expected": { "labelMatch": "Schema" }
+    },
+    { "action": "click", "target": "Schema tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "FAQs Page schema fields (doc step)",
+      "expected": {
+        "documentedStructure": [
+          ["Title"],
+          ["URL"],
+          ["Page Components"],
+          ["Page Components", "Hero Banner"],
+          ["Page Components", "Hero Banner", "Hero Banner"],
+          ["Page Components", "Section With Cards"],
+          ["Page Components", "Section With Cards", "Section with Cards"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Section Title"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Section Description"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Cards"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Cards", "Card Title H3"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Cards", "Description"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Cards", "Call To Action"],
+          ["Page Components", "Section With Cards", "Section with Cards", "Cards", "Image"],
+          ["SEO"],
+          ["SEO", "Meta Title"],
+          ["SEO", "Meta Description"],
+          ["SEO", "Meta Keywords"],
+          ["SEO", "Enable Search Indexing"]
+        ],
+        "exactMatch": true
+      }
+    }
+  ]
+}

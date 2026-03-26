@@ -1,0 +1,17 @@
+export const CLICK_SELECTORS: Record<string, string> = {
+  "Headless CMS":
+    '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
+  "Any Stack Card (doc step)":
+    '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
+  "Assets (doc step)":
+    '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
+  "New Asset (doc step)":
+    'button[data-test-id="cs-add-asset"], button[aria-label="Upload Asset"], button:has-text("New Asset")',
+  "Choose Files (doc step)":
+    '#scrte-image-modal button[data-test-id="cs-button"]:has-text("Choose Files"), button:has-text("Choose Files")',
+};
+
+export const INPUT_SELECTORS: Record<string, string> = {
+  "Asset file input (doc step)":
+    '#scrte-image-modal input[data-testid="drop-input"], #scrte-image-modal input[type="file"], input[data-testid="drop-input"]',
+};

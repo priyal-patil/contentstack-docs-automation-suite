@@ -1,0 +1,74 @@
+{
+  "id": "shared-views",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/shared-views",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Views tab in left panel (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Views" }
+    },
+    {
+      "action": "verify",
+      "target": "Saved Views section (doc step)",
+      "expected": { "labelEquals": "Saved Views" }
+    },
+    { "action": "click", "target": "Saved Views section (doc step)" },
+    {
+      "action": "verify",
+      "target": "First saved view in list (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Vertical ellipsis next to saved view (doc step)" },
+    { "action": "click", "target": "Share menu item (doc step)" },
+    {
+      "action": "verify",
+      "target": "Share View modal (doc step)",
+      "expected": { "modalTitle": "Share View" }
+    },
+    {
+      "action": "verify",
+      "target": "Users or Roles field in Share View modal (doc step)",
+      "expected": { "labelEquals": "Users or Roles" }
+    },
+    { "action": "click", "target": "Users or Roles select dropdown (doc step)" },
+    { "action": "click", "target": "Admin role option (doc step)" },
+    { "action": "click", "target": "Content Manager role option (doc step)" },
+    { "action": "click", "target": "Developer role option (doc step)" },
+    { "action": "click", "target": "Close Users or Roles dropdown by clicking footer (doc step)" },
+    { "action": "click", "target": "Permission dropdown in Share View modal (doc step)" },
+    { "action": "click", "target": "Edit permission option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Manage button in Share View modal (doc step)",
+      "expected": { "labelEquals": "Manage" }
+    },
+    {
+      "action": "verify",
+      "target": "Share button in Share View modal (doc step)",
+      "expected": { "labelEquals": "Share" }
+    },
+    { "action": "click", "target": "Manage button in Share View modal (doc step)" },
+    {
+      "action": "verify",
+      "target": "Manage Access modal (doc step)",
+      "expected": { "modalTitle": "Manage Access" }
+    },
+    {
+      "action": "click",
+      "target": "Manage Access: if Viewer dropdown visible, verify options and set to Editor (doc step)"
+    },
+    { "action": "click", "target": "Go back from Manage Access (doc step)" },
+    { "action": "click", "target": "Share button in Share View modal (doc step)" }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "id": "copy-a-global-field",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/copy-a-global-field",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "within": "Left Panel",
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis"
+    },
+    {
+      "action": "verify",
+      "target": "Copy Global Field option (doc step)",
+      "expected": {
+        "labelEquals": "Copy Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Copy Global Field option (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Copy Global Field modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Copy Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Name (copy global field) (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "UID (copy global field) (doc step)",
+      "expected": {
+        "labelEquals": "Unique ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Description (copy global field) (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Name (copy global field) (doc step)",
+      "value": "APPEND:-{unique}"
+    },
+    
+    {
+      "action": "enter",
+      "target": "Description (copy global field) (doc step)",
+      "value": "copy-created-{unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Copy (doc step)",
+      "expected": {
+        "labelEquals": "Copy",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Copy (global field modal) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

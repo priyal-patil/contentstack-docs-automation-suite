@@ -1,0 +1,157 @@
+{
+  "id": "create-a-webhook",
+  "project": "CMS",
+  "module": "webhook",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-webhooks/create-a-webhook",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Webhooks in settings left nav (doc step)",
+      "expected": {
+        "withinStrict": true,
+        "labelEquals": "Webhooks",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Webhooks in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Webhook button (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "+ New Webhook button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Name label (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "URL to Notify label (doc step)",
+      "expected": {
+        "labelEquals": "URL to Notify",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "HTTP Basic Auth Username label (doc step)",
+      "expected": {
+        "labelEquals": "HTTP Basic Auth Username",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "HTTP Basic Auth Password label (doc step)",
+      "expected": {
+        "labelEquals": "HTTP Basic Auth Password",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Custom Headers label (doc step)",
+      "expected": {
+        "labelEquals": "Custom Headers",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email Addresses to Notify label (doc step)",
+      "expected": {
+        "labelEquals": "Email Addresses to Notify",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Trigger Conditions label (doc step)",
+      "expected": {
+        "labelEquals": "Trigger Conditions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Send Concise Payload label (doc step)",
+      "expected": {
+        "labelEquals": "Send Concise Payload",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Enable Webhook label (doc step)",
+      "expected": {
+        "labelEquals": "Enable Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Name input (doc step)",
+      "value": "Automation Test Webhook"
+    },
+    {
+      "action": "enter",
+      "target": "URL to Notify input (doc step)",
+      "value": "https://example.com/webhook"
+    },
+    {
+      "action": "enter",
+      "target": "HTTP Basic Auth Username input (doc step)",
+      "value": "automation_user"
+    },
+    {
+      "action": "enter",
+      "target": "HTTP Basic Auth Password input (doc step)",
+      "value": "automation_pass"
+    },
+    {
+      "action": "click",
+      "target": "Module dropdown (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entry option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Action dropdown (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entries Create option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Send Concise Payload toggle (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save webhook button (doc step)"
+    }
+  ]
+}

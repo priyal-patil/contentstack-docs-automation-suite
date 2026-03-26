@@ -1,0 +1,42 @@
+{
+  "id": "delete-entries-and-assets-in-bulk",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/delete-entries-and-assets-in-bulk",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "Auto"
+    },
+    { "action": "click", "target": "Search submit button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    { "action": "click", "target": "First entry checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete button on floating bar (doc step)",
+      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Delete in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete Entries modal (doc step)",
+      "expected": { "labelMatch": "Delete Entr", "modalTitle": "Delete Entr" }
+    },
+    { "action": "click", "target": "Delete confirm (doc step)" }
+  ]
+}

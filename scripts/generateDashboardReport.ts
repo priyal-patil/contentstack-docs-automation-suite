@@ -110,7 +110,8 @@ function collectFlowResults(pw: any): FlowRow[] {
 }
 
 function main() {
-  const flowsPath = path.join(REPORT_DIR, "flows-results.json");
+  const flowsBackup = path.join(REPORT_DIR, "flows-results-cms.json");
+  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : path.join(REPORT_DIR, "flows-results.json");
   const failuresPath = path.join(REPORT_DIR, "doc-step-failures.json");
 
   const pw = readJson<{ suites?: any[] }>(flowsPath);

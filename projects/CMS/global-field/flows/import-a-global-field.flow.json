@@ -1,0 +1,109 @@
+{
+  "id": "import-a-global-field",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/import-a-global-field",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Import Global Field (doc step)",
+      "expected": {
+        "labelEquals": "Import",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Import Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Import Global Field modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Import Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Choose a file (global field) (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Choose a file",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "upload",
+      "target": "Choose a file (global field) (doc step)",
+      "value": "./dummyData/global-field-export.json"
+    },
+    {
+      "action": "verify",
+      "target": "Import (global field modal) (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Import",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Import (global field modal) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

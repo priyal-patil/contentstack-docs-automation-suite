@@ -1,0 +1,61 @@
+{
+  "id": "reply-to-a-comment",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/reply-to-a-comment",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Comment mode icon (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Automation seed comment thread"
+    },
+    {
+      "action": "enter",
+      "target": "Comment textbox (doc step)",
+      "value": "Automation reply comment {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Post (doc step)"
+    }
+  ]
+}
+

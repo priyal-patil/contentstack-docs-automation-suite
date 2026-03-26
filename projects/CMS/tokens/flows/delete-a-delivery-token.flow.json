@@ -1,0 +1,60 @@
+{
+  "id": "delete-a-delivery-token",
+  "project": "CMS",
+  "module": "tokens",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-tokens/delete-a-delivery-token",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Tokens in settings left nav (doc step)",
+      "expected": {
+        "withinStrict": true,
+        "labelEquals": "Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Tokens in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delivery Tokens tab (doc step)",
+      "expected": {
+        "labelEquals": "Delivery Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delivery Tokens tab (doc step)" },
+    { "action": "click", "target": "First delivery token row (doc step)" },
+    { "action": "click", "target": "Create Preview Token in delivery edit page (doc step)" },
+    { "action": "click", "target": "Cancel delivery token edit button (doc step)" },
+    { "action": "click", "target": "First delivery token row action (doc step)" },
+    { "action": "click", "target": "Delete delivery token option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete Delivery Token modal title (doc step)",
+      "expected": {
+        "modalTitle": "Delete Delivery Token",
+        "labelEquals": "Delete Delivery Token",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Delete delivery token name confirm input (doc step)" },
+    { "action": "click", "target": "Delete delivery token confirm button (doc step)" }
+  ]
+}

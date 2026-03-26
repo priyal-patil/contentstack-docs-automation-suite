@@ -1,0 +1,68 @@
+{
+  "id": "save-your-views",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/save-your-views",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Views tab in left panel (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Views" }
+    },
+    {
+      "action": "verify",
+      "target": "Popular Views section (doc step)",
+      "expected": { "labelEquals": "Popular Views" }
+    },
+    { "action": "click", "target": "Last Modified by Me view (doc step)" },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "test-save-view-{unique25}"
+    },
+    { "action": "click", "target": "Search submit button (doc step)" },
+    {
+      "action": "verify",
+      "target": "View name dropdown in top-right (doc step)",
+      "expected": { "labelMatch": "Last Modified by Me" }
+    },
+    { "action": "click", "target": "View name dropdown in top-right (doc step)" },
+    { "action": "click", "target": "Save as new view menu item (doc step)" },
+    {
+      "action": "verify",
+      "target": "Save View modal (doc step)",
+      "expected": { "modalTitle": "Save View" }
+    },
+    {
+      "action": "verify",
+      "target": "Name field in Save View modal (doc step)",
+      "expected": { "labelEquals": "Name" }
+    },
+    {
+      "action": "enter",
+      "target": "Name input in Save View modal (doc step)",
+      "value": "My Saved View {unique25}"
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Save View modal (doc step)",
+      "expected": { "labelEquals": "Save" }
+    },
+    { "action": "click", "target": "Save button in Save View modal (doc step)" },
+    { "action": "click", "target": "Saved Views section (doc step)" },
+    {
+      "action": "verify",
+      "target": "Saved view listed under Saved Views (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "My Saved View" }
+    }
+  ]
+}

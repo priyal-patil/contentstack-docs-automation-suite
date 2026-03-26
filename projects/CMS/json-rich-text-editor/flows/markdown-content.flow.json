@@ -1,0 +1,31 @@
+{
+  "id": "markdown-content",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/markdown-content",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Markdown doc {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE markdown syntax lines (doc step)",
+      "value": "__Sample content__\n_Sample content_\n# Sample content\n## Sample content\n### Sample content\n* Sample content\n1. Sample content\n~~Sample content~~\n`Sample content`\n^Sample content^\n~Sample content~\n[Text](https://example.com)\n> Sample content\n```Sample content```\n![alt](https://example.com/x.png)"
+    }
+  ]
+}

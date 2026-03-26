@@ -1,0 +1,53 @@
+{
+  "id": "create-a-folder",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/create-a-folder",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create new asset folder icon (doc step)",
+      "expected": {
+        "within": "Top-right corner",
+        "withinStrict": true
+      }
+    },
+    { "action": "click", "target": "Create new asset folder icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create Asset Folder modal title (doc step)",
+      "expected": {
+        "labelEquals": "Create Asset Folder",
+        "labelMatch": "contains",
+        "modalTitle": "Create Asset Folder"
+      }
+    },
+    { "action": "enter", "target": "Folder name input (doc step)", "value": "AutoFolder{unique}" },
+    { "action": "click", "target": "Create (doc step)" },
+    { "action": "click", "target": "Created folder row (doc step)" },
+    { "action": "click", "target": "New Asset (doc step)" },
+    { "action": "click", "target": "Choose Files (doc step)" },
+    { "action": "upload", "target": "Asset file input (doc step)", "value": "./dummyData/sample.svg" },
+    { "action": "click", "target": "First Asset row (doc step)" },
+    { "action": "click", "target": "Publish Asset button (doc step)" },
+    { "action": "click", "target": "Close modal/window (doc step)" }
+  ]
+}
+

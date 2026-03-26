@@ -1,0 +1,37 @@
+{
+  "id": "edit-an-asset",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/edit-an-asset/",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Asset row (doc step)" },
+    { "action": "click", "target": "Asset preview area (doc step)" },
+    { "action": "verify", "target": "Replace (doc step)", "expected": { "labelEquals": "Replace", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Title field label (doc step)", "expected": { "labelEquals": "Title", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Description field label (doc step)", "expected": { "labelEquals": "Description", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Tags field label (doc step)", "expected": { "labelEquals": "Tags", "labelMatch": "contains" } },
+    { "action": "enter", "target": "Title (doc step)", "value": "Edited Asset Title {unique}" },
+    { "action": "enter", "target": "Description (doc step)", "value": "Edited asset description {unique}" },
+    { "action": "click", "target": "Asset preview area (doc step)" },
+    { "action": "click", "target": "Replace (doc step)" },
+    { "action": "upload", "target": "Asset file input (doc step)", "value": "./dummyData/sample.svg" },
+    { "action": "click", "target": "Save (doc step)" }
+  ]
+}

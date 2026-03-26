@@ -1,0 +1,59 @@
+{
+  "id": "block-and-inline-properties-part-1",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/block-and-inline-properties",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Block property entry {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE type text then select for property (doc step)",
+      "value": "BlockPropertyDummy"
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "BlockPropertyDummy" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "verify", "target": "JSON RTE floating toolbar Property icon (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Property (doc step)" },
+    { "action": "click", "target": "JSON RTE Add Property menu or continue (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Add Property modal title (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Add Property", "labelMatch": "contains" }
+    },
+    { "action": "verify", "target": "JSON RTE Add Property modal Class label (doc step)" },
+    { "action": "verify", "target": "JSON RTE Add Property modal ID label (doc step)" },
+    { "action": "verify", "target": "JSON RTE Add Property modal Apply button label (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE Add Property Class field (doc step)",
+      "value": "doc-block-class"
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE Add Property ID field (doc step)",
+      "value": "doc-block-id"
+    },
+    { "action": "click", "target": "JSON RTE Add Property modal Apply (doc step)" }
+  ]
+}

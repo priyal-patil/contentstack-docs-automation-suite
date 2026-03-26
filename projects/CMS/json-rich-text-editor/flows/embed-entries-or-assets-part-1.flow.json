@@ -1,0 +1,80 @@
+{
+  "id": "embed-entries-or-assets-part-1",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/embed-entries-or-assets",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Embed entry doc {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    { "action": "click", "target": "JSON RTE Embed entry toolbar path (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose Entry modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Entry",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Choose Entry select Shared JSON RTE content type (doc step)" },
+    { "action": "click", "target": "JSON RTE Choose Entry first entry row (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose Entry Search Entry field (doc step)",
+      "expected": {
+        "labelEquals": "Search Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose Entry Select Embed Type label (doc step)",
+      "expected": {
+        "labelEquals": "Embed Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose Entry Block Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Block Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose Entry Inline Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Inline Embed",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Choose Entry Block Embed (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Embed Selected Entry button label (doc step)",
+      "expected": {
+        "labelEquals": "Embed Selected Entry",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Embed Selected Entry button (doc step)" }
+  ]
+}

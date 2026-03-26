@@ -1,0 +1,80 @@
+{
+  "id": "create-a-branch",
+  "project": "CMS",
+  "module": "branches",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/branches/create-a-branch",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Branches in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Branch button (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "+ New Branch button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New Branch modal (doc step)",
+      "expected": {
+        "modalTitle": "Create New Branch"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Branch ID label (doc step)",
+      "expected": {
+        "labelEquals": "Branch ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Source Branch label (doc step)",
+      "expected": {
+        "labelEquals": "Source Branch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Branch ID input (doc step)",
+      "value": "automation_test_branch"
+    },
+    {
+      "action": "click",
+      "target": "Source branch dropdown (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "main option in source dropdown (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Branch modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Branch modal (doc step)"
+    }
+  ]
+}

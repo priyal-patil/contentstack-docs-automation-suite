@@ -1,0 +1,93 @@
+{
+  "id": "create-a-global-field-part-2",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/create-a-global-field",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)"
+
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Global Field title (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Global (doc step)",
+      "expected": {
+        "within": "Field picker",
+        "withinStrict": false,
+        "labelEquals": "Global",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties title (doc step)",
+      "expected": {
+        "labelEquals": "Global Properties",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

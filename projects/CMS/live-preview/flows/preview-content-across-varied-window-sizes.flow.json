@@ -1,0 +1,41 @@
+{
+  "id": "preview-content-across-varied-window-sizes",
+  "project": "CMS",
+  "module": "live-preview",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/preview-content-across-varied-window-sizes",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    { "action": "verify", "target": "Live Preview icon (doc step)" },
+    { "action": "click", "target": "Live Preview icon (doc step)" },
+    { "action": "verify", "target": "Live Preview window (doc step)" },
+    { "action": "verify", "target": "Preview panel resize edge (doc step)" },
+    { "action": "click", "target": "Preview panel resize edge (doc step)" },
+    { "action": "verify", "target": "Open in new tab icon (doc step)" },
+    { "action": "click", "target": "Open in new tab icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Toggle orientation button (doc step)",
+      "expected": {
+        "labelEquals": "Orientation",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Toggle orientation (doc step)" }
+  ]
+}

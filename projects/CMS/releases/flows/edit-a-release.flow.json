@@ -1,0 +1,51 @@
+{
+  "id": "edit-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/edit-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "First release in left nav (doc step)" },
+    { "action": "click", "target": "Edit release icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Edit Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Edit Release",
+        "labelEquals": "Edit Release",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Release Name input (doc step)", "value": "APPEND: edited" },
+    { "action": "enter", "target": "Release Description input (doc step)", "value": "APPEND: edited" },
+    { "action": "click", "target": "Save button in edit release modal (doc step)" },
+    {
+      "action": "verify",
+      "target": "Release activity cell (doc step)",
+      "expected": {
+        "labelEquals": "publish",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "Release top-right horizontal ellipsis (doc step)" },
+    { "action": "click", "target": "Edit from release top-right menu (doc step)" }
+  ]
+}
+ 

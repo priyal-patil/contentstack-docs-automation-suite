@@ -1,0 +1,45 @@
+{
+  "id": "taxonomy-based-content-filtering-on-entry-list-page",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/taxonomy-based-content-filtering-on-entry-list-page",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Filters tab (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Left filters panel (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First taxonomy term/left filter option (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Entries list table (doc step)"
+    }
+  ]
+}
+

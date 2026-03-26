@@ -1,0 +1,74 @@
+{
+  "id": "partial-search",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/partial-search",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search bar dropdown (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "tech"
+    },
+    {
+      "action": "click",
+      "target": "Search submit button (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": ""
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "*olog"
+    },
+    {
+      "action": "click",
+      "target": "Search submit button (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": ""
+    },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "\"technology\""
+    },
+    {
+      "action": "click",
+      "target": "Search submit button (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    }
+  ]
+}

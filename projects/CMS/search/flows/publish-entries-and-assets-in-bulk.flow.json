@@ -1,0 +1,68 @@
+{
+  "id": "publish-entries-and-assets-in-bulk",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/publish-entries-and-assets-in-bulk",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "Auto"
+    },
+    { "action": "click", "target": "Search submit button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    { "action": "click", "target": "First entry checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish button on floating bar (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Publish in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Entries modal (doc step)",
+      "expected": { "labelMatch": "Publish Entr", "modalTitle": "Publish Entr" }
+    },
+    {
+      "action": "verify",
+      "target": "Select Environment(s) (doc step)",
+      "expected": { "labelEquals": "Select Environment(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Select Language(s) (doc step)",
+      "expected": { "labelEquals": "Select Language(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Now or Later (doc step)",
+      "expected": { "labelMatch": "Now" }
+    },
+    {
+      "action": "verify",
+      "target": "Send With References (doc step)",
+      "expected": { "labelMatch": "Send With References" }
+    },
+    {
+      "action": "verify",
+      "target": "Send Without References (doc step)",
+      "expected": { "labelMatch": "Send Without References" }
+    },
+    { "action": "click", "target": "First Environment checkbox (doc step)" },
+    { "action": "click", "target": "Send With References (doc step)" }
+  ]
+}

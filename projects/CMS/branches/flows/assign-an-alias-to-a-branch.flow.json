@@ -1,0 +1,88 @@
+{
+  "id": "assign-an-alias-to-a-branch",
+  "project": "CMS",
+  "module": "branches",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/branches/assign-an-alias-to-a-branch",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Branches in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Aliases tab (doc step)",
+      "expected": {
+        "labelEquals": "Aliases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Aliases tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ Assign Alias button (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "+ Assign Alias button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Assign New Alias modal (doc step)",
+      "expected": {
+        "modalTitle": "Assign New Alias"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Alias ID label (doc step)",
+      "expected": {
+        "labelEquals": "Alias ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Target Branch label (doc step)",
+      "expected": {
+        "labelEquals": "Target Branch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Alias ID input (doc step)",
+      "value": "automation_test_alias"
+    },
+    {
+      "action": "click",
+      "target": "Target Branch dropdown (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "main option in target branch dropdown (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Assign New Alias modal (doc step)",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Assign New Alias modal (doc step)"
+    }
+  ]
+}

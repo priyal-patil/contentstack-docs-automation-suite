@@ -1,0 +1,97 @@
+{
+  "id": "bulk-publish-assets",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/bulk-publish-assets",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Publish Status column header (doc step)",
+      "expected": {
+        "labelEquals": "Publish Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "First Not Published status (doc step)",
+      "expected": {
+        "labelEquals": "Not Published",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Second Not Published status (doc step)",
+      "expected": {
+        "labelEquals": "Not Published",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "First asset checkbox (doc step)" },
+    { "action": "click", "target": "Second asset checkbox (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish floating button label (doc step)",
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Assets modal title (doc step)",
+      "expected": {
+        "labelEquals": "Publish Asset",
+        "labelMatch": "contains",
+        "modalTitle": "Publish Asset"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Select Environment(s) label (doc step)",
+      "expected": {
+        "labelEquals": "Select Environment(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Select Language(s) label (doc step)",
+      "expected": {
+        "labelEquals": "Select Language(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish modal button label (doc step)",
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "First Environment checkbox (doc step)" },
+    { "action": "click", "target": "Publish modal publish button (doc step)" }
+  ]
+}
+

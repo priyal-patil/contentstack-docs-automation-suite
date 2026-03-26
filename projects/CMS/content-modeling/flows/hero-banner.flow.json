@@ -1,0 +1,64 @@
+{
+  "id": "hero-banner",
+  "project": "CMS",
+  "module": "content-modeling",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/content-modeling/hero-banner",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelMatch": "New" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelMatch": "Use Prebuilt" }
+    },
+    { "action": "click", "target": "Use Prebuilt (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add Content Model (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Add Content Model" }
+    },
+    {
+      "action": "verify",
+      "target": "Hero Banner card (doc step)",
+      "expected": { "within": "Modal" }
+    },
+    { "action": "click", "target": "Hero Banner card (doc step)" },
+    {
+      "action": "verify",
+      "target": "Schema tab (doc step)",
+      "expected": { "labelMatch": "Schema" }
+    },
+    { "action": "click", "target": "Schema tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "Hero Banner schema fields (doc step)",
+      "expected": {
+        "documentedStructure": [
+          ["Banner Title"],
+          ["Banner Image"],
+          ["Background Color"],
+          ["Text Color"],
+          ["Banner Description"],
+          ["Call To Action"],
+          ["Is Banner Image Full Width?"],
+          ["Banner Image Alignment"],
+          ["Content Alignment"]
+        ],
+        "exactMatch": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "id": "add-a-custom-language",
+  "project": "CMS",
+  "module": "language",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/multilingual-content/add-a-custom-language",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS"
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "More (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Languages (doc step)",
+      "expected": {
+        "labelEquals": "Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Languages (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Languages page (doc step)",
+      "expected": {
+        "labelEquals": "Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Language (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Add Language modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Add Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Custom Language option (doc step)",
+      "expected": {
+        "labelEquals": "Create Custom Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Custom Language option (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Language Name label (doc step)",
+      "expected": {
+        "labelEquals": "Language Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Language Name (doc step)",
+      "value": "Bel-{unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Language Code label (doc step)",
+      "expected": {
+        "labelEquals": "Language Code",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Language Code (doc step)",
+      "value": "BE-NE-auto-01"
+    },
+    {
+      "action": "verify",
+      "target": "Select Fallback Language label (doc step)",
+      "expected": {
+        "labelEquals": "Select Fallback Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Fallback Language dropdown (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Select Fallback Language dropdown (doc step)",
+      "value": "English - United States"
+    },
+    {
+      "action": "click",
+      "target": "English - United States option (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Add Language submit (doc step)",
+      "expected": {
+        "labelEquals": "Add",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Language submit (doc step)"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+<!--
+  DOM reference: primary split Restore button on restore taxonomy modal (opens contextual menu in restore-taxonomy-restore-menu.html).
+  Source of truth: projects/CMS/trash/selectors/module.selectors.ts
+
+  Restore taxonomy split Restore primary button (doc step):
+    .taxonomy-restore-button button.Button--primary, [data-test-id="cs-button-group"] .taxonomy-restore-button button.Button--primary
+
+  Restore taxonomy split open restore options dropdown (doc step):
+    .taxonomy-restore-button .openDropdownOnClick, [data-test-id="cs-button-group"] .taxonomy-restore-button .openDropdownOnClick,
+    .taxonomy-restore-button svg[name="CaretDown"]
+
+  Related modal shell: restore-taxonomy-modal.html (.taxonomy-restore-button wrapper on footer primary).
+
+  Term modal: same interaction on .term-restore-button (see restore-term-modal.html and Restore term split … keys in module.selectors.ts).
+-->
+<button data-test-id="cs-button" class="Button Button--primary Button--size-large Button--v2" aria-label="aria-button" type="button"><div class="flex-center"><div class="flex-v-center Button__mt-regular Button__visible">Restore<div class="openDropdownOnClick"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="chevron-toggle-icon  Icon--v2 Icon--medium" name="CaretDown" data-test-id="cs-icon"><path d="M26 12L16 22 6 12" stroke="#475161" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div></div></button>

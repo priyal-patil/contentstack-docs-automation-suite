@@ -1,0 +1,115 @@
+{
+  "id": "basic-formatting",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/basic-formatting",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Basic format entry {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    {
+      "action": "enter",
+      "target": "JSON RTE type lines for inline formatting toolbar (doc step)",
+      "value": "BoldMe\nItalicMe\nUnderlineMe\nStrikeMe\nCodeMe\nSuperMe\nSubMe"
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "BoldMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "verify", "target": "JSON RTE floating toolbar has doc inline style icons (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Bold (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "bold" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "ItalicMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Italic (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "italic" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "UnderlineMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Underline (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "underline" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "StrikeMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Strikethrough (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "strikethrough" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "CodeMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Inline code (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "inlinecode" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "SuperMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Superscript (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "superscript" }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "SubMe" }
+    },
+    { "action": "verify", "target": "JSON RTE floating formatting toolbar visible (doc step)" },
+    { "action": "click", "target": "JSON RTE floating toolbar Subscript (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE inline markup after toolbar apply (doc step)",
+      "expected": { "labelEquals": "subscript" }
+    }
+  ]
+}

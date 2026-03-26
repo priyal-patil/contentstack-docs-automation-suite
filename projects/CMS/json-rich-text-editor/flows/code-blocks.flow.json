@@ -1,0 +1,44 @@
+{
+  "id": "code-blocks",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/code-blocks",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Code blocks doc {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    { "action": "enter", "target": "JSON RTE type line for code snippet selection (doc step)", "value": "CodeSnippetWord" },
+    {
+      "action": "click",
+      "target": "JSON RTE triple-click word for toolbar (doc step)",
+      "expected": { "labelEquals": "CodeSnippetWord" }
+    },
+    { "action": "click", "target": "JSON RTE Format toolbar open (doc step)" },
+    { "action": "click", "target": "JSON RTE Format dropdown Code snippet (doc step)" },
+    { "action": "click", "target": "JSON RTE click code block area (doc step)" },
+    { "action": "click", "target": "JSON RTE code block language dropdown open (doc step)" },
+    { "action": "click", "target": "JSON RTE select JavaScript language option (doc step)" },
+    { "action": "press", "target": "JSON RTE key Enter in code block (doc step)", "value": "Enter" },
+    { "action": "press", "target": "JSON RTE key Shift Enter exit code block (doc step)", "value": "Shift+Enter" },
+    {
+      "action": "click",
+      "target": "Save entry from editor (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

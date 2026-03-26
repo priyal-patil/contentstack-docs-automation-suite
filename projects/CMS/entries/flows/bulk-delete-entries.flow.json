@@ -1,0 +1,62 @@
+{
+  "id": "bulk-delete-entries",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/bulk-delete-entries",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First entry checkbox (doc step)" },
+    { "action": "click", "target": "Second entry checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete floating button label (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delete in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete Entries modal title (doc step)",
+      "expected": {
+        "labelEquals": "Delete Entries",
+        "labelMatch": "contains",
+        "modalTitle": "Delete Entries"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Entries modal info (doc step)",
+      "expected": {
+        "labelEquals": "The selected entries will move to the Trash",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete modal button label (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delete confirm (doc step)" }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "id": "embed-entries-or-assets-part-2",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/embed-entries-or-assets",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First content type row New Entry modal (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Embed assets doc {unique}" },
+    { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Asset toolbar icon visible (doc step)",
+      "expected": {
+        "labelEquals": "Asset",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Asset toolbar open dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Choose from assets menu item (doc step)",
+      "expected": {
+        "labelEquals": "Choose from assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Choose from assets menu (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE React modal body open (doc step)",
+      "expected": {
+        "within": "Modal"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Asset",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset search (doc step)",
+      "expected": {
+        "labelEquals": "Search assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Select Asset first file row (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset Embed Type label (doc step)",
+      "expected": {
+        "labelEquals": "Embed Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset Block Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Block Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset Inline Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Inline Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset embed types visible (doc step)",
+      "expected": {
+        "labelEquals": "Block Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Select Asset Cancel button (doc step)",
+      "expected": {
+        "labelEquals": "Cancel",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Select Asset embed Block (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Add Selected Asset button label (doc step)",
+      "expected": {
+        "labelEquals": "Add Selected Asset",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Add Selected Asset (doc step)" },
+    { "action": "click", "target": "JSON RTE Asset toolbar open dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload new assets menu item (doc step)",
+      "expected": {
+        "labelEquals": "Upload new asset",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Upload new assets menu (doc step)" },
+    {
+      "action": "verify",
+      "target": "JSON RTE React modal body open (doc step)",
+      "expected": {
+        "within": "Modal"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Upload",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal create folder control (doc step)",
+      "expected": {
+        "labelEquals": "folder",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal search (doc step)",
+      "expected": {
+        "labelEquals": "Search Assets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Choose Files visible (doc step)",
+      "expected": {
+        "labelEquals": "Choose Files",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Cancel (doc step)",
+      "expected": {
+        "labelEquals": "Cancel",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "upload",
+      "target": "JSON RTE upload modal file input (doc step)",
+      "value": "./dummyData/sample.svg"
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Embed Type label (doc step)",
+      "expected": {
+        "labelEquals": "Embed Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Block Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Block Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Inline Embed label (doc step)",
+      "expected": {
+        "labelEquals": "Inline Embed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE Upload modal Insert Uploaded Images button label (doc step)",
+      "expected": {
+        "labelEquals": "Insert Uploaded Images",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "JSON RTE Insert Uploaded Images (doc step)" }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "id": "add-a-comment",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/add-a-comment",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "Comment Ready Entry {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Comment mode icon (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Comment textbox (doc step)",
+      "value": "Automation seed comment thread"
+    },
+    {
+      "action": "click",
+      "target": "Post (doc step)"
+    }
+  ]
+}
+

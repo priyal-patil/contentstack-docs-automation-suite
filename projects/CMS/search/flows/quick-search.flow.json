@@ -1,0 +1,37 @@
+{
+  "id": "quick-search",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/quick-search",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Search icon in header (doc step)",
+      "expected": { "within": "Top Bar", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Search icon in header (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entries option in Quick Search dropdown (doc step)",
+      "expected": { "labelEquals": "Entries" }
+    },
+    {
+      "action": "verify",
+      "target": "Assets option in Quick Search dropdown (doc step)",
+      "expected": { "labelEquals": "Assets" }
+    },
+    {
+      "action": "enter",
+      "target": "Quick Search input (doc step)",
+      "value": "Auto"
+    },
+    {
+      "action": "verify",
+      "target": "Entries listing page (doc step)",
+      "expected": {}
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "bulk-delete-assets",
+  "project": "CMS",
+  "module": "assets",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/bulk-delete-assets",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First asset checkbox (doc step)" },
+    { "action": "click", "target": "Second asset checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete floating button label (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delete in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delete Asset modal title (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains",
+        "modalTitle": "Delete"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Asset modal info (doc step)",
+      "expected": {
+        "labelEquals": "This will move the selected asset(s) to the Trash",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete modal button label (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delete confirm (doc step)" }
+  ]
+}
+

@@ -1,11 +1,20 @@
 import { defineConfig } from "@playwright/test";
 import path from "path";
 
+const isCI = !!process.env.CI;
+/** Set PLAYWRIGHT_HEADLESS=1 to force headless (e.g. batch CMS runs); default local runs use headed browser. */
+const useHeadless = isCI || process.env.PLAYWRIGHT_HEADLESS === "1";
+const defaultWorkers = isCI ? 2 : 1;
+const workers = Number(process.env.PW_WORKERS || defaultWorkers);
+const slowMo = Number(process.env.PW_SLOWMO || 200);
+/** Required for tests/flows.spec.ts module-parallel + serial-within-module. Set PW_FULLY_PARALLEL=0 to disable. */
+const fullyParallel = process.env.PW_FULLY_PARALLEL !== "0";
+
 export default defineConfig({
   globalSetup: "./global-setup.ts",
   testDir: "./tests",
-  fullyParallel: true,
-  workers: 4,
+  fullyParallel,
+  workers,
   retries: 0,
 
   // Some UI flows (e.g., Marketplace imports) can take several minutes.
@@ -41,9 +50,10 @@ export default defineConfig({
       testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/],
       use: {
         storageState: "auth.json",
-        headless: false,
+        headless: useHeadless,
         launchOptions: {
-          slowMo: 700,
+          slowMo,
+          args: ["--disable-dev-shm-usage", "--no-sandbox"],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",

@@ -1,0 +1,29 @@
+<!--
+  DOM reference: restore deleted term modal (Trash → Taxonomies → term row → Restore).
+  Source of truth for automation strings: projects/CMS/trash/selectors/module.selectors.ts
+
+  Restore term modal title (doc step):
+    [data-test-id="cs-modal-title-restore-term"], [data-test-id^="cs-modal-title-restore-term"]
+
+  Restore term modal description (doc step):
+    [data-test-id="cs-modal-description"]
+
+  Restore term split Restore primary button (doc step):
+    .term-restore-button button.Button--primary, .taxonomy-restore-button button.Button--primary,
+    [data-test-id="cs-button-group"] .term-restore-button button.Button--primary,
+    [data-test-id="cs-button-group"] .taxonomy-restore-button button.Button--primary
+
+  Restore term split open restore options dropdown (doc step):
+    .term-restore-button .openDropdownOnClick, .taxonomy-restore-button .openDropdownOnClick,
+    [data-test-id="cs-button-group"] .term-restore-button .openDropdownOnClick,
+    .term-restore-button svg[name="CaretDown"], .taxonomy-restore-button svg[name="CaretDown"]
+
+  Dropdown options (see restore-taxonomy-restore-menu.html pattern; labels differ for term):
+    Restore term With Entry Association menu option (doc step):
+      [role="menuitem"]:has-text("Restore with Entry Association"), li:has-text("Restore with Entry Association"), li[title="Restore with Entry Association"]
+    Restore term Without Entry Association menu option (doc step):
+      [role="menuitem"]:has-text("Restore without Entry Association"), li:has-text("Restore without Entry Association"), li[title="Restore without Entry Association"]
+    Restore term With Entry Association (doc step) (click):
+      [role="menuitem"]:has-text("Restore with Entry Association"), li[title="Restore with Entry Association"], button:has-text("Restore with Entry Association")
+-->
+<div class="ReactModal__delete"><div class="ReactModal__Content__header flex-justify"><div class="flex-v-center"><h3 title="Restore Term" data-test-id="cs-modal-title-restore-term">Restore Term</h3></div></div><div class="ReactModal__Content__body " data-test-id="cs-modal-description"><div>Do you want to restore the <b>'example'</b> term?</div></div><div class="ReactModal__Content__footer flex-right"><div class="Button__group" data-test-id="cs-button-group"><div class="term-restore-button"><div><button data-test-id="cs-button" class="Button Button--primary Button--size-large Button--v2" type="button"><div class="flex-center"><div class="flex-v-center Button__mt-regular Button__visible">Restore<div class="openDropdownOnClick"><svg name="CaretDown" data-test-id="cs-icon"></svg></div></div></div></button></div></div></div></div></div>

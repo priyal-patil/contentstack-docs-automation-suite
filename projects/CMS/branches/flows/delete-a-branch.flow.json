@@ -1,0 +1,57 @@
+{
+  "id": "delete-a-branch",
+  "project": "CMS",
+  "module": "branches",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/developers/branches/delete-a-branch",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Branches in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Branches page header (doc step)",
+      "expected": {
+        "labelEquals": "Branches",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Hover over branch row (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "click",
+      "target": "Delete icon on branch row (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Branch modal title (doc step)",
+      "expected": {
+        "modalTitle": "Delete Branch"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Branch ID input in Delete modal (doc step)",
+      "value": "automation_test_branch"
+    },
+    {
+      "action": "click",
+      "target": "Delete button in Delete Branch modal (doc step)"
+    }
+  ]
+}

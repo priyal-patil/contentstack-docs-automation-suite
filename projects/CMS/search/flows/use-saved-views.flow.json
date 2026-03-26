@@ -1,0 +1,98 @@
+{
+  "id": "use-saved-views",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/use-saved-views",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Views tab in left panel (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Views" }
+    },
+    {
+      "action": "verify",
+      "target": "Popular Views section (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Popular Views" }
+    },
+    {
+      "action": "verify",
+      "target": "Saved Views section (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Saved Views" }
+    },
+    { "action": "click", "target": "Saved Views section (doc step)" },
+    {
+      "action": "verify",
+      "target": "First saved view in list (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "First saved view in list (doc step)" },
+    {
+      "action": "verify",
+      "target": "View name dropdown in top-right (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Search bar input (doc step)", "value": "test" },
+    { "action": "click", "target": "Search submit button (doc step)" },
+    { "action": "click", "target": "View name dropdown in top-right (doc step)" },
+    {
+      "action": "verify",
+      "target": "Update the view menu item (doc step)",
+      "expected": { "labelMatch": "Update" }
+    },
+    {
+      "action": "verify",
+      "target": "Save as new view menu item (doc step)",
+      "expected": { "labelMatch": "Save as new view" }
+    },
+    {
+      "action": "verify",
+      "target": "Clear recent changes menu item (doc step)",
+      "expected": { "labelMatch": "Clear recent changes" }
+    },
+    {
+      "action": "verify",
+      "target": "Reset to all entries menu item (doc step)",
+      "expected": { "labelMatch": "Reset to all entries" }
+    },
+    { "action": "click", "target": "Clear recent changes menu item (doc step)" },
+    { "action": "click", "target": "Vertical ellipsis next to saved view (doc step)" },
+    {
+      "action": "verify",
+      "target": "Rename menu item (doc step)",
+      "expected": { "labelMatch": "Rename" }
+    },
+    {
+      "action": "verify",
+      "target": "Share menu item (doc step)",
+      "expected": { "labelMatch": "Share" }
+    },
+    {
+      "action": "verify",
+      "target": "Copy Link menu item (doc step)",
+      "expected": { "labelMatch": "Copy Link" }
+    },
+    {
+      "action": "verify",
+      "target": "View Details menu item (doc step)",
+      "expected": { "labelMatch": "View Details" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete menu item (doc step)",
+      "expected": { "labelMatch": "Delete" }
+    },
+    {
+      "action": "click",
+      "target": "Manage Saved Views: verify and perform options (doc step)"
+    }
+  ]
+}

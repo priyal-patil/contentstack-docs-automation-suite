@@ -1,0 +1,317 @@
+{
+  "id": "modular-blocks-within-global-fields",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/modular-blocks-within-global-fields",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Create New Global Field modal (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Global Field Name (doc step)",
+      "value": "GF-Modular-Blocks-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "Global field with modular blocks"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Modular Blocks (doc step)",
+      "expected": {
+        "labelEquals": "Modular Blocks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Modular Blocks (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Block (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Block Name (doc step)",
+      "value": "Car Brands"
+    },
+    {
+      "action": "click",
+      "target": "Create (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Brand Name"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Multi Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Brand Description"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "File (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Brand Logo"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Block (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Block Name (doc step)",
+      "value": "SEO Content"
+    },
+    {
+      "action": "click",
+      "target": "Create (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Multi Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Meta Description"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "SEO Title"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Block (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Block Name (doc step)",
+      "value": "Customer Enquiry Form"
+    },
+    {
+      "action": "click",
+      "target": "Create (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Customer Email"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field (inside block) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Multi Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Message Input"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Content Type Row (or builder) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Global (doc step)",
+      "expected": {
+        "labelEquals": "Global",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties title (doc step)",
+      "expected": {
+        "labelEquals": "Global Properties",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

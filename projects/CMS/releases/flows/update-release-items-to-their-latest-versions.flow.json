@@ -1,0 +1,45 @@
+{
+  "id": "update-release-items-to-their-latest-versions",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/update-release-items-to-their-latest-versions",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "Hover release row for update icon (doc step)" },
+    { "action": "click", "target": "Update all release items icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Update Release Item(s) modal title (doc step)",
+      "expected": {
+        "modalTitle": "Update Release Item(s)",
+        "labelEquals": "Update Release Item(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Update button in update release modal (doc step)",
+      "expected": {
+        "labelEquals": "Update",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Update button in update release modal (doc step)" }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "id": "working-with-entry-tabs",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/working-with-entry-tabs",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Global Field (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Global Field Name (doc step)",
+      "value": "SEO Settings-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "Global field for entry tabs"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "SEO Title"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "Entry Tabs CT-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (ct create) (doc step)",
+      "value": "Content type for entry tabs test"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Properties (Global) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "SEO Settings Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Advanced (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Show as Tab (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries page (doc step)",
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Entry Tabs CT content type row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create Entry (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Global tab (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "SEO Title (tab field) (doc step)",
+      "value": "SEO Title updated {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    }
+  ]
+}
+

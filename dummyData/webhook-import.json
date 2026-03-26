@@ -1,0 +1,18 @@
+{
+  "webhook": {
+    "name": "Imported Webhook Test",
+    "url": "https://example.com/webhook",
+    "branches": ["main"],
+    "concise_payload": false,
+    "disabled": false,
+    "headers": [],
+    "trigger_condition": {
+      "and": [
+        {
+          "module": "content_type",
+          "action": "create"
+        }
+      ]
+    }
+  }
+}

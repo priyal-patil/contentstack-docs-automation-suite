@@ -6,14 +6,88 @@
   "type": "executable",
   "use": ["login", "selectStack"],
   "steps": [
-    { "action": "click", "target": "Content Models" },
-    { "action": "click", "target": "Create New Content Type" },
-    { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
-    { "action": "enter", "target": "Name", "value": "AUTO-{unique}" },
-    { "action": "enter", "target": "Description", "value": "AUTO-{unique}" },
-    { "action": "select", "target": "Type", "value": "Single" },
-    { "action": "click", "target": "Save and proceed" },
-    { "action": "click", "target": "Insert a field" },
-    { "action": "click", "target": "Save" }
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelEquals": "Use Prebuilt", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Create New Content Type modal (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Name (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Description (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Single (Type doc step)",
+      "expected": { "labelEquals": "Single", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Multiple (Type doc step)",
+      "expected": { "labelEquals": "Multiple", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and proceed (doc step)",
+      "expected": { "labelEquals": "Save and proceed", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Name (doc step)", "value": "AUTO-{unique}" },
+    { "action": "enter", "target": "Description (doc step)", "value": "AUTO-{unique}" },
+    { "action": "select", "target": "Type (doc step)", "value": "Single" },
+    { "action": "click", "target": "Save and proceed (doc step)" },
+    {
+      "action": "verify",
+      "target": "Content Type Builder (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insert a field (doc step)",
+      "expected": { "documentedFields": ["Insert a field"], "visible": true }
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Insert a field (doc step)" },
+    { "action": "click", "target": "Save (doc step)" }
   ]
 }

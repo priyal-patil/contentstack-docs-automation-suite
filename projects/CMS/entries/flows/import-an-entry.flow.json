@@ -1,0 +1,81 @@
+{
+  "id": "import-an-entry",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/import-an-entry",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Content Type row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create Entry (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "See more (entry editor) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Import from see more (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Import Entry modal (doc step)",
+      "expected": {
+        "modalTitle": "Import Entry"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Choose a file (entry import) (doc step)"
+    },
+    {
+      "action": "upload",
+      "target": "Choose a file (entry import) (doc step)",
+      "value": "./dummyData/sample.json"
+    },
+    {
+      "action": "click",
+      "target": "Import confirm (entry modal) (doc step)"
+    }
+  ]
+}
+

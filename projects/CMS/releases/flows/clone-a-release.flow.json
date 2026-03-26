@@ -1,0 +1,47 @@
+{
+  "id": "clone-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/clone-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "Hover release row for clone icon (doc step)" },
+    { "action": "click", "target": "Clone release icon (doc step)" },
+    {
+      "action": "verify",
+      "target": "Clone Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Clone Release",
+        "labelEquals": "Clone Release",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Release Name input (doc step)", "value": "APPEND: cloned" },
+    { "action": "enter", "target": "Release Description input (doc step)", "value": "APPEND: cloned" },
+    {
+      "action": "verify",
+      "target": "Clone button in clone release modal (doc step)",
+      "expected": {
+        "labelEquals": "Clone",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Clone button in clone release modal (doc step)" }
+  ]
+}

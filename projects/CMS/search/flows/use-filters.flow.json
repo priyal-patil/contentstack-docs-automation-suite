@@ -1,0 +1,56 @@
+{
+  "id": "use-filters",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/use-filters",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Filters tab in left panel (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Filters" }
+    },
+    { "action": "click", "target": "Filters tab in left panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Content Types filter section (doc step)",
+      "expected": { "labelEquals": "Content Types" }
+    },
+    {
+      "action": "verify",
+      "target": "Manage Filters button (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Manage Filters" }
+    },
+    { "action": "click", "target": "Manage Filters button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Manage Filters modal options (doc step)",
+      "expected": {
+        "modalTitle": "Manage Filters",
+        "documentedOptions": [
+          "Content Types",
+          "Taxonomies",
+          "Select Variant(s)",
+          "Publish Status",
+          "Published At",
+          "Published By",
+          "Languages",
+          "Modified At",
+          "Last Modified By",
+          "Created At",
+          "Created By",
+          "Workflow Stages",
+          "Tags"
+        ]
+      }
+    }
+  ]
+}

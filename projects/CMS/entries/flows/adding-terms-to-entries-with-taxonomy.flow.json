@@ -1,0 +1,99 @@
+{
+  "id": "adding-terms-to-entries-with-taxonomy",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/adding-terms-to-entries-with-taxonomy",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "Taxonomy CT-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (ct create) (doc step)",
+      "value": "Content type with taxonomy field"
+    },
+    {
+      "action": "click",
+      "target": "Single (Type) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Taxonomy (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Taxonomy CT row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Create Entry (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Taxonomy field (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Select Term(s) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First term (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Apply (doc step)"
+    }
+  ]
+}
+

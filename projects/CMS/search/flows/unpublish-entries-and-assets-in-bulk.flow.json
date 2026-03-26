@@ -1,0 +1,63 @@
+{
+  "id": "unpublish-entries-and-assets-in-bulk",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/unpublish-entries-and-assets-in-bulk",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "enter",
+      "target": "Search bar input (doc step)",
+      "value": "Auto"
+    },
+    { "action": "click", "target": "Search submit button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    },
+    { "action": "click", "target": "First entry checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Unpublish button on floating bar (doc step)",
+      "expected": { "labelEquals": "Unpublish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Unpublish in floating panel (doc step)" },
+    {
+      "action": "verify",
+      "target": "Unpublish Entries modal (doc step)",
+      "expected": { "labelMatch": "Unpublish Entr", "modalTitle": "Unpublish Entr" }
+    },
+    {
+      "action": "verify",
+      "target": "Select Environment(s) (doc step)",
+      "expected": { "labelEquals": "Select Environment(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Select Language(s) (doc step)",
+      "expected": { "labelEquals": "Select Language(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Unpublish Now or Later (doc step)",
+      "expected": { "labelMatch": "Now" }
+    },
+    {
+      "action": "verify",
+      "target": "Send (doc step)",
+      "expected": { "labelMatch": "Send" }
+    },
+    { "action": "click", "target": "First Environment checkbox (doc step)" },
+    { "action": "click", "target": "Send (doc step)" }
+  ]
+}

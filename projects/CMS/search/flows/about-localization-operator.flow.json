@@ -1,0 +1,57 @@
+{
+  "id": "about-localization-operator",
+  "project": "CMS",
+  "module": "search",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/search-content/about-localization-operator",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Advanced Search button (doc step)",
+      "expected": { "labelMatch": "Advanced Search" }
+    },
+    { "action": "click", "target": "Advanced Search button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Match All Conditions (doc step)",
+      "expected": { "labelMatch": "Match All Conditions" }
+    },
+    { "action": "click", "target": "Content Type or Field dropdown (doc step)" },
+    { "action": "click", "target": "Language option in Content Type menu (doc step)" },
+    { "action": "click", "target": "Operator dropdown (doc step)" },
+    { "action": "click", "target": "Matches operator option (doc step)" },
+    { "action": "click", "target": "Value dropdown in Advanced Search (doc step)" },
+    { "action": "click", "target": "French language option (doc step)" },
+    { "action": "click", "target": "Operator dropdown (doc step)", "nth": 1 },
+    {
+      "action": "verify",
+      "target": "Localized In operator option (doc step)",
+      "expected": { "labelMatch": "Localized In" }
+    },
+    {
+      "action": "verify",
+      "target": "Not Localized In operator option (doc step)",
+      "expected": { "labelMatch": "Not Localized In" }
+    },
+    { "action": "click", "target": "Localized In operator option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search button in Advanced Search (doc step)",
+      "expected": { "labelMatch": "Search" }
+    },
+    { "action": "click", "target": "Search button in Advanced Search (doc step)" },
+    {
+      "action": "verify",
+      "target": "Search results displayed (doc step)",
+      "expected": {}
+    }
+  ]
+}

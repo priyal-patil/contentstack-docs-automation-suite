@@ -155,6 +155,8 @@ async function main() {
   console.log(`✅ Wrote: ${combinedCsv}`);
   // eslint-disable-next-line no-console
   console.log(`✅ Wrote: ${summaryMd}`);
+  // eslint-disable-next-line no-console
+  console.log(`Tip: npx ts-node scripts/generateUnifiedReport.ts --reportDir ${reportDir}`);
 }
 
 main().catch((e) => {

@@ -1,0 +1,235 @@
+{
+  "id": "group-fields-within-global-fields",
+  "project": "CMS",
+  "module": "global-field",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/global-field/group-fields-within-global-fields",
+  "type": "executable",
+  "use": [
+    "login",
+    "selectStack"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Create New Global Field modal (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Global Field Name (doc step)",
+      "value": "Banner-{unique}"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Group (doc step)",
+      "expected": {
+        "labelEquals": "Group",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Group (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Group Properties title (doc step)",
+      "expected": {
+        "labelEquals": "Group Properties",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Banner"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a sub-field (Group) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Banner Heading"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a sub-field (Group) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "JSON Rich Text Editor (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Banner Detail"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a sub-field (Group) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "File (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Banner Image"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a sub-field (Group) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Link (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Helpful Links"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Content Type Row (or builder) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "verify",
+      "target": "Global (doc step)",
+      "expected": {
+        "labelEquals": "Global",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Global (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Properties title (doc step)",
+      "expected": {
+        "labelEquals": "Global Properties",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Global Field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Any Global Field row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close (doc step)"
+    }
+  ]
+}

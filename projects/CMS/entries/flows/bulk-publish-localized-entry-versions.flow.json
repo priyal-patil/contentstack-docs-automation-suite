@@ -1,0 +1,44 @@
+{
+  "id": "bulk-publish-localized-entry-versions",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/bulk-publish-localized-entry-versions",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    { "action": "click", "target": "Ensure Master Locale Selected (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish (bottom-right) (doc step)",
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish (bottom-right) (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish queue page indicator (doc step)",
+      "expected": {
+        "labelEquals": "Publish Queue",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

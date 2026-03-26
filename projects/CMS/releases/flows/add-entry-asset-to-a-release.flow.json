@@ -1,0 +1,63 @@
+{
+  "id": "add-entry-asset-to-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/add-entry-asset-to-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    { "action": "click", "target": "See more (entry editor) (doc step)" },
+    { "action": "click", "target": "Add to Release from see more (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add to Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Add to Release",
+        "labelEquals": "Add to Release",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add to Release table Name header (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add to Release table Description header (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add to Release table Items header (doc step)",
+      "expected": { "labelEquals": "Items", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add to Release table Modified At header (doc step)",
+      "expected": { "labelEquals": "Modified At", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "First release row in Add to Release modal (doc step)" },
+    { "action": "verify", "target": "Add for Publishing button in Add to Release modal (doc step)" },
+    { "action": "verify", "target": "Add for Unpublishing button in Add to Release modal (doc step)" },
+    { "action": "click", "target": "Add for Publishing button in Add to Release modal (doc step)" },
+    { "action": "verify", "target": "Add With References button (doc step)" },
+    { "action": "verify", "target": "Add Without References button (doc step)" },
+    { "action": "click", "target": "Add With References button (doc step)" }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "id": "restore-a-deleted-asset",
+  "project": "CMS",
+  "module": "trash",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/manage-trash/restore-a-deleted-asset",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "preflight": {
+    "runFlowWhenTrashDeletedAssetsEmpty": "delete-an-asset"
+  },
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Trash in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Trash",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Trash in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Trash Assets tab (doc step)",
+      "expected": {
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Trash Assets tab (doc step)" },
+    { "action": "verify", "target": "Trash date range filter DATE (doc step)" },
+    {
+      "action": "click",
+      "target": "Trash date range filter DATE click (doc step)",
+      "timeoutMs": 30000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Trash Filters section header (doc step)",
+      "expected": {
+        "within": "Trash filters panel",
+        "withinStrict": false,
+        "labelEquals": "Filters",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Trash Deleted By filter section (doc step)",
+      "expected": {
+        "within": "Trash filters panel",
+        "withinStrict": false,
+        "labelEquals": "Deleted By",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Trash Deleted By filter checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Trash Reset filters button (doc step)",
+      "expected": {
+        "within": "Trash filters panel",
+        "withinStrict": false,
+        "labelEquals": "Reset filters",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Trash Reset filters button (doc step)" },
+    { "action": "hover", "target": "Trash deleted asset file row to restore hover (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Trash asset row Restore action visible after hover (doc step)",
+      "timeoutMs": 8000,
+      "expected": {
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Trash asset row Restore action after hover (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Restore deleted asset modal title (doc step)",
+      "timeoutMs": 60000,
+      "optional": true,
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Once done click Restore (deleted asset modal) (doc step)",
+      "timeoutMs": 60000,
+      "optional": true,
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Once done click Restore (deleted asset editor) (doc step)",
+      "timeoutMs": 60000,
+      "optional": true,
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Restore deleted asset modal Restore button (doc step)", "timeoutMs": 60000, "optional": true }
+  ]
+}

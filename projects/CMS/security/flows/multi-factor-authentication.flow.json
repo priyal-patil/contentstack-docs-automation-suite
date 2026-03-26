@@ -1,0 +1,101 @@
+{
+  "id": "multi-factor-authentication",
+  "project": "CMS",
+  "module": "security",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/multi-factor-authentication",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "User Profile icon (doc step)",
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
+        "labelEquals": "profile",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "User Profile icon (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Profile Settings option label (doc step)",
+      "expected": {
+        "labelEquals": "Profile Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Profile Settings option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Security tab label (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Security",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Security tab in profile left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Multi-Factor Authentication section label (doc step)",
+      "expected": {
+        "labelEquals": "Multi-Factor Authentication",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "MFA Add or Enable button (doc step)"
+    },
+    { "action": "click", "target": "MFA Enable button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Set Up MFA modal title (doc step)",
+      "expected": {
+        "modalTitle": "Set Up Multi-Factor Authentication",
+        "labelEquals": "Set Up Multi-Factor Authentication",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Set Up MFA modal Continue button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Authenticator App modal title (doc step)",
+      "expected": {
+        "labelEquals": "Authenticator App",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Authenticator App modal Next button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Enter verification code label (doc step)",
+      "expected": {
+        "labelEquals": "Enter verification code",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "MFA verification code input (doc step)"
+    },
+    {
+      "action": "warn",
+      "target": "Enter 6-digit code and Verify (doc step)",
+      "value": "External step: Enter the 6-digit verification code from your authenticator app and click Verify. Cannot automate TOTP code entry."
+    },
+    {
+      "action": "warn",
+      "target": "Backup codes: Copy or Download (doc step)",
+      "value": "External steps: Choose one of the following—Click Copy codes to copy the codes, or Click Download as .txt file to save them locally. Cannot automate backup code handling."
+    },
+    {
+      "action": "warn",
+      "target": "Backup codes: Done (doc step)",
+      "value": "External step: Click Done after copying or downloading your backup codes. Cannot automate."
+    }
+  ]
+}

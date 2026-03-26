@@ -1,0 +1,46 @@
+{
+  "id": "deploy-a-release",
+  "project": "CMS",
+  "module": "releases",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/create-and-manage-releases/deploy-a-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Releases (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Releases list (doc step)" },
+    { "action": "click", "target": "First release in left nav (doc step)" },
+    { "action": "click", "target": "Deploy button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Deploy Release modal title (doc step)",
+      "expected": {
+        "modalTitle": "Deploy Release",
+        "labelEquals": "Deploy Release",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "First deployment environment checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "Deploy button in deploy release modal (doc step)",
+      "expected": {
+        "labelEquals": "Deploy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Deploy button in deploy release modal (doc step)" }
+  ]
+}
