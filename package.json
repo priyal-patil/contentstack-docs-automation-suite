@@ -39,7 +39,11 @@
     "report:dashboard": "ts-node scripts/generateDashboardReport.ts",
     "report:unified": "ts-node scripts/generateUnifiedReport.ts",
     "test:all-and-report": "npm run sync:docs-urls && playwright test tests/flows.spec.ts tests/docs-audit.spec.ts; npm run report:dashboard",
-    "test:all-and-report:notify": "npm run test:all-and-report && open reports/latest/dashboard.html && osascript -e 'display notification \"Dashboard: reports/latest/dashboard.html\" with title \"Automation run finished\"'"
+    "test:all-and-report:notify": "npm run test:all-and-report && open reports/latest/dashboard.html && osascript -e 'display notification \"Dashboard: reports/latest/dashboard.html\" with title \"Automation run finished\"'",
+    "slack:ping": "ts-node scripts/slackFromXlsx.ts",
+    "slack:test": "ts-node scripts/urlRunSummaryAndSlack.ts --slack-test",
+    "slack:url-summary": "ts-node scripts/urlRunSummaryAndSlack.ts",
+    "slack:url-summary:dry": "ts-node scripts/urlRunSummaryAndSlack.ts --dry-run"
   },
   "keywords": [],
   "author": "",
