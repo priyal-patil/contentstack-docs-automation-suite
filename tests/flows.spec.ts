@@ -193,7 +193,10 @@ const flows = loadFlows().sort((a, b) => {
     if (id === "custom-preview-urls") return 117;
     if (id === "about-workflows") return 118;
     if (id === "about-workflow-stages") return 119;
-    if (id === "add-workflows-and-stages") return 120;
+    if (id === "add-a-publish-rule") return 120;
+    if (id === "update-a-publish-rule") return 121;
+    if (id === "delete-a-publish-rule") return 122;
+    if (id === "add-workflows-and-stages") return 123;
     return 0;
   };
   const fd = flowOrder(a) - flowOrder(b);
@@ -204,6 +207,16 @@ const flows = loadFlows().sort((a, b) => {
   const bKey = `${b.project || ""}::${b.module || ""}::${b.id || ""}`;
   return aKey.localeCompare(bKey);
 });
+
+/** Run in serial group — not in the main parallel loop (update/delete need a rule from add on the same stack). */
+const PUBLISH_RULE_CHAIN_SERIAL: string[] = [
+  "add-a-publish-rule",
+  "update-a-publish-rule",
+  "delete-a-publish-rule",
+];
+
+/** Create → update → delete same custom role (shared UUID in role name; see core/usersRolesChain.ts). */
+const ROLES_CHAIN_SERIAL: string[] = ["create-a-role", "update-a-role", "delete-a-role"];
 
 // After all flow tests: write doc-step failures for technical writers (which URL failed at which step, element not found, etc.)
 test.afterAll(() => {
@@ -276,7 +289,12 @@ test.afterAll(() => {
       try {
         execSync(`open "${reportPaths[0]}"`, { stdio: "ignore" });
       } catch {
-        // ignore if open fails (e.g. headless/CI)
+        // Set STRICT_FLOW_REPORT_OPEN=1 to fail the run when `open` fails (e.g. headed local run must surface the HTML report).
+        if (process.env.STRICT_FLOW_REPORT_OPEN === "1") {
+          throw new Error(
+            `Could not open flow report (macOS "open" failed). Set OPEN_FLOW_REPORT=false to skip, or open manually:\n${reportPaths[0]}`
+          );
+        }
       }
     }
   }
@@ -284,35 +302,28 @@ test.afterAll(() => {
   clearDocStepFailures();
 });
 
-/** Flows in global sort order, grouped for serial execution within each project/module/stage. */
-function groupFlowsByProjectModuleStage(flowList: any[]): Map<string, any[]> {
-  const m = new Map<string, any[]>();
-  for (const flow of flowList) {
-    const projectName = flow.project || "UnknownProject";
-    const moduleName = flow.module || "unknown-module";
-    const stage = flow.stage || "main";
-    const key = `${projectName}::${moduleName}::${stage}`;
-    if (!m.has(key)) m.set(key, []);
-    m.get(key)!.push(flow);
-  }
-  return m;
-}
+/**
+ * One test per flow in global dependency order (see `flows` sort above).
+ * Most flows run in parallel; `fullyParallel` means sort order is not global execution order — use `--workers=1` for that.
+ * Exception: add → update → delete publish rule run in a serial subgroup on the same stack (if add fails, later steps are skipped).
+ */
+test.describe("Flow suite (all flows; failures do not skip remaining URLs)", () => {
+  // Title must not repeat flow ids — otherwise -g "delete-a-publish-rule" matches this describe and runs all 3 tests.
+  test.describe.serial(
+    "CMS workflows: publish rules chain (serial)",
+    () => {
+      for (const id of PUBLISH_RULE_CHAIN_SERIAL) {
+        const flow = flows.find((f) => f.id === id);
+        if (!flow) continue;
 
-const flowGroups = groupFlowsByProjectModuleStage(flows);
+        const projectName = flow.project || "UnknownProject";
+        const moduleName = flow.module || "unknown-module";
+        const stage = flow.stage || "main";
+        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+        const testTitle = `Project=${projectName} Module=${moduleName} Stage=${stage} ${flowId}`;
 
-test.describe.parallel("Flow suite (parallel across modules, serial within each module/stage)", () => {
-  for (const [, groupFlows] of flowGroups) {
-    const first = groupFlows[0];
-    const projectName = first.project || "UnknownProject";
-    const moduleName = first.module || "unknown-module";
-    const stage = first.stage || "main";
-
-    test.describe.serial(`Project=${projectName} Module=${moduleName} Stage=${stage}`, () => {
-      for (const flow of groupFlows) {
-        const testName = flow.id || path.basename(flow.source || "unknown-flow");
-
-        test(testName, async ({ browser }) => {
-          ranFlowIds.add(flow.id || testName);
+        test(testTitle, async ({ browser }) => {
+          ranFlowIds.add(flow.id || flowId);
           const context = await browser.newContext({ storageState: "auth.json" });
           const page = await context.newPage();
 
@@ -321,6 +332,48 @@ test.describe.parallel("Flow suite (parallel across modules, serial within each 
           await context.close();
         });
       }
+    }
+  );
+
+  // One test body so core/usersRolesChain.ts singleton survives create → update → delete (avoid per-test isolation dropping the shared UUID).
+  test.describe.serial("CMS users-and-roles: role lifecycle chain (serial)", () => {
+    test("create-a-role → update-a-role → delete-a-role", async ({ browser }) => {
+      test.setTimeout(900_000);
+      for (const id of ROLES_CHAIN_SERIAL) {
+        const flow = flows.find((f) => f.id === id);
+        if (!flow) continue;
+        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+        ranFlowIds.add(flow.id || flowId);
+        const context = await browser.newContext({ storageState: "auth.json" });
+        const page = await context.newPage();
+        await executeFlow(page, flow);
+        await context.close();
+      }
+    });
+  });
+
+  for (const flow of flows) {
+    const fid = String(flow.id || "");
+    if (PUBLISH_RULE_CHAIN_SERIAL.includes(fid)) continue;
+    if (ROLES_CHAIN_SERIAL.includes(fid)) continue;
+
+    const projectName = flow.project || "UnknownProject";
+    const moduleName = flow.module || "unknown-module";
+    const stage = flow.stage || "main";
+    const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+    const testTitle = `Project=${projectName} Module=${moduleName} Stage=${stage} ${flowId}`;
+
+    test(testTitle, async ({ browser }) => {
+      if (flowId === "workflows-use-cases") {
+        test.setTimeout(900_000);
+      }
+      ranFlowIds.add(flow.id || flowId);
+      const context = await browser.newContext({ storageState: "auth.json" });
+      const page = await context.newPage();
+
+      await executeFlow(page, flow);
+
+      await context.close();
     });
   }
 });

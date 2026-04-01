@@ -55,14 +55,25 @@ function loadCmsFlowMeta(root: string): FlowMeta[] {
   return out;
 }
 
+function flowIdFromSpecTitle(title: string): string {
+  const t = String(title || "").trim();
+  if (/Project=CMS\b/.test(t)) {
+    const parts = t.split(/\s+/).filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : t;
+  }
+  return t;
+}
+
 function collectFlowResults(flowsResults: any): FlowResultRow[] {
   const rows: FlowResultRow[] = [];
   const walkSuite = (suite: any, inCms: boolean) => {
     const suiteTitle = String(suite?.title || "");
     const hereIsCms = inCms || suiteTitle.includes("Project=CMS");
     for (const spec of suite?.specs || []) {
-      if (!hereIsCms) continue;
-      const id = String(spec?.title || "");
+      const specTitle = String(spec?.title || "");
+      const specIsCms = /Project=CMS\b/.test(specTitle);
+      if (!hereIsCms && !specIsCms) continue;
+      const id = flowIdFromSpecTitle(specTitle);
       for (const t of spec?.tests || []) {
         const results = Array.isArray(t?.results) ? t.results : [];
         const failed = results.find((x: any) => x?.status === "failed" || x?.status === "timedOut");

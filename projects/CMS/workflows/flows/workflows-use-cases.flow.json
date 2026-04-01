@@ -1,0 +1,327 @@
+{
+  "id": "workflows-use-cases",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/workflows-use-cases",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains",
+        "within": "Left Navigation",
+        "withinStrict": true
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains",
+        "within": "Left Navigation",
+        "withinStrict": true
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Workflow Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Workflows tab selected Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Workflow", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Rules tab Workflow Settings (doc step)",
+      "timeoutMs": 30000,
+      "expected": { "labelEquals": "Publish Rules", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "New Workflow header button (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Workflow", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Workflow header button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Workflow Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow name input (doc step)",
+      "value": "Doc workflows use case WF {unique}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Description label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow description input (doc step)",
+      "value": "Doc Workflows Use Case 1 — media company workflow and publish rule.",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Scope label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Scope", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Workflow All Content types scope option (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow add first stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow first stage Stage name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Stage name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow first stage name input (doc step)",
+      "value": "Draft",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow first stage Description label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow first stage description input (doc step)",
+      "value": "This is the first draft stage.",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow first stage color picker (doc step)",
+      "timeoutMs": 60000,
+      "expected": {}
+    },
+    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow add second stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow second stage Stage name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Stage name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow second stage name input (doc step)",
+      "value": "Ready for Review",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow second stage Description label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow second stage description input (doc step)",
+      "value": "This is the review stage.",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage index 1 color picker (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color template Orange (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color picker modal Choose button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow second stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow add second stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow third stage name input (doc step)",
+      "value": "Needs Changes",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Workflow third stage description input (doc step)",
+      "value": "This is the second draft stage.",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage index 2 color picker (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color template Yellow (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color picker modal Choose button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow third stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow add second stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow fourth stage name input (doc step)",
+      "value": "SEO Tagging",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Workflow fourth stage description input (doc step)",
+      "value": "This is the SEO tagging stage.",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage index 3 color picker (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color template Green (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color picker modal Choose button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow fourth stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow add second stage (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow fifth stage name input (doc step)",
+      "value": "Complete",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Workflow fifth stage description input (doc step)",
+      "value": "This is the complete stage.",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage index 4 color picker (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color template Purple (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow color picker modal Choose button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow fifth stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow first stage Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow Specific stages option (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 Draft next stage token (doc step)",
+      "value": "Ready for Review",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage Specific users roles move option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow UC1 Draft move role Content Writer (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow stage index 1 Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 1 parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 1 transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow Specific stages option (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 Ready for Review next stage token 1 (doc step)",
+      "value": "Draft",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 Ready for Review next stage token 2 (doc step)",
+      "value": "Needs Changes",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 Ready for Review next stage token 3 (doc step)",
+      "value": "SEO Tagging",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage Specific users roles move option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow UC1 Ready for Review move role Reviewer (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow second stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow stage index 2 Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 2 parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 2 transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow Specific stages option (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 Needs Changes next stage token (doc step)",
+      "value": "Ready for Review",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage Specific users roles move option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow UC1 Needs Changes move role Content Writer (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow third stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow stage index 3 Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 3 parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 3 transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow Specific stages option (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "enter",
+      "target": "Workflow UC1 SEO Tagging next stage token (doc step)",
+      "value": "Complete",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow stage Specific users roles move option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow UC1 SEO Tagging move role SEO Team (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow fourth stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Workflow stage index 4 Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 4 parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage index 4 transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage All stages option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow stage All users roles move option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow fifth stage Done button (doc step)", "timeoutMs": 60000 },
+
+    { "action": "click", "target": "Enable Workflow toggle switch (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow editor Save button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Workflow editor Save button (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "verify",
+      "target": "Workflow save success toast (doc step)",
+      "timeoutMs": 120000,
+      "expected": {}
+    },
+
+    { "action": "click", "target": "Publish Rules tab Workflow Settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Workflow Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "New Publish Rule header button (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Publish Rule", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Publish Rule header button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Rule Details page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Rule Details", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Publish rule Specific Language(s) option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule locale English United States option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule Action Publish radio (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule Environment Production option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule workflow stage Complete option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "use-task-filter",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/use-task-filter",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Tasks icon beside Help in top bar (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Tasks page Filters heading in left sidebar (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Filters",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Task filter panel section headings match use task filter doc (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Tasks filter Action values Approved Pending Rejected in left sidebar (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

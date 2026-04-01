@@ -1,5 +1,6 @@
 import path from "path";
 import fse from "fs-extra";
+import { flowIdFromPlaywrightSpecTitle, projectFromPlaywrightSpecTitle } from "./parseFlowSpecTitle";
 
 type CombinedRow = {
   kind: "doc_only" | "flow";
@@ -50,6 +51,11 @@ function flattenPlaywrightJson(root: any): CombinedRow[] {
 
     for (const spec of suite?.specs || []) {
       const specTitle = String(spec?.title || "");
+      const projectForRow = projectFromPlaywrightSpecTitle(specTitle) || projectHere;
+      const flowId =
+        projectFromPlaywrightSpecTitle(specTitle) !== undefined
+          ? flowIdFromPlaywrightSpecTitle(specTitle)
+          : specTitle || "unknown-flow";
       for (const t of spec?.tests || []) {
         const finalResult = (t?.results || [])[0] || {};
         const status = mapPwStatus(finalResult?.status || t?.status);
@@ -61,8 +67,8 @@ function flattenPlaywrightJson(root: any): CombinedRow[] {
 
         out.push({
           kind: "flow",
-          project: projectHere || "Unknown",
-          id: specTitle || t?.title || "unknown-flow",
+          project: projectForRow || "Unknown",
+          id: flowId || String(t?.title || "unknown-flow"),
           source: file,
           status,
         });

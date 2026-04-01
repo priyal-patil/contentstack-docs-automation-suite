@@ -28,6 +28,9 @@ env:
   CI: "true"
   # Isolate this run’s reports (Playwright JSON + unified output)
   REPORT_DIR: ${{ github.workspace }}/reports/run-${{ github.run_id }}
+  # Slack message header: "Nightly Docs-QA Audit: <label>" (override per repo / matrix)
+  SLACK_PROJECT_LABEL: CMS
+  SLACK_TIMEZONE: UTC
 
 jobs:
   test-and-report:
@@ -65,7 +68,8 @@ jobs:
             tests/docs-audit.spec.ts \
             tests/flows.spec.ts \
             --project=default \
-            --project=docs-audit
+            --project=docs-audit \
+            --project=flows
 
       - name: Generate unified report
         if: always()
@@ -96,6 +100,8 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           RUN_ID: ${{ github.run_id }}
+          SLACK_PROJECT_LABEL: ${{ env.SLACK_PROJECT_LABEL }}
+          SLACK_TIMEZONE: ${{ env.SLACK_TIMEZONE }}
         run: node scripts/ci/slackUnifiedNotify.cjs
 
       - name: Fail job if Playwright tests failed

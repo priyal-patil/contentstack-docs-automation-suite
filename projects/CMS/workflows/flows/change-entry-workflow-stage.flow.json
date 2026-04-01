@@ -1,0 +1,148 @@
+{
+  "id": "change-entry-workflow-stage",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/change-entry-workflow-stage",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab icon (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Entry editor right sidebar",
+        "withinStrict": true
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry editor Status tab icon (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Status panel title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Entry Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Details section heading in Entry Status panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Workflow Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Current stage assignees due date under Workflow Details in Entry Status panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Change link visible beside workflow stage in Workflow Details Status panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Change link beside workflow stage in Workflow Details Status panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Workflow Settings section heading in Entry Status panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Entry Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Set Workflow Stage label in Entry Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Set Workflow Stage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Set Due Date label in Entry Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Set Due Date",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Assign to label in Entry Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Assign to",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Notify via Email label in Entry Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Notify via Email",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Comment label in Entry Workflow Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Add Comment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Update button in Entry Workflow Settings Status panel (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

@@ -24,7 +24,7 @@ START_ISO="$(date -Iseconds 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")"
 echo "{\"startedAt\":\"$START_ISO\",\"reportDir\":\"$REPORT_DIR\",\"mode\":\"cms-headless\"}" > "$REPORT_DIR/run-meta.json"
 
 export PW_SLOWMO="${PW_SLOWMO:-0}"
-# Parallel across modules (flows.spec.ts); cap if your machine struggles (e.g. PW_WORKERS=4).
+# Flow tests use --project=flows (not default). Cap workers if needed (e.g. PW_WORKERS=4).
 export PW_WORKERS="${PW_WORKERS:-6}"
 # Allow disabling parallel test dispatch: PW_FULLY_PARALLEL=0
 export PW_FULLY_PARALLEL="${PW_FULLY_PARALLEL:-1}"
@@ -38,7 +38,7 @@ export DOCS_URLS_CSV="$ROOT/data/cms-urls.csv"
 
 RUN_EXIT=0
 set +e
-npx playwright test tests/flows.spec.ts -g "Project=CMS" --project=default 2>&1 | tee "$REPORT_DIR/cms-playwright.log"
+npx playwright test tests/flows.spec.ts -g "Project=CMS" --project=flows 2>&1 | tee "$REPORT_DIR/cms-playwright.log"
 RUN_EXIT=${PIPESTATUS[0]}
 set -e
 

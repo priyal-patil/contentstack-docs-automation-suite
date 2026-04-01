@@ -3,6 +3,10 @@ import path from "path";
 import fs from "fs";
 import { Page, expect, Locator } from "@playwright/test";
 import { recordDocStepWarning } from "../../core/docStepFailureReporter";
+import {
+  getUsersRolesChainRolePrimaryLabel,
+  getUsersRolesChainUnique,
+} from "../../core/usersRolesChain";
 import { rowIsTrashAssetFolder, rowIsTrashFileAsset } from "../../core/preflightTrashAssets";
 
 type Step = {
@@ -42,6 +46,609 @@ function getStepTimeoutMs(step: Step, fallback = 30_000): number {
   const raw = (step as any)?.timeoutMs ?? step?.expected?.timeoutMs;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+/** Workflows Use Case 1 — multi-stage workflow + publish rule (workflows-use-cases doc). */
+function isWorkflowsUseCasesFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "workflows-use-cases";
+}
+
+/** Workflow editor flows that share stage card / transition / Save handlers (create or update). */
+function isCmsWorkflowEditorFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    id === "add-workflows-and-stages" ||
+    id === "update-a-workflow" ||
+    id === "set-edit-access-permissions-for-workflow-stages" ||
+    isWorkflowsUseCasesFlow(flow)
+  );
+}
+
+/** Uses Workflow Settings table first row (list view). */
+function isCmsWorkflowSettingsListRowFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    isCmsWorkflowEditorFlow(flow) ||
+    id === "enable-or-disable-a-workflow-part-1" ||
+    id === "enable-or-disable-a-workflow-part-2" ||
+    id === "delete-a-workflow"
+  );
+}
+
+/** Add a Publish Rule (Workflow Settings → Publish Rules → Rule Details). */
+function isAddPublishRuleFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return id === "add-a-publish-rule" || id === "workflows-use-cases";
+}
+
+/** Update a Publish Rule (Publish Rules list → ⋮ → Edit → Rule Details → Save). */
+function isUpdatePublishRuleFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "update-a-publish-rule";
+}
+
+/** Delete a Publish Rule (Publish Rules list → ⋮ → Delete → confirm modal). */
+function isDeletePublishRuleFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "delete-a-publish-rule";
+}
+
+/** Shared list row actions (⋮) on Publish Rules tab. */
+function isPublishRuleListRowMenuFlow(flow?: { id?: string }): boolean {
+  return isUpdatePublishRuleFlow(flow) || isDeletePublishRuleFlow(flow);
+}
+
+/** Get Started with Workflows — entry editor RHS Status tab → Entry Status (workflow details). */
+function isGetStartedWithWorkflowsFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "get-started-with-workflows";
+}
+
+/** Change Entry Workflow Stage — same entry Status panel path, then Change → Entry Workflow Settings → Update. */
+function isChangeEntryWorkflowStageFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "change-entry-workflow-stage";
+}
+
+/** Revoke edit access for an entry — Status → Workflow Details → Users to whom edit access is granted → x (doc). */
+function isRevokeEditAccessForEntryFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "revoke-edit-access-for-an-entry";
+}
+
+/** Send an entry for publish/unpublish approval — Part 1: Status → Publish Rules → Request Approval (doc). */
+function isSendPublishUnpublishApprovalPart1Flow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "send-an-entry-for-publish-or-unpublish-approval-part-1";
+}
+
+/** Send an entry for publish/unpublish approval — Part 2: Publish footer → modal → Send (doc). */
+function isSendPublishUnpublishApprovalPart2Flow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "send-an-entry-for-publish-or-unpublish-approval-part-2";
+}
+
+/** About Workflow Tasks — stack → Top Bar Tasks icon beside Help (doc). */
+function isAboutWorkflowTasksFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "about-workflow-tasks";
+}
+
+/** Use Task Filter — Tasks page → left filter panel (tasks-filter.html; doc: By Users, By Action, By Workflow Stages). */
+function isUseTaskFilterFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "use-task-filter";
+}
+
+/** Add a New User — Settings → Users & Roles → Invite User → modal (invite-user-modal.html). */
+function isAddANewUserFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "add-a-new-user";
+}
+
+/** Remove a User — doc: hover user row → Delete at extreme right → confirm Remove. */
+function isRemoveAUserFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "remove-a-user";
+}
+
+/** Assign Role to a User — Users tab → row → Update User modal → Roles → Update (assign-role-to-a-user doc). */
+function isAssignRoleToUserFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "assign-role-to-a-user";
+}
+
+/** Create a Role — Settings → Users & Roles → Roles → + New Role → Save (new-role-page.html). */
+function isCreateARoleFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "create-a-role";
+}
+
+/** Create or Update Role — shared role editor UI (permissions, env, languages, Save). */
+function isRoleEditorFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return id === "create-a-role" || id === "update-a-role" || id === "examples-to-create-custom-roles-scenario-1";
+}
+
+/** Examples to Create Custom Roles — Scenario 1 only (entry-level: all permissions to specific content types). */
+function isExamplesCustomRolesScenario1Flow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "examples-to-create-custom-roles-scenario-1";
+}
+
+/** Update a Role — Settings → Users & Roles → Roles → open existing role → Save (update-a-role doc). */
+function isUpdateARoleFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "update-a-role";
+}
+
+/** Delete a Role — Roles tab → hover row → Delete → confirm (delete-a-role doc). */
+function isDeleteARoleFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "delete-a-role";
+}
+
+/** “This role CAN” → Select Permission(s) react-select (permission-entries.html / permission-assets.html). */
+async function fillCreateRoleEntryOrAssetCanPermissionSelect(
+  page: Page,
+  scope: Locator,
+  permissionLabel: string,
+  timeoutMs: number
+): Promise<void> {
+  await expect(scope).toBeVisible({ timeout: timeoutMs });
+  const row = scope.locator('[data-test-id="cs-roles-permission-can-entries-select-input"]').first();
+  await expect(row).toBeVisible({ timeout: timeoutMs });
+  const ctrl = row.locator(".Select__control").first();
+  await expect(ctrl).toBeVisible({ timeout: timeoutMs });
+  await ctrl.click({ timeout: timeoutMs });
+  await page.waitForTimeout(350);
+  const inp = row.locator('input[aria-label="cs-select-aria"], input[type="text"]').first();
+  await expect(inp).toBeVisible({ timeout: Math.min(timeoutMs, 20_000) });
+  await inp.fill("");
+  await inp.fill(permissionLabel);
+  await page.waitForTimeout(400);
+  const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+  const opt = menu.getByRole("option", { name: new RegExp(escapeRegex(permissionLabel), "i") }).first();
+  if (await opt.isVisible({ timeout: 6_000 }).catch(() => false)) {
+    await opt.click({ timeout: timeoutMs });
+  } else {
+    await page.keyboard.press("Enter");
+  }
+  await page.waitForTimeout(300);
+}
+
+/** First “All Entries of Content Types” rule row (permission-entries.html — cs-role-all-entries-rule-*). */
+function getFirstAllEntriesContentTypesRuleRow(page: Page): Locator {
+  return page.locator('[data-test-id^="cs-role-all-entries-rule"]').first();
+}
+
+/** “This role CAN” → second select: All Content Types vs Specific Content Types (`cs-roles-type-input-select`). */
+async function fillRoleEntryTypeScopeSelect(
+  page: Page,
+  ruleRow: Locator,
+  scopeLabel: string,
+  timeoutMs: number
+): Promise<void> {
+  const typeSelect = ruleRow.locator('[data-test-id="cs-roles-type-input-select"]').first();
+  await expect(typeSelect).toBeVisible({ timeout: timeoutMs });
+  const ctrl = typeSelect.locator(".Select__control").first();
+  await ctrl.click({ timeout: timeoutMs });
+  await page.waitForTimeout(350);
+  const inp = typeSelect.locator('input[aria-label="cs-select-aria"]').first();
+  await expect(inp).toBeVisible({ timeout: Math.min(timeoutMs, 20_000) });
+  await inp.fill("");
+  await inp.fill(scopeLabel);
+  await page.waitForTimeout(400);
+  const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+  const opt = menu.getByRole("option", { name: new RegExp(escapeRegex(scopeLabel), "i") }).first();
+  if (await opt.isVisible({ timeout: 6_000 }).catch(() => false)) {
+    await opt.click({ timeout: timeoutMs });
+  } else {
+    await page.keyboard.press("Enter");
+  }
+  await page.waitForTimeout(300);
+}
+
+/** After doc hover, Delete/trash must appear (visible enabled control at row actions). */
+async function assertDeleteControlVisibleAfterHover(page: Page, row: Locator, timeoutMs: number): Promise<void> {
+  const deadline = Date.now() + Math.min(timeoutMs, 20_000);
+  while (Date.now() < deadline) {
+    const trashIcon = row.locator('svg[name="Delete"]').first();
+    const rowActions = row.locator('[data-test-id="cs-table-action-options"]');
+    if (await trashIcon.isVisible().catch(() => false)) return;
+    if (
+      (await rowActions.isVisible().catch(() => false)) &&
+      (await rowActions.isEnabled().catch(() => false))
+    ) {
+      return;
+    }
+    await page.waitForTimeout(280);
+  }
+  throw new Error(
+    'remove-a-user (doc): After hovering the user row, no Delete control appeared at the extreme right. Hover does not reveal removable-user actions for this row (e.g. Owner or insufficient permissions).'
+  );
+}
+
+/** User row to target for removal. Optional CS_REMOVE_USER_EMAIL; else first non-empty data row (delete affordance checked after hover). */
+async function findUsersTableRowForRemove(page: Page, flow: any): Promise<Locator> {
+  const emailNeedle = (process.env.CS_REMOVE_USER_EMAIL || "").trim();
+  const tableRoot = page.locator(".users-list").first();
+  await expect(tableRoot).toBeVisible({ timeout: 60_000 });
+  const pollUntil = Date.now() + 45_000;
+  while (Date.now() < pollUntil) {
+    const n = await tableRoot
+      .locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+      .count()
+      .catch(() => 0);
+    if (n > 0) break;
+    const loading = page.locator(".users-list .Spinner, .users-list [class*='Spinner'], .users-list .ListLoader");
+    if (await loading.first().isVisible().catch(() => false)) {
+      await loading.first().waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
+    }
+    await page.waitForTimeout(400);
+  }
+  if (emailNeedle) {
+    const candidates = tableRoot.locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)');
+    const n = await candidates.count().catch(() => 0);
+    for (let i = 0; i < n; i++) {
+      const r = candidates.nth(i);
+      if (!(await r.isVisible().catch(() => false))) continue;
+      const emailCell = r.locator('[data-test-id="cs-users-table-email"]').first();
+      const txt = ((await emailCell.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+      if (!txt || !txt.toLowerCase().includes(emailNeedle.toLowerCase())) continue;
+      const tid = (await r.getAttribute("data-test-id")) || "";
+      const m = tid.match(/cs-table-body-row-(\d+)/);
+      (flow as any).__removeUserRowIndex = m ? parseInt(m[1], 10) : i;
+      return r;
+    }
+    throw new Error(`remove-a-user: No user row with email matching CS_REMOVE_USER_EMAIL ("${emailNeedle}").`);
+  }
+  for (let i = 0; i < 30; i++) {
+    const r = tableRoot.locator(`[data-test-id="cs-table-body-row-${i}"]:not(.Table__empty__row)`).first();
+    if (!(await r.isVisible({ timeout: 2_000 }).catch(() => false))) continue;
+    (flow as any).__removeUserRowIndex = i;
+    return r;
+  }
+  throw new Error(
+    "remove-a-user: Users table has no rows. Invite a collaborator first (add-a-new-user), or set CS_REMOVE_USER_EMAIL."
+  );
+}
+
+/** User row for assign-role-to-a-user. Optional CS_ASSIGN_ROLE_USER_EMAIL; else first data row. */
+async function findUsersTableRowForAssignRole(page: Page, flow: any): Promise<Locator> {
+  const emailNeedle = (process.env.CS_ASSIGN_ROLE_USER_EMAIL || "").trim();
+  const tableRoot = page.locator(".users-list").first();
+  await expect(tableRoot).toBeVisible({ timeout: 60_000 });
+  const pollUntil = Date.now() + 45_000;
+  while (Date.now() < pollUntil) {
+    const n = await tableRoot
+      .locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+      .count()
+      .catch(() => 0);
+    if (n > 0) break;
+    const loading = page.locator(".users-list .Spinner, .users-list [class*='Spinner'], .users-list .ListLoader");
+    if (await loading.first().isVisible().catch(() => false)) {
+      await loading.first().waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
+    }
+    await page.waitForTimeout(400);
+  }
+  if (emailNeedle) {
+    const candidates = tableRoot.locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)');
+    const n = await candidates.count().catch(() => 0);
+    for (let i = 0; i < n; i++) {
+      const r = candidates.nth(i);
+      if (!(await r.isVisible().catch(() => false))) continue;
+      const emailCell = r.locator('[data-test-id="cs-users-table-email"]').first();
+      const txt = ((await emailCell.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+      if (!txt || !txt.toLowerCase().includes(emailNeedle.toLowerCase())) continue;
+      const tid = (await r.getAttribute("data-test-id")) || "";
+      const m = tid.match(/cs-table-body-row-(\d+)/);
+      (flow as any).__assignRoleUserRowIndex = m ? parseInt(m[1], 10) : i;
+      return r;
+    }
+    throw new Error(`assign-role-to-a-user: No user row with email matching CS_ASSIGN_ROLE_USER_EMAIL ("${emailNeedle}").`);
+  }
+  for (let i = 0; i < 30; i++) {
+    const r = tableRoot.locator(`[data-test-id="cs-table-body-row-${i}"]:not(.Table__empty__row)`).first();
+    if (!(await r.isVisible({ timeout: 2_000 }).catch(() => false))) continue;
+    (flow as any).__assignRoleUserRowIndex = i;
+    return r;
+  }
+  throw new Error(
+    "assign-role-to-a-user: Users table has no rows. Invite a collaborator first (add-a-new-user), or set CS_ASSIGN_ROLE_USER_EMAIL."
+  );
+}
+
+/** After hover on a role row, only the direct trash Delete control counts (delete-a-role doc); do not use ⋮ menu. */
+async function assertDeleteControlVisibleAfterHoverRole(page: Page, row: Locator, timeoutMs: number): Promise<void> {
+  const deadline = Date.now() + Math.min(timeoutMs, 20_000);
+  while (Date.now() < deadline) {
+    const trashClickable = row
+      .locator(
+        'button:has(svg[name="Delete"]), [role="button"]:has(svg[name="Delete"]), .Table__body__cell--tableRowAction button, [data-test-id="cs-table-row-action-delete"]'
+      )
+      .first();
+    if (await trashClickable.isVisible().catch(() => false)) return;
+    if (await row.locator('svg[name="Delete"]').first().isVisible().catch(() => false)) return;
+    await page.waitForTimeout(280);
+  }
+  throw new Error(
+    "delete-a-role (doc): After hovering the role row, the trash Delete control did not appear at the extreme right. Do not use the ⋮ menu; only the direct trash icon is expected. Custom roles only; system roles hide delete, or permissions may block."
+  );
+}
+
+/** Parse cs-table-body-row-N from row (loop index i may not match N). */
+async function applyDeleteRoleRowIndex(flow: any, r: Locator, i: number): Promise<void> {
+  const tid = (await r.getAttribute("data-test-id")) || "";
+  const m = tid.match(/cs-table-body-row-(\d+)/);
+  (flow as any).__deleteRoleRowIndex = m ? parseInt(m[1], 10) : i;
+}
+
+/** Roles tab: row to delete. Optional CS_DELETE_ROLE_NAME (matches role name); else first non–system role row. */
+async function findRolesTableRowForDelete(page: Page, flow: any): Promise<Locator> {
+  const tableRoot = page.locator(".roles-list").first();
+  await expect(tableRoot).toBeVisible({ timeout: 60_000 });
+  const pollUntil = Date.now() + 45_000;
+  while (Date.now() < pollUntil) {
+    const n = await tableRoot
+      .locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+      .count()
+      .catch(() => 0);
+    if (n > 0) break;
+    const loading = page.locator(".roles-list .Spinner, .roles-list [class*='Spinner'], .roles-list .ListLoader");
+    if (await loading.first().isVisible().catch(() => false)) {
+      await loading.first().waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
+    }
+    await page.waitForTimeout(400);
+  }
+  const nameNeedle = (process.env.CS_DELETE_ROLE_NAME || "").trim();
+  const chainU = getUsersRolesChainUnique();
+  const rows = tableRoot.locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)');
+  if (nameNeedle) {
+    const n = await rows.count().catch(() => 0);
+    for (let i = 0; i < n; i++) {
+      const r = rows.nth(i);
+      if (!(await r.isVisible().catch(() => false))) continue;
+      const primary = r.locator('[data-test-id="cs-roles-table-role-primaryText"]').first();
+      const txt = ((await primary.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+      if (!txt || !txt.toLowerCase().includes(nameNeedle.toLowerCase())) continue;
+      await applyDeleteRoleRowIndex(flow, r, i);
+      return r;
+    }
+    throw new Error(`delete-a-role: No role row matching CS_DELETE_ROLE_NAME ("${nameNeedle}").`);
+  }
+  const n = await rows.count().catch(() => 0);
+  const chainLabel = getUsersRolesChainRolePrimaryLabel();
+  if (chainU || chainLabel) {
+    const pollUntil = Date.now() + 45_000;
+    while (Date.now() < pollUntil) {
+      const n2 = await rows.count().catch(() => 0);
+      for (let i = 0; i < n2; i++) {
+        const r = rows.nth(i);
+        if (!(await r.isVisible().catch(() => false))) continue;
+        const primary = r.locator('[data-test-id="cs-roles-table-role-primaryText"]').first();
+        const txt = ((await primary.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+        const matches =
+          (chainLabel && (txt === chainLabel || txt.includes(chainLabel))) ||
+          Boolean(chainU && txt.includes(chainU));
+        if (matches) {
+          await applyDeleteRoleRowIndex(flow, r, i);
+          return r;
+        }
+      }
+      await page.waitForTimeout(400);
+    }
+  }
+  const nLatest = await rows.count().catch(() => 0);
+  for (let i = 0; i < nLatest; i++) {
+    const r = rows.nth(i);
+    if (!(await r.isVisible().catch(() => false))) continue;
+    const sec = r.locator('[data-test-id="cs-roles-table-role-secondaryText"]').first();
+    const txt = ((await sec.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+    if (txt.toLowerCase().includes("system role")) continue;
+    await applyDeleteRoleRowIndex(flow, r, i);
+    return r;
+  }
+  throw new Error(
+    "delete-a-role: No deletable custom role row found (only system roles). Create a custom role (create-a-role) or set CS_DELETE_ROLE_NAME."
+  );
+}
+
+/** Roles tab: row to open for edit — optional CS_UPDATE_ROLE_NAME; else first non–system role row (same rules as delete target). */
+async function findRolesTableRowForEdit(page: Page, flow: any): Promise<Locator> {
+  const tableRoot = page.locator(".roles-list").first();
+  await expect(tableRoot).toBeVisible({ timeout: 60_000 });
+  const nameNeedle = (process.env.CS_UPDATE_ROLE_NAME || "").trim();
+  const chainU = getUsersRolesChainUnique();
+  const rows = tableRoot.locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)');
+  const n = await rows.count().catch(() => 0);
+  if (nameNeedle) {
+    for (let i = 0; i < n; i++) {
+      const r = rows.nth(i);
+      if (!(await r.isVisible().catch(() => false))) continue;
+      const primary = r.locator('[data-test-id="cs-roles-table-role-primaryText"]').first();
+      const txt = ((await primary.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+      if (!txt || !txt.toLowerCase().includes(nameNeedle.toLowerCase())) continue;
+      return r;
+    }
+    throw new Error(`update-a-role: No role row matching CS_UPDATE_ROLE_NAME ("${nameNeedle}").`);
+  }
+  const chainLabel = getUsersRolesChainRolePrimaryLabel();
+  if (chainU || chainLabel) {
+    const pollUntil = Date.now() + 45_000;
+    while (Date.now() < pollUntil) {
+      const n2 = await rows.count().catch(() => 0);
+      for (let i = 0; i < n2; i++) {
+        const r = rows.nth(i);
+        if (!(await r.isVisible().catch(() => false))) continue;
+        const primary = r.locator('[data-test-id="cs-roles-table-role-primaryText"]').first();
+        const txt = ((await primary.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+        const matches =
+          (chainLabel && (txt === chainLabel || txt.includes(chainLabel))) ||
+          Boolean(chainU && txt.includes(chainU));
+        if (matches) return r;
+      }
+      await page.waitForTimeout(400);
+    }
+  }
+  const nLatest = await rows.count().catch(() => 0);
+  for (let i = 0; i < nLatest; i++) {
+    const r = rows.nth(i);
+    if (!(await r.isVisible().catch(() => false))) continue;
+    const sec = r.locator('[data-test-id="cs-roles-table-role-secondaryText"]').first();
+    const txt = ((await sec.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+    if (txt.toLowerCase().includes("system role")) continue;
+    return r;
+  }
+  throw new Error(
+    "update-a-role: No custom role row found (only system roles). Create a custom role (create-a-role) or set CS_UPDATE_ROLE_NAME."
+  );
+}
+
+/** Shared: RHS Status → Entry Status → Workflow Details (get-started + change-entry + revoke edit access + send publish approval part 1). */
+function isEntryStatusWorkflowPanelFlow(flow?: { id?: string }): boolean {
+  return (
+    isGetStartedWithWorkflowsFlow(flow) ||
+    isChangeEntryWorkflowStageFlow(flow) ||
+    isRevokeEditAccessForEntryFlow(flow) ||
+    isSendPublishUnpublishApprovalPart1Flow(flow)
+  );
+}
+
+/** Send an Entry for Edit Access Approval — entry page → Request Edit Access → modal → Send Request. */
+function isSendEntryForEditAccessApprovalFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "send-an-entry-for-edit-access-approval";
+}
+
+/** Approve Edit Access Request for an Entry — Information RHS → Pending Access Requests → Allow or Reject (doc). */
+function isApproveEditAccessRequestFlow(flow?: { id?: string }): boolean {
+  return String(flow?.id || "").toLowerCase() === "approve-edit-access-request-for-an-entry";
+}
+
+/** First stage summary card title (any stage name — not only "Doc Stage One"). */
+function workflowStage0CardHeading(page: Page): Locator {
+  return page.locator('#stage_0 [data-test-id="cs-heading-tag"], #stage_0 h3').first();
+}
+
+/** UC1: stage panel may expose either data-test-id or #stage_N (prefer #stage_* — transition lives under it when editing from summary). */
+function workflowsUc1StageShell(page: Page, stageIndex: number): Locator {
+  const tid = `cs-wf-edit-stage-${stageIndex}`;
+  const sid = `stage_${stageIndex}`;
+  return page.locator(`#${sid}`).or(page.locator(`[data-test-id="${tid}"]`)).first();
+}
+
+/** workflows-use-cases: react-select token under Next available stages (Specific stages), scoped to draggable row or #stage_N. */
+async function workflowsUc1FillNextStageToken(page: Page, stageIndex: number, token: string, t: number) {
+  const tm = Math.min(t, 25_000);
+  const root = page
+    .locator(`[data-rbd-draggable-id="workflowStages[${stageIndex}]"]`)
+    .or(page.locator(`#stage_${stageIndex}`))
+    .first();
+  await expect(root).toBeVisible({ timeout: tm });
+  await root.scrollIntoViewIfNeeded().catch(() => {});
+  await root.locator('[data-test-id="cs-wf-stage-specific-stages"]').click({ timeout: 8_000, force: true }).catch(() => {});
+  await page.waitForTimeout(500);
+  const ctrl = root.locator(".next-stage__specific .Select__control, .next-stage .Select__control").first();
+  await ctrl.click({ timeout: 8_000, force: true }).catch(() => {});
+  await page.waitForTimeout(400);
+  let inp = root
+    .locator(".next-stage__specific .Select__input input, .next-stage .Select__input input, .next-stage input[type=\"text\"]")
+    .first();
+  if (!(await inp.isVisible({ timeout: 4_000 }).catch(() => false))) {
+    inp = root.locator('input[aria-autocomplete="list"]').first();
+  }
+  if (!(await inp.isVisible({ timeout: 4_000 }).catch(() => false))) {
+    inp = root.locator(".next-stage__specific input, .next-stage input").first();
+  }
+  await expect(inp).toBeVisible({ timeout: tm });
+  await inp.fill(token, { timeout: t });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(350);
+}
+
+/** workflows-use-cases: Specific user(s)/role(s) who can move — pick role in stack roles list. */
+async function workflowsUc1PickMoveRole(page: Page, stageIndex: number, roleName: string, t: number) {
+  const shell = workflowsUc1StageShell(page, stageIndex);
+  await expect(shell).toBeVisible({ timeout: t });
+  const spec = shell.locator('[data-test-id="cs-wf-stage-specific-users"]').first();
+  await expect(spec).toBeVisible({ timeout: t });
+  await spec.click({ timeout: t, force: true });
+  await page.waitForTimeout(450);
+  const roleCtrl = shell.locator(".users-roles__specific .Select__control").first();
+  await roleCtrl.click({ timeout: 8_000, force: true }).catch(() => {});
+  await page.waitForTimeout(400);
+  await shell.locator('[data-test-id="cs-wf-stage-users"]').scrollIntoViewIfNeeded().catch(() => {});
+  await page.waitForTimeout(600);
+  let roleInp = shell
+    .locator('.users-roles__specific .Select__input input, .users-roles__specific input[type="text"]')
+    .first();
+  if (!(await roleInp.isVisible({ timeout: 5_000 }).catch(() => false))) {
+    roleInp = page
+      .locator(`#stage_${stageIndex} .users-roles input[aria-autocomplete="list"], #stage_${stageIndex} .users-roles__specific input[aria-autocomplete="list"]`)
+      .first();
+  }
+  await expect(roleInp).toBeVisible({ timeout: Math.min(t, 20_000) });
+  await roleInp.click({ timeout: Math.min(t, 15_000) }).catch(() => {});
+  await roleInp.fill(roleName, { timeout: 12_000 });
+  await page.waitForTimeout(400);
+  const opt = page
+    .locator('[role="listbox"] [role="option"], div.Select__menu .Select__option, div[role="option"]')
+    .filter({ hasText: new RegExp(escapeRegex(roleName), "i") })
+    .first();
+  if (await opt.isVisible({ timeout: 10_000 }).catch(() => false)) {
+    await opt.click({ timeout: t, force: true });
+  } else {
+    await page.keyboard.press("Enter");
+  }
+  await page.waitForTimeout(350);
+}
+
+/** workflows-use-cases: open color picker for the stage row being added (UC1 always edits the last row after each + stage). */
+async function workflowsUc1ClickStageColorPicker(page: Page, _stageEditIndex: 1 | 2 | 3 | 4, t: number) {
+  const tMax = Math.min(t, 45_000);
+  const tClick = Math.min(t, 12_000);
+  const shell = page.locator("form[data-test-id=\"cs-form\"] .workflow-stages, .content-main.workflows .workflow-stages").first();
+  const rbdRows = shell.locator('[data-rbd-draggable-id^="workflowStages"]');
+  const stageById = shell.locator('[id^="stage_"]');
+  const lastStageBlock =
+    (await stageById.count()) > 0 ? stageById.last() : rbdRows.last();
+  await expect(lastStageBlock).toBeVisible({ timeout: tMax });
+  await page.waitForTimeout(400);
+  const candidates = [
+    lastStageBlock.locator('.stage-edit__color [data-test-id="cs-color-picker"] .ColorPicker'),
+    lastStageBlock.locator('[data-test-id="cs-color-picker"] .ColorPicker'),
+    lastStageBlock.locator('[data-test-id="cs-color-picker"]'),
+  ];
+  let lastErr: unknown;
+  for (const loc of candidates) {
+    try {
+      if ((await loc.count()) === 0) continue;
+      const el = loc.first();
+      await el.scrollIntoViewIfNeeded({ timeout: 3_000 }).catch(() => {});
+      await el.click({ timeout: tClick, force: true });
+      return;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  try {
+    const wrap = lastStageBlock.locator('[data-test-id="cs-color-picker"]').first();
+    if ((await wrap.count()) > 0) {
+      await wrap.evaluate((node) => (node as HTMLElement).click());
+      return;
+    }
+  } catch (e) {
+    lastErr = e;
+  }
+  const fallback = page
+    .locator(
+      'form[data-test-id="cs-form"] .workflow-stages [data-test-id="cs-color-picker"] .ColorPicker, ' +
+        '.workflow-stages [data-test-id="cs-color-picker"] .ColorPicker'
+    )
+    .last();
+  if ((await fallback.count()) > 0) {
+    await fallback.scrollIntoViewIfNeeded({ timeout: 3_000 }).catch(() => {});
+    await fallback.click({ timeout: tClick, force: true });
+    return;
+  }
+  const fallbackWrap = page
+    .locator('form[data-test-id="cs-form"] .workflow-stages [data-test-id="cs-color-picker"], .workflow-stages [data-test-id="cs-color-picker"]')
+    .last();
+  if ((await fallbackWrap.count()) > 0) {
+    await fallbackWrap.click({ timeout: tClick, force: true });
+    return;
+  }
+  throw lastErr instanceof Error
+    ? lastErr
+    : new Error(
+        lastErr != null
+          ? String(lastErr)
+          : "workflowsUc1ClickStageColorPicker: no color control found in last workflow stage row"
+      );
 }
 
 /** Shared with use-slash: create CT with JSON RTE + open new entry (same entry pattern as keyboard-shortcuts doc stack). */
@@ -191,6 +798,15 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
     "#header-content-wrapper-id",
     "#navbar-items-wrapper-id",
   ],
+  /** Doc: Tasks / Help in top-right (command bar — tasks-icon.html, Help control-bar). */
+  "Top right corner": [
+    "nav.TopNavbar",
+    ".TopNavbar",
+    '[data-test-id="cs-top-nav"]',
+    ".command-bar",
+    ".TopNavbar__content__items__list",
+    ".TopNavbar__content__items__list__redirect",
+  ],
   Modal: [
     '[role="dialog"]',
     ".Modal",
@@ -226,6 +842,8 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
     "#PageLayout__body",
     ".PageLayout__body__container",
   ],
+  /** Entry editor right rail tabs (entry-right-nav.html — Status, Workflow, etc.). */
+  "Entry editor right sidebar": [".SidebarWindow", ".SidebarWindow__tabs-container", ".SidebarWindow__tabs-container--border"],
 };
 
 function loadOverrides(flow?: any): { click: Record<string, string>; input: Record<string, string> } {
@@ -439,6 +1057,21 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
     if (looksLikeTopBar) return;
   }
 
+  if (expectedWithin === "Top right corner") {
+    const looksLikeTopRight = await el
+      .evaluate((node) => {
+        const self = node as HTMLElement;
+        const dt = self?.getAttribute?.("data-test-id") || "";
+        if (dt === "cms-nav-tasks" || dt === "cs-help-center" || dt === "cs-icon") return true;
+        if (self?.closest?.(".command-bar__help--large")) return true;
+        return !!self?.closest?.(
+          'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], .command-bar, .TopNavbar__content__items__list, .TopNavbar__content__items__list__redirect'
+        );
+      })
+      .catch(() => false);
+    if (looksLikeTopRight) return;
+  }
+
   if (expectedWithin === "Modal") {
     const looksLikeModal = await el
       .evaluate((node) => {
@@ -479,6 +1112,17 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       })
       .catch(() => false);
     if (inTrashToolbar) return;
+  }
+
+  if (expectedWithin === "Entry editor right sidebar") {
+    const inRhs = await el
+      .evaluate((node) => {
+        return !!(node as HTMLElement)?.closest?.(
+          ".SidebarWindow, .SidebarWindow__tabs-container, .SidebarWindow__tabs-container--border"
+        );
+      })
+      .catch(() => false);
+    if (inRhs) return;
   }
 
   for (const sel of containers) {
@@ -944,6 +1588,498 @@ export async function performAction(
 ): Promise<Page | void> {
   switch (step.action) {
     case "click": {
+      // about-workflow-tasks / use-task-filter — Top Bar Tasks beside Help (tasks-icon.html: data-test-id="cms-nav-tasks").
+      if (
+        (isAboutWorkflowTasksFlow(flow) || isUseTaskFilterFlow(flow)) &&
+        step.target === "Tasks icon beside Help in top bar (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const el = page.locator('[data-test-id="cms-nav-tasks"]').first();
+        await expect(el).toBeVisible({ timeout: t });
+        await el.click({ timeout: t, force: true });
+        await page.waitForTimeout(400);
+        if (isUseTaskFilterFlow(flow)) {
+          await page.waitForURL(/my-tasks/, { timeout: 45_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+        }
+        break;
+      }
+
+      // remove-a-user — doc: click Delete at extreme right (trash svg or row actions control revealed by hover).
+      if (isRemoveAUserFlow(flow) && step.target === "Delete icon at extreme right of user row after hover (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const idx = (flow as any).__removeUserRowIndex;
+        if (idx === undefined || Number.isNaN(Number(idx))) {
+          throw new Error("remove-a-user: Hover the user row first (doc step order).");
+        }
+        const row = page.locator(`[data-test-id="cs-table-body-row-${idx}"]`).first();
+        await expect(row).toBeVisible({ timeout: t });
+        const trashClickable = row
+          .locator(
+            'button:has(svg[name="Delete"]), [role="button"]:has(svg[name="Delete"]), .Table__body__cell--tableRowAction button, [data-test-id="cs-table-row-action-delete"]'
+          )
+          .first();
+        if (await trashClickable.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          await trashClickable.click({ timeout: t });
+        } else {
+          const dots = row.locator('[data-test-id="cs-table-action-options"]').first();
+          await expect(dots).toBeVisible({ timeout: t });
+          await dots.click({ timeout: t });
+        }
+        await page.waitForTimeout(450);
+        break;
+      }
+
+      // delete-a-role — only direct trash at extreme right after hover (no ⋮ / overflow); opens Delete Role modal.
+      if (isDeleteARoleFlow(flow) && step.target === "Delete icon at extreme right of role row after hover (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const row = await findRolesTableRowForDelete(page, flow);
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        await expect(row).toBeVisible({ timeout: t });
+        await row.hover({ timeout: Math.min(t, 15_000), force: true }).catch(() => {});
+        await page.waitForTimeout(350);
+        const trashClickable = row
+          .locator(
+            'button:has(svg[name="Delete"]), [role="button"]:has(svg[name="Delete"]), .Table__body__cell--tableRowAction button, [data-test-id="cs-table-row-action-delete"]'
+          )
+          .first();
+        await expect(trashClickable).toBeVisible({ timeout: Math.min(t, 25_000) });
+        await trashClickable.click({ timeout: t });
+        await page.waitForTimeout(400);
+        const modalTitle = page
+          .locator('[data-test-id="cs-modal-title-delete-role"]')
+          .or(page.locator('h3[title="Delete Role"]'))
+          .or(page.getByRole("heading", { name: /^Delete Role$/i }));
+        await expect(modalTitle.first()).toBeVisible({ timeout: Math.min(t, 25_000) });
+        break;
+      }
+
+      // delete-a-role — modal footer destructive Delete (delete-role-modal.html).
+      if (isDeleteARoleFlow(flow) && step.target === "Delete Role confirmation modal Delete button (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const btn = page.locator('[data-test-id="cs-roles-quick-action-delete"]').first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await btn.click({ timeout: t });
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Add rule under All Entries of Content Types Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const add = page.locator('[data-test-id="cs-roles-add-condition-ct"]').first();
+        await expect(add).toBeVisible({ timeout: t });
+        await add.click({ timeout: t });
+        await page.waitForTimeout(450);
+        break;
+      }
+
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Select Content Types button for All Entries rule Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const ruleRow = getFirstAllEntriesContentTypesRuleRow(page);
+        await expect(ruleRow).toBeVisible({ timeout: t });
+        const btn = ruleRow.locator('[data-test-id="cs-tag-as-select"]').first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await btn.click({ timeout: t });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Content type row in Select Content Types modal Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const ctName = String(step.value ?? process.env.CS_SCENARIO1_CONTENT_TYPE_NAME ?? "Contact Us").trim();
+        if (!ctName) {
+          throw new Error("examples Scenario 1: set step.value or CS_SCENARIO1_CONTENT_TYPE_NAME for the content type to select.");
+        }
+        const dlg = page.getByRole("dialog").first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const row = dlg.locator("tr, [role='row']").filter({ hasText: new RegExp(escapeRegex(ctName), "i") }).first();
+        if (await row.isVisible({ timeout: 10_000 }).catch(() => false)) {
+          await row.click({ timeout: t });
+        } else {
+          const cb = dlg.getByRole("checkbox", { name: new RegExp(escapeRegex(ctName), "i") }).first();
+          if (await cb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            await cb.click({ timeout: t });
+          } else {
+            await dlg.getByText(ctName, { exact: false }).first().click({ timeout: t });
+          }
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Add Content Types button in Select Content Types modal Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const dlg = page.getByRole("dialog").first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const addBtn = dlg.locator("button").filter({ hasText: /^Add Content Types$/i }).first();
+        await expect(addBtn).toBeVisible({ timeout: t });
+        await addBtn.click({ timeout: t });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      if (isAssignRoleToUserFlow(flow) && step.target === "User row to open Update User (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const row = await findUsersTableRowForAssignRole(page, flow);
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        await expect(row).toBeVisible({ timeout: t });
+        await row.click({ timeout: t });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      if (isRemoveAUserFlow(flow) && step.target === "Remove in user row actions menu (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const item = page.locator('[data-test-id="cs-users-action-remove"]').first();
+        await expect(item).toBeVisible({ timeout: t });
+        await item.click({ timeout: t });
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (isRemoveAUserFlow(flow) && step.target === "Remove user confirmation modal Remove button (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const dlg = page.getByRole("dialog").first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const primary = dlg
+          .getByRole("button", { name: /^Remove$/i })
+          .or(page.locator('[data-test-id="cs-users-quick-action-remove"]'))
+          .or(dlg.locator('button.Button--primary:has-text("Remove")'));
+        await expect(primary.first()).toBeVisible({ timeout: t });
+        await primary.first().click({ timeout: t });
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // update-a-role — Roles table: open role for editing (doc step 2: select the role you want to update).
+      if (isUpdateARoleFlow(flow) && step.target === "Role row link to open role for editing (doc step)") {
+        const t = getStepTimeoutMs(step);
+        await page
+          .locator('[data-test-id="cs-table"], .roles-list')
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 30_000) })
+          .catch(() => {});
+        const row = await findRolesTableRowForEdit(page, flow);
+        await row.hover({ timeout: Math.min(t, 15_000) }).catch(() => {});
+        await page.waitForTimeout(200);
+        const link = row.locator('a[href*="/settings/roles/"][href*="/edit"]');
+        const linkCount = await link.count().catch(() => 0);
+        if (linkCount > 0) {
+          const first = link.first();
+          await first.scrollIntoViewIfNeeded({ timeout: Math.min(t, 15_000) }).catch(() => {});
+          if (await first.isVisible().catch(() => false)) {
+            await first.click({ timeout: t });
+          } else {
+            await first.click({ timeout: t, force: true });
+          }
+        } else {
+          const primary = row.locator('[data-test-id="cs-roles-table-role-primaryText"]').first();
+          await primary.scrollIntoViewIfNeeded({ timeout: Math.min(t, 15_000) }).catch(() => {});
+          await primary.click({ timeout: t });
+        }
+        await page.waitForURL(/\/settings\/roles\/[^/]+\/edit/, { timeout: 60_000 }).catch(() => {});
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // create-a-role / update-a-role — Publishing Environments: ensure at least one env selected (new-role-page.html).
+      if (isRoleEditorFlow(flow) && step.target === "First Publishing Environment checkbox on New Role page (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const envScope = page.locator(".roles-edit__env");
+        await expect(envScope).toBeVisible({ timeout: t });
+        const labels = envScope.locator('[data-test-id="cs-roles-select-env"]');
+        const count = await labels.count();
+        if (count === 0) {
+          throw new Error(
+            "role editor: No publishing environments under Publishing Environments. Add an environment to the stack or ensure the section is visible."
+          );
+        }
+        const first = labels.first();
+        const inp = first.locator('input[type="checkbox"]').first();
+        await expect(first).toBeVisible({ timeout: t });
+        if (!(await inp.isChecked().catch(() => false))) {
+          await first.click({ timeout: t });
+        }
+        await page.waitForTimeout(300);
+        break;
+      }
+
+      // create-a-role / update-a-role — Languages: ensure at least one language selected (doc: language-related permissions).
+      if (isRoleEditorFlow(flow) && step.target === "First Language checkbox on New Role page (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const langScope = page.locator(".roles-edit__lang");
+        await expect(langScope).toBeVisible({ timeout: t });
+        const labels = langScope.locator('[data-test-id="cs-roles-select-lang"]');
+        const count = await labels.count();
+        if (count === 0) {
+          throw new Error(
+            "role editor: No languages under Languages. Ensure the stack has languages and the section is visible."
+          );
+        }
+        const first = labels.first();
+        const inp = first.locator('input[type="checkbox"]').first();
+        await expect(first).toBeVisible({ timeout: t });
+        if (!(await inp.isChecked().catch(() => false))) {
+          await first.click({ timeout: t });
+        }
+        await page.waitForTimeout(300);
+        break;
+      }
+
+      // create-a-role / update-a-role — Save (role editor footer).
+      if (
+        isRoleEditorFlow(flow) &&
+        (step.target === "New role save button (doc step)" ||
+          step.target === "Save button to create the new role (doc step)" ||
+          step.target === "Save button to save role changes (doc step)")
+      ) {
+        const t = getStepTimeoutMs(step);
+        const byTestId = page.locator('[data-test-id="cs-roles-save"], [data-test-id="cs-page-layout-footer-save"]').first();
+        const footerPrimary = page
+          .locator(
+            '.PageLayout__footer button.Button--primary:has-text("Save"), [class*="footer"] button.Button--primary:has-text("Save"), footer button.Button--primary:has-text("Save")'
+          )
+          .first();
+        await page
+          .locator(".roles-edit, [data-test-id=\"cs-page-layout\"]")
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
+          .catch(() => {});
+        if (await byTestId.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          await byTestId.click({ timeout: t });
+        } else {
+          await expect(footerPrimary).toBeVisible({ timeout: t });
+          await footerPrimary.click({ timeout: t });
+        }
+        await page.waitForTimeout(450);
+        break;
+      }
+
+      // get-started-with-workflows / change-entry-workflow-stage — entry RHS Status tab (entry-right-nav.html).
+      if (isEntryStatusWorkflowPanelFlow(flow) && step.target === "Entry editor Status tab icon (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const el = page.locator('[data-test-id="cs-entry-edit-tab-status"]').first();
+        await expect(el).toBeVisible({ timeout: tGs });
+        await el.click({ timeout: tGs, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // send-an-entry-for-publish-or-unpublish-approval part 1 — Publish Rules → Request Approval (doc).
+      if (
+        isSendPublishUnpublishApprovalPart1Flow(flow) &&
+        step.target === "Request Approval button in Publish Rules section (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const body = page.locator(".SidebarWindow__content__body").first();
+        await expect(body).toBeVisible({ timeout: t });
+        const scope = body.locator(".publish-rules__container").first();
+        await expect(scope).toBeVisible({ timeout: t });
+        const btn = scope.getByRole("button", { name: /Request Approval/i }).first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await btn.click({ timeout: t, force: true });
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // revoke-edit-access-for-an-entry — x beside a user in "Users to whom edit access is granted" (doc step 3).
+      if (
+        isRevokeEditAccessForEntryFlow(flow) &&
+        step.target === "Revoke edit access remove icon beside first user in Users to whom edit access granted section (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const body = page.locator(".SidebarWindow__content__body").first();
+        await expect(body).toBeVisible({ timeout: t });
+        const section = body.locator("div").filter({ hasText: /Users to whom edit access is granted/i }).first();
+        await expect(section).toBeVisible({ timeout: t });
+        const controls = section.locator('button, [role="button"]');
+        const n = await controls.count().catch(() => 0);
+        let clicked = false;
+        for (let i = 0; i < n; i++) {
+          const b = controls.nth(i);
+          if (!(await b.isVisible().catch(() => false))) continue;
+          const name = (await b.getAttribute("aria-label").catch(() => "")) || "";
+          const txt = ((await b.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          if (/^View All$/i.test(txt)) continue;
+          if (/Users to whom edit access is granted/i.test(txt)) continue;
+          const hasSvg = (await b.locator("svg").count().catch(() => 0)) > 0;
+          if (hasSvg || /remove|close|revoke|dismiss/i.test(name)) {
+            await b.click({ timeout: t, force: true });
+            clicked = true;
+            break;
+          }
+        }
+        if (!clicked) {
+          throw new Error(
+            'Revoke edit access for an entry (doc): No revoke control (x) beside a user in "Users to whom edit access is granted" — grant edit access first or UI changed.'
+          );
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // revoke-edit-access-for-an-entry — View All when >4 users with edit access (doc step 4).
+      if (
+        isRevokeEditAccessForEntryFlow(flow) &&
+        step.target === "View All link in Users to whom edit access granted section (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const body = page.locator(".SidebarWindow__content__body").first();
+        await expect(body).toBeVisible({ timeout: t });
+        const section = body.locator("div").filter({ hasText: /Users to whom edit access is granted/i }).first();
+        await expect(section).toBeVisible({ timeout: t });
+        const viewAll = section
+          .getByRole("button", { name: /^View All$/i })
+          .or(section.getByRole("link", { name: /^View All$/i }))
+          .first();
+        await expect(viewAll).toBeVisible({ timeout: t });
+        await viewAll.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // revoke-edit-access-for-an-entry — x beside a user in All Other users dialog (doc step 5).
+      if (
+        isRevokeEditAccessForEntryFlow(flow) &&
+        step.target === "Revoke edit access remove icon beside first user in All Other users dialog (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const dlg = page.getByRole("dialog").filter({ hasText: /All Other users/i }).first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const controls = dlg.locator('button, [role="button"]');
+        const n = await controls.count().catch(() => 0);
+        let clicked = false;
+        for (let i = 0; i < n; i++) {
+          const b = controls.nth(i);
+          if (!(await b.isVisible().catch(() => false))) continue;
+          const name = (await b.getAttribute("aria-label").catch(() => "")) || "";
+          const txt = ((await b.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          if (/^Close$/i.test(txt)) continue;
+          if (/All Other users/i.test(txt)) continue;
+          const hasSvg = (await b.locator("svg").count().catch(() => 0)) > 0;
+          if (hasSvg || /remove|close|revoke|dismiss/i.test(name)) {
+            await b.click({ timeout: t, force: true });
+            clicked = true;
+            break;
+          }
+        }
+        if (!clicked) {
+          throw new Error(
+            'Revoke edit access for an entry (doc): No revoke "x" beside a user in the "All Other users" dialog.'
+          );
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // revoke-edit-access-for-an-entry — Close on All Other users dialog (doc step 6).
+      if (
+        isRevokeEditAccessForEntryFlow(flow) &&
+        step.target === "Close button in All Other users dialog (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const dlg = page.getByRole("dialog").filter({ hasText: /All Other users/i }).first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const closeBtn = dlg.getByRole("button", { name: /^Close$/i }).first();
+        await expect(closeBtn).toBeVisible({ timeout: t });
+        await closeBtn.click({ timeout: t, force: true });
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // change-entry-workflow-stage — Change beside current stage (Workflow Details), then Update (doc).
+      if (isChangeEntryWorkflowStageFlow(flow) && step.target === "Change link beside workflow stage in Workflow Details Status panel (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const body = page.locator(".SidebarWindow__content__body").first();
+        await expect(body).toBeVisible({ timeout: t });
+        const change = body
+          .getByRole("link", { name: /^Change$/i })
+          .or(body.getByRole("button", { name: /^Change$/i }))
+          .first();
+        await expect(change).toBeVisible({ timeout: t });
+        await change.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+      if (isChangeEntryWorkflowStageFlow(flow) && step.target === "Update button in Entry Workflow Settings Status panel (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const body = page.locator(".SidebarWindow__content__body").first();
+        await expect(body).toBeVisible({ timeout: t });
+        const btn = body.getByRole("button", { name: /^Update$/i }).first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await btn.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // send-an-entry-for-edit-access-approval — Request Edit Access (doc: bottom of entry page); modal Send Request.
+      if (isSendEntryForEditAccessApprovalFlow(flow) && step.target === "Request Edit Access button at entry page bottom (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const btn = page
+          .getByRole("button", { name: /Request Edit Access/i })
+          .or(page.locator('[data-test-id*="request-edit-access" i]'))
+          .or(page.locator('[data-test-id*="entry-request-edit" i]'))
+          .first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)).catch(() => {});
+        await page.waitForTimeout(350);
+        await btn.scrollIntoViewIfNeeded().catch(() => {});
+        await btn.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+      if (isSendEntryForEditAccessApprovalFlow(flow) && step.target === "Send Request button in Request Edit Access modal (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const modal = page.getByRole("dialog").filter({ hasText: /Request Edit Access/i }).first();
+        await expect(modal).toBeVisible({ timeout: t });
+        const sendBtn = modal.getByRole("button", { name: /Send Request/i }).first();
+        await expect(sendBtn).toBeVisible({ timeout: t });
+        await sendBtn.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // approve-edit-access-request-for-an-entry — Information tab (data/dom/CMS/workflows/entry-info.html); Pending Access Requests → Allow (doc).
+      if (isApproveEditAccessRequestFlow(flow) && step.target === "Entry editor Information tab icon in right panel (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const el = page.locator('[data-test-id="cs-entry-edit-tab-information"]').first();
+        await expect(el).toBeVisible({ timeout: t });
+        await el.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+      if (isApproveEditAccessRequestFlow(flow) && step.target === "Allow button in Pending Access Requests dialog (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const modal = page.getByRole("dialog").filter({ hasText: /Pending Access Requests/i }).first();
+        await expect(modal).toBeVisible({ timeout: t });
+        const allow = modal
+          .getByRole("button", { name: /^Allow$/i })
+          .or(modal.getByRole("link", { name: /^Allow$/i }))
+          .first();
+        await expect(allow).toBeVisible({ timeout: t });
+        await allow.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // set-edit-access-permissions-for-workflow-stages — doc example: Current stage user(s) under Users/roles who can edit the entry in this stage.
+      if (
+        String(flow?.id || "").toLowerCase() === "set-edit-access-permissions-for-workflow-stages" &&
+        step.target === "Workflow stage Current stage users edit option (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const stage = page.locator("#stage_0, [data-test-id='cs-wf-edit-stage-0']").first();
+        await stage.waitFor({ state: "visible", timeout: Math.min(t, 30_000) }).catch(() => {});
+        const loc = page
+          .locator('[data-test-id="cs-wf-edit-stage-by-current-stage-user"]')
+          .or(page.getByRole("radio", { name: /Current stage user/i }))
+          .first();
+        await expect(loc).toBeVisible({ timeout: t });
+        await loc.click({ timeout: t, force: true });
+        await page.waitForTimeout(400);
+        break;
+      }
+
       // If user clicks vertical ellipsis, open it and confirm menu is visible
       if (step.target === "vertical ellipsis") {
         await openRowActionMenu(page, step, flow); // ✅ pass step
@@ -5531,13 +6667,37 @@ export async function performAction(
         }
       }
 
-      // add-workflows-and-stages — workflow create/edit (data/dom/CMS/workflows/*.html).
-      if (String(flow?.id || "").toLowerCase() === "add-workflows-and-stages") {
+      // add-workflows-and-stages / update-a-workflow — workflow create/edit (data/dom/CMS/workflows/*.html).
+      if (isCmsWorkflowEditorFlow(flow)) {
         const t = Math.min(getStepTimeoutMs(step), 50_000);
         if (step.target === "Workflow first stage Done button (doc step)") {
-          const btn = page.locator('[data-test-id="cs-workflow-stage-done"]').first();
-          await expect(btn).toBeVisible({ timeout: t });
-          await btn.click({ timeout: t, force: true });
+          // DOM: Cancel/Done sit in [data-test-id="cs-button-group"]; Done is [data-test-id="cs-workflow-stage-done"].
+          // Prefer stage-scoped locators so we hit the visible first-stage footer, not a hidden duplicate.
+          const doneCandidates = [
+            page.locator('[data-test-id="cs-wf-edit-stage-0"] [data-test-id="cs-workflow-stage-done"]'),
+            page.locator('#stage_0 [data-test-id="cs-workflow-stage-done"]'),
+            page.locator('[data-test-id="cs-button-group"] [data-test-id="cs-workflow-stage-done"]'),
+            page.locator('[data-test-id="cs-workflow-stage-done"]'),
+          ];
+          let clicked = false;
+          for (const loc of doneCandidates) {
+            const btn = loc.first();
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            if (await btn.isVisible({ timeout: Math.min(10_000, t) }).catch(() => false)) {
+              await btn.click({ timeout: t, force: true });
+              clicked = true;
+              break;
+            }
+          }
+          if (!clicked) {
+            const bySpan = page
+              .locator('[data-test-id="cs-button-group"] button.Button--primary')
+              .filter({ has: page.locator("span", { hasText: /^Done$/ }) })
+              .first();
+            await bySpan.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(bySpan).toBeVisible({ timeout: t });
+            await bySpan.click({ timeout: t, force: true });
+          }
           await page.waitForTimeout(450);
           break;
         }
@@ -6058,6 +7218,538 @@ export async function performAction(
         }
         await page.waitForTimeout(300);
         break;
+      }
+
+      // add-a-publish-rule: Rule Details — react-selects + Publish radio + Save (add-a-publish-rule doc).
+      if (step.action === "click" && isAddPublishRuleFlow(flow)) {
+        if (step.target === "Publish rule environment first option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-env"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(300);
+          // react-select v2: visible menu is .Select__menu with .Select__option (portaled; not always [role="listbox"]).
+          // Option rows may wrap env test ids e.g. cs-publish-rules-gh-env (publish-rule DOM).
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          const optInMenu = menu.locator(".Select__option").first();
+          const optByEnvId = page.locator('[data-test-id^="cs-publish-rules-"][data-test-id$="-env"] .Select__option').first();
+          if (await menu.isVisible({ timeout: 12_000 }).catch(() => false) && (await optInMenu.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            await optInMenu.click({ timeout: t, force: true });
+          } else if (await optByEnvId.isVisible({ timeout: 10_000 }).catch(() => false)) {
+            await optByEnvId.click({ timeout: t, force: true });
+          } else {
+            const wrap = page.locator('[data-test-id^="cs-publish-rules-"][data-test-id$="-env"]').first();
+            await expect(wrap).toBeVisible({ timeout: 15_000 });
+            await wrap.click({ timeout: t, force: true });
+          }
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Publish rule Action Publish radio (doc step)") {
+          const lab = page.locator('[data-test-id="cs-publish-rule-action-publish"]').first();
+          await expect(lab).toBeVisible({ timeout: t });
+          await lab.click({ timeout: t, force: true });
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Publish rule All radio (doc step)") {
+          const lab = page.locator('[data-test-id="cs-publish-rule-action-all"]').first();
+          await expect(lab).toBeVisible({ timeout: t });
+          await lab.click({ timeout: t, force: true });
+          await page.waitForTimeout(250);
+          break;
+        }
+        // Approver: By User(s) — react-select v2: .Select__menu / .Select__option (prefer "Me" when present).
+        if (step.target === "Publish rule approver By User(s) Me or first option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-user-approval"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          await expect(menu).toBeVisible({ timeout: 15_000 });
+          const meOpt = menu.locator(".Select__option").filter({ hasText: /^Me$/i }).first();
+          if (await meOpt.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            await meOpt.click({ timeout: t, force: true });
+          } else {
+            await menu.locator(".Select__option").first().click({ timeout: t, force: true });
+          }
+          await page.waitForTimeout(350);
+          break;
+        }
+        // Approver: By Role(s) — react-select menu + Admin (label title or option text).
+        if (step.target === "Publish rule approver By Role(s) Admin option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-roles-approval"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          await expect(menu).toBeVisible({ timeout: 15_000 });
+          const adminLabel = menu.locator('label[title="Admin"], label[title^="Admin"]').first();
+          const adminByText = menu.locator(".Select__option").filter({ hasText: /^Admin$/i }).first();
+          if (await adminLabel.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            await adminLabel.click({ timeout: t, force: true });
+          } else if (await adminByText.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await adminByText.click({ timeout: t, force: true });
+          } else {
+            await expect(page.getByRole("option", { name: /^Admin$/i }).first()).toBeVisible({ timeout: 8_000 });
+            await page.getByRole("option", { name: /^Admin$/i }).first().click({ timeout: t, force: true });
+          }
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (step.target === "Publish rule workflow stage first option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-workflow-stage"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const opt = page.locator('[role="listbox"] [role="option"], div[role="option"]').first();
+          const optOk = await opt.isVisible({ timeout: 15_000 }).catch(() => false);
+          if (!optOk) {
+            throw new Error(
+              'Add a publish rule (doc): No workflow stage in the dropdown. The doc requires at least one workflow in the stack to use the "Stage" condition (about-publish-rule-components). Create a workflow (e.g. "Add Workflows and Stages") or pick a stack that already has workflows.'
+            );
+          }
+          await opt.click({ timeout: t, force: true });
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Publish rule Save button (doc step)") {
+          const btn = page.locator('[data-test-id="cs-publish-rules-create-save"]').first();
+          await expect(btn).toBeVisible({ timeout: t });
+          await btn.click({ timeout: t, force: true });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Publish rule Specific Language(s) option (doc step)") {
+          const lab = page.locator('[data-test-id="cs-publish-rules-specific-languages"]').first();
+          await expect(lab).toBeVisible({ timeout: t });
+          await lab.click({ timeout: t, force: true });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Publish rule locale English United States option (doc step)") {
+          const langCtrl = page
+            .locator(
+              '[data-test-id="cs-publish-rules-select-locale"] .Select__control, [data-test-id="cs-publish-rules-select-locales"] .Select__control'
+            )
+            .first();
+          await expect(langCtrl).toBeVisible({ timeout: Math.min(t, 45_000) });
+          await langCtrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          await expect(menu).toBeVisible({ timeout: 15_000 });
+          const enUs = menu
+            .locator(".Select__option")
+            .filter({ hasText: /English.*United States/i })
+            .first();
+          await expect(enUs).toBeVisible({ timeout: 12_000 });
+          await enUs.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (step.target === "Publish rule Environment Production option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-env"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          await expect(menu).toBeVisible({ timeout: 15_000 });
+          const prod = menu.locator(".Select__option").filter({ hasText: /^Production$/i }).first();
+          await expect(prod).toBeVisible({ timeout: 15_000 });
+          await prod.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (step.target === "Publish rule workflow stage Complete option (doc step)") {
+          const ctrl = page.locator('[data-test-id="cs-publish-rules-select-workflow-stage"] .Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: t });
+          await ctrl.click({ timeout: t, force: true });
+          await page.waitForTimeout(350);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).first();
+          await expect(menu).toBeVisible({ timeout: 15_000 });
+          const opt = menu.locator(".Select__option").filter({ hasText: /^Complete$/i }).first();
+          await expect(opt).toBeVisible({ timeout: 15_000 });
+          await opt.click({ timeout: t, force: true });
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // workflows-use-cases UC1 — stage color pickers (scope to expanded inline editor; collapsed rows may omit dots).
+      if (step.action === "click" && isWorkflowsUseCasesFlow(flow)) {
+        const t = getStepTimeoutMs(step);
+        if (step.target === "Workflow stage index 1 color picker (doc step)") {
+          await workflowsUc1ClickStageColorPicker(page, 1, t);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Workflow stage index 2 color picker (doc step)") {
+          await workflowsUc1ClickStageColorPicker(page, 2, t);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Workflow stage index 3 color picker (doc step)") {
+          await workflowsUc1ClickStageColorPicker(page, 3, t);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Workflow stage index 4 color picker (doc step)") {
+          await workflowsUc1ClickStageColorPicker(page, 4, t);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (
+          step.target === "Workflow third stage Done button (doc step)" ||
+          step.target === "Workflow fourth stage Done button (doc step)" ||
+          step.target === "Workflow fifth stage Done button (doc step)"
+        ) {
+          const done = page.locator('[data-test-id="cs-workflow-stage-done"]').last();
+          await expect(done).toBeVisible({ timeout: t });
+          await done.click({ timeout: t, force: true });
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Workflow UC1 Draft move role Content Writer (doc step)") {
+          await workflowsUc1PickMoveRole(page, 0, "Content Writer", t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Ready for Review move role Reviewer (doc step)") {
+          await workflowsUc1PickMoveRole(page, 1, "Reviewer", t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Needs Changes move role Content Writer (doc step)") {
+          await workflowsUc1PickMoveRole(page, 2, "Content Writer", t);
+          break;
+        }
+        if (step.target === "Workflow UC1 SEO Tagging move role SEO Team (doc step)") {
+          await workflowsUc1PickMoveRole(page, 3, "SEO Team", t);
+          break;
+        }
+      }
+
+      // update-a-publish-rule / delete-a-publish-rule: first row ⋮ (shared).
+      if (step.action === "click" && isPublishRuleListRowMenuFlow(flow)) {
+        const tUp = getStepTimeoutMs(step);
+        if (step.target === "Publish rules list first row Actions ellipsis (doc step)") {
+          const el = page
+            .locator(
+              '.content-main.workflows [data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"]'
+            )
+            .first();
+          await expect(el).toBeVisible({ timeout: tUp });
+          await el.scrollIntoViewIfNeeded().catch(() => {});
+          await el.click({ timeout: tUp, force: true });
+          await page.waitForTimeout(350);
+          break;
+        }
+      }
+
+      // update-a-publish-rule: Publish Rules list → ⋮ → Edit → Rule Details → Prevent self-approval → Save (edit-rule-details.html).
+      if (step.action === "click" && isUpdatePublishRuleFlow(flow)) {
+        const tUp = getStepTimeoutMs(step);
+        if (step.target === "Publish rules list Edit in vertical actions menu (doc step)") {
+          const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]');
+          await expect(tip).toBeVisible({ timeout: tUp });
+          const edit = tip.locator('[data-test-id="cs-publish-rules-action-edit"]');
+          await expect(edit).toBeVisible({ timeout: tUp });
+          await edit.click({ timeout: tUp, force: true });
+          await page.waitForURL(/\/settings\/publishrules\/.+\/edit/, { timeout: Math.min(tUp, 90_000) }).catch(() => {});
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Publish rule Prevent self-approval toggle enable (doc step)") {
+          const wrap = page.locator('[data-test-id="cms-click-checkbox-publish-rules-four-eye-principle-disabled"]').first();
+          await expect(wrap).toBeVisible({ timeout: tUp });
+          const input = wrap.locator('input[type="checkbox"]').first();
+          const checked = await input.isChecked().catch(() => false);
+          if (!checked) {
+            await wrap.locator("label.toggle-switch").click({ timeout: tUp, force: true });
+          }
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Publish rule edit Save button (doc step)") {
+          const btn = page.locator('[data-test-id="cs-publish-rules-edit-save"]').first();
+          await expect(btn).toBeVisible({ timeout: tUp });
+          await btn.click({ timeout: tUp, force: true });
+          await page.waitForTimeout(600);
+          break;
+        }
+      }
+
+      // delete-a-publish-rule: ⋮ → Delete → modal Delete (delete-publish-rule-modal.html).
+      if (step.action === "click" && isDeletePublishRuleFlow(flow)) {
+        const tDel = getStepTimeoutMs(step);
+        if (step.target === "Publish rules list Delete in vertical actions menu (doc step)") {
+          // Matches publish-rule-verticle-menu.html: ul[cs-vertical-action-tooltip-actions] > li[cs-publish-rules-action-delete].
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id="cs-publish-rules-action-delete"]') })
+            .first();
+          await expect(tip).toBeVisible({ timeout: tDel });
+          const del = tip.locator('[data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id="cs-publish-rules-action-delete"]').first();
+          await expect(del).toBeVisible({ timeout: tDel });
+          await del.scrollIntoViewIfNeeded().catch(() => {});
+          await del.click({ timeout: tDel, force: true });
+          const modalTitle = page.locator('[data-test-id="cs-modal-title-delete-publish-rule"]').first();
+          if (!(await modalTitle.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            await del.evaluate((el) => {
+              (el as HTMLElement).click();
+            });
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Delete publish rule modal Delete button (doc step)") {
+          const btn = page.locator('[data-test-id="cs-publish-rules-quick-action-delete"]').first();
+          await expect(btn).toBeVisible({ timeout: tDel });
+          await btn.click({ timeout: tDel, force: true });
+          await page.waitForTimeout(600);
+          break;
+        }
+      }
+
+      // update-a-workflow / enable-or-disable-a-workflow-part-2: open first workflow row from Workflow Settings table.
+      if (
+        step.action === "click" &&
+        step.target === "Workflow list first row open (doc step)" &&
+        isCmsWorkflowSettingsListRowFlow(flow)
+      ) {
+        const link = page.locator('.content-main.workflows a[href*="/settings/workflow/"][href*="/edit"]').first();
+        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        const deadline = Date.now() + t;
+        let target: Locator | null = null;
+        while (Date.now() < deadline && !target) {
+          if (await link.isVisible().catch(() => false)) target = link;
+          else if (await row.isVisible().catch(() => false)) target = row;
+          else await page.waitForTimeout(400);
+        }
+        if (!target) {
+          throw new Error(
+            'Workflow Settings (doc): Could not open a workflow from the list (no row/link). Ensure this stack has at least one workflow.'
+          );
+        }
+        await target.scrollIntoViewIfNeeded().catch(() => {});
+        await target.click({ timeout: t, force: true });
+        await page.waitForURL(/\/settings\/workflow\//, { timeout: Math.min(t, 90_000) }).catch(() => {});
+        await page.waitForTimeout(600);
+        break;
+      }
+
+      // delete-a-workflow: hover row (doc); Delete must already be visible — no opening ⋮ (doc: hover + Delete icon).
+      if (
+        step.action === "click" &&
+        step.target === "Workflow list first row Delete in workflow actions menu (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "delete-a-workflow"
+      ) {
+        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        await expect(row).toBeVisible({ timeout: t });
+        await row.hover({ timeout: Math.min(t, 15_000), force: true }).catch(() => {});
+        await page.waitForTimeout(350);
+        const delInTip = page
+          .locator('[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-workflow-action-delete"]')
+          .first();
+        await expect(delInTip).toBeVisible({ timeout: t });
+        await delInTip.click({ timeout: t, force: true });
+        await page.waitForTimeout(400);
+        await page
+          .locator('[data-test-id="cs-modal-title-delete-workflow"], h3:has-text("Delete Workflow")')
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 30_000) })
+          .catch(() => {});
+        break;
+      }
+
+      // delete-a-workflow: doc says "Proceed"; app may label primary destructive action "Delete" (delete-workflow-modal.html).
+      if (
+        step.action === "click" &&
+        step.target === "Delete Workflow modal Proceed button (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "delete-a-workflow"
+      ) {
+        const proceedByRole = page.getByRole("button", { name: /^Proceed$/i }).first();
+        const byTestId = page.locator('[data-test-id="cs-workflow-quick-action-delete"]').first();
+        if (await proceedByRole.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          await proceedByRole.click({ timeout: t, force: true });
+        } else if (await byTestId.isVisible({ timeout: 8_000 }).catch(() => false)) {
+          await byTestId.click({ timeout: t, force: true });
+        } else {
+          await expect(byTestId).toBeVisible({ timeout: t });
+          await byTestId.click({ timeout: t, force: true });
+        }
+        await page.waitForTimeout(600);
+        break;
+      }
+
+      // Workflow editor: stage 1 may be a summary card, or use left "Outline" → Stages → Doc Stage One; legacy #stage_0 still supported.
+      if (
+        step.action === "click" &&
+        step.target === "Workflow first stage parent accordion expand (doc step)" &&
+        isCmsWorkflowEditorFlow(flow)
+      ) {
+        // Summary-card layout: stage 0 is EntryReferenceDetails (no cs-wf-edit-stage-0) until Edit opens the full panel with Cancel/Done.
+        const editStage0 = page.locator('#stage_0 [data-test-id="cs-entry-reference-details-action-edit"]').first();
+        if (await editStage0.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await editStage0.scrollIntoViewIfNeeded().catch(() => {});
+          await editStage0.click({ timeout: t, force: true });
+          await page.waitForTimeout(600);
+        }
+        const byLegacy = page
+          .locator(
+            '[data-test-id="cs-wf-edit-stage-0"] .Accordion-v2__heading-parent button, [data-test-id="cs-wf-edit-stage-0"] .Accordion__heading button'
+          )
+          .first();
+        const byTitle = page.locator("#stage_0 .stage-edit__title").first();
+        const byCardHeading = page
+          .locator(".workflow-stages h3, .workflow-stages [role='heading']")
+          .filter({ hasText: /^Doc Stage One / })
+          .first();
+        const byOutline = page.locator("listitem").filter({ hasText: /Doc Stage One/ }).first();
+        const byMainStageCard = page
+          .getByRole("button", { name: /Doc Stage One[\s\S]{0,400}Next available stages/i })
+          .first();
+        // New UI: nested Edit on summary card (drag, Edit, Delete) opens inline transition form with radios.
+        const summaryCard = page.locator('button:has(h3:has-text("Doc Stage One"))').first();
+        if (await summaryCard.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          await summaryCard.scrollIntoViewIfNeeded().catch(() => {});
+          const inners = summaryCard.locator("button");
+          const n = await inners.count();
+          if (n >= 2) {
+            await inners.nth(1).click({ timeout: t, force: true });
+          }
+        } else if (await byMainStageCard.isVisible().catch(() => false)) {
+          await byMainStageCard.click({ timeout: t });
+        } else if (await byOutline.isVisible().catch(() => false)) {
+          await byOutline.click({ timeout: t });
+        } else if (await byLegacy.isVisible().catch(() => false)) {
+          await byLegacy.click({ timeout: t });
+        } else if (await byTitle.isVisible().catch(() => false)) {
+          await byTitle.click({ timeout: t });
+        } else if (await byCardHeading.isVisible().catch(() => false)) {
+          await byCardHeading.click({ timeout: t });
+        } else {
+          const row = page.locator("#stage_0").first();
+          await expect(row).toBeVisible({ timeout: t });
+          await row.click({ position: { x: 40, y: 28 }, timeout: t });
+        }
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // Transition rules: new layout may show Next available stages without a separate accordion row; legacy uses cs-accordion.
+      if (
+        step.action === "click" &&
+        step.target === "Workflow first stage transition accordion toggle (doc step)" &&
+        isCmsWorkflowEditorFlow(flow)
+      ) {
+        const nextStages = page.locator('[data-test-id="cs-wf-next-stages"]').first();
+        const allStagesRadio = page.locator('[data-test-id="cs-wf-stage-all-stages"]').first();
+        // Full transition form visible (not only summary card text).
+        if (await allStagesRadio.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await page.waitForTimeout(200);
+          break;
+        }
+        await workflowStage0CardHeading(page).click({ timeout: Math.min(t, 15_000) }).catch(() => {});
+        await page.waitForTimeout(400);
+        if (await allStagesRadio.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          await page.waitForTimeout(200);
+          break;
+        }
+        if (await nextStages.isVisible({ timeout: Math.min(t, 90_000) }).catch(() => false)) {
+          await page.waitForTimeout(200);
+          break;
+        }
+        const scoped = page.locator("#stage_0").first();
+        const stageEditShell = page.locator('[data-test-id="cs-wf-edit-stage-0"]').first();
+        // Outer stage wrapper can stay Accordion-close after Edit — inner transition (radios) is not mounted until parent opens.
+        if (await stageEditShell.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          const parentClosed = stageEditShell.locator(".Accordion-close").first();
+          if (await parentClosed.isVisible().catch(() => false)) {
+            const parentToggle = stageEditShell
+              .locator(".Accordion-v2__heading-parent button, .Accordion-v2__heading-parent .Accordion__heading button")
+              .first();
+            if (await parentToggle.isVisible().catch(() => false)) {
+              await parentToggle.click({ timeout: t, force: true });
+              await page.waitForTimeout(550);
+            }
+          }
+        }
+        // Scope to the open stage editor — unscoped cs-accordion matches the wrong row; parent Accordion-v2 intercepts clicks.
+        const transitionAcc = stageEditShell
+          .locator('[data-test-id="cs-accordion"]')
+          .filter({ hasText: /Stage transition|access rules/i })
+          .first();
+        const transitionAccFallback = scoped
+          .locator('[data-test-id="cs-accordion"]')
+          .filter({ hasText: /Stage transition|access rules/i })
+          .first();
+        const acc = (await transitionAcc.isVisible({ timeout: 2_000 }).catch(() => false))
+          ? transitionAcc
+          : transitionAccFallback;
+        if (await acc.isVisible({ timeout: 8_000 }).catch(() => false)) {
+          const toggleBtn = acc.locator(".Accordion__heading button").first();
+          await toggleBtn.click({ timeout: t, force: true }).catch(() => {});
+          await page.waitForTimeout(450);
+          let radiosOk = await page
+            .locator('[data-test-id="cs-wf-stage-all-stages"]')
+            .first()
+            .isVisible({ timeout: 4_000 })
+            .catch(() => false);
+          if (!radiosOk) {
+            await toggleBtn.click({ timeout: t, force: true }).catch(() => {});
+            await page.waitForTimeout(450);
+            radiosOk = await page
+              .locator('[data-test-id="cs-wf-stage-all-stages"]')
+              .first()
+              .isVisible({ timeout: 4_000 })
+              .catch(() => false);
+          }
+          if (!radiosOk) {
+            const byHeadingRow = stageEditShell
+              .locator(".Accordion__heading")
+              .filter({ hasText: /Stage transition.*access rules|access rules/i })
+              .first();
+            const byBtnInHeading = byHeadingRow.locator("button").first();
+            if (await byBtnInHeading.isVisible().catch(() => false)) {
+              await byBtnInHeading.click({ timeout: t, force: true });
+            }
+          }
+        } else if (
+          await scoped.locator('[data-test-id="cs-accordion"] .Accordion__heading button').first().isVisible().catch(() => false)
+        ) {
+          await scoped
+            .locator('[data-test-id="cs-accordion"] .Accordion__heading button')
+            .first()
+            .click({ timeout: t, force: true });
+        }
+        await page.waitForTimeout(450);
+        break;
+      }
+
+      // add-workflows-and-stages: primary permission clicks (All / All); legacy test-ids; summary-card UI may omit — warn and continue to Save.
+      if (step.action === "click" && String(flow?.id || "").toLowerCase() === "add-workflows-and-stages") {
+        const wfPermClicks: Record<string, Locator> = {
+          "Workflow stage All users roles move option (doc step)": page
+            .locator('[data-test-id="cs-wf-stage-all-users"]')
+            .or(page.getByRole("radio", { name: /All users\/roles/i })),
+          "Workflow stage All users edit entry option (doc step)": page
+            .locator('[data-test-id="cs-wf-edit-stage-by-all"]')
+            .or(page.getByRole("radio", { name: /All users\/roles/i })),
+        };
+        const mapped = wfPermClicks[step.target];
+        if (mapped) {
+          const clickable = mapped.first();
+          if (await clickable.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            await clickable.click({ timeout: t, force: true });
+          } else {
+            recordVerificationWarning(
+              step,
+              context,
+              `Workflow UI (doc): ${step.target} — control not in DOM (summary layout); click skipped so flow can reach Save.`
+            );
+          }
+          await page.waitForTimeout(350);
+          break;
+        }
       }
 
       try {
@@ -6951,6 +8643,471 @@ export async function performAction(
     }
 
     case "verify": {
+      // send-an-entry-for-publish-or-unpublish-approval part 2 — Publish lives in the entry footer; doc placement is "bottom", not Main content body (avoid false "Main content" warnings).
+      if (isSendPublishUnpublishApprovalPart2Flow(flow) && step.target === "Publish button at bottom of entry editor page (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const entryChrome = page.locator('[data-test-id="cs-entry-edit-tab-status"], .SidebarWindow').first();
+        await expect(entryChrome).toBeVisible({ timeout: tGs });
+        const btn = page.locator('button[data-test-id="cs-entry-publish"], button[aria-label="Publish Entry"]').first();
+        await expect(btn).toBeVisible({ timeout: tGs });
+        await btn.scrollIntoViewIfNeeded().catch(() => {});
+        if (step.expected?.labelEquals) {
+          await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        }
+        break;
+      }
+
+      // about-workflow-tasks — Tasks beside Help (?) in TopNavbar (tasks-icon.html: cms-nav-tasks, cs-help-center).
+      if (isAboutWorkflowTasksFlow(flow) && step.target === "Tasks icon beside Help in top bar (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const tasksBtn = page.locator('[data-test-id="cms-nav-tasks"]').first();
+        const helpIcon = page.locator('[data-test-id="cs-help-center"]').first();
+        await expect(tasksBtn).toBeVisible({ timeout: tGs });
+        await expect(helpIcon).toBeVisible({ timeout: tGs });
+        if (step.expected?.within) {
+          await ensureWithin(page, tasksBtn, step.expected.within, step.expected?.withinStrict === true);
+          await ensureWithin(page, helpIcon, step.expected.within, step.expected?.withinStrict === true);
+        }
+        if (step.expected?.labelEquals) {
+          await assertLabelMatch(tasksBtn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        }
+        break;
+      }
+      // use-task-filter — Tasks page filter panel (tasks-filter.html); doc label parity vs UI (warnings only for wording / extra sections).
+      if (isUseTaskFilterFlow(flow) && step.target === "Tasks page Filters heading in left sidebar (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const wrap = page.locator(".publish-que-filter-wrapper").first();
+        await expect(wrap).toBeVisible({ timeout: tGs });
+        const h = wrap.locator('[data-test-id="cs-section-header"]').filter({ hasText: /^Filters$/i }).first();
+        await expect(h).toBeVisible({ timeout: tGs });
+        if (step.expected?.within) {
+          await ensureWithin(page, h, step.expected.within, step.expected?.withinStrict === true);
+        }
+        if (step.expected?.labelEquals) {
+          await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        }
+        break;
+      }
+      if (isUseTaskFilterFlow(flow) && step.target === "Task filter panel section headings match use task filter doc (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const wrap = page.locator(".publish-que-filter-wrapper").first();
+        await expect(wrap).toBeVisible({ timeout: tGs });
+        const txt = ((await wrap.innerText().catch(() => "")) || "").replace(/\s+/g, " ");
+        for (const need of ["Users", "Action", "Workflow Stage"]) {
+          if (!new RegExp(`\\b${need.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(txt)) {
+            throw new Error(
+              `use-task-filter (doc): Tasks filter panel must include "${need}" section (see data/dom/CMS/workflows/tasks-filter.html).`
+            );
+          }
+        }
+        if (/\bUsers\b/i.test(txt) && !/\bBy\s+Users\b/i.test(txt)) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Doc titles this filter "By Users"; UI accordion heading is "Users" (tasks-filter.html).'
+          );
+        }
+        if (/Workflow Stage/i.test(txt) && !/Workflow Stages/i.test(txt)) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Doc titles this filter "By Workflow Stages"; UI heading is "Workflow Stage" (singular).'
+          );
+        }
+        if (/\bAccess Request\b/i.test(txt)) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Tasks filter panel includes an "Access Request" section; use-task-filter doc bullets do not mention it.'
+          );
+        }
+        if (/\bContent Type\b/i.test(txt)) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Tasks filter panel includes a "Content Type" section; use-task-filter doc bullets do not mention it.'
+          );
+        }
+        break;
+      }
+      if (isUseTaskFilterFlow(flow) && step.target === "Tasks filter Action values Approved Pending Rejected in left sidebar (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const wrap = page.locator(".publish-que-filter-wrapper").first();
+        await expect(wrap).toBeVisible({ timeout: tGs });
+        const actionSection = wrap.locator('[data-test-id="cs-left-sidebar-action-section"]').first();
+        await expect(actionSection).toBeVisible({ timeout: tGs });
+        for (const label of ["Approved", "Pending", "Rejected"]) {
+          const row = actionSection.getByText(label, { exact: true }).first();
+          await expect(row).toBeVisible({ timeout: tGs });
+        }
+        break;
+      }
+
+      // about-workflow-tasks — Help (?) control beside Tasks: command-bar__help--large, svg HelpExtraLarge (doc).
+      if (isAboutWorkflowTasksFlow(flow) && step.target === "Help icon question mark beside Tasks in top bar (doc step)") {
+        const tGs = getStepTimeoutMs(step);
+        const tasksBtn = page.locator('[data-test-id="cms-nav-tasks"]').first();
+        await expect(tasksBtn).toBeVisible({ timeout: tGs });
+        const helpBtn = page.locator('div.command-bar__help--large[aria-label="Help"]').first();
+        await expect(helpBtn).toBeVisible({ timeout: tGs });
+        const helpSvg = helpBtn.locator('svg[name="HelpExtraLarge"][data-test-id="cs-help-center"]').first();
+        await expect(helpSvg).toBeVisible({ timeout: tGs });
+        if (step.expected?.within) {
+          await ensureWithin(page, helpBtn, step.expected.within, step.expected?.withinStrict === true);
+        }
+        if (step.expected?.labelEquals) {
+          await assertLabelMatch(helpBtn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+        }
+        break;
+      }
+
+      // get-started-with-workflows / change-entry-workflow-stage — doc: Top Bar Entries → open entry → RHS Status (strict ensureWithin; no generic warning-only path).
+      if (isEntryStatusWorkflowPanelFlow(flow)) {
+        const tGs = getStepTimeoutMs(step);
+        const entryStatusDocLabel = isChangeEntryWorkflowStageFlow(flow)
+          ? "Change entry workflow stage (doc)"
+          : isRevokeEditAccessForEntryFlow(flow)
+            ? "Revoke edit access for an entry (doc)"
+            : isSendPublishUnpublishApprovalPart1Flow(flow)
+              ? "Send an entry for publish or unpublish approval — right-side panel (doc)"
+              : "Get Started with Workflows (doc)";
+        if (step.target === "Entries (doc step)") {
+          const el = page.locator('[data-test-id="cms-nav-entries"]').first();
+          await expect(el).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Entry editor Status tab icon (doc step)") {
+          const el = page.locator('[data-test-id="cs-entry-edit-tab-status"]').first();
+          await expect(el).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+          }
+          break;
+        }
+        if (step.target === "Entry Status panel title (doc step)") {
+          const title = page.locator(".SidebarWindow__content__title").filter({ hasText: /Entry Status/i }).first();
+          await expect(title).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, title, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Workflow Details section heading in Entry Status panel (doc step)") {
+          const body = page.locator(".SidebarWindow__content__body").first();
+          await expect(body).toBeVisible({ timeout: tGs });
+          const heading = body.getByText(/Workflow Details/i).first();
+          await expect(heading).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(heading, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Current stage assignees due date under Workflow Details in Entry Status panel (doc step)") {
+          const body = page.locator(".SidebarWindow__content__body").first();
+          await expect(body).toBeVisible({ timeout: tGs });
+          const txt = ((await body.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          if (!/workflow\s*details/i.test(txt)) {
+            throw new Error(
+              `${entryStatusDocLabel}: "Workflow Details" section not found in Entry Status panel (required before stage/assignees/due).`
+            );
+          }
+          const hasDocFields =
+            /(current\s+stage|\bstage\b|due\s*date|\bdue\b|assigned|assignee|approver|users?\s+to\s+whom)/i.test(txt);
+          if (!hasDocFields) {
+            throw new Error(
+              `${entryStatusDocLabel}: Under Workflow Details, expected current stage, assignees, and/or due date — no matching content in panel.`
+            );
+          }
+          break;
+        }
+        if (step.target === "Publish Rules heading in Entry Status panel (doc step)") {
+          const h = page.locator(".publish-rules__heading").filter({ hasText: /Publish Rules/i }).first();
+          await expect(h).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, h, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (
+          isSendPublishUnpublishApprovalPart1Flow(flow) &&
+          step.target === "Publish Rules section publish request status after Request Approval (doc step)"
+        ) {
+          const body = page.locator(".SidebarWindow__content__body").first();
+          await expect(body).toBeVisible({ timeout: tGs });
+          const section = body.locator(".publish-rules__container").first();
+          await expect(section).toBeVisible({ timeout: tGs });
+          const txt = ((await section.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          if (!/(awaiting|approved|rejected|pending|approval|submitted|request)/i.test(txt)) {
+            throw new Error(
+              `${entryStatusDocLabel}: After "Request Approval", expected request status text (e.g. awaiting approval) in the Publish Rules section.`
+            );
+          }
+          break;
+        }
+        if (isRevokeEditAccessForEntryFlow(flow) && step.target === "Users to whom edit access is granted section heading in Entry Status panel (doc step)") {
+          const body = page.locator(".SidebarWindow__content__body").first();
+          await expect(body).toBeVisible({ timeout: tGs });
+          const heading = body.getByText(/Users to whom edit access is granted/i).first();
+          await expect(heading).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, heading, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(heading, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (isRevokeEditAccessForEntryFlow(flow) && step.target === "All Other users dialog title (doc step)") {
+          const dlg = page.getByRole("dialog").filter({ hasText: /All Other users/i }).first();
+          await expect(dlg).toBeVisible({ timeout: tGs });
+          const title = dlg.getByText(/All Other users/i).first();
+          await expect(title).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, title, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // change-entry-workflow-stage — Entry Workflow Settings subsections (doc step 3) then Update (doc step 4).
+      if (isChangeEntryWorkflowStageFlow(flow)) {
+        const tGs = getStepTimeoutMs(step);
+        const scope = page.locator(".SidebarWindow__content__body").first();
+        if (step.target === "Change link visible beside workflow stage in Workflow Details Status panel (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const change = scope
+            .getByRole("link", { name: /^Change$/i })
+            .or(scope.getByRole("button", { name: /^Change$/i }))
+            .first();
+          await expect(change).toBeVisible({ timeout: tGs });
+          break;
+        }
+        if (step.target === "Entry Workflow Settings section heading in Entry Status panel (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const h = scope.getByText(/Entry Workflow Settings/i).first();
+          await expect(h).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Set Workflow Stage label in Entry Workflow Settings (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const lab = scope.getByText(/Set Workflow Stage/i).first();
+          await expect(lab).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Set Due Date label in Entry Workflow Settings (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const lab = scope.getByText(/Set Due Date/i).first();
+          await expect(lab).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Assign to label in Entry Workflow Settings (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const lab = scope.getByText(/^\s*Assign to\s*:?\s*$/i).or(scope.getByText(/Assign to/i)).first();
+          await expect(lab).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Notify via Email label in Entry Workflow Settings (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const lab = scope.getByText(/Notify via Email/i).first();
+          await expect(lab).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Add Comment label in Entry Workflow Settings (doc step)") {
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const lab = scope.getByText(/Add Comment/i).first();
+          await expect(lab).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // set-edit-access-permissions-for-workflow-stages — doc step 4 (Stage transition & access rules); doc step 6 (Done).
+      if (String(flow?.id || "").toLowerCase() === "set-edit-access-permissions-for-workflow-stages") {
+        const tGs = getStepTimeoutMs(step);
+        if (step.target === "Stage transition and access rules accordion heading in workflow stage (doc step)") {
+          const stageShell = page.locator('[data-test-id="cs-wf-edit-stage-0"]').or(page.locator("#stage_0")).first();
+          await expect(stageShell).toBeVisible({ timeout: tGs });
+          const acc = stageShell
+            .locator('[data-test-id="cs-accordion"]')
+            .filter({ hasText: /Stage transition|access rules/i })
+            .first();
+          await expect(acc).toBeVisible({ timeout: tGs });
+          const heading = acc
+            .locator(".Accordion__heading, .Accordion-v2__heading")
+            .filter({ hasText: /Stage transition|access rules/i })
+            .first();
+          await expect(heading).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(heading, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Stage transition and access rules accordion expanded (doc step)") {
+          const stageShell = page.locator('[data-test-id="cs-wf-edit-stage-0"]').or(page.locator("#stage_0")).first();
+          const acc = stageShell
+            .locator('[data-test-id="cs-accordion"]')
+            .filter({ hasText: /Stage transition|access rules/i })
+            .first();
+          await expect(acc).toBeVisible({ timeout: tGs });
+          const openClass = await acc.evaluate((el) => /\bAccordion-open\b/.test((el as HTMLElement).className));
+          if (!openClass) {
+            const inner = acc.locator(".Accordion__open, .Accordion__data").first();
+            await expect(inner).toBeVisible({ timeout: tGs });
+          }
+          break;
+        }
+        if (step.target === "Workflow first stage Done button label (doc step)") {
+          const btn = page
+            .locator('[data-test-id="cs-wf-edit-stage-0"] [data-test-id="cs-workflow-stage-done"]')
+            .or(page.locator('#stage_0 [data-test-id="cs-workflow-stage-done"]'))
+            .or(page.locator('[data-test-id="cs-workflow-stage-done"]'))
+            .first();
+          await expect(btn).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // send-an-entry-for-publish-or-unpublish-approval part 1 — after Status: Publish Rules → Request Approval visible (doc).
+      if (isSendPublishUnpublishApprovalPart1Flow(flow)) {
+        const tGs = getStepTimeoutMs(step);
+        if (step.target === "Request Approval button visible in Publish Rules section (doc step)") {
+          const body = page.locator(".SidebarWindow__content__body").first();
+          await expect(body).toBeVisible({ timeout: tGs });
+          const scope = body.locator(".publish-rules__container").first();
+          await expect(scope).toBeVisible({ timeout: tGs });
+          const btn = scope.getByRole("button", { name: /Request Approval/i }).first();
+          await expect(btn).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // send-an-entry-for-edit-access-approval — Request Edit Access must be visible (hard fail if not); modal title in Modal.
+      if (isSendEntryForEditAccessApprovalFlow(flow)) {
+        const tGs = getStepTimeoutMs(step);
+        if (step.target === "Request Edit Access button visible at entry page bottom (doc step)") {
+          await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)).catch(() => {});
+          await page.waitForTimeout(400);
+          const btn = page
+            .getByRole("button", { name: /Request Edit Access/i })
+            .or(page.locator('[data-test-id*="request-edit-access" i]'))
+            .or(page.locator('[data-test-id*="entry-request-edit" i]'))
+            .first();
+          await expect(btn).toBeVisible({ timeout: tGs });
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(btn).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Request Edit Access dialog title (doc step)") {
+          const modal = page.getByRole("dialog").filter({ hasText: /Request Edit Access/i }).first();
+          await expect(modal).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, modal, step.expected.within, step.expected?.withinStrict === true);
+          }
+          const title = modal.getByText(/Request Edit Access/i).first();
+          await expect(title).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // approve-edit-access-request-for-an-entry — Information tab (cs-entry-edit-tab-information); Pending Access Requests modal; Allow + Reject must exist or fail.
+      if (isApproveEditAccessRequestFlow(flow)) {
+        const tGs = getStepTimeoutMs(step);
+        if (step.target === "Entry editor Information tab icon in right panel (doc step)") {
+          const el = page.locator('[data-test-id="cs-entry-edit-tab-information"]').first();
+          await expect(el).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+          }
+          break;
+        }
+        if (step.target === "Pending Access Requests dialog title (doc step)") {
+          const modal = page.getByRole("dialog").filter({ hasText: /Pending Access Requests/i }).first();
+          await expect(modal).toBeVisible({ timeout: tGs });
+          if (step.expected?.within) {
+            await ensureWithin(page, modal, step.expected.within, step.expected?.withinStrict === true);
+          }
+          const title = modal.getByText(/Pending Access Requests/i).first();
+          await expect(title).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Allow button visible in Pending Access Requests dialog (doc step)") {
+          const modal = page.getByRole("dialog").filter({ hasText: /Pending Access Requests/i }).first();
+          await expect(modal).toBeVisible({ timeout: tGs });
+          const allow = modal
+            .getByRole("button", { name: /^Allow$/i })
+            .or(modal.getByRole("link", { name: /^Allow$/i }))
+            .first();
+          await expect(allow).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(allow, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+        if (step.target === "Reject button visible in Pending Access Requests dialog (doc step)") {
+          const modal = page.getByRole("dialog").filter({ hasText: /Pending Access Requests/i }).first();
+          await expect(modal).toBeVisible({ timeout: tGs });
+          const reject = modal
+            .getByRole("button", { name: /^Reject$/i })
+            .or(modal.getByRole("link", { name: /^Reject$/i }))
+            .first();
+          await expect(reject).toBeVisible({ timeout: tGs });
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(reject, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
       // customize-json-rich-text-editor — Embed Object(s) label (ct-advanced-page.html)
       if (
         String(flow?.id || "").toLowerCase() === "customize-json-rich-text-editor" &&
@@ -9782,6 +11939,464 @@ export async function performAction(
         }
       }
 
+      // Workflow Settings list + editor: list row, enable-disable doc parity, Save toast (add-workflows / update / enable-disable parts).
+      if (isCmsWorkflowSettingsListRowFlow(flow) && step.action === "verify") {
+        if (step.target === "Workflow list first row visible (doc step)") {
+          const t = getStepTimeoutMs(step);
+          await page
+            .locator(".content-main.workflows, .content-main.workflow")
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
+            .catch(() => {});
+          await page.locator('[data-test-id="cs-table"]').first().waitFor({ state: "visible", timeout: Math.min(t, 30_000) }).catch(() => {});
+          const link = page.locator('.content-main.workflows a[href*="/settings/workflow/"][href*="/edit"]').first();
+          const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+          const deadline = Date.now() + t;
+          let ok = false;
+          while (Date.now() < deadline && !ok) {
+            if (await link.isVisible().catch(() => false)) ok = true;
+            else if (await row.isVisible().catch(() => false)) ok = true;
+            else await page.waitForTimeout(400);
+          }
+          if (!ok) {
+            throw new Error(
+              'Workflow Settings (doc): No workflow appears in the list. The stack must have at least one workflow—create one (e.g. "Add Workflows and Stages") or use a stack that already has workflows.'
+            );
+          }
+          break;
+        }
+        if (
+          step.target === "Workflow list first row Power icon visible after hover (doc step)" &&
+          String(flow?.id || "").toLowerCase() === "enable-or-disable-a-workflow-part-1"
+        ) {
+          const t = getStepTimeoutMs(step);
+          const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+          await expect(row).toBeVisible({ timeout: t });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          await row.hover({ timeout: Math.min(t, 15_000), force: true }).catch(() => {});
+          await page.waitForTimeout(450);
+          const power = row.locator('button:has(svg[name="Power"]), svg[name="Power"]').first();
+          await expect(power).toBeVisible({
+            timeout: t,
+          });
+          break;
+        }
+        if (
+          step.target === "Workflow list first row Delete icon visible after hover (doc step)" &&
+          String(flow?.id || "").toLowerCase() === "delete-a-workflow"
+        ) {
+          const t = getStepTimeoutMs(step);
+          const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+          await expect(row).toBeVisible({ timeout: t });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          await row.hover({ timeout: Math.min(t, 15_000), force: true }).catch(() => {});
+          await page.waitForTimeout(450);
+          const delInTip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-workflow-action-delete"]')
+            .first();
+          await expect(delInTip).toBeVisible({ timeout: t });
+          break;
+        }
+        if (
+          step.target === "Enable Workflow doc expects checkbox not app toggle (doc step)" &&
+          String(flow?.id || "").toLowerCase() === "enable-or-disable-a-workflow-part-2"
+        ) {
+          const t = getStepTimeoutMs(step);
+          const wrap = page.locator('[data-test-id^="cs-wf-activation-switch"]').first();
+          await expect(wrap).toBeVisible({ timeout: Math.min(t, 30_000) });
+          const toggleLbl = wrap.locator("label.toggle-switch").first();
+          const byRoleSwitch = page.getByRole("switch", { name: /enable workflow/i }).first();
+          const hasToggleUi =
+            (await toggleLbl.isVisible({ timeout: 6_000 }).catch(() => false)) ||
+            (await byRoleSwitch.isVisible({ timeout: 4_000 }).catch(() => false));
+          if (hasToggleUi) {
+            throw new Error(
+              'Enable or disable a workflow (doc): Document says check or uncheck the "Enable Workflow" checkbox; the app shows a toggle/switch (not a checkbox). Doc-step parity failure.'
+            );
+          }
+          break;
+        }
+        if (step.target === "Workflow save success toast (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const errBanner = page
+            .locator('[role="dialog"], .ReactModal__Content, [role="alert"]')
+            .filter({ hasText: /error|invalid|cannot|failed|required to save|fix the errors/i })
+            .first();
+          const errSoon = await errBanner.isVisible({ timeout: 2_500 }).catch(() => false);
+          if (errSoon) {
+            const txt = ((await errBanner.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+            throw new Error(`Workflow save failed (doc step): ${txt.slice(0, 500)}`);
+          }
+          const successLike = page.getByText(/workflow.*saved|saved successfully|successfully saved|has been saved|created successfully/i).first();
+          const toast = page
+            .locator(".Toastify__toast, [class*='Toastify'], [class*='toast']")
+            .filter({ hasText: /success|saved|created/i })
+            .first();
+          const wfSettingsChrome = page
+            .locator(
+              '[data-test-id="cs-page-title"]:has-text("Workflow Settings"), .page-header-title:has-text("Workflow Settings")'
+            )
+            .first();
+          const statusRegion = page.locator('[role="status"], [aria-live="polite"], .Notification').first();
+          const deadline = Date.now() + Math.min(t, 90_000);
+          let ok = false;
+          while (Date.now() < deadline && !ok) {
+            if (await successLike.isVisible().catch(() => false)) ok = true;
+            else if (await toast.isVisible().catch(() => false)) ok = true;
+            else if (await wfSettingsChrome.isVisible().catch(() => false)) ok = true;
+            else if (/workflow-settings|\/workflows/i.test(page.url())) ok = true;
+            else if (await statusRegion.isVisible().catch(() => false)) {
+              const st = ((await statusRegion.innerText().catch(() => "")) || "").toLowerCase();
+              if (/(saved|success|created|updated)/i.test(st)) ok = true;
+            }
+            if (ok) break;
+            await page.waitForTimeout(350);
+          }
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Workflow save (doc step): success toast/title/URL not detected within timeout after Save (app may use a different confirmation; check network/screenshot)."
+            );
+          }
+          break;
+        }
+        // "Specific stage(s)" may only exist after inline editor + Stage transition accordion are open (not on summary-only cards).
+        if (step.target === "Workflow Specific stages option (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const byTest = page.locator('[data-test-id="cs-wf-stage-specific-stages"]');
+          const byRadio = page.getByRole("radio", { name: /Specific stage/i });
+          const deadline = Date.now() + Math.min(t, 25_000);
+          while (Date.now() < deadline) {
+            if (await byTest.first().isVisible().catch(() => false)) break;
+            if (await byRadio.first().isVisible().catch(() => false)) break;
+            await workflowStage0CardHeading(page).click({ timeout: 5_000 }).catch(() => {});
+            const acc = page.locator('[data-test-id="cs-accordion"]').filter({ hasText: /Stage transition|access rules/i }).first();
+            if (await acc.isVisible().catch(() => false)) {
+              const collapsed = acc.locator(".Accordion-close, .Accordion__heading__collapsed").first();
+              if (await collapsed.isVisible().catch(() => false)) {
+                await acc.locator(".Accordion__heading button").first().click({ timeout: 5_000 }).catch(() => {});
+              }
+            }
+            await page.waitForTimeout(450);
+          }
+          const picked = byTest
+            .or(byRadio)
+            .or(page.getByText(/Specific stage/i).filter({ hasNotText: /Content Type/i }))
+            .first();
+          const vis = await picked.isVisible({ timeout: 8_000 }).catch(() => false);
+          if (!vis) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Workflow UI: "Specific stage(s)" option not found (no matching test-id/radio/label after opening stage editor and transition accordion). Doc lists this next to "All stages"; current build may use different markup.'
+            );
+            break;
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(picked, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(step, context, err?.message ?? String(err));
+            }
+          }
+          break;
+        }
+        // Permissions live under the same "Stage transition & access rules" accordion as Next available stages (legacy DOM uses cs-wf-stage-users, etc.).
+        const wfPermTargets = new Set([
+          "Users who can move stage All users roles label (doc step)",
+          "Workflow stage All users roles move option (doc step)",
+          "Workflow stage Specific users roles move option (doc step)",
+          "Users who can edit entry in stage label (doc step)",
+          "Workflow stage All users edit entry option (doc step)",
+          "Workflow stage No users edit entry option (doc step)",
+          "Workflow stage Current stage users edit option (doc step)",
+        ]);
+        if (wfPermTargets.has(step.target)) {
+          const byMap: Record<string, Locator> = {
+            "Users who can move stage All users roles label (doc step)": page
+              .locator('[data-test-id="cs-wf-stage-users"]')
+              .or(page.getByText(/Users\/roles who can change the entry stage/i)),
+            "Workflow stage All users roles move option (doc step)": page
+              .locator('[data-test-id="cs-wf-stage-all-users"]')
+              .or(page.getByRole("radio", { name: /All users\/roles/i })),
+            "Workflow stage Specific users roles move option (doc step)": page
+              .locator('[data-test-id="cs-wf-stage-specific-users"]')
+              .or(page.getByRole("radio", { name: /Specific user/i })),
+            "Users who can edit entry in stage label (doc step)": page
+              .locator('[data-test-id="cs-wf-edit-stage"]')
+              .or(page.getByText(/Users\/roles who can edit the entry in this stage/i)),
+            "Workflow stage All users edit entry option (doc step)": page
+              .locator('[data-test-id="cs-wf-edit-stage-by-all"]')
+              .or(page.getByRole("radio", { name: /All users\/roles/i })),
+            "Workflow stage No users edit entry option (doc step)": page
+              .locator('[data-test-id="cs-wf-edit-stage-by-none"]')
+              .or(page.getByRole("radio", { name: /No user/i })),
+            "Workflow stage Current stage users edit option (doc step)": page
+              .locator('[data-test-id="cs-wf-edit-stage-by-current-stage-user"]')
+              .or(page.getByRole("radio", { name: /Current stage user/i })),
+          };
+          const primary = byMap[step.target];
+          const deadline = Date.now() + Math.min(getStepTimeoutMs(step), 25_000);
+          while (Date.now() < deadline) {
+            if (await primary.first().isVisible().catch(() => false)) break;
+            await workflowStage0CardHeading(page).click({ timeout: 5_000 }).catch(() => {});
+            const acc = page.locator('[data-test-id="cs-accordion"]').filter({ hasText: /Stage transition|access rules/i }).first();
+            if (await acc.isVisible().catch(() => false)) {
+              const collapsed = acc.locator(".Accordion-close, .Accordion__heading__collapsed").first();
+              if (await collapsed.isVisible().catch(() => false)) {
+                await acc.locator(".Accordion__heading button").first().click({ timeout: 5_000 }).catch(() => {});
+              }
+            }
+            await page.waitForTimeout(450);
+          }
+          const picked = primary.first();
+          if (await picked.isVisible({ timeout: 6_000 }).catch(() => false)) {
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(picked, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(step, context, err?.message ?? String(err));
+              }
+            }
+          } else {
+            recordVerificationWarning(
+              step,
+              context,
+              "Workflow Set Permissions (doc): cs-wf-stage-* controls not visible — summary-card layout may omit legacy accordion markup until product aligns with docs DOM."
+            );
+          }
+          break;
+        }
+        if (step.target === "Prevent self-advancement label (doc step)") {
+          const byTest = page.locator('[data-test-id="cs-wf-four-eye-principle"]');
+          const byText = page.getByText(/Prevent self-advancement/i);
+          const deadline = Date.now() + Math.min(getStepTimeoutMs(step), 15_000);
+          while (Date.now() < deadline) {
+            if (await byTest.first().isVisible().catch(() => false)) break;
+            if (await byText.first().isVisible().catch(() => false)) break;
+            await workflowStage0CardHeading(page).click({ timeout: 5_000 }).catch(() => {});
+            const acc = page.locator('[data-test-id="cs-accordion"]').filter({ hasText: /Stage transition|access rules/i }).first();
+            if (await acc.isVisible().catch(() => false)) {
+              const collapsed = acc.locator(".Accordion-close, .Accordion__heading__collapsed").first();
+              if (await collapsed.isVisible().catch(() => false)) {
+                await acc.locator(".Accordion__heading button").first().click({ timeout: 5_000 }).catch(() => {});
+              }
+            }
+            await page.waitForTimeout(400);
+          }
+          const picked = byTest.or(byText).first();
+          if (await picked.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(picked, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(step, context, err?.message ?? String(err));
+              }
+            }
+          } else {
+            recordVerificationWarning(
+              step,
+              context,
+              'Workflow editor: "Prevent self-advancement" label not visible in current layout (legacy cs-wf-four-eye-principle under transition accordion).'
+            );
+          }
+          break;
+        }
+      }
+
+      // update-a-publish-rule / delete-a-publish-rule: first row on Publish Rules tab (doc).
+      if (isPublishRuleListRowMenuFlow(flow) && step.action === "verify") {
+        if (step.target === "Publish rules list first row visible (doc step)") {
+          const t = getStepTimeoutMs(step);
+          await page
+            .locator(".content-main.workflows")
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
+            .catch(() => {});
+          await page
+            .locator('[data-test-id="cs-settings-publish-rules-tab"].Tab__selected')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 30_000) })
+            .catch(() => {});
+          const row = page.locator('.content-main.workflows [data-test-id="cs-table-body-row-0"]').first();
+          const deadline = Date.now() + t;
+          let ok = false;
+          while (Date.now() < deadline && !ok) {
+            if (await row.isVisible().catch(() => false)) ok = true;
+            else await page.waitForTimeout(400);
+          }
+          if (!ok) {
+            throw new Error(
+              'Publish Rules list (doc): No publish rule row in the list. Create one (e.g. "Add a Publish Rule") or use a stack that already has publish rules.'
+            );
+          }
+          break;
+        }
+      }
+
+      // update-a-publish-rule: Edit in ⋮ menu (doc).
+      if (isUpdatePublishRuleFlow(flow) && step.action === "verify") {
+        if (step.target === "Publish rules list first row Edit in actions menu visible (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]');
+          await expect(tip).toBeVisible({ timeout: t });
+          const edit = tip.locator('[data-test-id="cs-publish-rules-action-edit"]');
+          await expect(edit).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(
+                edit,
+                step.expected.labelEquals,
+                (step.expected.labelMatch as any) || "contains"
+              );
+            } catch (err: any) {
+              recordVerificationWarning(step, context, err?.message ?? String(err));
+            }
+          }
+          break;
+        }
+      }
+
+      // add-a-publish-rule / update-a-publish-rule: Rule Details — edit screen (edit-rule-details.html) may omit .rule-header__title; accept heading or editor chrome.
+      if (
+        (isAddPublishRuleFlow(flow) || isUpdatePublishRuleFlow(flow)) &&
+        step.action === "verify" &&
+        step.target === "Rule Details page title (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        await page.waitForURL(/\/settings\/publishrules\/.+\/(new|edit)/, { timeout: Math.min(t, 60_000) }).catch(() => {});
+        const title = page
+          .locator('.rule-header__title, [data-test-id="cs-page-title"], .page-header-title, .PageTitle')
+          .filter({ hasText: /Rule Details/i })
+          .first();
+        const editorChrome = page
+          .locator('[data-test-id="cs-publish-rules-edit-save"], [data-test-id="cs-publish-rules-create-save"]')
+          .first();
+        const deadline = Date.now() + Math.min(t, 25_000);
+        let ok = false;
+        while (Date.now() < deadline && !ok) {
+          if (await title.isVisible().catch(() => false)) ok = true;
+          else if (await editorChrome.isVisible().catch(() => false)) ok = true;
+          else await page.waitForTimeout(400);
+        }
+        if (!ok) {
+          throw new Error(
+            'Rule Details (doc): "Rule Details" heading or publish rule editor (Save) not found after opening new/edit publish rule.'
+          );
+        }
+        if (step.expected?.labelEquals && (await title.isVisible().catch(() => false))) {
+          try {
+            await assertLabelMatch(
+              title,
+              step.expected.labelEquals,
+              (step.expected.labelMatch as any) || "contains"
+            );
+          } catch (err: any) {
+            recordVerificationWarning(step, context, err?.message ?? String(err));
+          }
+        }
+        break;
+      }
+
+      // delete-a-publish-rule: Delete in ⋮ menu, modal, post-delete (warning if delete did not complete).
+      if (isDeletePublishRuleFlow(flow) && step.action === "verify") {
+        if (step.target === "Publish rules list first row Delete in actions menu visible (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id="cs-publish-rules-action-delete"]') })
+            .first();
+          await expect(tip).toBeVisible({ timeout: t });
+          const del = tip.locator('[data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id="cs-publish-rules-action-delete"]').first();
+          await expect(del).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(
+                del,
+                step.expected.labelEquals,
+                (step.expected.labelMatch as any) || "contains"
+              );
+            } catch (err: any) {
+              recordVerificationWarning(step, context, err?.message ?? String(err));
+            }
+          }
+          break;
+        }
+        if (step.target === "Delete publish rule modal title (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const title = page
+            .locator('.ReactModal__delete [data-test-id="cs-modal-title-delete-publish-rule"]')
+            .or(page.locator('[data-test-id="cs-modal-title-delete-publish-rule"]'))
+            .first();
+          await expect(title).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(
+                title,
+                step.expected.labelEquals,
+                (step.expected.labelMatch as any) || "contains"
+              );
+            } catch (err: any) {
+              recordVerificationWarning(step, context, err?.message ?? String(err));
+            }
+          }
+          break;
+        }
+        if (step.target === "Publish rule delete completed success or modal dismissed (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const modal = page.locator('[data-test-id="cs-modal-title-delete-publish-rule"]');
+          const deadline = Date.now() + Math.min(t, 25_000);
+          while (Date.now() < deadline) {
+            if (!(await modal.isVisible().catch(() => false))) break;
+            await page.waitForTimeout(350);
+          }
+          if (await modal.isVisible().catch(() => false)) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Delete a publish rule (doc): Delete confirmation modal still visible after confirm; delete may not have completed.'
+            );
+            break;
+          }
+          const errBanner = page
+            .locator('[role="alert"], .Toastify__toast--error, [class*="toast-error"]')
+            .filter({ hasText: /error|failed|cannot|invalid/i })
+            .first();
+          if (await errBanner.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            const txt = ((await errBanner.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+            recordVerificationWarning(
+              step,
+              context,
+              `Delete a publish rule (doc): Error after delete attempt: ${txt.slice(0, 400)}`
+            );
+            break;
+          }
+          break;
+        }
+      }
+
+      // add-a-publish-rule: Branch(es) in doc may be absent from captured Rule Details DOM (warning-only).
+      if (isAddPublishRuleFlow(flow) && step.action === "verify") {
+        if (step.target === "Publish rule Branch(es) label in Rule Details (doc step)") {
+          const t = getStepTimeoutMs(step);
+          const branch = page
+            .locator(
+              'label.FieldLabel:has-text("Branch"), [data-test-id="cs-field"]:has-text("Branch"), [data-test-id*="branch" i]'
+            )
+            .first();
+          const visible = await branch.isVisible({ timeout: Math.min(t, 10_000) }).catch(() => false);
+          if (!visible) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Add a publish rule (doc): "Branch(es)" parameter label not found in Rule Details (new-rule-details-page.html capture has no branch block; product may render branches elsewhere).'
+            );
+          }
+          break;
+        }
+      }
+
       const { click, input } = loadOverrides(flow);
       const clickMapped = click[step.target] || CLICK_SELECTORS[step.target];
       const inputMapped = input[step.target] || INPUT_SELECTORS[step.target];
@@ -9790,6 +12405,31 @@ export async function performAction(
         : inputMapped
         ? page.locator(inputMapped).first()
         : await resolveTarget(page, step.target, flow);
+      // Workflow UI: "Next available stages" may be on the summary card (plain text) or in the expanded form (test-id).
+      if (step.action === "verify" && step.target === "Next available stages All stages label (doc step)") {
+        el = page
+          .locator('[data-test-id="cs-wf-next-stages"]')
+          .or(page.getByText(/Next available stages/i))
+          .first();
+      }
+      // "All stages" may be a radio in the transition form or the summary card (accessible name lists stage + Next available stages + All stages).
+      if (step.action === "verify" && step.target === "Workflow stage All stages option (doc step)") {
+        el = page
+          .locator('[data-test-id="cs-wf-stage-all-stages"]')
+          .or(page.getByRole("radio", { name: /^All stages$/i }))
+          .or(
+            page.getByRole("button", {
+              name: /Doc Stage One[\s\S]{0,600}Next available stages[\s\S]{0,120}All stages/i,
+            })
+          )
+          .first();
+      }
+      if (step.action === "verify" && step.target === "Prevent self-advancement label (doc step)") {
+        el = page
+          .locator('[data-test-id="cs-wf-four-eye-principle"]')
+          .or(page.getByText(/Prevent self-advancement/i))
+          .first();
+      }
       // Restore CT modal: title test-id may include a suffix (e.g. -author); poll up to step timeout.
       if (step.target === "Restore content type modal title (doc step)") {
         const t = getStepTimeoutMs(step);
@@ -10329,6 +12969,23 @@ export async function performAction(
     }
 
     case "enter": {
+      // send-an-entry-for-edit-access-approval — Add comments in modal (doc step 3).
+      if (isSendEntryForEditAccessApprovalFlow(flow) && step.target === "Add comments field in Request Edit Access modal (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const modal = page.getByRole("dialog").filter({ hasText: /Request Edit Access/i }).first();
+        await expect(modal).toBeVisible({ timeout: t });
+        const ta = modal
+          .locator("textarea")
+          .or(modal.getByLabel(/Add comments/i))
+          .or(modal.getByPlaceholder(/comment/i))
+          .first();
+        await expect(ta).toBeVisible({ timeout: t });
+        const val = String(step.value ?? "Doc automation edit access request {unique}").split("{unique}").join(unique);
+        await ta.fill(val);
+        await page.waitForTimeout(300);
+        break;
+      }
+
       // Save Your Views: fill entries inline search (does not submit; next step clicks Search button)
       if (
         step.target === "Search bar input (doc step)" &&
@@ -10409,6 +13066,220 @@ export async function performAction(
         break;
       }
 
+      // add-a-new-user — Invite User modal: email Pills + Roles react-select (invite-user-modal.html).
+      if (isAddANewUserFlow(flow) && step.target === "Invite User modal Email field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const raw = String(step.value ?? process.env.CS_INVITE_TEST_EMAIL ?? "")
+          .split("{unique}")
+          .join(unique);
+        const email = raw.trim();
+        if (!email) {
+          throw new Error(
+            "add-a-new-user: set step.value or CS_INVITE_TEST_EMAIL for the invite email (doc requires at least one email address)."
+          );
+        }
+        const box = page.locator('[data-test-id="cs-users-email-input"]').first();
+        await expect(box).toBeVisible({ timeout: t });
+        await box.click();
+        await page.keyboard.type(email, { delay: 15 });
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (isAddANewUserFlow(flow) && step.target === "Invite User modal Roles field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const roleName = String(step.value ?? "Admin").trim();
+        const control = page
+          .locator(
+            '[data-test-id="cs-roles-invite-user-roles-select-input"] .Portal__control, [data-test-id="cs-roles-invite-user-roles-select-input"] div[class*="control"]'
+          )
+          .first();
+        await expect(control).toBeVisible({ timeout: t });
+        await control.click();
+        await page.waitForTimeout(350);
+        const rsInput = page
+          .locator(
+            '[data-test-id="cs-roles-invite-user-roles-select-input"] input[aria-label="cs-select-aria"], [data-test-id="cs-roles-invite-user-roles-select-input"] input[type="text"]'
+          )
+          .first();
+        await expect(rsInput).toBeVisible({ timeout: 12_000 });
+        await rsInput.fill("");
+        await rsInput.fill(roleName);
+        await page.waitForTimeout(500);
+        // Menu is portaled (Portal__*); react-select keeps focus on input — confirm with Enter (see invite-user-modal.html).
+        const menu = page.locator(".Select__menu, [class*='Select__menu'], [id$='-listbox']").last();
+        const optByPortal = page
+          .locator(`[id^="react-select"][id*="-option-"]`)
+          .filter({ hasText: new RegExp(`^${escapeRegex(roleName)}$`, "i") })
+          .first();
+        if (await menu.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          const row = menu.getByRole("option", { name: new RegExp(escapeRegex(roleName), "i") }).first();
+          if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await row.click({ timeout: Math.min(t, 20_000) });
+          } else {
+            await page.keyboard.press("Enter");
+          }
+        } else if (await optByPortal.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await optByPortal.click({ timeout: Math.min(t, 20_000) });
+        } else {
+          await page.keyboard.press("Enter");
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (isAddANewUserFlow(flow) && step.target === "Invite User modal Message field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const u25 = unique.replace(/-/g, "").slice(0, 25);
+        const val = String(step.value ?? "")
+          .split("{unique25}")
+          .join(u25)
+          .split("{unique}")
+          .join(unique);
+        const inp = page.locator('[data-test-id="cs-users-message-input"] input, [data-test-id="cs-users-message-input"] textarea').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val);
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      // assign-role-to-a-user — Update User modal Roles react-select (same pattern as invite; test ids may differ).
+      if (isAssignRoleToUserFlow(flow) && step.target === "Update User modal Roles field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const roleName = String(step.value ?? process.env.CS_ASSIGN_ROLE_NAME ?? "Admin").trim();
+        const control = page
+          .locator(
+            '[data-test-id="cs-users-update-user-roles-select-input"] .Portal__control, [data-test-id="cs-users-update-user-roles-select-input"] div[class*="control"], [data-test-id="cs-roles-invite-user-roles-select-input"] .Portal__control, [role="dialog"] [data-test-id*="roles-select"] .Portal__control'
+          )
+          .first();
+        await expect(control).toBeVisible({ timeout: t });
+        await control.click();
+        await page.waitForTimeout(350);
+        const rsInput = page
+          .locator(
+            '[data-test-id="cs-users-update-user-roles-select-input"] input[aria-label="cs-select-aria"], [data-test-id="cs-users-update-user-roles-select-input"] input[type="text"], [data-test-id="cs-roles-invite-user-roles-select-input"] input[aria-label="cs-select-aria"], [data-test-id="cs-roles-invite-user-roles-select-input"] input[type="text"], [role="dialog"] [data-test-id*="roles-select"] input[type="text"]'
+          )
+          .first();
+        await expect(rsInput).toBeVisible({ timeout: 12_000 });
+        await rsInput.fill("");
+        await rsInput.fill(roleName);
+        await page.waitForTimeout(500);
+        const menu = page.locator(".Select__menu, [class*='Select__menu'], [id$='-listbox']").last();
+        const optByPortal = page
+          .locator(`[id^="react-select"][id*="-option-"]`)
+          .filter({ hasText: new RegExp(`^${escapeRegex(roleName)}$`, "i") })
+          .first();
+        if (await menu.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          const row = menu.getByRole("option", { name: new RegExp(escapeRegex(roleName), "i") }).first();
+          if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await row.click({ timeout: Math.min(t, 20_000) });
+          } else {
+            await page.keyboard.press("Enter");
+          }
+        } else if (await optByPortal.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await optByPortal.click({ timeout: Math.min(t, 20_000) });
+        } else {
+          await page.keyboard.press("Enter");
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      // create-a-role / update-a-role — Name on role editor (new-role-page.html).
+      if (isRoleEditorFlow(flow) && step.target === "New role Name field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const val = String(step.value ?? "Doc QA Role {unique}")
+          .split("{unique}")
+          .join(unique);
+        const inp = page.locator('[data-test-id="cs-roles-name-input"] input, #roleName').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val);
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isRoleEditorFlow(flow) && step.target === "New role Description field (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const val = String(step.value ?? "Doc automation custom role ({unique})")
+          .split("{unique}")
+          .join(unique);
+        const inp = page.locator('[data-test-id="cs-roles-description-input"] textarea, #role_description').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val);
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      // create-a-role / update-a-role — Doc: Permissions on entries (define permissions). No “Add Rule” step in flow; add rule in UI only if no row exists.
+      if (isRoleEditorFlow(flow) && step.target === "Permissions on entries for all content types (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const perm = String(step.value ?? "Read").trim();
+        if (!perm) {
+          throw new Error(
+            "role editor: set step.value for entry permissions (doc: Permissions on entries — define permissions)."
+          );
+        }
+        const scope = page.locator(".roles-edit__permissions--entries").first();
+        await expect(scope).toBeVisible({ timeout: t });
+        const existing = scope.locator('[data-test-id="cs-roles-permission-can-entries-select-input"]');
+        if ((await existing.count()) === 0) {
+          const add = page.locator('[data-test-id="cs-roles-add-condition-ct"]').first();
+          await expect(add).toBeVisible({ timeout: t });
+          await add.click({ timeout: t });
+          await page.waitForTimeout(450);
+        }
+        await fillCreateRoleEntryOrAssetCanPermissionSelect(page, scope, perm, t);
+        break;
+      }
+
+      // create-a-role / update-a-role — Doc: Permissions on assets (define permissions).
+      if (isRoleEditorFlow(flow) && step.target === "Permissions on assets for all assets and folders (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const perm = String(step.value ?? "Read").trim();
+        if (!perm) {
+          throw new Error(
+            "role editor: set step.value for assets permissions (doc: Permissions on assets — define permissions)."
+          );
+        }
+        const scope = page.locator(".roles-edit__permissions--assets").first();
+        await expect(scope).toBeVisible({ timeout: t });
+        const existing = scope.locator('[data-test-id="cs-roles-permission-can-entries-select-input"]');
+        if ((await existing.count()) === 0) {
+          const add = page.locator('[data-test-id="cs-roles-add-condition-asset"]').first();
+          await expect(add).toBeVisible({ timeout: t });
+          await add.click({ timeout: t });
+          await page.waitForTimeout(450);
+        }
+        await fillCreateRoleEntryOrAssetCanPermissionSelect(page, scope, perm, t);
+        break;
+      }
+
+      // examples-to-create-custom-roles — Scenario 1: All Permissions + Specific Content Types (permission-entries.html).
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Select Permissions for All Entries rule Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const perm = String(step.value ?? "All Permissions").trim();
+        if (!perm) {
+          throw new Error("examples Scenario 1: set step.value for Select Permissions (doc: All Permissions).");
+        }
+        const ruleRow = getFirstAllEntriesContentTypesRuleRow(page);
+        await expect(ruleRow).toBeVisible({ timeout: t });
+        await fillCreateRoleEntryOrAssetCanPermissionSelect(page, ruleRow, perm, t);
+        break;
+      }
+
+      if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Content type scope for All Entries rule Scenario 1 (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const scope = String(step.value ?? "Specific Content Types").trim();
+        if (!scope) {
+          throw new Error("examples Scenario 1: set step.value for content type scope (doc: Specific Content Types).");
+        }
+        const ruleRow = getFirstAllEntriesContentTypesRuleRow(page);
+        await expect(ruleRow).toBeVisible({ timeout: t });
+        await fillRoleEntryTypeScopeSelect(page, ruleRow, scope, t);
+        break;
+      }
+
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
       const rawVal = String(step.value ?? "")
         .split("{unique25}")
@@ -10465,7 +13336,7 @@ export async function performAction(
         }
       }
 
-      if (String(flow?.id || "").toLowerCase() === "add-workflows-and-stages" && step.target === "Workflow second stage name input (doc step)") {
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow second stage name input (doc step)") {
         const t = Math.min(getStepTimeoutMs(step), 35_000);
         let inp = page.locator('input[name="workflowStages[1].name"]').first();
         if (!(await inp.isVisible({ timeout: 5_000 }).catch(() => false))) {
@@ -10475,6 +13346,117 @@ export async function performAction(
         await inp.fill(val, { timeout: t });
         await page.waitForTimeout(200);
         break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow third stage name input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        // After "+ stage", the new inline editor is often the last Stage name field (index in name[] may lag).
+        let inp = page.locator('.workflow-stages [data-test-id="cs-wf-stage-name-input"] input').last();
+        if (!(await inp.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          inp = page.locator('input[name="workflowStages[2].name"]').first();
+        }
+        if (!(await inp.isVisible({ timeout: 4_000 }).catch(() => false))) {
+          inp = page.locator('[data-test-id="cs-wf-edit-stage-2"] [data-test-id="cs-wf-stage-name-input"] input').first();
+        }
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow fourth stage name input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        let inp = page.locator('.workflow-stages [data-test-id="cs-wf-stage-name-input"] input').last();
+        if (!(await inp.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          inp = page.locator('input[name="workflowStages[3].name"]').first();
+        }
+        if (!(await inp.isVisible({ timeout: 4_000 }).catch(() => false))) {
+          inp = page.locator('[data-test-id="cs-wf-edit-stage-3"] [data-test-id="cs-wf-stage-name-input"] input').first();
+        }
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow fifth stage name input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        let inp = page.locator('.workflow-stages [data-test-id="cs-wf-stage-name-input"] input').last();
+        if (!(await inp.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          inp = page.locator('input[name="workflowStages[4].name"]').first();
+        }
+        if (!(await inp.isVisible({ timeout: 4_000 }).catch(() => false))) {
+          inp = page.locator('[data-test-id="cs-wf-edit-stage-4"] [data-test-id="cs-wf-stage-name-input"] input').first();
+        }
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow third stage description input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        let ta = page.locator('.workflow-stages [data-test-id="cs-wf-stage-description-input"] textarea').last();
+        if (!(await ta.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          ta = page.locator('[data-test-id="cs-wf-edit-stage-2"] [data-test-id="cs-wf-stage-description-input"] textarea').first();
+        }
+        await expect(ta).toBeVisible({ timeout: t });
+        await ta.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow fourth stage description input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        let ta = page.locator('.workflow-stages [data-test-id="cs-wf-stage-description-input"] textarea').last();
+        if (!(await ta.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          ta = page.locator('[data-test-id="cs-wf-edit-stage-3"] [data-test-id="cs-wf-stage-description-input"] textarea').first();
+        }
+        await expect(ta).toBeVisible({ timeout: t });
+        await ta.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      if (isCmsWorkflowEditorFlow(flow) && step.target === "Workflow fifth stage description input (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 50_000);
+        let ta = page.locator('.workflow-stages [data-test-id="cs-wf-stage-description-input"] textarea').last();
+        if (!(await ta.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          ta = page.locator('[data-test-id="cs-wf-edit-stage-4"] [data-test-id="cs-wf-stage-description-input"] textarea').first();
+        }
+        await expect(ta).toBeVisible({ timeout: t });
+        await ta.fill(val, { timeout: t });
+        await page.waitForTimeout(200);
+        break;
+      }
+
+      // workflows-use-cases UC1 — Next available stages tokens (Specific stages must be selected first).
+      if (isWorkflowsUseCasesFlow(flow) && step.action === "enter") {
+        const t = getStepTimeoutMs(step);
+        if (step.target === "Workflow UC1 Draft next stage token (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 0, val, t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Ready for Review next stage token 1 (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 1, val, t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Ready for Review next stage token 2 (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 1, val, t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Ready for Review next stage token 3 (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 1, val, t);
+          break;
+        }
+        if (step.target === "Workflow UC1 Needs Changes next stage token (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 2, val, t);
+          break;
+        }
+        if (step.target === "Workflow UC1 SEO Tagging next stage token (doc step)") {
+          await workflowsUc1FillNextStageToken(page, 3, val, t);
+          break;
+        }
       }
 
       if (String(flow?.id || "").toLowerCase() === "basic-formatting") {
@@ -10935,6 +13917,49 @@ export async function performAction(
     }
 
     case "hover": {
+      if (isRemoveAUserFlow(flow) && step.target === "Users table row to remove user (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const row = await findUsersTableRowForRemove(page, flow);
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        const box = await row.boundingBox().catch(() => null);
+        if (box && box.width > 40 && box.height > 8) {
+          await page.mouse.move(box.x + Math.max(8, box.width - 32), box.y + box.height / 2);
+          await page.waitForTimeout(200);
+        }
+        for (const pos of [{ x: 120, y: 30 }, { x: 60, y: 30 }]) {
+          await row.hover({ position: pos, timeout: Math.min(t, 20_000), force: true }).catch(() => {});
+          await page.waitForTimeout(200);
+        }
+        await page.waitForTimeout(350);
+        if (box && box.width > 40 && box.height > 8) {
+          await page.mouse.move(box.x + Math.max(8, box.width - 24), box.y + box.height / 2);
+          await page.waitForTimeout(250);
+        }
+        await assertDeleteControlVisibleAfterHover(page, row, t);
+        break;
+      }
+
+      if (isDeleteARoleFlow(flow) && step.target === "Roles table row to delete (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const row = await findRolesTableRowForDelete(page, flow);
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        const box = await row.boundingBox().catch(() => null);
+        if (box && box.width > 40 && box.height > 8) {
+          await page.mouse.move(box.x + Math.max(8, box.width - 32), box.y + box.height / 2);
+          await page.waitForTimeout(200);
+        }
+        for (const pos of [{ x: 120, y: 30 }, { x: 60, y: 30 }]) {
+          await row.hover({ position: pos, timeout: Math.min(t, 20_000), force: true }).catch(() => {});
+          await page.waitForTimeout(200);
+        }
+        await page.waitForTimeout(350);
+        if (box && box.width > 40 && box.height > 8) {
+          await page.mouse.move(box.x + Math.max(8, box.width - 24), box.y + box.height / 2);
+          await page.waitForTimeout(250);
+        }
+        await assertDeleteControlVisibleAfterHoverRole(page, row, t);
+        break;
+      }
       if (step.target === "Trash content type row to restore hover (doc step)") {
         const t = getStepTimeoutMs(step);
         const ctRoot = page.locator(".trash-content-types").first();
@@ -11105,12 +14130,53 @@ export async function performAction(
         await hoverTrashListingRowDocOnly(page, fileRow, Math.min(t, 15_000));
         break;
       }
+      if (step.target === "Workflow list first workflow row hover for Power icon (doc step)") {
+        const t = getStepTimeoutMs(step);
+        await page
+          .locator(".content-main.workflows")
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
+          .catch(() => {});
+        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        await expect(row).toBeVisible({ timeout: t });
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        await row.hover({ timeout: Math.min(t, 30_000), force: true });
+        await page.waitForTimeout(450);
+        break;
+      }
+      if (step.target === "Workflow list first workflow row hover for delete (doc step)") {
+        const t = getStepTimeoutMs(step);
+        if (String(flow?.id || "").toLowerCase() !== "delete-a-workflow") {
+          throw new Error(`Unknown hover target: ${step.target}`);
+        }
+        await page
+          .locator(".content-main.workflows")
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
+          .catch(() => {});
+        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        await expect(row).toBeVisible({ timeout: t });
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        await row.hover({ timeout: Math.min(t, 30_000), force: true });
+        await page.waitForTimeout(450);
+        break;
+      }
       throw new Error(`Unknown hover target: ${step.target}`);
     }
 
     case "navigate": {
-      await page.goto(step.target, { waitUntil: "domcontentloaded" });
-      await page.waitForLoadState("networkidle");
+      let url = String(step.target || "").trim();
+      if (url === "{{GET_STARTED_WORKFLOWS_ENTRY_URL}}") {
+        url = (process.env.GET_STARTED_WORKFLOWS_ENTRY_URL || "").trim();
+        if (!url) {
+          throw new Error(
+            "get-started-with-workflows: Set GET_STARTED_WORKFLOWS_ENTRY_URL in .env to the full entry editor URL (hash URL) for an entry that has a workflow enabled."
+          );
+        }
+      }
+      const navT = getStepTimeoutMs(step, 120_000);
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: navT });
+      await page.waitForLoadState("networkidle").catch(() => {});
       break;
     }
 

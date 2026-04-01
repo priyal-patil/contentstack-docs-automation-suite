@@ -1,0 +1,89 @@
+{
+  "id": "remove-a-user",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/remove-a-user",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "hover",
+      "target": "Users table row to remove user (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Delete icon at extreme right of user row after hover (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Remove in user row actions menu (doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Remove",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Remove in user row actions menu (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Remove user confirmation modal Remove button (doc step)",
+      "timeoutMs": 20000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Remove",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Remove user confirmation modal Remove button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

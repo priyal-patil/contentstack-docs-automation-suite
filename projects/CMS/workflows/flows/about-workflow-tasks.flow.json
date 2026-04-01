@@ -1,0 +1,48 @@
+{
+  "id": "about-workflow-tasks",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/about-workflow-tasks",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Tasks icon beside Help in top bar (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top right corner",
+        "withinStrict": true,
+        "labelEquals": "Tasks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Help icon question mark beside Tasks in top bar (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top right corner",
+        "withinStrict": true,
+        "labelEquals": "Help",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Tasks icon beside Help in top bar (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

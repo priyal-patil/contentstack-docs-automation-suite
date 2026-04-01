@@ -5,6 +5,11 @@
  */
 import fs from "fs";
 import path from "path";
+import {
+  collectAllFlowSpecs,
+  flowIdFromPlaywrightSpecTitle,
+  projectFromPlaywrightSpecTitle,
+} from "./parseFlowSpecTitle";
 
 export type UnifiedStatus = "PASS" | "WARNING" | "FAIL";
 export type IssueKind = "None" | "Drift" | "Gap" | "Content";
@@ -99,30 +104,18 @@ type PwSuite = { title?: string; file?: string; specs?: PwSpec[]; suites?: PwSui
 type PwSpec = { title?: string; tests?: Array<{ results?: Array<{ status?: string }>; status?: string }> };
 type PwRoot = { suites?: PwSuite[] };
 
-function collectExecutableSpecs(suite: PwSuite, out: Array<{ project: string; flowId: string; pwStatus: string }>) {
-  const t = String(suite?.title || "");
-  const m = t.match(/Project=([A-Za-z0-9_-]+)/);
-  const project = m?.[1] || "";
-  if (/Project=/.test(t) && project) {
-    for (const spec of suite.specs || []) {
-      const flowId = String(spec.title || "").trim();
-      if (!flowId) continue;
-      const tr = (spec.tests || [])[0];
-      const res = (tr?.results || [])[0];
-      const pwStatus = String(res?.status || tr?.status || "unknown");
-      out.push({ project, flowId, pwStatus });
-    }
-  }
-}
-
-function walkAllSuites(suite: PwSuite, out: Array<{ project: string; flowId: string; pwStatus: string }>) {
-  collectExecutableSpecs(suite, out);
-  for (const c of suite.suites || []) walkAllSuites(c, out);
-}
-
 export function parseExecutableFlowsFromResults(pw: PwRoot | null): Array<{ project: string; flowId: string; pwStatus: string }> {
   const out: Array<{ project: string; flowId: string; pwStatus: string }> = [];
-  for (const s of pw?.suites || []) walkAllSuites(s, out);
+  for (const spec of collectAllFlowSpecs(pw)) {
+    const title = String(spec.title || "");
+    const project = projectFromPlaywrightSpecTitle(title) || "";
+    const flowId = flowIdFromPlaywrightSpecTitle(title);
+    if (!project || !flowId) continue;
+    const tr = (spec.tests || [])[0];
+    const res = (tr?.results || [])[0];
+    const pwStatus = String(res?.status || tr?.status || "unknown");
+    out.push({ project, flowId, pwStatus });
+  }
   return out;
 }
 

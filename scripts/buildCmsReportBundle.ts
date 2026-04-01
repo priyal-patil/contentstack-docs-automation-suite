@@ -9,6 +9,7 @@
 import fs from "fs";
 import path from "path";
 import { generateFlowReportHtml } from "../core/flowReportGenerator";
+import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle, type PwSuite } from "../core/report/parseFlowSpecTitle";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -165,23 +166,9 @@ function buildLinkAuditHtml(doc: DocAuditResult, module: string): string {
 </html>`;
 }
 
-type PwSuite = { title?: string; specs?: Array<{ title?: string }>; suites?: PwSuite[] };
-
 function collectCmsFlowIdsFromResults(flowsPath: string): string[] {
   const pw = readJson<{ suites?: PwSuite[] }>(flowsPath);
-  const ids: string[] = [];
-  function visit(suite: PwSuite) {
-    const t = String(suite?.title || "");
-    if (/Project=CMS\b/.test(t)) {
-      for (const spec of suite.specs || []) {
-        const id = String(spec.title || "").trim();
-        if (id) ids.push(id);
-      }
-    }
-    for (const c of suite.suites || []) visit(c);
-  }
-  for (const s of pw?.suites || []) visit(s);
-  return ids;
+  return collectCmsFlowSpecs(pw).map((spec) => flowIdFromPlaywrightSpecTitle(String(spec.title || "")));
 }
 
 function main() {

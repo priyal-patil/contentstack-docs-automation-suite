@@ -11,6 +11,7 @@
 
 import fs from "fs";
 import path from "path";
+import { flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -98,7 +99,8 @@ function collectFlowResults(pw: any): FlowRow[] {
         const res = (t?.results || [])[0];
         const status = res?.status || t?.status || (spec?.ok === false ? "failed" : "passed");
         const err = (res?.error?.message || t?.error?.message || "").slice(0, 500);
-        rows.push({ id: title, status, error: err || undefined });
+        const id = /Project=[A-Za-z0-9_-]+\b/.test(title) ? flowIdFromPlaywrightSpecTitle(title) : title;
+        rows.push({ id, status, error: err || undefined });
       }
     }
     for (const child of suite?.suites || []) walk(child);

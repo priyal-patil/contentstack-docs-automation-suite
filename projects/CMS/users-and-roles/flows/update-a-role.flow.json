@@ -1,0 +1,131 @@
+{
+  "id": "update-a-role",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/update-a-role",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Role row link to open role for editing (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New role Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New role Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Permissions section heading on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Permissions",
+        "labelMatch": "contains"
+      }
+    },
+
+
+    {
+      "action": "verify",
+      "target": "Publishing Environments label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Publishing Environments",
+        "labelMatch": "contains"
+      }
+    },
+
+    {
+      "action": "verify",
+      "target": "Languages label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save button to save role changes (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button to save role changes (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "id": "add-a-new-user",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/add-a-new-user",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Invite User button top right on Users & Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Invite User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Invite User button top right on Users & Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite User modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Invite User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email field label in Invite User modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Email",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Roles field label in Invite User modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Message field label in Invite User modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Message",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Invite User modal Email field (doc step)",
+      "value": "docs-qa-test-invite-{unique}@example.org",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Invite User modal Roles field (doc step)",
+      "value": "Admin",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Invite User modal Message field (doc step)",
+      "value": "Doc automation optional invite message ({unique})",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite button in Invite User modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Invite",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Invite button in Invite User modal (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

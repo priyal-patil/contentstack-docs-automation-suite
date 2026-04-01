@@ -119,7 +119,7 @@ async function main() {
     console.log("\n▶️ Step 4: Running flow tests for", flowIds.length, "flow id(s) from sheet:", flowIds.join(", "));
     const grep = flowIds.map((id: string) => id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
     // Quote -g so shell does not interpret | as pipe
-    const flowArgs = ["playwright", "test", "tests/flows.spec.ts", "-g", `"${grep}"`, "--workers=1"];
+    const flowArgs = ["playwright", "test", "tests/flows.spec.ts", "--project=flows", "-g", `"${grep}"`, "--workers=1"];
     if (headed) flowArgs.push("--headed");
     const flowRun = spawnSync("npx", flowArgs, { cwd, stdio: "inherit", shell: true });
     if (flowRun.status !== 0) {

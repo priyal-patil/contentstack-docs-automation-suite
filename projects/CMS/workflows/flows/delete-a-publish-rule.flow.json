@@ -1,0 +1,103 @@
+{
+  "id": "delete-a-publish-rule",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/delete-a-publish-rule",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Rules tab Workflow Settings (doc step)",
+      "expected": {
+        "labelEquals": "Publish Rules",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish Rules tab Workflow Settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Publish Rules tab selected Workflow Settings (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "verify",
+      "target": "Publish rules table Actions column header (doc step)",
+      "expected": {
+        "labelEquals": "Actions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rules list first row visible (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "click",
+      "target": "Publish rules list first row Actions ellipsis (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Publish rules list first row Delete in actions menu visible (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Publish rules list Delete in vertical actions menu (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Delete publish rule modal title (doc step)",
+      "expected": {
+        "labelEquals": "Delete publish rule",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete publish rule modal Delete button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule delete completed success or modal dismissed (doc step)",
+      "expected": {}
+    }
+  ]
+}

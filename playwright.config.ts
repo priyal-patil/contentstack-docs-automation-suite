@@ -7,7 +7,7 @@ const useHeadless = isCI || process.env.PLAYWRIGHT_HEADLESS === "1";
 const defaultWorkers = isCI ? 2 : 1;
 const workers = Number(process.env.PW_WORKERS || defaultWorkers);
 const slowMo = Number(process.env.PW_SLOWMO || 200);
-/** Required for tests/flows.spec.ts module-parallel + serial-within-module. Set PW_FULLY_PARALLEL=0 to disable. */
+/** Flow URL tests are parallel-safe; other suites may opt out via PW_FULLY_PARALLEL=0. */
 const fullyParallel = process.env.PW_FULLY_PARALLEL !== "0";
 
 export default defineConfig({
@@ -46,8 +46,23 @@ export default defineConfig({
       },
     },
     {
+      name: "flows",
+      testMatch: /flows\.spec\.ts/,
+      use: {
+        storageState: "auth.json",
+        headless: useHeadless,
+        launchOptions: {
+          slowMo,
+          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+        },
+        screenshot: "only-on-failure",
+        video: "retain-on-failure",
+        trace: "on-first-retry",
+      },
+    },
+    {
       name: "default",
-      testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/],
+      testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/, /flows\.spec\.ts/],
       use: {
         storageState: "auth.json",
         headless: useHeadless,

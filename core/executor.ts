@@ -12,6 +12,10 @@
 import { Page } from "@playwright/test";
 import crypto from "crypto";
 import { performAction } from "../rules/core/actionRules";
+import {
+  ensureUsersRolesChainUnique,
+  resetUsersRolesChainUnique,
+} from "./usersRolesChain";
 
 /** One UUID per Playwright process for all `json-rich-text-editor` flows so customize + entry flows share the same CT name (`Shared JSON RTE Doc CT-{unique}`). */
 let jsonRichTextEditorModuleUnique: string | null = null;
@@ -21,6 +25,16 @@ function uniqueForFlow(flow: any): string {
   if (mod === "json-rich-text-editor") {
     if (!jsonRichTextEditorModuleUnique) jsonRichTextEditorModuleUnique = crypto.randomUUID();
     return jsonRichTextEditorModuleUnique;
+  }
+  const id = String(flow?.id || "").toLowerCase();
+  if (mod === "users-and-roles") {
+    if (id === "create-a-role") {
+      resetUsersRolesChainUnique();
+      return ensureUsersRolesChainUnique();
+    }
+    if (id === "update-a-role" || id === "delete-a-role") {
+      return ensureUsersRolesChainUnique();
+    }
   }
   return crypto.randomUUID();
 }

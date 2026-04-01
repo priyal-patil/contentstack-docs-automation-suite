@@ -1,0 +1,210 @@
+{
+  "id": "examples-to-create-custom-roles-scenario-1",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/examples-to-create-custom-roles",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Role button top right on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "New Role",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Role button top right on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New role Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New role Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "New role Name field (doc step)",
+      "value": "Scenario 1 Example Role {unique}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "New role Description field (doc step)",
+      "value": "Doc Scenario 1 — all permissions to specific content types ({unique})",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Permissions section heading on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Permissions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entries permissions block label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "All Entries of Content Types heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "All Entries of Content Types",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add rule under All Entries of Content Types Scenario 1 (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Select Permissions for All Entries rule Scenario 1 (doc step)",
+      "value": "All Permissions",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Content type scope for All Entries rule Scenario 1 (doc step)",
+      "value": "Specific Content Types",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select Content Types button for All Entries rule Scenario 1 (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Content type row in Select Content Types modal Scenario 1 (doc step)",
+      "value": "Contact Us",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Add Content Types button in Select Content Types modal Scenario 1 (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Publishing Environments label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Publishing Environments",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Publishing Environment checkbox on New Role page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Languages label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Language checkbox on New Role page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save button to create the new role (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button to create the new role (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

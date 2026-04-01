@@ -1,0 +1,89 @@
+{
+  "id": "delete-a-role",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/delete-a-role",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "hover",
+      "target": "Roles table row to delete (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Delete icon at extreme right of role row after hover (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Role modal title (doc step)",
+      "timeoutMs": 20000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete Role",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Role confirmation modal Delete button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

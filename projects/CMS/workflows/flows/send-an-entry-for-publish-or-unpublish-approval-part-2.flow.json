@@ -1,0 +1,69 @@
+{
+  "id": "send-an-entry-for-publish-or-unpublish-approval-part-2",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/send-an-entry-for-publish-or-unpublish-approval",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Publish button at bottom of entry editor page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Publish button at bottom of entry editor page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "modalTitle": "Publish Entry"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Send (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

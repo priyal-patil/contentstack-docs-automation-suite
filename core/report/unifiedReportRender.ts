@@ -12,6 +12,7 @@ import {
   safeSegment,
   type UnifiedRow,
 } from "./unifiedReportModel";
+import { buildSlackDocsQaPayload } from "./slackDocsQaMessages";
 
 function escapeHtml(s: string): string {
   return String(s ?? "")
@@ -321,6 +322,8 @@ export function renderUnifiedReport(
   const csv = excelSheet.map((line) => line.map((c) => csvEscape(String(c))).join(",")).join("\n");
   fs.writeFileSync(csvPath, csv, "utf-8");
 
+  const slackMessage = buildSlackDocsQaPayload(rows, generatedAt);
+
   const slackPayload = {
     generatedAt,
     reportDir,
@@ -329,6 +332,8 @@ export function renderUnifiedReport(
       warning: rows.filter((r) => r.status === "WARNING").length,
       fail: rows.filter((r) => r.status === "FAIL").length,
     },
+    /** Ready-to-post Slack mrkdwn + structured fields for integrations */
+    slackMessage,
     projects: [...byProj.entries()].map(([name, s]) => ({
       name,
       pass: s.pass,
@@ -349,6 +354,12 @@ export function renderUnifiedReport(
       issueType: r.issueType,
       details: r.details,
       reportHref: r.reportHref,
+      docStepFailures: r.docStepFailures,
+      docStepWarnings: r.docStepWarnings,
+      brokenLinks: r.brokenLinks,
+      brokenImages: r.brokenImages,
+      tableIssue: r.tableIssue,
+      oldLogoHits: r.oldLogoHits,
     })),
   };
   const slackPath = path.join(reportDir, "unified-report.json");

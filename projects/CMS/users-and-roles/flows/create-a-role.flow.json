@@ -1,0 +1,189 @@
+{
+  "id": "create-a-role",
+  "project": "CMS",
+  "module": "users-and-roles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/invite-users-and-assign-roles/create-a-role",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users & Roles in settings left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users & Roles page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users & Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Roles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Roles tab on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Role button top right on Users and Roles page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "New Role",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Role button top right on Users and Roles page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New role Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New role Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Permissions section heading on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Permissions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entries permissions block label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Assets permissions block label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Assets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "New role Name field (doc step)",
+      "value": "Doc QA Role {unique}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "New role Description field (doc step)",
+      "value": "Doc automation custom role ({unique})",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Permissions on entries for all content types (doc step)",
+      "value": "Read",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Permissions on assets for all assets and folders (doc step)",
+      "value": "Read",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Publishing Environments label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Publishing Environments",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Publishing Environment checkbox on New Role page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Languages label on New Role page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Language checkbox on New Role page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save button to create the new role (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button to create the new role (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

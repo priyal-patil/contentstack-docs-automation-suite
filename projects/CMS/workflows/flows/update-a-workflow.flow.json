@@ -1,0 +1,102 @@
+{
+  "id": "update-a-workflow",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/update-a-workflow",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflows tab selected Workflow Settings (doc step)",
+      "expected": {
+        "labelEquals": "Workflow",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow list first row visible (doc step)",
+      "expected": {},
+      "timeoutMs": 90000
+    },
+    { "action": "click", "target": "Workflow list first row open (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflow Name label (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Workflow description input (doc step)",
+      "value": "Updated via doc update-a-workflow {unique}",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow first stage Edit icon summary card (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage parent accordion expand (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage transition accordion toggle (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Prevent self-advancement label (doc step)",
+      "expected": {
+        "labelEquals": "Prevent self-advancement",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow first stage Delete icon (doc step)",
+      "expected": {},
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow editor Save button label (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow editor Save button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflow save success toast (doc step)",
+      "expected": {},
+      "timeoutMs": 120000
+    }
+  ]
+}

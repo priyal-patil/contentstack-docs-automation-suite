@@ -19,7 +19,10 @@
  *   playwright test tests/flows.spec.ts tests/docs-audit.spec.ts tests/docs.spec.ts
  *   npx ts-node scripts/generateUnifiedReport.ts --reportDir "$REPORT_DIR"
  *
- * Slack: POST unified-report.json or use projects[] + summary blocks in your integration.
+ * Slack: webhook posts `slackMessage.mrkdwnText` (Nightly Docs-QA format). Optional env:
+ *   SLACK_PROJECT_LABEL — header project name (default: single project from rows, else "Multi-project")
+ *   SLACK_TIMEZONE — IANA tz for "Completed at" (default: UTC)
+ *   SLACK_DASHBOARD_URL / SLACK_EXCEL_URL — footer links; else GitHub Actions run URL when set
  */
 
 import path from "path";

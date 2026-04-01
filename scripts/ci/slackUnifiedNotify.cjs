@@ -29,11 +29,17 @@ if (!fs.existsSync(jsonPath)) {
 }
 
 const j = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
-const s = j.summary || {};
-const text =
-  `*Documentation automation* (run ${runId || "local"})\n` +
-  `Pass: ${s.pass ?? 0} · Warn: ${s.warning ?? 0} · Fail: ${s.fail ?? 0}\n` +
-  (runUrl ? `<${runUrl}|Open workflow run>` : "");
+const sm = j.slackMessage;
+let text;
+if (sm && typeof sm.mrkdwnText === "string" && sm.mrkdwnText.trim()) {
+  text = sm.mrkdwnText.trim();
+} else {
+  const s = j.summary || {};
+  text =
+    `*Documentation automation* (run ${runId || "local"})\n` +
+    `Pass: ${s.pass ?? 0} · Warn: ${s.warning ?? 0} · Fail: ${s.fail ?? 0}\n` +
+    (runUrl ? `<${runUrl}|Open workflow run>` : "");
+}
 
 const body = JSON.stringify({ text });
 const u = new URL(webhook);

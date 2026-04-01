@@ -1,0 +1,123 @@
+{
+  "id": "revoke-edit-access-for-an-entry",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/revoke-edit-access-for-an-entry",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab icon (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Entry editor right sidebar",
+        "withinStrict": true
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry editor Status tab icon (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Status panel title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Entry Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Details section heading in Entry Status panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Workflow Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Current stage assignees due date under Workflow Details in Entry Status panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users to whom edit access is granted section heading in Entry Status panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Entry editor right sidebar",
+        "withinStrict": true,
+        "labelEquals": "Users to whom edit access is granted",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke edit access remove icon beside first user in Users to whom edit access granted section (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "View All link in Users to whom edit access granted section (doc step)",
+      "optional": true,
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "All Other users dialog title (doc step)",
+      "optional": true,
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Modal",
+        "withinStrict": true,
+        "labelEquals": "All Other users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke edit access remove icon beside first user in All Other users dialog (doc step)",
+      "optional": true,
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "Close button in All Other users dialog (doc step)",
+      "optional": true,
+      "timeoutMs": 30000
+    }
+  ]
+}

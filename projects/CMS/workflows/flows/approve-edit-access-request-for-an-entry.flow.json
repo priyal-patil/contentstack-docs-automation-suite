@@ -1,0 +1,66 @@
+{
+  "id": "approve-edit-access-request-for-an-entry",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/approve-edit-access-request-for-an-entry",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entry editor Information tab icon in right panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Entry editor right sidebar",
+        "withinStrict": true
+      }
+    },
+    { "action": "click", "target": "Entry editor Information tab icon in right panel (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Pending Access Requests dialog title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "withinStrict": true,
+        "labelEquals": "Pending Access Requests",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Allow button visible in Pending Access Requests dialog (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Allow",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Reject button visible in Pending Access Requests dialog (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Reject",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Allow button in Pending Access Requests dialog (doc step)", "timeoutMs": 60000 }
+  ]
+}

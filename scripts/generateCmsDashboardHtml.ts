@@ -7,6 +7,7 @@
 
 import fs from "fs";
 import path from "path";
+import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -49,14 +50,6 @@ function walkFlowSources(cmsRoot: string, out: Map<string, string>) {
 
 type PwSuite = { title?: string; specs?: Array<{ title?: string; tests?: Array<{ results?: Array<{ status?: string; duration?: number; error?: { message?: string } }> }>; ok?: boolean }>; suites?: PwSuite[] };
 
-function collectCmsSpecs(suite: PwSuite, cmsSpecs: NonNullable<PwSuite["specs"]>) {
-  const t = String(suite?.title || "");
-  if (/Project=CMS\b/.test(t)) {
-    for (const spec of suite.specs || []) cmsSpecs.push(spec);
-  }
-  for (const child of suite.suites || []) collectCmsSpecs(child, cmsSpecs);
-}
-
 function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "—";
   const s = Math.floor(ms / 1000);
@@ -86,8 +79,7 @@ function main() {
   const sourceByFlow = new Map<string, string>();
   walkFlowSources(path.join(process.cwd(), "projects", "CMS"), sourceByFlow);
 
-  const cmsSpecs: NonNullable<PwSuite["specs"]> = [];
-  for (const s of pw?.suites || []) collectCmsSpecs(s, cmsSpecs);
+  const cmsSpecs: NonNullable<PwSuite["specs"]> = collectCmsFlowSpecs(pw as { suites?: PwSuite[] });
 
   type Row = {
     flowId: string;
@@ -105,7 +97,7 @@ function main() {
 
   const rows: Row[] = [];
   for (const spec of cmsSpecs) {
-    const flowId = String(spec.title || "");
+    const flowId = flowIdFromPlaywrightSpecTitle(String(spec.title || ""));
     const res = (spec.tests || [])[0]?.results?.[0] || {};
     const status = String(res.status || "unknown");
     const durationMs = Number(res.duration ?? 0);

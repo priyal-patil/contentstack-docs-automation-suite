@@ -1,0 +1,228 @@
+{
+  "id": "add-a-publish-rule",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/add-a-publish-rule",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow Settings page title (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Rules tab Workflow Settings (doc step)",
+      "expected": {
+        "labelEquals": "Publish Rules",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish Rules tab Workflow Settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Publish Rules tab selected Workflow Settings (doc step)",
+      "expected": {}
+    },
+    {
+      "action": "verify",
+      "target": "New Publish Rule header button (doc step)",
+      "expected": {
+        "labelEquals": "New Publish Rule",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "New Publish Rule header button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Rule Details page title (doc step)",
+      "expected": {
+        "labelEquals": "Rule Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Branch(es) label in Rule Details (doc step)",
+      "expected": {
+        "labelEquals": "Branch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Content type label (doc step)",
+      "expected": {
+        "labelEquals": "Content type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule All Content types option (doc step)",
+      "expected": {
+        "labelEquals": "All Content types",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Specific Content Type(s) option (doc step)",
+      "expected": {
+        "labelEquals": "Specific Content Type(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Language label (doc step)",
+      "expected": {
+        "labelEquals": "Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule All Languages option (doc step)",
+      "expected": {
+        "labelEquals": "All Languages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Specific Language(s) option (doc step)",
+      "expected": {
+        "labelEquals": "Specific Language(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Environment label (doc step)",
+      "expected": {
+        "labelEquals": "Environment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Action label (doc step)",
+      "expected": {
+        "labelEquals": "Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Action Publish option (doc step)",
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Action Unpublish option (doc step)",
+      "expected": {
+        "labelEquals": "Unpublish",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Action All option (doc step)",
+      "expected": {
+        "labelEquals": "All",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Conditions section (doc step)",
+      "expected": {
+        "labelEquals": "Conditions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Select approvers section (doc step)",
+      "expected": {
+        "labelEquals": "approver",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule By User(s) label (doc step)",
+      "expected": {
+        "labelEquals": "User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule By Role(s) label (doc step)",
+      "expected": {
+        "labelEquals": "Role",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Prevent self-approval label (doc step)",
+      "expected": {
+        "labelEquals": "Prevent self-approval",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Workflow Stage section (doc step)",
+      "expected": {
+        "labelEquals": "Workflow",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish rule Workflow stage should be label (doc step)",
+      "expected": {
+        "labelEquals": "Workflow stage",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish rule environment first option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule All radio (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule approver By User(s) Me or first option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule approver By Role(s) Admin option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Publish rule Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

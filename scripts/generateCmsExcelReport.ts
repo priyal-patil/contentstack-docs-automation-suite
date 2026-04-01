@@ -8,6 +8,7 @@
 import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
+import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -44,18 +45,6 @@ type PwResult = { status?: string; duration?: number; error?: { message?: string
 type PwTest = { results?: PwResult[]; title?: string };
 type PwSpec = { title?: string; tests?: PwTest[] };
 type PwSuite = { title?: string; specs?: PwSpec[]; suites?: PwSuite[] };
-
-function collectCmsSpecs(suite: PwSuite, cmsSpecs: PwSpec[]) {
-  const t = String(suite?.title || "");
-  if (/Project=CMS\b/.test(t)) {
-    for (const spec of suite.specs || []) cmsSpecs.push(spec);
-  }
-  for (const child of suite.suites || []) collectCmsSpecs(child, cmsSpecs);
-}
-
-function walkAllSuites(root: { suites?: PwSuite[] } | undefined, cmsSpecs: PwSpec[]) {
-  for (const s of root?.suites || []) collectCmsSpecs(s, cmsSpecs);
-}
 
 function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "";
@@ -137,8 +126,7 @@ function main() {
   const sourceByFlow = new Map<string, string>();
   walkFlowSources(path.join(process.cwd(), "projects", "CMS"), sourceByFlow);
 
-  const cmsSpecs: PwSpec[] = [];
-  walkAllSuites(pw as { suites?: PwSuite[] }, cmsSpecs);
+  const cmsSpecs: PwSpec[] = collectCmsFlowSpecs(pw as { suites?: PwSuite[] });
 
   const rows: Array<{
     flowId: string;
@@ -163,7 +151,7 @@ function main() {
   const auditResults: DocAuditRow[] = docsAudit?.results || [];
 
   for (const spec of cmsSpecs) {
-    const flowId = String(spec.title || "");
+    const flowId = flowIdFromPlaywrightSpecTitle(String(spec.title || ""));
     const test = (spec.tests || [])[0];
     const res = (test?.results || [])[0] || {};
     const status = String(res.status || "unknown");
