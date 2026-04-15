@@ -1,0 +1,46 @@
+{
+  "id": "add-to-release",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/add-to-release",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Visual builder horizontal ellipses (doc step)" },
+    { "action": "click", "target": "Visual builder horizontal ellipses (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Add to Release menu item VE (doc step)" },
+    { "action": "click", "target": "Add to Release menu item VE (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Add to Release modal (doc step)",
+      "optional": true,
+      "expected": { "modalTitle": "Add to Release" }
+    },
+    {
+      "action": "verify",
+      "target": "Select release modal (doc step)",
+      "optional": true,
+      "expected": { "modalTitle": "Release" }
+    }
+  ]
+}

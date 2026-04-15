@@ -1,0 +1,89 @@
+{
+  "id": "preview-content-across-a-timeline",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/timeline/preview-content-across-a-timeline",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Timeline preview default view (doc step)"
+    },
+    { "action": "click", "target": "Timeline bar date control (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Timeline environment selector (doc step)" },
+    { "action": "verify", "target": "Timeline locale selector (doc step)" },
+    { "action": "click", "target": "Add Preview button (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Timeline add preview dropdown (doc step)", "optional": true },
+    { "action": "click", "target": "Scheduled publish or release menu option (doc step)", "optional": true },
+    { "action": "click", "target": "Select Custom Date option (doc step)", "optional": true },
+    { "action": "verify", "target": "URL Navigation toggle (doc step)" },
+    { "action": "verify", "target": "URL Navigation mode description (doc step)", "optional": true },
+    { "action": "click", "target": "Timeline date Preview Details icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Preview setup dialog after Preview action (doc step)",
+      "optional": true
+    },
+    {
+      "action": "warn",
+      "value": "Depending on the scenario of your entry's publish status you will see different modals (doc): Environment/Locale, Scheduled Publish, Release, and/or tentative Date and Time as described below."
+    },
+    {
+      "action": "warn",
+      "value": "Unpublished Entries (doc): If the entry is not published in any environment and not scheduled, select Environment and Locale to preview. If not added to any release and not scheduled for publishing, input a tentative Date and Time to proceed."
+    },
+    {
+      "action": "warn",
+      "value": "Scheduled Publishing (doc): For scheduled publishes, select Environment and Locale; use the Scheduled Publish dropdown when the entry is scheduled for publishing."
+    },
+    {
+      "action": "warn",
+      "value": "Added to an Undeployed Release (doc): Select Environment and Locale; if part of a release but not deployed, input a tentative Date and Time. From Releases, previewing an undeployed release may prompt for tentative Date and Time."
+    },
+    {
+      "action": "warn",
+      "value": "Added to a Deployed Release (doc): Select Environment and Locale; if already deployed via a release, use the Release dropdown to select the release."
+    },
+    { "action": "verify", "target": "Publish Timeline left panel (doc step)", "optional": true },
+    { "action": "verify", "target": "Scheduled publish detail line (doc step)", "optional": true },
+    { "action": "verify", "target": "Release items list region (doc step)", "optional": true },
+    { "action": "click", "target": "Timeline entries vertical ellipsis (doc step)", "optional": true },
+    { "action": "verify", "target": "Compare Entry menu item (doc step)", "optional": true },
+    { "action": "verify", "target": "Open link in new tab control (doc step)", "optional": true },
+    { "action": "click", "target": "Compare Website icon (doc step)", "optional": true },
+    { "action": "verify", "target": "Highlight Differences option (doc step)", "optional": true },
+    { "action": "click", "target": "Viewport Responsive button (doc step)", "optional": true },
+    { "action": "verify", "target": "Website orientation toggle (doc step)", "optional": true },
+    {
+      "action": "warn",
+      "value": "Alternatively compare websites in different timelines from the Preview Details page (doc)."
+    },
+    { "action": "click", "target": "Remove Preview icon (doc step)", "optional": true },
+    {
+      "action": "warn",
+      "value": "When viewing a particular release, use the Preview button to preview the website for that specific release (doc)."
+    },
+    { "action": "verify", "target": "Release context Preview button (doc step)", "optional": true }
+  ]
+}

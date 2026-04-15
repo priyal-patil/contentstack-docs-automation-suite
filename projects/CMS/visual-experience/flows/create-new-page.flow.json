@@ -1,0 +1,90 @@
+{
+  "id": "create-new-page",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/create-new-page",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    { "action": "click", "target": "URL bar add new page plus icon (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create new page modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Create New Page"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create new page content type select control (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Create new page Page content type option (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    { "action": "enter", "target": "Create new page Title field (doc step)", "value": "Doc new page {unique}" },
+    { "action": "verify", "target": "Create new page URL input visible (doc step)" },
+    { "action": "click", "target": "Create new page Create button (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    { "action": "click", "target": "Components button visual builder (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Components menu Hero Banner component (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Visual editor Form sidebar root (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false
+      }
+    },
+    {
+      "action": "warn",
+      "value": "Doc: Canvas preview updates in real time when you enter content in the right panel."
+    },
+    { "action": "enter", "target": "Page component first field input in Form sidebar (doc step)", "value": "Doc content {unique}" },
+    { "action": "verify", "target": "Visual editor canvas workspace (doc step)", "optional": true },
+    { "action": "click", "target": "Save changes header button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Save changes modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Save Changes"
+      }
+    },
+    { "action": "click", "target": "Save changes modal Confirm Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

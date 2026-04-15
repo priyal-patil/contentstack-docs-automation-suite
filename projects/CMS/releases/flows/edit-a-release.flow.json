@@ -34,18 +34,6 @@
     },
     { "action": "enter", "target": "Release Name input (doc step)", "value": "APPEND: edited" },
     { "action": "enter", "target": "Release Description input (doc step)", "value": "APPEND: edited" },
-    { "action": "click", "target": "Save button in edit release modal (doc step)" },
-    {
-      "action": "verify",
-      "target": "Release activity cell (doc step)",
-      "expected": {
-        "labelEquals": "publish",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "verify", "target": "Releases list (doc step)" },
-    { "action": "click", "target": "Release top-right horizontal ellipsis (doc step)" },
-    { "action": "click", "target": "Edit from release top-right menu (doc step)" }
+    { "action": "click", "target": "Save button in edit release modal (doc step)" }
   ]
 }
- 

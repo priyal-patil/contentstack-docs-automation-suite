@@ -2,6 +2,11 @@ import { test } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import {
+  parseDocsUrlsCsvFile,
+  filterDocRowsByAuditEnv,
+  uniqueUrlsFromRows,
+} from "../core/docsUrlsCsv";
 
 type BrokenLink = {
   docUrl: string;
@@ -158,15 +163,6 @@ async function runOldLogoCheck(
     }
   }
   return found;
-}
-
-function readDocUrlsFromCsv(csvPath: string): string[] {
-  const raw = fs.readFileSync(csvPath, "utf-8");
-  return raw
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .filter((l) => !l.startsWith("#"));
 }
 
 function normalizeUrl(base: string, href: string): string | null {
@@ -364,12 +360,15 @@ async function runTableVerification(
 // Allow override so "run only URLs from this bulk sheet" can pass a CSV with just those URLs
 const defaultCsv = path.resolve(__dirname, "../data/docs-urls.csv");
 const csvPath = process.env.DOCS_URLS_CSV ? path.resolve(process.cwd(), process.env.DOCS_URLS_CSV) : defaultCsv;
-const docUrls = readDocUrlsFromCsv(csvPath);
+const auditRows = filterDocRowsByAuditEnv(parseDocsUrlsCsvFile(csvPath));
+const docUrls = uniqueUrlsFromRows(auditRows);
+const auditFilter =
+  process.env.DOCS_AUDIT_PROJECTS?.trim() || process.env.DOCS_AUDIT_PROJECT?.trim() || "(all projects)";
 console.log("[Docs Audit] csvPath =", csvPath);
 console.log("[Docs Audit] exists =", fs.existsSync(csvPath));
-console.log("[Docs Audit] raw file =\n", fs.readFileSync(csvPath, "utf-8"));
-console.log("[Docs Audit] parsed urls =", docUrls);
-console.log("[Docs Audit] count =", docUrls.length);
+console.log("[Docs Audit] project filter =", auditFilter);
+console.log("[Docs Audit] row count (after filter) =", auditRows.length);
+console.log("[Docs Audit] unique doc URLs =", docUrls.length);
 
 let refLogoData: RefLogoData | null = null;
 

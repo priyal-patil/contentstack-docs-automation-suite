@@ -1,0 +1,28 @@
+---
+description: Row menu steps must repeat rowContains when the runner re-opens the menu (tables with many rows)
+alwaysApply: true
+---
+
+# Flow JSON: row action menu + `rowContains`
+
+When a flow uses **`expected.rowContains`** on **vertical ellipsis** (or any step that scopes the row), **every later step that re-opens the same row’s ⋯ menu must use the same `expected.rowContains`**.
+
+## Why
+
+`openRowActionMenu` in `rules/core/actionRules.ts` only receives `step.expected` from the **current** step. If `rowContains` is missing, it falls back to module overrides (e.g. **first table row**) or the **first visible** ⋯ — which is **wrong** once other flows have added rows (typical in full CMS / bulk runs). The **Delete** / **Copy Content Type** paths call `openRowActionMenu` again; they do not reuse an already-open menu.
+
+## Required pattern
+
+- If step A is: `click` → `vertical ellipsis` → `"expected": { "rowContains": "<token>" }`
+- Then any step B that clicks a **row menu item** (e.g. **Delete**, **Edit**, **Copy Content Type**) that is implemented with a **fresh menu open** must include the **same** row scope, e.g. `"expected": { "rowContains": "<token>" }` on that step.
+
+Use the **same `<token>`** the doc/automation uses to identify that row (e.g. a name prefix like `AUTO-`).
+
+## Do not
+
+- Omit `rowContains` on follow-on menu clicks when the ellipsis step had `rowContains`.
+- Assume “first row” or “first visible ⋯” stays correct after other URLs/flows have populated the table.
+
+## When editing any doc URL flow
+
+Before saving a flow that touches **table row actions**, check: **ellipsis + later menu item** → **both** carry matching `rowContains` if the table can have multiple rows.

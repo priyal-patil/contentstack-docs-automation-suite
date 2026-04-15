@@ -7,14 +7,21 @@
   "type": "executable",
   "use": ["login", "selectStack"],
   "steps": [
-    {"action": "click", "target": "Content Models"},
-    {"action": "click", "target": "vertical ellipsis"},
-    {"action": "click", "target": "Edit"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Group (doc step)"},
-    {"action": "click", "target": "Properties (doc step)"},
-    {"action": "click", "target": "Advanced (doc step)"},
-    {"action": "click", "target": "Show as Tab (doc step)"},
-    {"action": "click", "target": "Save and Close (doc step)"}
+    { "action": "click", "target": "Content Models" },
+    { "action": "click", "target": "vertical ellipsis" },
+    { "action": "click", "target": "Edit" },
+    { "action": "click", "target": "Insert a field" },
+    { "action": "click", "target": "Group (doc step)" },
+    { "action": "click", "target": "Properties (doc step)" },
+    { "action": "click", "target": "Advanced (doc step)" },
+    { "action": "click", "target": "Show as Tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "Show as Tab toggle on (doc step)",
+      "expected": {
+        "labelEquals": "Show as Tab"
+      }
+    },
+    { "action": "click", "target": "Save and Close (doc step)" }
   ]
 }

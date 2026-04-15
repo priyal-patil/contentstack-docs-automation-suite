@@ -7,8 +7,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cms-nav-settings"], button[aria-label="Settings"], [data-test-id="cs-dropdown-elements"]:has-text("Settings"), [id^="cs-dropdown-elements-"]:has-text("Settings"), [role="menuitem"]:has-text("Settings"), li:has-text("Settings"), button:has-text("Settings")',
   "More (doc step)":
     'button:has-text("More"), button[aria-label*="more" i], button[aria-label*="aria-button" i]:has(svg[name="SeeMore"]), [data-test-id="cs-dropdown-truncate-button"]',
+  // Stack Settings left nav — Tokens row: a.ListRowV2-wrapper[href*="/settings/tokens/list"] → div#tokens[data-test-id="cs-stack-settings-tokens"] (label in cs-truncate)
   "Tokens in settings left nav (doc step)":
-    '[data-test-id="cs-stack-settings-tokens"], a[href*="/settings/tokens/list"], .ListRowV2:has-text("Tokens")',
+    'a.ListRowV2-wrapper[href*="/settings/tokens/list"], a[href*="/settings/tokens/list"]:has([data-test-id="cs-stack-settings-tokens"]), [data-test-id="cs-stack-settings-tokens"], div#tokens[data-test-id="cs-stack-settings-tokens"], a[href*="/settings/tokens/list"], .ListRowV2:has-text("Tokens")',
   "Management Tokens tab (doc step)":
     '[data-test-id="cs-management-tokens-tab"], [role="tab"]:has-text("Management Tokens")',
   "Delivery Tokens tab (doc step)":
@@ -18,7 +19,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Delivery Token button (doc step)":
     '[data-test-id="cs-delivery-token-add"], button:has-text("Delivery Token"), button:has-text("+ Delivery Token")',
   "First delivery token row (doc step)":
-    '[data-test-id="cs-table-body-row-0"] [data-test-id*="delivery-token" i], [data-test-id="cs-table-body-row-0"] [role="cell"]',
+    '[data-test-id="cs-table-body-row-0"]:not(.Table__empty__row) [data-test-id*="delivery-token" i], [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row) [data-test-id*="delivery-tokens" i], [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row) [role="cell"]',
   "First delivery token row action (doc step)":
     '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"], [data-test-id="cs-table-action-options"]',
   "First management token row (doc step)":

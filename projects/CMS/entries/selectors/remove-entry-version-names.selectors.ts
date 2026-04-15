@@ -6,7 +6,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Save (doc step)":
     '[data-test-id="cs-entry-save"], button:has-text("Save")',
   "Version icon (doc step)":
-    '[data-test-id="cs-entry-version-icon-wrapper"], [data-test-id="cs-entry-version-header-icon"]',
+    '[data-test-id="cs-entry-version-header-icon"]',
   "Second version timeline row (doc step)":
     'xpath=(//*[@data-test-id="cs-version-timeline-version"])[2]',
   "Second version rename icon (doc step)":

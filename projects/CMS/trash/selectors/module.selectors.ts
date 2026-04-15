@@ -1,3 +1,11 @@
+/**
+ * Trash → Taxonomies table (restore/delete flows): row Actions column opens a vertical menu.
+ *
+ * Ellipsis control: `button[data-test-id="cs-table-action-options"].three-dots-vertical-icon` (e.g. aria-label "row 1 action", role="menu").
+ * Menu root: `[data-test-id="cs-vertical-action-tooltip"]` → list `[data-test-id="cs-vertical-action-tooltip-actions"]`.
+ * Items: View Details (`.trash_viewDetails` / `.trash_viewDetails_text`), Restore (`.restore-btn` wraps tippy + icon; `.restore-label` text "Restore").
+ * See also: data/dom/CMS/trash/taxonomy-verticle-menu.html
+ */
 export const CLICK_SELECTORS: Record<string, string> = {
   "Settings (doc step)":
     '[data-test-id="cms-nav-settings"], button[aria-label="Settings"], [role="menu"] [role="menuitem"]:has-text("Settings"), [data-test-id="menu"] li:has-text("Settings"), [data-test-id="menu"] a:has-text("Settings")',
@@ -55,15 +63,17 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-assets-action-restore"], [data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-asstes-action-restore"]',
   "Trash asset row Restore action after hover (doc step)":
     '[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-assets-action-restore"], [data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-asstes-action-restore"]',
-  /** data/dom/CMS/trash/taxonomies-listing-page.html + taxonomy-verticle-ellipses.html — Actions column ellipsis opens menu (taxonomy-verticle-menu.html). */
+  /** Actions column: cs-table-action-options + three-dots-vertical-icon; opens taxonomy-verticle-menu.html */
   "Trash taxonomy first row Actions ellipsis (doc step)":
-    '.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"]',
+    '.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"], .trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button[data-test-id="cs-table-action-options"].three-dots-vertical-icon, .trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button[data-test-id="cs-table-action-options"][aria-label*="action" i]',
+  /** VerticalActionTooltip — View Details row */
   "Trash taxonomy View Details in vertical action menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .trash_viewDetails_text',
+    '[data-test-id="cs-vertical-action-tooltip"] .trash_viewDetails_text, [data-test-id="cs-vertical-action-tooltip-actions"] .trash_viewDetails_text',
   "Trash taxonomy Restore in vertical action menu visible (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore")',
+    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore"), [data-test-id="cs-vertical-action-tooltip-actions"] .restore-label:has-text("Restore")',
+  /** Prefer clicking `.restore-btn` (full control); label-only is fallback — taxonomy-verticle-menu.html */
   "Trash taxonomy Restore in vertical action menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore")',
+    '[data-test-id="cs-vertical-action-tooltip"] .restore-btn, [data-test-id="cs-vertical-action-tooltip-actions"] .restore-btn, [data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore"), [data-test-id="cs-vertical-action-tooltip-actions"] .restore-label:has-text("Restore")',
   /** data/dom/CMS/trash/restore-taxonomy-modal.html */
   "Restore taxonomy modal title (doc step)": '[data-test-id="cs-modal-title-restore-taxonomy"]',
   "Restore taxonomy modal description (doc step)": '[data-test-id="cs-modal-description"]',
@@ -84,11 +94,11 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Trash term first row Actions ellipsis (doc step)":
     '.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row):has(.termTypeCell :has-text("Term")) [data-test-id="cs-table-action-options"]',
   "Trash term View Details in vertical action menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .trash_viewDetails_text',
+    '[data-test-id="cs-vertical-action-tooltip"] .trash_viewDetails_text, [data-test-id="cs-vertical-action-tooltip-actions"] .trash_viewDetails_text',
   "Trash term Restore in vertical action menu visible (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore")',
+    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore"), [data-test-id="cs-vertical-action-tooltip-actions"] .restore-label:has-text("Restore")',
   "Trash term Restore in vertical action menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore")',
+    '[data-test-id="cs-vertical-action-tooltip"] .restore-btn, [data-test-id="cs-vertical-action-tooltip-actions"] .restore-btn, [data-test-id="cs-vertical-action-tooltip"] .restore-label:has-text("Restore"), [data-test-id="cs-vertical-action-tooltip-actions"] .restore-label:has-text("Restore")',
   /** Restore deleted term modal — split Restore pattern like restore-taxonomy-modal.html / restore-taxonomy-restore-dropdown.html */
   "Restore term modal title (doc step)":
     '[data-test-id="cs-modal-title-restore-term"], [data-test-id^="cs-modal-title-restore-term"]',

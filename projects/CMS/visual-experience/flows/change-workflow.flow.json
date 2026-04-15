@@ -1,0 +1,35 @@
+{
+  "id": "change-workflow",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/change-workflow",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Visual builder horizontal ellipses (doc step)" },
+    { "action": "click", "target": "Visual builder horizontal ellipses (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Change workflow menu item (doc step)" },
+    { "action": "click", "target": "Change workflow menu item (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Change workflow details panel (doc step)", "optional": true }
+  ]
+}

@@ -11,6 +11,7 @@
 import path from "path";
 import fs from "fs";
 import { spawnSync } from "child_process";
+import { writeDocsUrlsCsv, mergeDocUrlRows, normalizeCanonicalDocUrl } from "../core/docsUrlsCsv";
 
 function getArg(argv: string[], name: string): string | undefined {
   const i = argv.indexOf(name);
@@ -55,6 +56,7 @@ async function main() {
     url: string;
     id: string;
     kind: string;
+    project: string;
   }>;
   const urls = [...new Set(items.map((x) => x.url))];
   const executableIds = items.filter((x) => x.kind === "executable").map((x) => x.id);
@@ -66,36 +68,17 @@ async function main() {
     return;
   }
 
-  // 3) Write a temporary CSV with only these URLs for docs-audit (run only sheet URLs)
-  //    and merge these URLs into the main docs-urls.csv so they are always included for future audits
+  // 3) Write a temporary project,url CSV for docs-audit (sheet URLs only). Main docs-urls.csv is updated by bulk ingest.
   const dataDir = path.join(cwd, "data");
   const bulkRunCsv = path.join(dataDir, "docs-urls-bulk-run.csv");
-  const mainDocsCsv = path.join(dataDir, "docs-urls.csv");
   fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(
-    bulkRunCsv,
-    "# Docs to audit (this run: only URLs from bulk sheet)\n" + urls.sort().join("\n") + "\n",
-    "utf-8"
+  const bulkRows = mergeDocUrlRows(
+    [],
+    items
+      .filter((it) => it.url.includes("contentstack.com/docs"))
+      .map((it) => ({ project: it.project, url: normalizeCanonicalDocUrl(it.url) }))
   );
-  const docUrls = urls.filter((u) => u.includes("contentstack.com/docs"));
-  if (docUrls.length > 0) {
-    let commentHeader = "# Docs to audit (one per line)\n";
-    const existingSet = new Set<string>();
-    if (fs.existsSync(mainDocsCsv)) {
-      const raw = fs.readFileSync(mainDocsCsv, "utf-8").split(/\r?\n/);
-      const commentLines: string[] = [];
-      for (const line of raw) {
-        const t = line.trim();
-        if (t.startsWith("#")) commentLines.push(line);
-        else if (t) existingSet.add(t);
-      }
-      if (commentLines.length) commentHeader = commentLines.join("\n") + "\n";
-    }
-    docUrls.forEach((u) => existingSet.add(u));
-    fs.writeFileSync(mainDocsCsv, commentHeader + [...existingSet].sort().join("\n") + "\n", "utf-8");
-    // eslint-disable-next-line no-console
-    console.log("📋 Merged", docUrls.length, "URL(s) into data/docs-urls.csv for future audits.");
-  }
+  writeDocsUrlsCsv(bulkRunCsv, bulkRows);
 
   // 4) Run docs-audit for only these URLs
   // eslint-disable-next-line no-console
@@ -126,6 +109,19 @@ async function main() {
       // eslint-disable-next-line no-console
       console.warn("Flow tests exited with", flowRun.status);
     }
+  }
+
+  const reportDir = process.env.REPORT_DIR || path.join(cwd, "reports/latest");
+  // eslint-disable-next-line no-console
+  console.log("\n📣 Slack: posting flow run summary (if SLACK_BOT_TOKEN / slack.authToken set; SKIP_SLACK=1 to skip)...");
+  const slack = spawnSync(
+    "npx",
+    ["ts-node", "scripts/urlRunSummaryAndSlack.ts", "--reportDir", reportDir],
+    { cwd, stdio: "inherit", shell: true, env: { ...process.env } }
+  );
+  if (slack.status !== 0) {
+    // eslint-disable-next-line no-console
+    console.warn("urlRunSummaryAndSlack exited with", slack.status);
   }
 
   // eslint-disable-next-line no-console

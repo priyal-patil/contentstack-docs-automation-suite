@@ -7,19 +7,40 @@ alwaysApply: true
 
 When creating or updating automation flows based on a documentation URL, the flow must reflect the **exact user actions described in the doc**.
 
-## Non-negotiables
+## What must be verified (only what the document names or places)
 
-- **Map exact document steps** into flow JSON, in order.
-- Add verification metadata for document claims:
-  - position/container checks (`Left Navigation`, `Top Bar`, `Modal`) when stated in doc
-  - modal name verification when a modal is named in doc
-  - field/button label verification for names used in doc
-- If the doc explicitly says navigation is from **Left Navigation** (or equivalent wording), include an explicit `verify` step for that nav item with:
+- **Verify only** labels, button names, modal titles, field names, and **placement** that the document **explicitly states** (exact wording or clear proper-name reference in the doc).
+- Put the **exact** strings from the document into the flow JSON for those checks (after normalizing only trivial typography: spaces, not meaning).
+- **Match using equality**, not substring/“contains” semantics:
+  - Use **`labelEquals`** (or an equivalent strict exact match) against the **document’s** wording.
+  - **Do not** use **`labelMatch`**, partial match, or contains-style matching for doc-derived verification of named UI elements.
+
+## Placement / container (`within`, modal, top bar, etc.)
+
+- Add **`within` / position / container** verification **only if the document explicitly says** that placement (e.g. it says **Left navigation**, **top bar**, **in the modal named X**).
+- **Do not** infer or “correct” placement from how the app happens to lay out UI. If the doc is silent on placement, **do not** add placement/container checks—**perform the action** only.
+
+## When the document does not name the control
+
+- If a step is required to continue the doc’s procedure but the doc **does not give** a specific **name/label/title** for that control (button, field, modal, menu item), **perform the action** (click, fill, open, etc.) **without** a **`verify`** tied to that unnamed piece.
+- **Do not** add verification steps for fields, buttons, modals, or regions **not called out by name or explicit placement** in the document.
+
+## Order and scope
+
+- **Map exact document steps** into flow JSON, **in order**.
+- Add verification metadata **only** for the document claims above (named targets + doc-stated placement).
+
+### Left navigation (example)
+
+- If and **only if** the doc explicitly says the action is from **Left Navigation** (or equivalent wording), include an explicit **`verify`** for that nav item with:
   - `"within": "Left Navigation"`
-  - `labelEquals`/`labelMatch`
-  - do not skip this check or replace it with only page-level verification
+  - **`labelEquals`** using the **exact** label text from the document
+  - Do not replace this with only page-level verification
+
+## Traceability and selectors
+
 - **Label doc-derived targets** with `"(doc step)"` so reporting stays traceable to docs.
-- You may stabilize selectors for a doc step, but do not change document intent.
+- You may stabilize selectors for a doc step, but **do not change document intent** and do not add extra verification beyond what the doc supports.
 
 ## Allowed “generic” steps (can be implicit)
 
@@ -27,6 +48,8 @@ These can be included even if not repeated in every doc:
 
 - login / select stack / open module page
 - “open the content type/entry” to reach the described screen
+
+**For these generic steps:** perform as needed; **do not** add **label/modal/placement `verify`** unless the document **explicitly** names or places that control.
 
 Everything else must come from the doc.
 
@@ -42,4 +65,3 @@ Document step must **hard fail** only when step execution itself is impossible:
 - required target not found / not visible / timeout
 - required action cannot be performed
 - clearly missing prerequisite step in doc that blocks execution
-

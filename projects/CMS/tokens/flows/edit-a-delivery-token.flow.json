@@ -23,7 +23,7 @@
     { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
-      "target": "Tokens in settings (doc step)",
+      "target": "Tokens in settings left nav (doc step)",
       "expected": {
         "withinStrict": true,
         "labelEquals": "Tokens",

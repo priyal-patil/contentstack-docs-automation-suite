@@ -1,0 +1,59 @@
+{
+  "id": "add-a-review-comment",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/preview-sharing/add-a-review-comment",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "warn",
+      "value": "Doc: Open the shared preview link from email before adding a review comment."
+    },
+    { "action": "verify", "target": "Shared preview section discussion icon (doc step)", "optional": true },
+    { "action": "click", "target": "Shared preview section discussion icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Add New Comment modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Add New Comment"
+      },
+      "optional": true
+    },
+    {
+      "action": "enter",
+      "target": "Review comment input box (doc step)",
+      "value": "Review comment from automation",
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Review comment Post button (doc step)",
+      "expected": {
+        "labelEquals": "Post",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Review comment Post button (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Shared preview discussion thread (doc step)", "optional": true },
+    { "action": "verify", "target": "Review comment Edit icon (doc step)", "optional": true },
+    { "action": "click", "target": "Review comment Edit icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "enter",
+      "target": "Review comment input box (doc step)",
+      "value": "APPEND: (edited)",
+      "optional": true
+    },
+    { "action": "click", "target": "Review comment Update button (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Review comment Delete icon (doc step)", "optional": true },
+    { "action": "click", "target": "Review comment Delete icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: Comment max length is 500 characters; deleting the only comment removes the whole thread."
+    }
+  ]
+}

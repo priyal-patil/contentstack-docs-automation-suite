@@ -33,7 +33,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "View permission option (doc step)":
     'li[title="View"], .Dropdown__menu__list__item:has-text("View")',
   "Edit permission option (doc step)":
-    '.Dropdown__menu--secondary [data-test-id="cs-dropdown-elements"][title="Edit"], .Dropdown__menu--secondary li[title="Edit"], [data-test-id="cs-dropdown-elements"][title="Edit"], li[title="Edit"], .Dropdown__menu__list__item:has-text("Edit"), li:has-text("Edit")',
+    '[data-test-id="cs-share-view-entries"] .Dropdown__menu--secondary [data-test-id="cs-dropdown-elements"][title="Edit"], [data-test-id="cs-share-view-entries"] .Dropdown__menu--secondary li[title="Edit"], .Dropdown__menu--secondary [data-test-id="cs-dropdown-elements"][title="Edit"], .Dropdown__menu--secondary li[title="Edit"], [data-test-id="cs-dropdown-elements"][title="Edit"], li[title="Edit"], .Dropdown__menu__list__item:has-text("Edit"), li:has-text("Edit")',
   "Manage button in Share View modal (doc step)":
     '[data-test-id="cs-shared-views-entries-manage-btn"], [data-test-id="cs-share-view-entries"] button:has-text("Manage")',
   "Share button in Share View modal (doc step)":

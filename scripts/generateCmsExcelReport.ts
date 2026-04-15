@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
 import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
-
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 const REPORT_DIR = path.resolve(
   process.cwd(),
   process.argv.includes("--reportDir") ? process.argv[process.argv.indexOf("--reportDir") + 1] : "reports/latest"
@@ -92,10 +92,7 @@ type DocAuditRow = {
 };
 
 function main() {
-  const flowsBackup = path.join(REPORT_DIR, "flows-results-cms.json");
-  const flowsPathDefault = path.join(REPORT_DIR, "flows-results.json");
-  /** After a full batch, CMS flow results may be saved here so docs-audit run does not overwrite them. */
-  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : flowsPathDefault;
+  const flowsPath = resolveFlowsResultsPath(REPORT_DIR);
   const failuresPath = path.join(REPORT_DIR, "doc-step-failures.json");
   const warningsPath = path.join(REPORT_DIR, "doc-step-warnings.json");
   const docsAuditPath = path.join(REPORT_DIR, "docs-audit-summary.json");

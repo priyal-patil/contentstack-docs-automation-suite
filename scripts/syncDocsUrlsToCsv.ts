@@ -1,11 +1,10 @@
 /**
  * Sync all contentstack.com/docs URLs into data/docs-urls.csv from:
- * - data/docs-urls.csv (existing)
- * - flows/<project>/docs.json url arrays
- * - projects/.../flows/*.flow.json "source" fields
+ * - data/docs-urls.csv (existing rows, project,url or legacy)
+ * - flows/<Project>/docs.json url arrays (project = folder name)
+ * - projects/<Project>/.../flows/*.flow.json "source" fields
  *
- * Run after adding new doc URLs to flows or docs.json so docs-audit (links, table, logo)
- * runs against the full set. Does not remove URLs already only in docs-urls.csv.
+ * Output format: CSV with header project,url (one row per project+URL).
  *
  * Usage:
  *   npx ts-node scripts/syncDocsUrlsToCsv.ts
@@ -14,50 +13,45 @@
 
 import fs from "fs";
 import path from "path";
+import {
+  DocUrlRow,
+  mergeDocUrlRows,
+  normalizeCanonicalDocUrl,
+  parseDocsUrlsCsvFile,
+  writeDocsUrlsCsv,
+  DOCS_HOST_FRAGMENT,
+} from "../core/docsUrlsCsv";
 
 const DOCS_CSV = path.resolve(process.cwd(), "data", "docs-urls.csv");
 const FLOWS_DIR = path.resolve(process.cwd(), "flows");
 const PROJECTS_DIR = path.resolve(process.cwd(), "projects");
 
-const DOCS_HOST = "contentstack.com/docs";
-
-function collectFromCsv(): Set<string> {
-  const out = new Set<string>();
-  if (!fs.existsSync(DOCS_CSV)) return out;
-  const lines = fs.readFileSync(DOCS_CSV, "utf-8").split(/\r?\n/);
-  for (const line of lines) {
-    const u = line.trim();
-    if (!u || u.startsWith("#")) continue;
-    if (u.includes(DOCS_HOST)) out.add(u);
-  }
-  return out;
-}
-
-function collectFromDocsJson(dir: string): Set<string> {
-  const out = new Set<string>();
+function collectFromDocsJson(dir: string): DocUrlRow[] {
+  const out: DocUrlRow[] = [];
   if (!fs.existsSync(dir)) return out;
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const e of entries) {
-    if (e.isDirectory()) {
-      const docsPath = path.join(dir, e.name, "docs.json");
-      if (fs.existsSync(docsPath)) {
-        try {
-          const j = JSON.parse(fs.readFileSync(docsPath, "utf-8"));
-          const urls = (j.urls || []) as string[];
-          urls.forEach((u) => {
-            if (u && String(u).includes(DOCS_HOST)) out.add(String(u).trim());
-          });
-        } catch {
-          // skip invalid json
+    if (!e.isDirectory()) continue;
+    const project = e.name;
+    const docsPath = path.join(dir, project, "docs.json");
+    if (!fs.existsSync(docsPath)) continue;
+    try {
+      const j = JSON.parse(fs.readFileSync(docsPath, "utf-8")) as { urls?: string[] };
+      for (const u of j.urls || []) {
+        const s = String(u || "").trim();
+        if (s.includes(DOCS_HOST_FRAGMENT)) {
+          out.push({ project, url: normalizeCanonicalDocUrl(s) });
         }
       }
+    } catch {
+      // skip invalid json
     }
   }
   return out;
 }
 
-function collectFromFlowSources(dir: string): Set<string> {
-  const out = new Set<string>();
+function collectFromFlowSources(dir: string): DocUrlRow[] {
+  const out: DocUrlRow[] = [];
   if (!fs.existsSync(dir)) return out;
 
   function walk(d: string) {
@@ -66,10 +60,16 @@ function collectFromFlowSources(dir: string): Set<string> {
       const full = path.join(d, e.name);
       if (e.isDirectory()) walk(full);
       else if (e.name.endsWith(".flow.json")) {
+        const rel = path.relative(dir, full);
+        const top = rel.split(path.sep)[0];
+        if (!top) continue;
+        const project = top;
         try {
-          const j = JSON.parse(fs.readFileSync(full, "utf-8"));
+          const j = JSON.parse(fs.readFileSync(full, "utf-8")) as { source?: string };
           const src = j.source;
-          if (src && String(src).includes(DOCS_HOST)) out.add(String(src).trim());
+          if (src && String(src).includes(DOCS_HOST_FRAGMENT)) {
+            out.push({ project, url: normalizeCanonicalDocUrl(String(src).trim()) });
+          }
         } catch {
           // skip
         }
@@ -81,21 +81,21 @@ function collectFromFlowSources(dir: string): Set<string> {
 }
 
 function main() {
-  const fromCsv = collectFromCsv();
+  const fromCsv = parseDocsUrlsCsvFile(DOCS_CSV);
   const fromDocsJson = collectFromDocsJson(FLOWS_DIR);
   const fromFlows = collectFromFlowSources(PROJECTS_DIR);
 
-  const all = new Set<string>([...fromCsv, ...fromDocsJson, ...fromFlows]);
-  const sorted = [...all].sort();
+  const merged = mergeDocUrlRows(mergeDocUrlRows(fromCsv, fromDocsJson), fromFlows);
 
-  const header = "# Docs to audit (one per line). Synced from docs-urls.csv, flows/*/docs.json, and flow source URLs.\n";
   fs.mkdirSync(path.dirname(DOCS_CSV), { recursive: true });
-  fs.writeFileSync(DOCS_CSV, header + sorted.join("\n") + "\n", "utf-8");
+  writeDocsUrlsCsv(DOCS_CSV, merged);
 
   // eslint-disable-next-line no-console
-  console.log(`✅ Synced ${sorted.length} URL(s) to ${DOCS_CSV}`);
+  console.log(`Synced ${merged.length} row(s) to ${DOCS_CSV}`);
   // eslint-disable-next-line no-console
-  console.log(`   (from CSV: ${fromCsv.size}, docs.json: ${fromDocsJson.size}, flow sources: ${fromFlows.size})`);
+  console.log(
+    `   (from CSV: ${fromCsv.length}, docs.json: ${fromDocsJson.length}, flow sources: ${fromFlows.length})`
+  );
 }
 
 main();

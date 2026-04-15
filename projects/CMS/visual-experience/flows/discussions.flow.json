@@ -1,0 +1,81 @@
+{
+  "id": "discussions",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/discussions",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    {
+      "action": "warn",
+      "value": "Doc: Use website navigation or URL bar to locate the page for which you want to view comments."
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Discussions tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Discussions",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Discussions tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Discussions panel heading (doc step)" },
+    { "action": "verify", "target": "Discussions Hide from Canvas toggle (doc step)" },
+    { "action": "click", "target": "Discussions Hide from Canvas toggle (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Discussions icon beside canvas field (doc step)", "optional": true },
+    { "action": "click", "target": "Discussions icon beside canvas field (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Discussions status dropdown (doc step)" },
+    { "action": "click", "target": "Discussions status dropdown (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Discussions filter Timeline option (doc step)",
+      "expected": {
+        "labelEquals": "Timeline",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Discussions filter Resolved option (doc step)",
+      "expected": {
+        "labelEquals": "Resolved",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Discussions filter Active option (doc step)",
+      "expected": {
+        "labelEquals": "Active",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    }
+  ]
+}

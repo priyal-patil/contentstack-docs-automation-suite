@@ -17,6 +17,7 @@
 import fs from "fs";
 import path from "path";
 import * as cheerio from "cheerio";
+import { upsertDocsUrlsCsv, normalizeCanonicalDocUrl, type DocUrlRow } from "../core/docsUrlsCsv";
 import { analyzeDocUrl } from "./analyzeDocUrl";
 import { docStepsToFlowSteps } from "./docStepsToFlowActions";
 
@@ -482,6 +483,7 @@ async function main() {
   let countInformational = 0;
   let countExecutable = 0;
   const bulkUrls = new Set<string>();
+  const docRowsToAdd: DocUrlRow[] = [];
 
   for (const it of expanded) {
     const url = (it.url || "").trim();
@@ -495,6 +497,9 @@ async function main() {
     bulkUrls.add(url);
 
     const project = normalizeProject(it.project || inferProject(url));
+    if (url.includes("contentstack.com/docs")) {
+      docRowsToAdd.push({ project, url: normalizeCanonicalDocUrl(url) });
+    }
     const kind: FlowKind = inferKind(it, url);
 
     if (kind === "informational") {
@@ -598,30 +603,12 @@ async function main() {
     console.log(`✅ [executable] ${project}/${moduleName}/${id} -> flow + selectors (source: ${url})`);
   }
 
-  // Append all bulk URLs (only contentstack.com/docs) to data/docs-urls.csv so docs-audit runs for them
-  const docBulkUrls = [...bulkUrls].filter((u) => u.includes("contentstack.com/docs"));
-  if (docBulkUrls.length > 0) {
-    const commentLines: string[] = [];
-    const existingUrls = new Set<string>();
-    if (fs.existsSync(docsUrlsCsvPath)) {
-      const lines = fs.readFileSync(docsUrlsCsvPath, "utf-8").split(/\r?\n/);
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        if (trimmed.startsWith("#")) {
-          commentLines.push(line);
-        } else {
-          existingUrls.add(trimmed);
-        }
-      }
-    }
-    docBulkUrls.forEach((u) => existingUrls.add(u));
-    const header = commentLines.length ? commentLines.join("\n") + "\n" : "# Docs to audit (one per line)\n";
-    const urlLines = [...existingUrls].sort();
-    fs.mkdirSync(path.dirname(docsUrlsCsvPath), { recursive: true });
-    fs.writeFileSync(docsUrlsCsvPath, header + urlLines.join("\n") + "\n", "utf-8");
+  if (docRowsToAdd.length > 0) {
+    upsertDocsUrlsCsv(docsUrlsCsvPath, docRowsToAdd);
     // eslint-disable-next-line no-console
-    console.log(`\n📋 Added ${docBulkUrls.length} URL(s) to data/docs-urls.csv (docs-audit will run for these).`);
+    console.log(
+      `\nMerged ${docRowsToAdd.length} docs URL row(s) into data/docs-urls.csv (project,url).`
+    );
   }
 
   // eslint-disable-next-line no-console
@@ -636,7 +623,7 @@ async function main() {
 export async function getExpandedItemsFromCsv(
   csvPath: string,
   options?: { analyzeDocs?: boolean }
-): Promise<Array<{ url: string; id: string; kind: FlowKind }>> {
+): Promise<Array<{ url: string; id: string; kind: FlowKind; project: string }>> {
   const inputDir = path.dirname(path.resolve(process.cwd(), csvPath));
   const resolvedPath = path.resolve(process.cwd(), csvPath);
   let items = loadBulkFromCSV(resolvedPath, inputDir);
@@ -654,6 +641,7 @@ export async function getExpandedItemsFromCsv(
       url: (it.url || "").trim(),
       id: (it.id || "").trim(),
       kind: inferKind(it, it.url || ""),
+      project: normalizeProject(it.project || inferProject((it.url || "").trim())),
     }))
     .filter((x) => x.url && x.id);
 }

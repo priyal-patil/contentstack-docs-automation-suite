@@ -1,0 +1,47 @@
+---
+description: Canonical HTML layout for CMS report bundle entry after flow/docs-audit runs; enforce when generating or opening dashboard reports.
+alwaysApply: true
+---
+
+# CMS report bundle dashboard (canonical HTML)
+
+When a **CMS project execution** finishes (sequential batch, retry, headless report, or any run that produces `REPORT_DIR` with flows + optional docs-audit), the **primary bundle landing page** MUST match this structure and dark theme. Implementation lives in `scripts/buildCmsReportBundle.ts` (`report-bundle/index.html`).
+
+## Required layout
+
+1. **Theme**   Dark UI: navy/charcoal background (`#0f172a`–style), light body text (`#e2e8f0`), cards/sections slightly elevated (`#1e293b`, border `#334155`).
+
+2. **Header**  
+   - **Title (H1):** `CMS automation & docs link-audit — report bundle`  
+   - **Subtitle / meta:** `Report directory:` + absolute path to `REPORT_DIR` (word-break allowed).
+
+3. **Top row — four cards** (grid, equal visual weight)  
+   Each card: **light-blue / cyan link title** + **smaller grey description** below.
+
+   | Card link text | Sub-description | Target (relative from `report-bundle/index.html`) |
+   |-----------------------|------------------------------------------|---------------------------------------------------|
+   | CMS dashboard         | Flows, warnings, failures                | `../cms-dashboard.html`                           |
+   | Project dashboard     | Flows + docs-audit merge                 | `../dashboard.html`                               |
+   | Excel workbook        | All URLs, steps, link audit              | `../cms-automation-report.xlsx`                   |
+   | Playwright HTML report| Raw test run                             | `../html/index.html`                              |
+
+4. **Main section**  
+   - **Heading:** `By module (project CMS)`  
+   - **Table:** two columns **`Module`** | **`Folder`**  
+   - **Rows:** one per CMS module that has bundle content (sorted). **Folder** column: link text **`Open module folder`** → `CMS/<module>/index.html`.
+
+5. **Modules**  
+   Rows are **dynamic** from the run (whatever modules produced flow reports or link-audit pages). Do not hard-code a fixed module list in the rule; the generator discovers modules from results.
+
+6. **Footer note (optional)**  
+   Short line explaining flow HTML under `CMS/<module>/` is acceptable (see existing generator).
+
+## Agent / workflow expectations
+
+- After updating report generation, **keep `buildCmsReportBundle.ts` aligned** with this spec (titles, card copy, table columns, dark styling).
+- When telling the user where to open the dashboard for a batch, prefer **`{REPORT_DIR}/report-bundle/index.html`** for this exact format; `unified-dashboard.html` is a separate unified view.
+- Pipelines that already call `buildCmsReportBundle.ts` (e.g. `scripts/run-cms-sequential-modules-dashboard.sh`, `scripts/rerun-cms-timed-out-from-summary.sh`, `scripts/finish-cms-retry-slack-dashboard.sh`) should **continue** to invoke it so this page is always produced for the same `REPORT_DIR`.
+
+## Reference screenshot
+
+Project reference image (layout): `assets/image-4a56ddc7-d8ad-4c13-8bc0-6d90a724ea73.png` (or `.cursor/projects/.../assets/...` in the editor).

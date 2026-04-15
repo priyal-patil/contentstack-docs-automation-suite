@@ -2,6 +2,10 @@
  * Flow: managing-non-localizable-fields
  * Source: https://www.contentstack.com/docs/developers/create-content-types/managing-non-localizable-fields
  * Generated/updated by bulkIngestFromUrls. Prefer data-test-id selectors.
+ *
+ * Product note: For a **Group** field opened via **Properties**, the panel may **not** show a
+ * **Non-localizable** toggle at all (UI differs from single-line fields). Automation that expects
+ * the toggle will time out until the flow matches a field type / panel where the control exists.
  */
 
 export const CLICK_SELECTORS: Record<string, string> = {

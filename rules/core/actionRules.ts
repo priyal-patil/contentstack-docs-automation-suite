@@ -7374,6 +7374,70 @@ export async function performAction(
         }
       }
 
+      // Live Preview entry: initial URL modal — Show stays disabled until an environment is chosen; poll until enabled.
+      if (step.action === "click" && step.target === "Show Live Preview button (doc step)") {
+        const modal = page.locator('[data-testid="live-preview-initial-url-modal"]');
+        if (await modal.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          const showBtn = page.locator('[data-test-id="cs-live-preview-show"]');
+          const deadline = Date.now() + Math.min(t, 90_000);
+          let clicked = false;
+          while (Date.now() < deadline && !clicked) {
+            if (await showBtn.isEnabled().catch(() => false)) {
+              await showBtn.click({ timeout: 15_000 });
+              await page.waitForTimeout(700);
+              clicked = true;
+            } else {
+              await page.waitForTimeout(400);
+            }
+          }
+          if (!clicked) {
+            throw new Error("Show Live Preview did not become enabled in time (select an environment in the modal).");
+          }
+          break;
+        }
+      }
+
+      // Share View: Users/Roles react-select often stays open and blocks the permission dropdown; blur it, then open View/Edit menu (share-view-view-menu.html — li[title="Edit"]).
+      if (step.action === "click" && step.target === "Edit permission option (doc step)" && String(flow?.id || "").toLowerCase() === "shared-views") {
+        const t = getStepTimeoutMs(step);
+        await page
+          .locator('[data-test-id="cs-modal-title-share-view"], [data-test-id="cs-share-view-entries"]')
+          .first()
+          .waitFor({ state: "visible", timeout: Math.min(t, 25_000) });
+        const shareRoot = page.locator('[data-test-id="cs-share-view-entries"]').first();
+        await shareRoot
+          .locator('[data-test-id="cs-modal-description"], .save-as-view')
+          .first()
+          .click({ position: { x: 24, y: 40 }, force: true })
+          .catch(() => {});
+        await page.getByRole("heading", { name: /^Share View$/i }).click({ force: true }).catch(() => {});
+        await page.waitForTimeout(350);
+        const menuEditOpen = page.locator('ul.Dropdown__menu__list li[title="Edit"], .Dropdown__menu--secondary li[title="Edit"]').first();
+        if (await menuEditOpen.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await menuEditOpen.click({ timeout: t });
+          await page.waitForTimeout(300);
+          break;
+        }
+        const permControl = page
+          .locator(
+            '[data-test-id="cs-share-views-entries-permission-dropdown"], .added-users-roles-permission .permission-dropdown, .permission-dropdown'
+          )
+          .first();
+        await expect(permControl).toBeVisible({ timeout: Math.min(t, 15_000) });
+        await permControl.click({ timeout: 8_000, force: true }).catch(() => {});
+        await page.waitForTimeout(450);
+        const editPick = page
+          .locator(
+            'ul.Dropdown__menu__list li[title="Edit"], .Dropdown__menu--secondary li[title="Edit"], [data-test-id="cs-dropdown-elements"][title="Edit"]'
+          )
+          .first();
+        await expect(editPick).toBeVisible({ timeout: Math.min(t, 12_000) });
+        await editPick.click({ timeout: t });
+        await page.waitForTimeout(300);
+        break;
+      }
+
+
       // workflows-use-cases UC1 — stage color pickers (scope to expanded inline editor; collapsed rows may omit dots).
       if (step.action === "click" && isWorkflowsUseCasesFlow(flow)) {
         const t = getStepTimeoutMs(step);
@@ -8643,6 +8707,190 @@ export async function performAction(
     }
 
     case "verify": {
+      // add-entry-asset-to-a-release — “Add Reference(s) to Release” only when the entry has references (doc).
+      {
+        const flowId = String(flow?.id || "").toLowerCase();
+        if (
+          flowId === "add-entry-asset-to-a-release" &&
+          (step.target === "Add With References button (doc step)" ||
+            step.target === "Add Without References button (doc step)")
+        ) {
+          if ((flow as any).__skipAddReferenceModalSteps) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Add to Release (doc): Add Reference(s) modal was not shown — skipping verification (conditional on entry references).'
+            );
+            break;
+          }
+          const t = getStepTimeoutMs(step);
+          const withRef = page.getByRole("button", { name: /Add With References/i }).first();
+          const withoutRef = page.getByRole("button", { name: /Add Without References/i }).first();
+          const deadline = Date.now() + Math.min(t, 12_000);
+          let bothReady = false;
+          while (Date.now() < deadline && !bothReady) {
+            const a = await withRef.isVisible().catch(() => false);
+            const b = await withoutRef.isVisible().catch(() => false);
+            if (a && b) bothReady = true;
+            else await page.waitForTimeout(350);
+          }
+          if (!bothReady) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Add to Release (doc): "Add Reference(s) to Release" appears only when the entry has references; neither "Add With References" nor "Add Without References" was visible.'
+            );
+            (flow as any).__skipAddReferenceModalSteps = true;
+            break;
+          }
+          const el = step.target === "Add With References button (doc step)" ? withRef : withoutRef;
+          await expect(el).toBeVisible({ timeout: Math.min(t, 15_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+      }
+      {
+        const flowId = String(flow?.id || "").toLowerCase();
+        if (
+          flowId === "setting-up-taxonomy-based-permissions-for-regional-content-management" &&
+          (step.target === "Specific Taxonomies radio (doc step)" ||
+            step.target === "Specific Terms radio (doc step)")
+        ) {
+          const t = getStepTimeoutMs(step);
+          const isTax = step.target.includes("Taxonomies");
+          const nameRe = isTax ? /Specific Taxonomies/i : /Specific Terms/i;
+          const scope = page.locator('[role="dialog"]').filter({ hasText: nameRe }).first();
+          const dialogRadio = scope.getByRole("radio", { name: nameRe }).first();
+          const pageRadio = page.getByRole("radio", { name: nameRe }).first();
+          let el: Locator = pageRadio;
+          if (await scope.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            el = dialogRadio;
+          }
+          if (!(await el.isVisible({ timeout: 6_000 }).catch(() => false))) {
+            el = page.getByText(nameRe).first();
+          }
+          await expect(el).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              const lab = el.locator("xpath=ancestor::label[1]").first();
+              const pick = (await lab.isVisible().catch(() => false)) ? lab : el;
+              await assertLabelMatch(pick, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+      }
+      // publish-entries-and-assets-in-bulk — search can open bulk modal (Send With/Without References) or single-entry modal (primary "Send" on Publish Entry).
+      if (
+        String(flow?.id || "").toLowerCase() === "publish-entries-and-assets-in-bulk" &&
+        (step.target === "Send With References (doc step)" || step.target === "Send Without References (doc step)")
+      ) {
+        const t = getStepTimeoutMs(step);
+        const dlg = page
+          .locator('[role="dialog"]')
+          .filter({ hasText: /Publish (Entry|Entries)/i })
+          .first();
+        await expect(dlg).toBeVisible({ timeout: Math.min(t, 25_000) });
+        const withRef = dlg.locator('button[data-test-id="cs-bulk-entry-publish-with-ref"]');
+        const withoutRef = dlg.locator('button[data-test-id="cs-bulk-entry-publish-without-ref"]');
+        const singleSend = dlg.locator('button[data-test-id="cs-single-entry-publish"]');
+        const deadline = Date.now() + Math.min(t, 18_000);
+        let bothBulk = false;
+        while (Date.now() < deadline && !bothBulk) {
+          const a = await withRef.isVisible().catch(() => false);
+          const b = await withoutRef.isVisible().catch(() => false);
+          if (a && b) bothBulk = true;
+          else await page.waitForTimeout(350);
+        }
+        if (bothBulk) {
+          const el = step.target === "Send With References (doc step)" ? withRef : withoutRef;
+          await expect(el).toBeVisible({ timeout: Math.min(t, 15_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+        } else if (await singleSend.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Publish from search (doc): modal shows a single primary "Send" (Publish Entry) — documentation describes separate "Send With References" and "Send Without References" (bulk publish modal; publish-entries-references.html).'
+          );
+          await expect(singleSend).toBeVisible({ timeout: Math.min(t, 12_000) });
+        } else {
+          throw new Error(
+            'Publish from search (doc step): expected bulk "Send With/Without References" buttons or single-entry Send — none became visible in the publish dialog.'
+          );
+        }
+        break;
+      }
+      // set-up-live-preview-for-your-stack — doc says "Visual Experience" page title; app header is often "Live Preview" on this route.
+      if (
+        String(flow?.id || "").toLowerCase() === "set-up-live-preview-for-your-stack" &&
+        step.target === "Visual Experience page title (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step);
+        await page.waitForFunction(
+          () =>
+            /visual-experience/i.test(window.location.href) ||
+            /visual-experience/i.test(String(window.location.hash || "")),
+          { timeout: Math.min(t, 22_000) }
+        );
+        const titleEl = page
+          .locator('[data-test-id="cs-page-title"] .page-header-title, [data-test-id="cs-page-title"], .page-header-title')
+          .first();
+        await expect(titleEl).toBeVisible({ timeout: Math.min(t, 25_000) });
+        const txt = ((await titleEl.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+        const looksRight = /visual experience/i.test(txt) || /live preview/i.test(txt);
+        if (txt && !looksRight) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Live Preview setup (doc): on Visual Experience settings URL expected heading text like "Visual Experience" or "Live Preview" — got "${txt}".`
+          );
+        } else if (/live preview/i.test(txt) && step.expected?.labelEquals && /visual experience/i.test(String(step.expected.labelEquals))) {
+          recordVerificationWarning(
+            step,
+            context,
+            'Live Preview setup (doc): documentation says page title "Visual Experience"; app shows "Live Preview" in the header on this screen.'
+          );
+        }
+        break;
+      }
+
       // send-an-entry-for-publish-or-unpublish-approval part 2 — Publish lives in the entry footer; doc placement is "bottom", not Main content body (avoid false "Main content" warnings).
       if (isSendPublishUnpublishApprovalPart2Flow(flow) && step.target === "Publish button at bottom of entry editor page (doc step)") {
         const tGs = getStepTimeoutMs(step);
@@ -14130,36 +14378,83 @@ export async function performAction(
         await hoverTrashListingRowDocOnly(page, fileRow, Math.min(t, 15_000));
         break;
       }
-      if (step.target === "Workflow list first workflow row hover for Power icon (doc step)") {
+      // delete-a-workflow (doc): hover the workflow row; fail if Delete control is not shown (hover-revealed or row actions).
+      if (
+        step.target === "Workflow listing first workflow row hover for delete icon (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "delete-a-workflow"
+      ) {
         const t = getStepTimeoutMs(step);
-        await page
-          .locator(".content-main.workflows")
-          .first()
-          .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
-          .catch(() => {});
-        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        const row = page
+          .locator('.content-main.workflows [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row)')
+          .first();
         await expect(row).toBeVisible({ timeout: t });
-        await row.scrollIntoViewIfNeeded().catch(() => {});
-        await row.hover({ timeout: Math.min(t, 30_000), force: true });
-        await page.waitForTimeout(450);
+        await row.hover({ timeout: Math.min(t, 15_000) });
+        await page.waitForTimeout(280);
+        const scoped = page.locator('[data-test-id="cs-table-body-row-0"]');
+        const deleteCandidates = [
+          scoped.locator('button:has(svg[name="Delete"])').first(),
+          scoped.locator('svg[name="Delete"]').first(),
+          scoped.locator('[data-test-id*="delete" i]').first(),
+        ];
+        let ok = false;
+        for (const loc of deleteCandidates) {
+          if (await loc.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            ok = true;
+            break;
+          }
+        }
+        if (!ok) {
+          throw new Error(
+            'Delete workflow (doc): after hovering the workflow row, the Delete control was not visible. Expected a Delete icon/button on the row per delete-a-workflow documentation.'
+          );
+        }
         break;
       }
-      if (step.target === "Workflow list first workflow row hover for delete (doc step)") {
+
+      // enable-or-disable-a-workflow (doc): hover the workflow row; fail if Power icon is not shown.
+      if (
+        step.target === "Workflow listing first workflow row hover for Power icon (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "enable-or-disable-a-workflow"
+      ) {
         const t = getStepTimeoutMs(step);
-        if (String(flow?.id || "").toLowerCase() !== "delete-a-workflow") {
-          throw new Error(`Unknown hover target: ${step.target}`);
-        }
-        await page
-          .locator(".content-main.workflows")
-          .first()
-          .waitFor({ state: "visible", timeout: Math.min(t, 45_000) })
-          .catch(() => {});
-        const row = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+        const row = page
+          .locator('.content-main.workflows [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row)')
+          .first();
         await expect(row).toBeVisible({ timeout: t });
-        await row.scrollIntoViewIfNeeded().catch(() => {});
-        await row.hover({ timeout: Math.min(t, 30_000), force: true });
-        await page.waitForTimeout(450);
+        await row.hover({ timeout: Math.min(t, 15_000) });
+        await page.waitForTimeout(280);
+        const scoped = page.locator('[data-test-id="cs-table-body-row-0"]');
+        const powerCandidates = [
+          scoped.locator('button:has(svg[name="Power"])').first(),
+          scoped.locator('svg[name="Power"]').first(),
+          scoped.locator('button:has(svg[name="Lightning"])').first(),
+          scoped.locator('svg[name="Lightning"]').first(),
+        ];
+        let ok = false;
+        for (const loc of powerCandidates) {
+          if (await loc.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            ok = true;
+            break;
+          }
+        }
+        if (!ok) {
+          throw new Error(
+            'Enable or disable workflow (doc): after hovering the workflow row, the Power icon was not visible. Expected the Power control on the row per enable-or-disable-a-workflow documentation.'
+          );
+        }
         break;
+      }
+
+      {
+        const { click } = loadOverrides(flow);
+        const mapped = click[step.target] || CLICK_SELECTORS[step.target];
+        if (mapped) {
+          const el = page.locator(mapped).first();
+          const t = getStepTimeoutMs(step);
+          await expect(el).toBeVisible({ timeout: t });
+          await el.hover();
+          break;
+        }
       }
       throw new Error(`Unknown hover target: ${step.target}`);
     }

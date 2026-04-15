@@ -10,7 +10,7 @@ import fs from "fs";
 import path from "path";
 import { generateFlowReportHtml } from "../core/flowReportGenerator";
 import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle, type PwSuite } from "../core/report/parseFlowSpecTitle";
-
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 const REPORT_DIR = path.resolve(
   process.cwd(),
   process.argv.includes("--reportDir") ? process.argv[process.argv.indexOf("--reportDir") + 1] : "reports/latest"
@@ -172,8 +172,7 @@ function collectCmsFlowIdsFromResults(flowsPath: string): string[] {
 }
 
 function main() {
-  const flowsBackup = path.join(REPORT_DIR, "flows-results-cms.json");
-  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : path.join(REPORT_DIR, "flows-results.json");
+  const flowsPath = resolveFlowsResultsPath(REPORT_DIR);
   const summaryPath = path.join(REPORT_DIR, "docs-audit-summary.json");
 
   const byFlowId = collectCmsFlowMeta();
@@ -298,6 +297,8 @@ function main() {
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #334155; }
     th { color: #94a3b8; font-weight: 600; }
+    tbody a { color: #c4b5fd; font-weight: 500; text-decoration: none; }
+    tbody a:hover { text-decoration: underline; color: #ddd6fe; }
   </style>
 </head>
 <body>

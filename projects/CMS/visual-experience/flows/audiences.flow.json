@@ -1,0 +1,73 @@
+{
+  "id": "audiences",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/audiences",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "VE sidebar Audiences tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Audiences",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Audiences tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Audiences select control (doc step)" },
+    { "action": "click", "target": "Audiences select control (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "click", "target": "Audiences dropdown option item (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Audiences Segmented Experience tab (doc step)" },
+    { "action": "verify", "target": "Audiences A/B Test tab (doc step)" },
+    { "action": "click", "target": "Audiences Segmented Experience tab (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "click", "target": "Audiences A/B Test tab (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Experience audience conditions block (doc step)", "optional": true },
+    { "action": "verify", "target": "Active variant beside experience row (doc step)", "optional": true },
+    { "action": "verify", "target": "Audiences experience Edit icon (doc step)", "optional": true },
+    { "action": "click", "target": "Audiences experience Edit icon (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Audiences Highlight Variant toggle (doc step)" },
+    { "action": "click", "target": "Audiences Highlight Variant toggle (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: After audience conditions are met, Visual Editor shows active variant; edits apply to entry variants and base entries in real time."
+    },
+    { "action": "click", "target": "Save changes header button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Save changes modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Save Changes"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Save changes modal Confirm Save button (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "click", "target": "Publish changes header button (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Publish menu panel (doc step)", "optional": true }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "id": "add-taxonomy-to-a-content-type",
+  "project": "CMS",
+  "module": "taxonomy",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/add-taxonomy-to-a-content-type",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "contains", "labelEquals": "Content Models" }
+    },
+    { "action": "click", "target": "Content Models (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+
+
+    { "action": "enter", "target": "Name (doc step)", "value": "Doc Taxonomy CT {unique}" },
+    { "action": "enter", "target": "UID (doc step)", "value": "doc_tax_ct_{unique25}" },
+    { "action": "click", "target": "Save and proceed" },
+    {
+      "action": "verify",
+      "target": "Content Type Builder (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insert a field (doc step)",
+      "expected": { "documentedFields": ["Insert a field"], "visible": true }
+    },
+    { "action": "click", "target": "Insert a field" },
+    {
+      "action": "verify",
+      "target": "Taxonomy field tile label (doc step)",
+      "expected": { "labelEquals": "Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Taxonomy (doc step)" },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
+    { "action": "click", "target": "Properties (Taxonomy field) (doc step)" },
+    { "action": "click", "target": "+ Add Taxonomy (doc step)" },
+    {
+      "action": "verify",
+      "target": "Select Taxonomy field label (doc step)",
+      "expected": { "labelEquals": "Select Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Select Taxonomy dropdown (doc step)" },
+    { "action": "click", "target": "Select first available taxonomy from dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "Apply in Add Taxonomy modal (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Apply", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Apply taxonomy field properties (doc step)" }
+  ]
+}

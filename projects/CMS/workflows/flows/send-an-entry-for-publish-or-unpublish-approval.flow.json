@@ -1,0 +1,109 @@
+{
+  "id": "send-an-entry-for-publish-or-unpublish-approval",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/send-an-entry-for-publish-or-unpublish-approval",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab (doc step)",
+      "expected": { "within": "Status panel" }
+    },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab Status icon (doc step)",
+      "expected": { "within": "Status panel" }
+    },
+    { "action": "click", "target": "Entry editor Status tab (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Publish Rules section heading (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Publish Rules",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Rules Request Approval button (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Request Approval",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish Rules Request Approval button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Publish approval request status text (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "approval",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Publish (bottom) button (doc step)",
+      "expected": {
+        "within": "Main content",
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Publish (bottom) button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Publish Entry modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Publish Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Environment option in Publish modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First Language option in Publish modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Send button in Publish modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Send",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Send button in Publish modal (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "warn",
+      "value": "Doc: if a publish rule applies to selected environment or language, Send submits for approval to approvers."
+    },
+    {
+      "action": "warn",
+      "value": "Doc: API request/accept/reject publish request endpoints are separate from this UI flow."
+    }
+  ]
+}

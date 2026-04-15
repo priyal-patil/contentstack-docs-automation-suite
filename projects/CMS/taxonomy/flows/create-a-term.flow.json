@@ -1,0 +1,165 @@
+{
+  "id": "create-a-term",
+  "project": "CMS",
+  "module": "taxonomy",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/create-a-term",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy in settings (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy page title (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy listing first taxonomy row open edit (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Add Term button on taxonomy details (doc step)",
+      "expected": {
+        "labelEquals": "Add Term",
+        "labelMatch": "contains",
+        "labelMismatchWarnOnly": true
+      }
+    },
+    { "action": "click", "target": "Add Term button on taxonomy details (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term Details section title (doc step)",
+      "expected": {
+        "labelEquals": "Term Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Term Term Name field label (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Term Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Term Term UID field label (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Term UID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Term Term Name input (doc step)",
+      "value": "Doc term {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Term modal Save button (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
+
+    {
+      "action": "verify",
+      "target": "Term details Create a Sibling Term button (doc step)",
+      "expected": {
+        "labelEquals": "Create a Sibling Term",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Term details Create a Sibling Term button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term Details section title (doc step)",
+      "expected": {
+        "labelEquals": "Term Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Term Term Name input (doc step)",
+      "value": "Doc term parent two {unique}"
+    },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
+
+    {
+      "action": "verify",
+      "target": "Term details Create a Sibling Term button (doc step)",
+      "expected": {
+        "labelEquals": "Create a Sibling Term",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Term details Create a Sibling Term button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term Details section title (doc step)",
+      "expected": {
+        "labelEquals": "Term Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Term Term Name input (doc step)",
+      "value": "Doc term sibling {unique}"
+    },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
+
+    { "action": "click", "target": "Taxonomy terms list first root term open details (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Term details Create a Sibling Term split dropdown caret (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term vertical menu Create a Child Term (doc step)",
+      "expected": {
+        "labelEquals": "Create a Child Term",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Term vertical menu Create a Child Term (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term Details section title (doc step)",
+      "expected": {
+        "labelEquals": "Term Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Term Term Name input (doc step)",
+      "value": "Doc term child {unique}"
+    },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

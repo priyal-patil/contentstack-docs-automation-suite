@@ -1,0 +1,123 @@
+{
+  "id": "form",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/form",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    {
+      "action": "warn",
+      "value": "Doc: Use URL bar to locate the page you want to update."
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Form tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Form",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Form tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor Form sidebar root (doc step)" },
+    {
+      "action": "warn",
+      "value": "Doc: Edit fields in Form panel to see real-time changes on the Visual Editor canvas."
+    },
+
+    { "action": "click", "target": "Entry actions menu in visual editor (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Import entry menu item in visual editor (doc step)",
+      "expected": {
+        "labelEquals": "Import",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Import entry menu item in visual editor (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Import entry modal in visual editor (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Import"
+      },
+      "optional": true
+    },
+    {
+      "action": "upload",
+      "target": "Import entry JSON file input in visual editor (doc step)",
+      "value": "data/CMS/visual-experience/import-entry-sample.json",
+      "optional": true
+    },
+
+    { "action": "click", "target": "Entry actions menu in visual editor (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Export entry menu item in visual editor (doc step)",
+      "expected": {
+        "labelEquals": "Export",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Export entry menu item in visual editor (doc step)", "timeoutMs": 90000 },
+
+    { "action": "click", "target": "Entry actions menu in visual editor (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Add to Release menu item VE (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Add to Release modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Add to Release"
+      }
+    },
+    { "action": "verify", "target": "Add to Release select release control (doc step)" },
+    { "action": "click", "target": "Add to Release select release control (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Add to Release locale checkbox (doc step)" },
+    { "action": "click", "target": "Add to Release locale checkbox (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Add to Release Add button confirm (doc step)",
+      "expected": {
+        "labelEquals": "Add",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Add to Release Add button confirm (doc step)", "timeoutMs": 90000, "optional": true },
+
+    { "action": "click", "target": "Version dropdown in visual editor (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Version option row in visual editor (doc step)", "optional": true },
+    { "action": "hover", "target": "Version option row in visual editor (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Version rename pencil icon in visual editor (doc step)", "optional": true },
+    { "action": "click", "target": "Version rename pencil icon in visual editor (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "enter", "target": "Version rename input in visual editor (doc step)", "value": "Doc version {unique}", "optional": true },
+    { "action": "click", "target": "Version rename Save button in visual editor (doc step)", "timeoutMs": 90000, "optional": true }
+  ]
+}

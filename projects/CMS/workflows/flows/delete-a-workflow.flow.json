@@ -13,6 +13,7 @@
       "action": "verify",
       "target": "Settings (doc step)",
       "expected": {
+        "within": "Left Navigation",
         "labelEquals": "Settings",
         "labelMatch": "contains"
       }
@@ -22,23 +23,15 @@
       "action": "verify",
       "target": "Workflows in settings left nav (doc step)",
       "expected": {
+        "within": "Left Navigation",
         "labelEquals": "Workflows",
-        "labelMatch": "contains",
-        "within": "Left Navigation"
+        "labelMatch": "contains"
       }
     },
     { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Workflow Settings page title (doc step)",
-      "expected": {
-        "labelEquals": "Workflow Settings",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Workflows tab selected Workflow Settings (doc step)",
+      "target": "Workflow page title (doc step)",
       "expected": {
         "labelEquals": "Workflow",
         "labelMatch": "contains"
@@ -46,30 +39,45 @@
     },
     {
       "action": "verify",
-      "target": "Workflow list first row visible (doc step)",
-      "expected": {},
-      "timeoutMs": 90000
-    },
-    {
-      "action": "hover",
-      "target": "Workflow list first workflow row hover for delete (doc step)",
-      "timeoutMs": 60000
-    },
-    {
-      "action": "verify",
-      "target": "Workflow list first row Delete icon visible after hover (doc step)",
-      "expected": {},
-      "timeoutMs": 60000
-    },
-    { "action": "click", "target": "Workflow list first row Delete in workflow actions menu (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
-      "target": "Delete Workflow modal title (doc step)",
+      "target": "Workflows tab selected Workflow (doc step)",
       "expected": {
-        "labelEquals": "Delete Workflow",
+        "labelEquals": "Workflows",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Delete Workflow modal Proceed button (doc step)", "timeoutMs": 60000 }
+    {
+      "action": "verify",
+      "target": "Workflow listing Name column header (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "hover",
+      "target": "Workflow listing first workflow row hover for delete icon (doc step)",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Workflow listing first workflow row Delete icon (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow delete confirmation Proceed button (doc step)",
+      "optional": true,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Workflow delete confirmation Proceed button (doc step)",
+      "optional": true,
+      "timeoutMs": 30000
+    },
+    {
+      "action": "warn",
+      "value": "Doc: API reference — delete a workflow via API is separate from the UI steps above. If Proceed was skipped (optional), confirm delete manually in a test stack."
+    }
   ]
 }

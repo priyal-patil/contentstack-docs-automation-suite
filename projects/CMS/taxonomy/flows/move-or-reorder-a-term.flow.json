@@ -1,0 +1,79 @@
+{
+  "id": "move-or-reorder-a-term",
+  "project": "CMS",
+  "module": "taxonomy",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/move-or-reorder-a-term",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy in settings (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy page title (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy listing first taxonomy row open edit (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "hover",
+      "target": "Taxonomy term list first term row hover for drag (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "drag",
+      "target": "Taxonomy term list first term drag handle (doc step)",
+      "value": "Taxonomy term list second term row drop target (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Move Term modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Move Term",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Move Term modal confirmation text (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "move ",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Move Term modal Move button (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Move",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Move Term modal Move button (doc step)", "timeoutMs": 90000 }
+  ]
+}

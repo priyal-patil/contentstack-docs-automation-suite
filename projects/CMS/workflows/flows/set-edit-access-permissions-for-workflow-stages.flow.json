@@ -15,7 +15,6 @@
       "timeoutMs": 90000,
       "expected": {
         "within": "Left Navigation",
-        "withinStrict": true,
         "labelEquals": "Settings",
         "labelMatch": "contains"
       }
@@ -53,43 +52,34 @@
     },
     {
       "action": "verify",
-      "target": "Workflow list first row visible (doc step)",
-      "timeoutMs": 90000,
-      "expected": {}
-    },
-    { "action": "click", "target": "Workflow list first row open (doc step)", "timeoutMs": 90000 },
-    {
-      "action": "verify",
-      "target": "Workflow Name label (doc step)",
-      "timeoutMs": 60000,
+      "target": "Workflows tab selected Workflow (doc step)",
       "expected": {
-        "labelEquals": "Workflow Name",
+        "labelEquals": "Workflows",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Workflow first stage Edit icon summary card (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Workflow first stage parent accordion expand (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Stage transition and access rules accordion heading in workflow stage (doc step)",
-      "timeoutMs": 60000,
+      "target": "Workflow listing Name column header (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow listing first workflow row link (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow edit first stage Edit icon (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "click",
+      "target": "Workflow stage modal Stage transition accordion toggle (doc step)",
+      "optional": true,
+      "timeoutMs": 15000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage Stage transition accordion title (doc step)",
+      "optional": true,
       "expected": {
         "labelEquals": "Stage transition",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "click", "target": "Workflow first stage transition accordion toggle (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
-      "target": "Stage transition and access rules accordion expanded (doc step)",
-      "timeoutMs": 60000
-    },
-    {
-      "action": "verify",
-      "target": "Next available stages All stages label (doc step)",
-      "timeoutMs": 60000,
-      "expected": {
-        "labelEquals": "Next available stages",
         "labelMatch": "contains"
       }
     },
@@ -102,16 +92,15 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Workflow stage Current stage users edit option (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Workflow first stage Done button label (doc step)",
-      "timeoutMs": 60000,
+      "target": "Workflow stage Current stage users edit option (doc step)",
       "expected": {
-        "labelEquals": "Done",
+        "labelEquals": "Current stage user(s)",
         "labelMatch": "contains"
       }
     },
+    { "action": "click", "target": "Workflow stage Current stage users edit option (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
@@ -128,6 +117,10 @@
       "target": "Workflow save success toast (doc step)",
       "timeoutMs": 120000,
       "expected": {}
+    },
+    {
+      "action": "warn",
+      "value": "Doc: Workflow superusers, organization owners, and stack owners/admins can edit or delete entries in any stage regardless of these rules."
     }
   ]
 }

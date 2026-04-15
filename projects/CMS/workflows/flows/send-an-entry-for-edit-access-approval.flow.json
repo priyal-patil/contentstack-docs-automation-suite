@@ -14,39 +14,61 @@
       "target": "Entries (doc step)",
       "timeoutMs": 90000,
       "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
         "labelEquals": "Entries",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Entry row (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Entries (doc step)" },
+    { "action": "click", "target": "First Entry row (doc step)" },
     {
       "action": "verify",
-      "target": "Request Edit Access button visible at entry page bottom (doc step)",
+      "target": "Request Edit Access button (doc step)",
       "timeoutMs": 90000,
       "expected": {
+        "within": "Main content",
         "labelEquals": "Request Edit Access",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Request Edit Access button at entry page bottom (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Request Edit Access button (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Request Edit Access dialog title (doc step)",
-      "timeoutMs": 60000,
+      "target": "Request Edit Access modal title (doc step)",
       "expected": {
         "within": "Modal",
-        "withinStrict": true,
         "labelEquals": "Request Edit Access",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "Add comments for approver field (doc step)",
+      "expected": { "within": "Modal" }
     },
     {
       "action": "enter",
-      "target": "Add comments field in Request Edit Access modal (doc step)",
-      "value": "Doc edit access approval request {unique}",
+      "target": "Add comments for approver field (doc step)",
+      "value": "Edit access request comment (doc step) - send-an-entry-for-edit-access-approval."
+    },
+    {
+      "action": "verify",
+      "target": "Send Request button in Request Edit Access modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Send Request",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Send Request button in Request Edit Access modal (doc step)",
       "timeoutMs": 60000
     },
-    { "action": "click", "target": "Send Request button in Request Edit Access modal (doc step)", "timeoutMs": 60000 }
+    {
+      "action": "warn",
+      "value": "Doc: After sending, request status (pending, approved, rejected) appears in the Tasks section - not automated here. API-based edit access flows are separate from these UI steps."
+    }
   ]
 }

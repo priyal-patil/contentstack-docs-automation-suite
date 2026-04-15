@@ -1,0 +1,48 @@
+{
+  "id": "reply-to-a-review-comment",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/preview-sharing/reply-to-a-review-comment",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "warn",
+      "value": "Doc: Open the shared preview link from email before replying to a review comment."
+    },
+    { "action": "verify", "target": "Shared preview section discussion icon (doc step)", "optional": true },
+    { "action": "click", "target": "Shared preview section discussion icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Discussions tab in preview sharing right panel (doc step)",
+      "expected": {
+        "labelEquals": "Discussions",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Discussions tab in preview sharing right panel (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Shared preview discussion thread (doc step)", "optional": true },
+    {
+      "action": "enter",
+      "target": "Review comment input box (doc step)",
+      "value": "Reply from automation",
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Review comment Post button (doc step)",
+      "expected": {
+        "labelEquals": "Post",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Review comment Post button (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: Mentions with @username can be used in replies; comment length limit is 500 characters."
+    }
+  ]
+}

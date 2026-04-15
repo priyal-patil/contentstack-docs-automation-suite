@@ -13,8 +13,8 @@ const ranFlowIds = new Set<string>();
 // Do NOT use test.describe.configure({ mode: "serial" }) at file scope: Playwright skips
 // all remaining tests after the first failure in a serial group (204+ "skipped" in reports).
 //
-// Instead: parallelize by project+module+stage (each group runs serially so publish→unpublish
-// order is preserved *within* that module/stage). Enable fullyParallel + workers in config / PW_WORKERS.
+// Inner groups use describe.parallel (not serial): a failure in one URL must NOT skip the rest
+// in the same module/stage. Order is still deterministic via flow sort, but tests run independently.
 
 const legacyFlowsDir = path.resolve(__dirname, "../flows");
 const projectsDir = path.resolve(__dirname, "../projects");
@@ -60,6 +60,66 @@ function loadFlows(): any[] {
   // Legacy support (until you delete old flows folder)
   walk(legacyFlowsDir);
   return all;
+}
+
+/**
+ * CMS-only tie-breaker when explicit `flowOrder` ties (both 0): create/add → edit/update → export/import/move/bulk → other → delete-like.
+ * Non-zero `flowOrder` wins first (dependency chains). See .cursor/rules/cms-execution-order.mdc.
+ */
+function crudLifecycleRank(f: any): number {
+  if (String(f?.project || "") !== "CMS") return 0;
+  const id = String(f?.id || "").toLowerCase();
+  if (!id) return 50;
+
+  if (
+    /^delete-/.test(id) ||
+    /^bulk-delete-/.test(id) ||
+    id === "edit-or-delete-a-comment" ||
+    id === "delete-entries-and-assets-in-bulk"
+  ) {
+    return 100;
+  }
+
+  if (
+    /^create-/.test(id) ||
+    /^add-/.test(id) ||
+    /^new-/.test(id) ||
+    /^duplicate-/.test(id) ||
+    /^clone-/.test(id) ||
+    /^generate-/.test(id) ||
+    id.startsWith("set-up-") ||
+    id.includes("quickstart") ||
+    id.startsWith("get-started")
+  ) {
+    return 0;
+  }
+
+  if (
+    /^edit-/.test(id) ||
+    /^update-/.test(id) ||
+    /^rename-/.test(id) ||
+    /^customize-/.test(id) ||
+    /^change-/.test(id) ||
+    /^modify-/.test(id)
+  ) {
+    return 10;
+  }
+
+  if (
+    /^export-/.test(id) ||
+    /^import-/.test(id) ||
+    /^move-/.test(id) ||
+    /^copy-/.test(id) ||
+    /^bulk-/.test(id) ||
+    /^publish-/.test(id) ||
+    /^unpublish-/.test(id) ||
+    /^deploy-/.test(id) ||
+    /^remove-/.test(id)
+  ) {
+    return 20;
+  }
+
+  return 30;
 }
 
 const flows = loadFlows().sort((a, b) => {
@@ -197,10 +257,28 @@ const flows = loadFlows().sort((a, b) => {
     if (id === "update-a-publish-rule") return 121;
     if (id === "delete-a-publish-rule") return 122;
     if (id === "add-workflows-and-stages") return 123;
+    if (id === "update-a-workflow") return 124;
+    if (id === "delete-a-workflow") return 125;
+    if (id === "enable-or-disable-a-workflow") return 126;
+    if (id === "set-edit-access-permissions-for-workflow-stages") return 127;
+    if (id === "change-entry-workflow-stage") return 128;
+    if (id === "send-an-entry-for-edit-access-approval") return 129;
+    if (id === "send-an-entry-for-publish-or-unpublish-approval") return 130;
+    if (id === "approve-edit-access-request-for-an-entry") return 131;
+    if (id === "revoke-edit-access-for-an-entry") return 132;
+    if (id === "create-a-taxonomy") return 133;
+    if (id === "edit-a-taxonomy") return 134;
+    if (id === "export-a-taxonomy") return 135;
+    if (id === "import-a-taxonomy") return 136;
+    if (id === "delete-a-taxonomy") return 137;
+    if (id === "add-taxonomy-to-a-content-type") return 138;
     return 0;
   };
   const fd = flowOrder(a) - flowOrder(b);
   if (fd !== 0) return fd;
+
+  const cr = crudLifecycleRank(a) - crudLifecycleRank(b);
+  if (cr !== 0) return cr;
 
   // Stable ordering within stage for determinism
   const aKey = `${a.project || ""}::${a.module || ""}::${a.id || ""}`;
@@ -240,6 +318,8 @@ test.afterAll(() => {
       target: f.target,
       value: f.value,
       errorMessage: f.errorMessage,
+      missingElementSummary: f.missingElementSummary,
+      screenshotRelativePath: f.screenshotRelativePath,
       step: f.step,
     })),
   };
@@ -302,28 +382,44 @@ test.afterAll(() => {
   clearDocStepFailures();
 });
 
-/**
- * One test per flow in global dependency order (see `flows` sort above).
- * Most flows run in parallel; `fullyParallel` means sort order is not global execution order — use `--workers=1` for that.
- * Exception: add → update → delete publish rule run in a serial subgroup on the same stack (if add fails, later steps are skipped).
- */
-test.describe("Flow suite (all flows; failures do not skip remaining URLs)", () => {
-  // Title must not repeat flow ids — otherwise -g "delete-a-publish-rule" matches this describe and runs all 3 tests.
-  test.describe.serial(
-    "CMS workflows: publish rules chain (serial)",
-    () => {
-      for (const id of PUBLISH_RULE_CHAIN_SERIAL) {
-        const flow = flows.find((f) => f.id === id);
-        if (!flow) continue;
+/** Flows in global sort order, grouped by project/module/stage (each group runs in parallel). */
+function groupFlowsByProjectModuleStage(flowList: any[]): Map<string, any[]> {
+  const m = new Map<string, any[]>();
+  for (const flow of flowList) {
+    const projectName = flow.project || "UnknownProject";
+    const moduleName = flow.module || "unknown-module";
+    const stage = flow.stage || "main";
+    const key = `${projectName}::${moduleName}::${stage}`;
+    if (!m.has(key)) m.set(key, []);
+    m.get(key)!.push(flow);
+  }
+  return m;
+}
 
-        const projectName = flow.project || "UnknownProject";
-        const moduleName = flow.module || "unknown-module";
-        const stage = flow.stage || "main";
-        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
-        const testTitle = `Project=${projectName} Module=${moduleName} Stage=${stage} ${flowId}`;
+/** Flows that run in serial chains — excluded from module-parallel groups to avoid duplicate tests. */
+const SERIAL_CHAIN_FLOW_IDS = new Set<string>([...PUBLISH_RULE_CHAIN_SERIAL, ...ROLES_CHAIN_SERIAL]);
 
-        test(testTitle, async ({ browser }) => {
-          ranFlowIds.add(flow.id || flowId);
+const flowsForParallel = flows.filter((f) => !SERIAL_CHAIN_FLOW_IDS.has(String(f.id || "")));
+const flowGroups = groupFlowsByProjectModuleStage(flowsForParallel);
+
+test.describe.parallel("Flow suite (parallel across modules; all URLs in a module/stage run even if one fails)", () => {
+  // Default project timeout is 7m; headed + PW_SLOWMO long JSON RTE flows can exceed 20m wall time.
+  test.describe.configure({ timeout: 1_800_000 });
+  for (const [, groupFlows] of flowGroups) {
+    const first = groupFlows[0];
+    const projectName = first.project || "UnknownProject";
+    const moduleName = first.module || "unknown-module";
+    const stage = first.stage || "main";
+
+    test.describe.parallel(`Project=${projectName} Module=${moduleName} Stage=${stage}`, () => {
+      for (const flow of groupFlows) {
+        const testName = flow.id || path.basename(flow.source || "unknown-flow");
+
+        test(testName, async ({ browser }) => {
+          if (testName === "workflows-use-cases") {
+            test.setTimeout(900_000);
+          }
+          ranFlowIds.add(flow.id || testName);
           const context = await browser.newContext({ storageState: "auth.json" });
           const page = await context.newPage();
 
@@ -332,49 +428,39 @@ test.describe("Flow suite (all flows; failures do not skip remaining URLs)", () 
           await context.close();
         });
       }
-    }
-  );
-
-  // One test body so core/usersRolesChain.ts singleton survives create → update → delete (avoid per-test isolation dropping the shared UUID).
-  test.describe.serial("CMS users-and-roles: role lifecycle chain (serial)", () => {
-    test("create-a-role → update-a-role → delete-a-role", async ({ browser }) => {
-      test.setTimeout(900_000);
-      for (const id of ROLES_CHAIN_SERIAL) {
-        const flow = flows.find((f) => f.id === id);
-        if (!flow) continue;
-        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
-        ranFlowIds.add(flow.id || flowId);
-        const context = await browser.newContext({ storageState: "auth.json" });
-        const page = await context.newPage();
-        await executeFlow(page, flow);
-        await context.close();
-      }
-    });
-  });
-
-  for (const flow of flows) {
-    const fid = String(flow.id || "");
-    if (PUBLISH_RULE_CHAIN_SERIAL.includes(fid)) continue;
-    if (ROLES_CHAIN_SERIAL.includes(fid)) continue;
-
-    const projectName = flow.project || "UnknownProject";
-    const moduleName = flow.module || "unknown-module";
-    const stage = flow.stage || "main";
-    const flowId = flow.id || path.basename(flow.source || "unknown-flow");
-    const testTitle = `Project=${projectName} Module=${moduleName} Stage=${stage} ${flowId}`;
-
-    test(testTitle, async ({ browser }) => {
-      if (flowId === "workflows-use-cases") {
-        test.setTimeout(900_000);
-      }
-      ranFlowIds.add(flow.id || flowId);
-      const context = await browser.newContext({ storageState: "auth.json" });
-      const page = await context.newPage();
-
-      await executeFlow(page, flow);
-
-      await context.close();
     });
   }
 });
 
+test.describe.serial("CMS workflows: publish rules chain (serial)", () => {
+  test("add-a-publish-rule → update-a-publish-rule → delete-a-publish-rule", async ({ browser }) => {
+    test.setTimeout(900_000);
+    for (const id of PUBLISH_RULE_CHAIN_SERIAL) {
+      const flow = flows.find((f) => f.id === id);
+      if (!flow) continue;
+      const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+      ranFlowIds.add(flow.id || flowId);
+      const context = await browser.newContext({ storageState: "auth.json" });
+      const page = await context.newPage();
+      await executeFlow(page, flow);
+      await context.close();
+    }
+  });
+});
+
+// One test body so core/usersRolesChain.ts singleton survives create → update → delete (avoid per-test isolation dropping the shared UUID).
+test.describe.serial("CMS users-and-roles: role lifecycle chain (serial)", () => {
+  test("create-a-role → update-a-role → delete-a-role", async ({ browser }) => {
+    test.setTimeout(900_000);
+    for (const id of ROLES_CHAIN_SERIAL) {
+      const flow = flows.find((f) => f.id === id);
+      if (!flow) continue;
+      const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+      ranFlowIds.add(flow.id || flowId);
+      const context = await browser.newContext({ storageState: "auth.json" });
+      const page = await context.newPage();
+      await executeFlow(page, flow);
+      await context.close();
+    }
+  });
+});

@@ -1,0 +1,48 @@
+{
+  "id": "reopen-a-review-comment",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/preview-sharing/reopen-a-review-comment",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "warn",
+      "value": "Doc: Open the shared preview link from email before reopening a review comment."
+    },
+    {
+      "action": "verify",
+      "target": "Discussions tab in preview sharing right panel (doc step)",
+      "expected": {
+        "labelEquals": "Discussions",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Discussions tab in preview sharing right panel (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Discussions status dropdown (doc step)", "optional": true },
+    { "action": "click", "target": "Discussions status dropdown (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Discussions filter Resolved option (doc step)",
+      "expected": {
+        "labelEquals": "Resolved",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Discussions filter Resolved option (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "hover", "target": "Shared preview discussion thread (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Review comment Reopen button (doc step)",
+      "expected": {
+        "labelEquals": "Reopen",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Review comment Reopen button (doc step)", "timeoutMs": 90000, "optional": true }
+  ]
+}

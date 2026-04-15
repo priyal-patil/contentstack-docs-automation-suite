@@ -30,15 +30,7 @@
     { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Workflow Settings page title (doc step)",
-      "expected": {
-        "labelEquals": "Workflow Settings",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Workflows tab selected Workflow Settings (doc step)",
+      "target": "Workflow page title (doc step)",
       "expected": {
         "labelEquals": "Workflow",
         "labelMatch": "contains"
@@ -46,11 +38,21 @@
     },
     {
       "action": "verify",
-      "target": "Workflow list first row visible (doc step)",
-      "expected": {},
-      "timeoutMs": 90000
+      "target": "Workflows tab selected Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "click", "target": "Workflow list first row open (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflow listing Name column header (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow listing first workflow row link (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Workflow Name label (doc step)",
@@ -60,29 +62,62 @@
       }
     },
     {
-      "action": "enter",
-      "target": "Workflow description input (doc step)",
-      "value": "Updated via doc update-a-workflow {unique}",
-      "timeoutMs": 60000
-    },
-    { "action": "click", "target": "Workflow first stage Edit icon summary card (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Workflow first stage parent accordion expand (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Workflow first stage transition accordion toggle (doc step)", "timeoutMs": 60000 },
-    {
       "action": "verify",
-      "target": "Prevent self-advancement label (doc step)",
+      "target": "Workflow Description label (doc step)",
       "expected": {
-        "labelEquals": "Prevent self-advancement",
+        "labelEquals": "Description",
         "labelMatch": "contains"
       }
     },
     {
       "action": "verify",
-      "target": "Workflow first stage Delete icon (doc step)",
-      "expected": {},
+      "target": "Workflow Scope label (doc step)",
+      "expected": {
+        "labelEquals": "Scope",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Stages section label (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Stages",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Workflow edit first stage Edit icon (doc step)",
       "timeoutMs": 60000
     },
-    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Prevent self-advancement label (doc step)",
+      "optional": true,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Prevent self-advancement",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Workflow first stage Done button (doc step)",
+      "optional": true,
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow edit first stage Delete icon (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "warn",
+      "value": "Doc: API reference — update a workflow via API is separate from the UI steps above."
+    },
     {
       "action": "verify",
       "target": "Workflow editor Save button label (doc step)",

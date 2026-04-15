@@ -38,6 +38,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-entries-my-views-element-action"], .views-container--item-action-wrapper',
 };
 
+/** Entries list search only — avoid left nav “Search my views” (same cs-search-input-field / Search patterns). */
+export const INPUT_SELECTORS: Record<string, string> = {
+  "Search bar input (doc step)":
+    '[data-test-id="cs-page-layout-contentBody"] [data-test-id="cs-entries-inline-search"] input, .entryList [data-test-id="cs-entries-inline-search"] input',
+};
+
 export const VERIFY_SELECTORS: Record<string, string> = {
   "Views tab in left panel (doc step)":
     '[data-test-id="cs-entries-view-tab"], .Tab__item:has-text("Views")',

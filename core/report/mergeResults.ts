@@ -1,7 +1,7 @@
 import path from "path";
 import fse from "fs-extra";
 import { flowIdFromPlaywrightSpecTitle, projectFromPlaywrightSpecTitle } from "./parseFlowSpecTitle";
-
+import { resolveFlowsResultsPath } from "./resolveFlowsResultsPath";
 type CombinedRow = {
   kind: "doc_only" | "flow";
   project: string;
@@ -87,7 +87,7 @@ async function main() {
   const reportDir = reportDirArg ? path.resolve(process.cwd(), reportDirArg) : path.resolve(process.cwd(), "reports/latest");
 
   const docsPath = path.join(reportDir, "docs-results.json");
-  const flowsPath = path.join(reportDir, "flows-results.json");
+  const flowsPath = resolveFlowsResultsPath(reportDir);
 
   const docs = await tryReadJson(docsPath);
   const pw = await tryReadJson(flowsPath);

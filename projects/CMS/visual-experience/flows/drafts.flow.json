@@ -1,0 +1,60 @@
+{
+  "id": "drafts",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/drafts",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    { "action": "click", "target": "VE sidebar Drafts tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Drafts panel heading (doc step)" },
+    {
+      "action": "verify",
+      "target": "Drafts list entry Compare action (doc step)",
+      "expected": {
+        "labelEquals": "Compare",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Drafts list entry Compare action (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Drafts side-by-side compare view (doc step)", "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: In compare view, saved and current draft are shown side-by-side; draft changes are highlighted in red."
+    },
+    {
+      "action": "verify",
+      "target": "Drafts revert icon (doc step)",
+      "expected": {
+        "labelEquals": "Revert",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Drafts revert icon (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Drafts panel empty state (doc step)", "optional": true }
+  ]
+}

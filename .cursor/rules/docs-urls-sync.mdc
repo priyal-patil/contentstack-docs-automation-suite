@@ -1,0 +1,49 @@
+---
+description: Keep data/docs-urls.csv in sync with flow sources and informational docs URLs
+alwaysApply: true
+---
+
+# Docs URLs CSV (`data/docs-urls.csv`)
+
+## Format
+
+- Master list for **docs-audit** (links, images, tables, logo checks): CSV with header **`project,url`** (see `core/docsUrlsCsv.ts`).
+- **`project`** is the automation project (`CMS`, `Launch`, `Personalize`, …), derived from folder names under `projects/<Project>/` or `flows/<Project>/`.
+
+## When `docs-urls.csv` updates **automatically** (no separate sync step)
+
+These commands **merge** `contentstack.com/docs` URLs into `data/docs-urls.csv` as part of their work:
+
+- **`npm run ingest:bulk`** / `bulkIngestFromUrls.ts` — every bulk item with a docs URL gets a **`project,url`** row (executable + informational).
+- **`npm run add-doc-url`** / `addDocUrlToCsv.ts` — appends/merges rows (use `--project` when not CMS).
+- **`tools/intake-urls.ts`** — docs URLs are merged with inferred `project`.
+- **`npm run test:all-and-report`** — runs **`sync:docs-urls`** before tests.
+
+Batch runs that start **background docs-audit** or **inline docs-audit** also run **`syncDocsUrlsToCsv`** (e.g. CMS sequential script, `run-docs-audit-background.sh`), so the CSV is refreshed from disk **when those scripts run**, not when you only save a file in the editor.
+
+## When it does **not** update by itself
+
+- Editing **`projects/**/flows/*.flow.json`** (`source`) or **`flows/<Project>/docs.json`** (`urls`) in the IDE **does not** write `docs-urls.csv` until something runs sync or ingest.
+
+**After adding or changing doc URLs only in JSON files**, run:
+
+```bash
+npm run sync:docs-urls
+```
+
+Then commit `data/docs-urls.csv` if you want the repo to stay the single source of truth for audits and CI.
+
+## What sync does
+
+**`npm run sync:docs-urls`** merges:
+
+1. Existing `data/docs-urls.csv`
+2. All URLs in **`flows/*/docs.json`**
+3. All **`source`** fields in **`projects/**/flows/*.flow.json`** that contain `contentstack.com/docs`
+
+Dedupes by **`(project, normalized url)`** and rewrites the CSV.
+
+## Agent behavior
+
+- Prefer **bulk ingest** or **add-doc-url** when introducing new docs URLs so the CSV stays updated in one step.
+- If you (or the user) only edited flow JSON / `docs.json`, **run `npm run sync:docs-urls`** before assuming docs-audit covers the new URLs.

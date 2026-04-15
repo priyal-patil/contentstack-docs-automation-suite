@@ -25,12 +25,12 @@
       "expected": {}
     },
     { "action": "click", "target": "First entry checkbox (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)" },
     {
       "action": "verify",
-      "target": "Delete button on floating bar (doc step)",
+      "target": "Delete in floating panel (doc step)",
       "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
     },
-    { "action": "click", "target": "Floating panel See More (doc step)" },
     { "action": "click", "target": "Delete in floating panel (doc step)" },
     {
       "action": "verify",

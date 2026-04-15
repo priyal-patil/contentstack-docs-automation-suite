@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { writeDocsUrlsCsv, normalizeCanonicalDocUrl, type DocUrlRow } from "../core/docsUrlsCsv";
 
 function walk(dir: string, out: string[]) {
   if (!fs.existsSync(dir)) return;
@@ -8,28 +9,6 @@ function walk(dir: string, out: string[]) {
     const st = fs.statSync(full);
     if (st.isDirectory()) walk(full, out);
     else if (full.endsWith(".flow.json")) out.push(full);
-  }
-}
-
-/**
- * Single canonical form for Contentstack docs URLs so http/https, www, and trailing slashes
- * do not create duplicate rows in cms-urls.csv (same page, different strings).
- */
-function normalizeUrl(u: string): string {
-  const raw = String(u || "").trim();
-  if (!raw || !raw.includes("contentstack.com/docs")) return raw;
-  try {
-    const withProto = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    const url = new URL(withProto);
-    if (!/contentstack\.com$/i.test(url.hostname)) return raw;
-    url.protocol = "https:";
-    if (url.hostname === "contentstack.com") url.hostname = "www.contentstack.com";
-    let p = url.pathname;
-    if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
-    url.pathname = p;
-    return url.toString();
-  } catch {
-    return raw;
   }
 }
 
@@ -50,7 +29,7 @@ function main() {
     try {
       const raw = fs.readFileSync(f, "utf-8");
       const json = JSON.parse(raw) as { source?: string };
-      const src = normalizeUrl(json.source || "");
+      const src = normalizeCanonicalDocUrl(json.source || "");
       if (src) urls.add(src);
     } catch {
       // ignore malformed flow files
@@ -62,7 +41,7 @@ function main() {
       const raw = fs.readFileSync(cmsDocsJson, "utf-8");
       const parsed = JSON.parse(raw) as { urls?: string[] };
       for (const u of parsed.urls || []) {
-        const n = normalizeUrl(u);
+        const n = normalizeCanonicalDocUrl(u);
         if (n) urls.add(n);
       }
     } catch {
@@ -71,13 +50,12 @@ function main() {
   }
 
   const ordered = Array.from(urls).sort((a, b) => a.localeCompare(b));
-  fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, ordered.join("\n") + "\n", "utf-8");
+  const rows: DocUrlRow[] = ordered.map((u) => ({ project: "CMS", url: u }));
+  writeDocsUrlsCsv(outPath, rows);
   // eslint-disable-next-line no-console
-  console.log(`✅ Wrote CMS URL CSV: ${outPath}`);
+  console.log(`Wrote CMS URL CSV: ${outPath}`);
   // eslint-disable-next-line no-console
   console.log(`URLs: ${ordered.length}`);
 }
 
 main();
-

@@ -1,0 +1,47 @@
+{
+  "id": "widgets",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/widgets",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "VE sidebar Widgets tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Widgets",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Widgets tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Widgets panel heading (doc step)" },
+    { "action": "verify", "target": "Widgets dropdown selected app value (doc step)" },
+    { "action": "click", "target": "Widgets dropdown trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Widgets dropdown first app option (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Widgets extension iframe (doc step)" }
+  ]
+}

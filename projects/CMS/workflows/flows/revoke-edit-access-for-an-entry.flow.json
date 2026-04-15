@@ -22,102 +22,104 @@
       "target": "Entries (doc step)",
       "timeoutMs": 90000,
       "expected": {
+        "within": "Top Bar",
+        "withinStrict": true,
         "labelEquals": "Entries",
         "labelMatch": "contains"
       }
     },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First Entry row (doc step)", "timeoutMs": 90000 },
     {
-      "action": "click",
-      "target": "Entries (doc step)",
-      "timeoutMs": 90000
-    },
-    {
-      "action": "click",
-      "target": "First Entry row (doc step)",
-      "timeoutMs": 90000
+      "action": "verify",
+      "target": "Entry editor Status tab (doc step)",
+      "expected": { "within": "Status panel" }
     },
     {
       "action": "verify",
-      "target": "Entry editor Status tab icon (doc step)",
-      "timeoutMs": 60000,
-      "expected": {
-        "within": "Entry editor right sidebar",
-        "withinStrict": true
-      }
+      "target": "Entry editor Status tab Status icon (doc step)",
+      "expected": { "within": "Status panel" }
     },
-    {
-      "action": "click",
-      "target": "Entry editor Status tab icon (doc step)",
-      "timeoutMs": 60000
-    },
+    { "action": "click", "target": "Entry editor Status tab (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Entry Status panel title (doc step)",
-      "timeoutMs": 60000,
+      "target": "Entry editor Workflow Details heading (doc step)",
       "expected": {
-        "labelEquals": "Entry Status",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Workflow Details section heading in Entry Status panel (doc step)",
-      "timeoutMs": 60000,
-      "expected": {
+        "within": "Status panel",
         "labelEquals": "Workflow Details",
         "labelMatch": "contains"
       }
     },
     {
       "action": "verify",
-      "target": "Current stage assignees due date under Workflow Details in Entry Status panel (doc step)",
-      "timeoutMs": 60000
+      "target": "Entry workflow Change link (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Change",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
-      "target": "Users to whom edit access is granted section heading in Entry Status panel (doc step)",
-      "timeoutMs": 60000,
+      "target": "Users to whom edit access is granted section heading (doc step)",
       "expected": {
-        "within": "Entry editor right sidebar",
-        "withinStrict": true,
+        "within": "Status panel",
         "labelEquals": "Users to whom edit access is granted",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Revoke edit access remove icon beside first user in Users to whom edit access granted section (doc step)",
+      "target": "Revoke edit access remove user first chip button (doc step)",
       "timeoutMs": 60000
     },
     {
-      "action": "click",
-      "target": "View All link in Users to whom edit access granted section (doc step)",
+      "action": "verify",
+      "target": "Revoke edit access View All link (doc step)",
       "optional": true,
-      "timeoutMs": 30000
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "View All",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke edit access View All link (doc step)",
+      "optional": true,
+      "timeoutMs": 60000
     },
     {
       "action": "verify",
-      "target": "All Other users dialog title (doc step)",
+      "target": "All Other users modal title (doc step)",
       "optional": true,
-      "timeoutMs": 30000,
       "expected": {
         "within": "Modal",
-        "withinStrict": true,
         "labelEquals": "All Other users",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Revoke edit access remove icon beside first user in All Other users dialog (doc step)",
+      "target": "Revoke edit access remove user first chip in All Other users modal (doc step)",
       "optional": true,
-      "timeoutMs": 30000
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Once done click Close in All Other users modal (doc step)",
+      "optional": true,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Close",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
-      "target": "Close button in All Other users dialog (doc step)",
+      "target": "Once done click Close in All Other users modal (doc step)",
       "optional": true,
-      "timeoutMs": 30000
+      "timeoutMs": 60000
     }
   ]
 }

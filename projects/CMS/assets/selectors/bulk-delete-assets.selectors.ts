@@ -1,3 +1,13 @@
+/**
+ * Assets table row selection (bulk ops).
+ * DOM: [data-test-id="cs-table-row-selection"] > .checkbox-wrapper > label[data-test-id="cs-checkbox"] > input#rowSelect[title^="select row"].
+ * Use explicit row test-ids (cs-table-body-row-0, …) — :nth-match() is not reliable across Playwright engines.
+ */
+export const ASSET_TABLE_FIRST_ROW_CHECKBOX =
+  '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-row-selection"] label[data-test-id="cs-checkbox"], [data-test-id="cs-table-body-row-0"] label[data-test-id="cs-checkbox"]';
+export const ASSET_TABLE_SECOND_ROW_CHECKBOX =
+  '[data-test-id="cs-table-body-row-1"] [data-test-id="cs-table-row-selection"] label[data-test-id="cs-checkbox"], [data-test-id="cs-table-body-row-1"] label[data-test-id="cs-checkbox"]';
+
 export const CLICK_SELECTORS: Record<string, string> = {
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
@@ -5,10 +15,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
-  "First asset checkbox (doc step)":
-    ':nth-match([data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-row-selection"] input[type="checkbox"], 1)',
-  "Second asset checkbox (doc step)":
-    ':nth-match([data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-row-selection"] input[type="checkbox"], 2)',
+  "First asset checkbox (doc step)": ASSET_TABLE_FIRST_ROW_CHECKBOX,
+  "Second asset checkbox (doc step)": ASSET_TABLE_SECOND_ROW_CHECKBOX,
   "Delete in floating panel (doc step)":
     'button[data-test-id="cs-asset-bulk-panel-delete"], [data-test-id="cs-asset-bulk-panel-delete"]',
   "Delete confirm (doc step)":

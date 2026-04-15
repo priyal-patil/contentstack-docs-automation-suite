@@ -1,0 +1,14 @@
+---
+description: Doc-minimal steps and verify only what the document states
+alwaysApply: true
+---
+
+# Doc-minimal flow rule
+
+- Add only steps **explicitly stated** in the source document (sentence-by-sentence). Do not add inferred prerequisite UI actions if they are not written in the document.
+- If a required UI action is missing in the docs, allow the flow to fail and record it as a doc-step failure.
+- **Verify** only what the document **names** (labels, buttons, fields, modal titles) or **explicitly places** (e.g. left navigation, top bar, modal). Use **`labelEquals`** with the **exact** doc string—**not** contains/partial/`labelMatch` for those checks. See **`doc-step-parity.mdc`** for full detail.
+- For controls **not named** in the document: **perform** the action only—**no** `verify` for that unnamed piece.
+- Placement/container checks **only** when the document states that placement; **never** infer placement from the app.
+- Treat position, modal-title, and field/button **label** mismatches vs the document as **warnings** in reporting; **do not** fail the run for verification mismatch alone.
+- **Hard fail** only when an executable step cannot be performed (target missing, timeout, action impossible).

@@ -1,3 +1,14 @@
+/**
+ * Used by actionRules “open properties” path for Modular Blocks: hover field row, then force/DOM-click.
+ * Keep in sync with "Properties (Single Line Textbox) (doc step)" — first segment must be this test id so .first() hits Sliders, not another field.
+ */
+export const MODULAR_BLOCKS_SINGLE_LINE_PROPERTIES_BUTTON_SELECTOR =
+  '[data-test-id="cs-ct-single-line-textbox-option-properties"]';
+
+/** Content type builder row that contains the Single Line properties icon (hover target before click). */
+export const MODULAR_BLOCKS_SINGLE_LINE_FIELD_ROW_SELECTOR =
+  `.ContentTypeField:has(${MODULAR_BLOCKS_SINGLE_LINE_PROPERTIES_BUTTON_SELECTOR})`;
+
 export const CLICK_SELECTORS: Record<string, string> = {
   // Open first content type row (from provided DOM: div[role="row"] with data-test-id)
   "Open the content type you want to add Modular Blocks to.":
@@ -24,9 +35,10 @@ export const CLICK_SELECTORS: Record<string, string> = {
   // Pick a field tile to add inside block (doc says "select any field")
   "Single Line Textbox (doc step)": '[data-test-id="cs-ct-select-field-single_line"]',
 
-  // Rename: open properties for the Single Line Textbox inside the block (field has dynamic id e.g. cs-ct-banner-1-option-properties)
+  // Properties (Sliders) for Single Line Textbox only. Do NOT use [data-test-id$="-option-properties"] alone —
+  // that matches Modular Blocks / other fields first in DOM, so .first() clicks the wrong icon vs manual.
   "Properties (Single Line Textbox) (doc step)":
-    'div.Block .ContentTypeField [data-test-id$="-option-properties"], [data-test-id="cs-ct-single-line-textbox-option-properties"]',
+    `${MODULAR_BLOCKS_SINGLE_LINE_PROPERTIES_BUTTON_SELECTOR}, button:has(svg[name="Sliders"])${MODULAR_BLOCKS_SINGLE_LINE_PROPERTIES_BUTTON_SELECTOR}`,
 
   // Delete one of the added fields (provided snippet)
   "Delete field (doc step)": '[data-test-id="cs-ct-single-line-textbox-option-delete"]',
@@ -40,8 +52,9 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Block Name (doc step)":
     '[data-test-id="cs-cb-add-block-title-input"] input, input[placeholder="Enter block title"]',
 
-  // Display Name input in Single Line Textbox properties panel (panel may use same component; first "Enter value" in panel)
+  // Display Name: wrapper is div[data-test-id="cs-content-type-field-single-line-textbox-basic-display-name-input"], input has TextInput__input + dynamic name *.displayName
+  // Avoid broad "Enter value" fallbacks here — they can match a hidden input first and break .first().
   "Display Name (doc step)":
-    '[data-test-id="cs-content-type-field-single-line-textbox-basic-display-name-input"] input, [class*="FieldProperties"] input[placeholder="Enter value"], [role="tabpanel"] input[placeholder="Enter value"]',
+    '[data-test-id="cs-content-type-field-single-line-textbox-basic-display-name-input"] input.TextInput__input, [data-test-id="cs-content-type-field-single-line-textbox-basic-display-name-input"] input[placeholder="Enter value"], [data-test-id="cs-content-type-field-single-line-textbox-basic-display-name-input"] input, input[aria-label$=".displayName"].TextInput__input',
 };
 

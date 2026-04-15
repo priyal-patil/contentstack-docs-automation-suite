@@ -43,6 +43,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '.ReactModal__new-entry .Table__body [data-test-id="cs-table-body-row-0"], [role="dialog"]:has-text("Select Content Type") .Table__body [data-test-id="cs-table-body-row-0"], [role="dialog"] [data-test-id="cs-table-body-row-0"]',
   "Slash RTE content type row New Entry modal (doc step)":
     '.ReactModal__new-entry [role="row"]:has-text("Slash RTE CT-"), [role="dialog"] [role="row"]:has-text("Slash RTE CT-"), [role="dialog"] table tr:has-text("Slash RTE CT-")',
+  /** Select Content Type modal: after choosing a row, primary CTA is Proceed (`cs-new-entry-single-proceed`, aria-label Proceed). */
+  "Proceed (Select Content Type modal) (doc step)":
+    '[data-test-id="cs-new-entry-single-proceed"], button[aria-label="Proceed"]:not([disabled]), [role="dialog"]:has-text("Select Content Type") button[aria-label="Proceed"], [role="dialog"] button:has-text("Proceed"):not([disabled]), [role="dialog"] button:has-text("Create")',
   "Create Entry (doc step)":
     '[data-test-id="cs-new-entry-single-proceed"], button[aria-label="Proceed"]:not([disabled]), [role="dialog"] button:has-text("Proceed"):not([disabled]), [role="dialog"] button:has-text("Create")',
   "JSON RTE entry editor focus (doc step)":

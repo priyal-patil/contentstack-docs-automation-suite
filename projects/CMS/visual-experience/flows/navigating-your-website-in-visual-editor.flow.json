@@ -1,0 +1,110 @@
+{
+  "id": "navigating-your-website-in-visual-editor",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/navigating-your-website-in-visual-editor",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    { "action": "verify", "target": "Visual editor canvas workspace (doc step)" },
+    { "action": "verify", "target": "Visual editor contextual toolbar (doc step)", "optional": true },
+    { "action": "verify", "target": "Editor sidebar rail container (doc step)" },
+    {
+      "action": "verify",
+      "target": "VE sidebar Status tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Form tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Form",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Drafts tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Drafts",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Discussions tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Discussions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Widgets tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Widgets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Audiences tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Audiences",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Automate tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Automate",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Visual editor publish panel region (doc step)" },
+    {
+      "action": "warn",
+      "value": "Publish Panel (doc): Displays entries updated during a session; assign workflows, fix validation errors, quick vs advanced publishing — verify in-app when publishing."
+    }
+  ]
+}

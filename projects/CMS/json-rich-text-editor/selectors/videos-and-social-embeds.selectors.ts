@@ -6,6 +6,8 @@
 export const CLICK_SELECTORS: Record<string, string> = {
   "New Entry (doc step)":
     '[data-test-id="cs-new-entry-all-entry"], button[aria-label="Create New Entry"], .PageLayout__head button:has-text("New Entry"), button.Button--primary:has-text("New Entry")',
+  "Proceed (Select Content Type modal) (doc step)":
+    '[data-test-id="cs-new-entry-single-proceed"], button[aria-label="Proceed"]:not([disabled])',
   "Create Entry (doc step)":
     '[data-test-id="cs-new-entry-single-proceed"], button[aria-label="Proceed"]:not([disabled])',
 };

@@ -1,0 +1,84 @@
+{
+  "id": "status",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/status",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "VE sidebar Status tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Status",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Status tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Status panel back button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Status panel Basic Information section root (doc step)",
+      "expected": {
+        "labelEquals": "Basic Information",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status panel Referenced In section root (doc step)",
+      "expected": {
+        "labelEquals": "Referenced In",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status panel Localization Status section root (doc step)",
+      "expected": {
+        "labelEquals": "Localization Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status panel Publish Status section root (doc step)",
+      "expected": {
+        "labelEquals": "Publish Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status panel Release Status section root (doc step)",
+      "expected": {
+        "labelEquals": "Release Status",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Status panel Entry ID copy control (doc step)" },
+    { "action": "verify", "target": "Status panel Content Type ID copy control (doc step)" }
+  ]
+}
