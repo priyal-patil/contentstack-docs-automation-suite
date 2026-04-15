@@ -5,9 +5,11 @@ export const CLICK_SELECTORS: Record<string, string> = {
   // Readiness gate on Content Types page
   "Content Types": '[data-test-id="cs-cb-new-ct"]',
 
-  // Common CTA on Content Types page
-  "+ New Content Type": '[data-test-id="cs-cb-new-ct"]',
-  "New Content Type": '[data-test-id="cs-cb-new-ct"]',
+  // Common CTA on Content Types page (matches primary button: cs-cb-new-ct, aria-label Create New Content Type)
+  "+ New Content Type":
+    '[data-test-id="cs-cb-new-ct"], button:has-text("New Content Type"), button[aria-label="Create New Content Type"]',
+  "New Content Type":
+    '[data-test-id="cs-cb-new-ct"], button:has-text("New Content Type"), button[aria-label="Create New Content Type"]',
   "Create New (Content Type)":
     'div:has-text("Create New"):visible',
   "Create New": '[data-test-id="cs-cb-new-ct-child"]',

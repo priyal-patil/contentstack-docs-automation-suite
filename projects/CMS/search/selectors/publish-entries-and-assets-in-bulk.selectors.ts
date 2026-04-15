@@ -1,7 +1,7 @@
 /**
  * Selectors for Publish Entries and Assets in Bulk flow (from search results).
  * Doc: https://www.contentstack.com/docs/content-managers/search-content/publish-entries-and-assets-in-bulk
- * DOM: data/dom/CMS/entries/publish-entries-references.html
+ * DOM: data/dom/CMS/entries/publish-entries-references.html (bulk) and publish-entry.html (single-entry Send).
  */
 export const CLICK_SELECTORS: Record<string, string> = {
   "First entry checkbox (doc step)":
@@ -19,9 +19,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "First Environment checkbox (doc step)":
     'label[data-test-id="cs-entries-publish-select-environment-element"], [data-test-id="cs-entries-publish-select-environment-element"]',
   "Send With References (doc step)":
-    'button[data-test-id="cs-bulk-entry-publish-with-ref"], button[data-test-id="cs-single-entry-publish"], button:has-text("Send With References"), button:has-text("Send")',
+    'button[data-test-id="cs-bulk-entry-publish-with-ref"], button[data-test-id="cs-single-entry-publish"], button:has-text("Send With References")',
   "Send Without References (doc step)":
-    'button[data-test-id="cs-bulk-entry-publish-without-ref"], button:has-text("Send Without References")',
+    'button[data-test-id="cs-bulk-entry-publish-without-ref"], button[data-test-id="cs-single-entry-publish"], button:has-text("Send Without References")',
   "Send With References or Send Without References (doc step)":
     'button[data-test-id="cs-bulk-entry-publish-with-ref"], button[data-test-id="cs-bulk-entry-publish-without-ref"], button[data-test-id="cs-single-entry-publish"], button:has-text("Send With References"), button:has-text("Send Without References"), button:has-text("Send")',
   "Publish Entries modal (doc step)":

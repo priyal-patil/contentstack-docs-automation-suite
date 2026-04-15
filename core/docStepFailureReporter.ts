@@ -23,6 +23,15 @@ export type DocStepFailure = {
   value?: string;
   /** Error message (e.g. "Element not found", "Timeout"). */
   errorMessage: string;
+  /**
+   * Short human-readable line for reports: what kind of control was missing (button/field/label/modal)
+   * and optional locator snippet from the error.
+   */
+  missingElementSummary?: string;
+  /**
+   * Path relative to REPORT_DIR (e.g. `flow-screenshots/my-flow-step-3.png`) for HTML img/link.
+   */
+  screenshotRelativePath?: string;
   /** Full step object for debugging. */
   step: Record<string, unknown>;
 };
@@ -83,6 +92,41 @@ function readRecentJsonl(prefix: "failures-" | "warnings-"): Record<string, unkn
   return out;
 }
 
+/**
+ * Builds a one-line description of what was not found on the page (for HTML/JSON reports).
+ */
+export function buildMissingElementSummary(step: Record<string, unknown>, errorMessage: string): string {
+  const action = String(step?.action ?? "").toLowerCase();
+  const target = String(step?.target ?? "(unknown target)");
+  const msg = errorMessage || "";
+
+  let kind = "UI control";
+  if (action === "click") kind = "Button/link/control";
+  else if (action === "enter" || action === "type") kind = "Field/input";
+  else if (action === "verify") kind = "Element/label/modal to verify";
+  else if (action === "upload") kind = "File input/control";
+
+  const tl = target.toLowerCase();
+  if (/\(doc step\)/i.test(target) && /modal/i.test(tl)) kind = "Modal/dialog";
+  else if (/\(doc step\)/i.test(target) && /toggle|checkbox|switch/i.test(tl)) kind = "Toggle/checkbox";
+  else if (/\(doc step\)/i.test(target) && /dropdown|select|menu/i.test(tl)) kind = "Dropdown/menu";
+
+  let locatorHint = "";
+  const locLine = msg.match(/Locator:\s*([^\n]+)/i);
+  const waitLine = msg.match(/waiting for\s+([^\n]+)/i);
+  const rawLine = (locLine?.[1] || waitLine?.[1] || "").trim();
+  if (rawLine) {
+    const short = rawLine.length > 240 ? `${rawLine.slice(0, 240)}…` : rawLine;
+    locatorHint = ` — ${short}`;
+  }
+
+  if (/timeout/i.test(msg) && /attached|visible/i.test(msg) && !locatorHint) {
+    locatorHint = " — timed out waiting for element to attach/appear";
+  }
+
+  return `${kind} not found or not usable: "${target}"${locatorHint}`;
+}
+
 function dedupe<T extends { documentUrl: string; flowId: string; stepIndex: number; target: string; action: string }>(
   rows: T[],
   messageKey: keyof T
@@ -104,12 +148,16 @@ export function recordDocStepFailure(
   flowId: string,
   stepIndex: number,
   step: Record<string, unknown>,
-  errorMessage: string
+  errorMessage: string,
+  extras?: {
+    missingElementSummary?: string;
+    screenshotRelativePath?: string;
+  }
 ): void {
   const action = String(step?.action ?? "unknown");
   const target = String(step?.target ?? "unknown");
   const value = step?.value != null ? String(step.value) : undefined;
-  failures.push({
+  const row: DocStepFailure = {
     documentUrl,
     flowId,
     stepIndex,
@@ -119,7 +167,10 @@ export function recordDocStepFailure(
     value,
     errorMessage,
     step: step as Record<string, unknown>,
-  });
+  };
+  if (extras?.missingElementSummary) row.missingElementSummary = extras.missingElementSummary;
+  if (extras?.screenshotRelativePath) row.screenshotRelativePath = extras.screenshotRelativePath;
+  failures.push(row);
   appendJsonl(FAILURES_FILE, failures[failures.length - 1] as unknown as Record<string, unknown>);
 }
 

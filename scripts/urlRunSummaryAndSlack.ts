@@ -9,14 +9,25 @@
  *   npx ts-node scripts/urlRunSummaryAndSlack.ts
  *   npx ts-node scripts/urlRunSummaryAndSlack.ts --dry-run
  *   npx ts-node scripts/urlRunSummaryAndSlack.ts --slack-test   # one test message only
+ *   npx ts-node scripts/urlRunSummaryAndSlack.ts --mergeBaselineUrlRunSummary reports/cms-seq-.../url-run-summary.json
+ *     (uses per-flow results from this Playwright JSON run for any flow also in baseline; recounts totals for Slack/HTML)
  *   npx ts-node scripts/slackFromXlsx.ts   # only: xlsx token → one Slack message (simplest)
  *
  * Env: REPORT_DIR, SLACK_CHANNEL_ID (optional), ENCRYPTION_DATA_XLSX, SLACK_BOT_TOKEN (overrides xlsx)
+ *      SKIP_SLACK=1 — write url-run-summary JSON/HTML only; do not post to Slack
  */
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require("dotenv").config();
+} catch {
+  /* optional */
+}
 
 import fs from "fs";
 import path from "path";
 import { loadFlowMetaById } from "../core/report/unifiedReportModel";
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 import { resolveSlackBotToken, resolveSlackChannelId } from "./lib/encryptionData";
 
 type FlowRow = {
@@ -162,6 +173,7 @@ function buildSlackPayload(summary: {
   flowsFile: string;
   counts: { total: number; passed: number; failed: number; skipped: number; timedOut: number; interrupted: number; other: number };
   failedSamples: Array<{ flowId: string; documentUrl: string; error?: string }>;
+  cumulativeNote?: string;
 }): { text: string; blocks: unknown[] } {
   const { counts: c } = summary;
   const failedLines = summary.failedSamples
@@ -169,17 +181,18 @@ function buildSlackPayload(summary: {
     .map((f) => `• *${f.flowId}* — ${f.documentUrl || "no URL in flow meta"}\n  _${(f.error || "").slice(0, 200)}_`)
     .join("\n");
 
-  const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${c.total} total (flows in this run). Report: ${summary.reportDir}`;
+  const cum = summary.cumulativeNote ? ` ${summary.cumulativeNote}` : "";
+  const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${c.total} total (flows).${cum} Report: ${summary.reportDir}`;
 
   const blocks: unknown[] = [
     {
       type: "header",
-      text: { type: "plain_text", text: "Documentation URL run summary", emoji: true },
+      text: { type: "plain_text", text: summary.cumulativeNote ? "Documentation URL run summary (cumulative)" : "Documentation URL run summary", emoji: true },
     },
     {
       type: "section",
       fields: [
-        { type: "mrkdwn", text: `*Total (this run)*\n${c.total}` },
+        { type: "mrkdwn", text: `${summary.cumulativeNote ? "*Total (full batch)*" : "*Total (this run)*"}\n${c.total}` },
         { type: "mrkdwn", text: `*Passed*\n${c.passed}` },
         { type: "mrkdwn", text: `*Failed*\n${c.failed}` },
         {
@@ -188,6 +201,14 @@ function buildSlackPayload(summary: {
         },
       ],
     },
+    ...(summary.cumulativeNote
+      ? [
+          {
+            type: "context",
+            elements: [{ type: "mrkdwn", text: summary.cumulativeNote }],
+          },
+        ]
+      : []),
     {
       type: "context",
       elements: [
@@ -286,12 +307,6 @@ async function main(): Promise<void> {
   const argv = process.argv.slice(2);
 
   if (hasFlag(argv, "--slack-test")) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("dotenv").config();
-    } catch {
-      /* dotenv optional */
-    }
     const channelId = resolveSlackChannelId(process.cwd());
     let botToken: string | undefined;
     try {
@@ -317,27 +332,60 @@ async function main(): Promise<void> {
   const reportDir = path.resolve(process.cwd(), getArg(argv, "--reportDir") || process.env.REPORT_DIR || "reports/latest");
   const dryRun = hasFlag(argv, "--dry-run");
   const noHtml = hasFlag(argv, "--no-html");
+  const mergeBaselineArg = getArg(argv, "--mergeBaselineUrlRunSummary");
 
-  const flowsBackup = path.join(reportDir, "flows-results-cms.json");
-  const flowsPrimary = path.join(reportDir, "flows-results.json");
-  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : flowsPrimary;
+  const flowsPath = resolveFlowsResultsPath(reportDir);
   const flowsFileLabel = path.relative(process.cwd(), flowsPath) || flowsPath;
 
   const pw = readJson<any>(flowsPath);
   const rawRows = pw ? collectFlowResults(pw) : [];
   const metaById = loadFlowMetaById(process.cwd());
 
-  const rows: FlowRow[] = rawRows.map((r) => {
-    const m = metaById.get(r.id);
-    return {
-      flowId: r.id,
-      status: r.status,
-      documentUrl: m?.source || "",
-      project: m?.project || "",
-      module: m?.module || "",
-      error: r.error,
-    };
-  });
+  let rows: FlowRow[];
+  let cumulativeNote: string | undefined;
+
+  if (mergeBaselineArg) {
+    const baselinePath = path.resolve(process.cwd(), mergeBaselineArg);
+    const baseline = readJson<{ flows?: FlowRow[]; reportDir?: string }>(baselinePath);
+    if (!baseline?.flows?.length) {
+      // eslint-disable-next-line no-console
+      console.error(`Invalid or empty baseline url-run-summary: ${baselinePath}`);
+      process.exitCode = 1;
+      return;
+    }
+    const rerunMap = new Map(rawRows.map((r) => [r.id, r]));
+    const baselineIds = new Set(baseline.flows.map((f) => f.flowId));
+    const unknownRerun = [...rerunMap.keys()].filter((id) => !baselineIds.has(id));
+    if (unknownRerun.length) {
+      // eslint-disable-next-line no-console
+      console.warn("Rerun includes flow ids not in baseline (ignored for merge):", unknownRerun.join(", "));
+    }
+    rows = baseline.flows.map((bf) => {
+      const r = rerunMap.get(bf.flowId);
+      if (r) {
+        return {
+          ...bf,
+          status: r.status,
+          error: r.error,
+        };
+      }
+      return { ...bf };
+    });
+    const relBase = path.relative(process.cwd(), baselinePath) || baselinePath;
+    cumulativeNote = `_Cumulative_: retried flows merged into baseline \`${relBase}\` (${baseline.flows.length} URLs). This report dir is the retry Playwright output.`;
+  } else {
+    rows = rawRows.map((r) => {
+      const m = metaById.get(r.id);
+      return {
+        flowId: r.id,
+        status: r.status,
+        documentUrl: m?.source || "",
+        project: m?.project || "",
+        module: m?.module || "",
+        error: r.error,
+      };
+    });
+  }
 
   let passed = 0;
   let failed = 0;
@@ -346,7 +394,7 @@ async function main(): Promise<void> {
   let interrupted = 0;
   let other = 0;
 
-  for (const r of rawRows) {
+  for (const r of rows) {
     const s = r.status;
     if (s === "passed") passed++;
     else if (s === "failed") failed++;
@@ -356,28 +404,33 @@ async function main(): Promise<void> {
     else other++;
   }
 
-  const total = rawRows.length;
+  const total = rows.length;
   const counts = { total, passed, failed, skipped, timedOut, interrupted, other };
 
   const generatedAt = new Date().toISOString();
   const jsonOut = {
     generatedAt,
-    description:
-      "Executable doc URL (flow) counts for the last Playwright run that wrote flows-results.json. Total reflects only flows executed in that run (e.g. after -g filter).",
+    description: mergeBaselineArg
+      ? `Cumulative counts: baseline url-run-summary merged with Playwright results in ${flowsFileLabel} for overlapping flow ids.`
+      : "Executable doc URL (flow) counts for the last Playwright run that wrote flows-results.json. Total reflects only flows executed in that run (e.g. after -g filter).",
     reportDir,
     flowsSourceFile: flowsFileLabel,
+    ...(mergeBaselineArg
+      ? { mergedFromBaseline: path.relative(process.cwd(), path.resolve(process.cwd(), mergeBaselineArg)) || mergeBaselineArg }
+      : {}),
     counts,
     flows: rows,
   };
 
   fs.mkdirSync(reportDir, { recursive: true });
-  const jsonPath = path.join(reportDir, "url-run-summary.json");
+  const summaryBase = mergeBaselineArg ? "url-run-summary-cumulative" : "url-run-summary";
+  const jsonPath = path.join(reportDir, `${summaryBase}.json`);
   fs.writeFileSync(jsonPath, JSON.stringify(jsonOut, null, 2), "utf-8");
   // eslint-disable-next-line no-console
   console.log(`✅ Wrote ${path.relative(process.cwd(), jsonPath) || jsonPath}`);
 
   if (!noHtml) {
-    const htmlPath = path.join(reportDir, "url-run-summary.html");
+    const htmlPath = path.join(reportDir, `${summaryBase}.html`);
     fs.writeFileSync(
       htmlPath,
       buildSummaryHtml({
@@ -397,7 +450,13 @@ async function main(): Promise<void> {
 
   if (dryRun) {
     // eslint-disable-next-line no-console
-    console.log("Dry run: skipping Slack. Summary:", JSON.stringify(counts));
+    console.log("Dry run: skipping Slack. Summary:", JSON.stringify({ counts, cumulativeNote }));
+    return;
+  }
+
+  if (process.env.SKIP_SLACK === "1") {
+    // eslint-disable-next-line no-console
+    console.log("SKIP_SLACK=1 — not posting to Slack (url-run-summary files were written).");
     return;
   }
 
@@ -426,6 +485,7 @@ async function main(): Promise<void> {
     flowsFile: flowsFileLabel,
     counts,
     failedSamples,
+    cumulativeNote,
   });
   // eslint-disable-next-line no-console
   console.log("✅ Posted summary to Slack");

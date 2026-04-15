@@ -1,0 +1,35 @@
+---
+description: Maps natural phrases like Run CMS / Run Launch to background headless batch + Slack + dashboards.
+alwaysApply: true
+---
+
+# Short commands: Run \<Project\>
+
+When the user says any of the following, start the matching **background** headless batch (Slack + open dashboards when the run finishes — unless `SKIP_SLACK=1` / `SKIP_OPEN_DASHBOARD=1`):
+
+| User phrase (examples) | Command |
+|------------------------|---------|
+| Run CMS, run cms, CMS batch, Run the CMS sequential module batch | `npm run launch:cms:bg` **or** `bash scripts/run-project-batch-background.sh CMS` |
+| Run Launch, run launch | `npm run launch:launch:bg` **or** `bash scripts/run-project-batch-background.sh Launch` |
+| Run Personalize, run personalize | `npm run launch:personalize:bg` **or** `bash scripts/run-project-batch-background.sh Personalize` |
+
+Aliases in `package.json`: `npm run run:cms`, `npm run run:launch`, `npm run run:personalize` (same as `launch:*:bg`).
+
+## Behavior
+
+- **CMS:** Full sequential pipeline: `scripts/run-cms-sequential-modules-dashboard.sh` (modules in order → delete batch → trash → merge → dashboards → Slack). Opens **unified-dashboard.html** and **report-bundle/index.html** when done unless `SKIP_OPEN_DASHBOARD=1`.
+- **Launch / Personalize:** `scripts/run-generic-project-headless.sh` — all flows for that project, then `generateDashboardReport`, `generateUnifiedReport`, Slack, open unified dashboard.
+
+## Foreground (optional)
+
+To run **CMS** in the foreground instead of background: `npm run test:cms:sequential-modules`.
+
+## Logs
+
+Background runs append to `reports/bg-<project>-<timestamp>.log`. Suggest: `tail -f reports/bg-cms-*.log` (newest file).
+
+## Adding a new project
+
+1. Add a branch in `scripts/run-project-batch-background.sh` and either a dedicated `run-*-headless.sh` or extend the generic script.
+2. Add `launch:<name>:bg` and `run:<name>` to `package.json`.
+3. Extend the table in this rule.

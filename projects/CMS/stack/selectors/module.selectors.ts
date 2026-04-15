@@ -24,9 +24,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "+ New Stack (doc step)":
     'button:has-text("+ New Stack"), button:has-text("New Stack"), [aria-label*="New Stack" i]',
   "Create New (doc step)":
-    'button:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id*="create-new" i]',
+    '[data-test-id="cs-add-stack-create-new"], button:has-text("Create New"), [role="button"]:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id*="create-new" i]',
   "Use Prebuilt (doc step)":
-    'button:has-text("Use Prebuilt"), [role="menuitem"]:has-text("Use Prebuilt"), [data-test-id*="prebuilt" i]',
+    '[data-test-id="cs-add-stack-use-prebuilt"], button:has-text("Use Prebuilt"), [role="button"]:has-text("Use Prebuilt"), [role="menuitem"]:has-text("Use Prebuilt"), [data-test-id*="prebuilt" i]',
   "Create (doc step)":
     'button:has-text("Create"), [aria-label^="Create" i]',
   "Stack Color (doc step)":

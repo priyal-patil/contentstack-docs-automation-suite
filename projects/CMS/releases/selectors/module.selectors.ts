@@ -3,8 +3,11 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
     '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
+  "More (doc step)":
+    '[data-test-id="cs-dropdown-truncate-button"], button:has-text("More"), [aria-label="More"], button[aria-label*="more" i]',
+  // Prefer stack-scoped href + stable test-id; Releases can sit under top-nav "More" when truncated.
   "Releases (doc step)":
-    '[data-test-id="cms-nav-releases"], button:has-text("Releases"), a[href*="/releases/list"]',
+    'a[href*="/#!/stack/"][href*="/releases"], [data-test-id="cms-nav-releases"], button[data-test-id="cms-nav-releases"], button:has-text("Releases"), a[href*="/releases/list"], a[href*="/releases"]',
   "New Release button (doc step)":
     '[data-test-id="cs-empty-create-new-release"], button[data-test-id="cs-button"]:has-text("New Release"), button:has-text("New Release"), button:has-text("+ New Release")',
   "Create button in release modal (doc step)":
@@ -18,7 +21,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Delete release icon (doc step)":
     "[data-test-id='cs-releases-card-action-delete'] button[data-test-id='cs-button'], button[data-test-id='cs-button']:has(svg[name='Delete']), button[data-test-id='cs-button'] svg[name='Delete']",
   "Lock release icon (doc step)":
-    ".ReleaseLeftContent svg[name='Lock'][data-test-id='cs-icon'], .flex-v-center.Button__mt-regular.Button__visible svg[name='Lock'][data-test-id='cs-icon'], svg[name='Lock'][data-test-id='cs-icon'], svg[name='Lock'], *[name='Lock'], [data-test-id*='lock' i], button[aria-label*='lock' i]",
+    '[data-test-id="cs-releases-card-action-lock"] button[data-test-id="cs-button"], [data-test-id="cs-releases-card-action-lock"] svg[name="Lock"], [data-test-id="cs-releases-card-action-lock"]',
   "Unlock release icon (doc step)":
     "svg[name='Unlock'], *[name='Unlock'], [data-test-id*='unlock' i], button[aria-label*='unlock' i]",
   "Hover release row for update icon (doc step)":
@@ -59,12 +62,26 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-entry-see-more-dropdown"]',
   "Add to Release from see more (doc step)":
     '[data-test-id="cs-entry-edit-see-more-add-to-release"], [data-test-id="cs-dropdown-elements"]:has-text("Add to Release"), li:has-text("Add to Release")',
+  // Opens bulk “Select release” UI (placeholder: “Select release”).
+  "Select release dropdown in Add to Release modal (doc step)":
+    '[data-test-id="cs-entry-bulk-add-to-release-search-field"], #releaseSelect, .bulk-release--select[data-test-id="cs-entry-bulk-add-to-release-search-field"]',
+  // Bulk list row (dynamic release id in data-test-id); legacy table row kept as fallback.
   "First release row in Add to Release modal (doc step)":
-    '[data-test-id="cs-table-body-row-1"], [data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-entries-release-title"])',
+    '.bulk-release__list-container__right--body--list[data-test-id^="cs-entry-bulk-add-to-release-"], [data-test-id="cs-table-body-row-0"]:has([data-test-id="cs-entries-release-title"]), [data-test-id="cs-table-body-row-1"], [data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-entries-release-title"])',
+  // Nested “Select Release” picker: after choosing a row, confirm with footer primary (returns to Add to Release form).
+  "Select Release confirmation in release picker modal (doc step)":
+    '[role="dialog"]:has(h3:has-text("Select Release")) .ReactModal__Content__footer button.Button--primary:has-text("Select Release"), [role="dialog"]:has(h3:has-text("Select Release")) .ReactModal__Content__footer button:has-text("Select Release")',
+  // Bulk Add to Release (entry): doc “Publish or Unpublish … and click Add” — radios + primary Add (not asset-only “Add for Publishing” buttons).
+  "Publish action in Add to Release modal (doc step)":
+    '[data-test-id="cs-entry-bulk-add-to-release-publish"], label[data-test-id="cs-entry-bulk-add-to-release-publish"]',
+  "Unpublish action in Add to Release modal (doc step)":
+    '[data-test-id="cs-entry-bulk-add-to-release-unpublish"], label[data-test-id="cs-entry-bulk-add-to-release-unpublish"]',
+  "Add button in Add to Release modal (doc step)":
+    '[data-test-id="cs-entry-bulk-add-to-release-add"], .ReactModal__bulk-release [data-test-id="cs-entry-bulk-add-to-release-add"], [role="dialog"] [data-test-id="cs-entry-bulk-add-to-release-add"]',
   "Add for Publishing button in Add to Release modal (doc step)":
-    '[data-test-id="cs-releases-publish"], button:has-text("Add for Publishing")',
+    '.ReactModal__Content__footer [data-test-id="cs-releases-publish"], [role="dialog"] [data-test-id="cs-releases-publish"], [data-test-id="cs-releases-publish"], button:has-text("Add for Publishing")',
   "Add for Unpublishing button in Add to Release modal (doc step)":
-    '[data-test-id="cs-releases-unpublish"], button:has-text("Add for Unpublishing")',
+    '.ReactModal__Content__footer [data-test-id="cs-releases-unpublish"], [role="dialog"] [data-test-id="cs-releases-unpublish"], [data-test-id="cs-releases-unpublish"], button:has-text("Add for Unpublishing")',
   "Create New Release option in Add to Release modal (doc step)":
     '[data-test-id="cs-inline-forms-label"]:has-text("Create New Release"), [data-test-id="cs-inline-form-add-icon"], .InlineForms:has-text("Create New Release")',
   "Create New Release save icon in Add to Release modal (doc step)":
@@ -123,7 +140,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Release activity cell (doc step)":
     '[data-test-id="cs-releases-list-activity"] [data-test-id="cs-truncate"], [data-test-id="cs-releases-list-activity"]',
   "Add to Release modal title (doc step)":
-    '[data-test-id="cs-modal-title"]:has-text("Add to Release"), h3:has-text("Add to Release")',
+    '[data-test-id="cs-modal-title-add-to-release"], [data-test-id="cs-modal-title"]:has-text("Add to Release"), h3:has-text("Add to Release")',
   "Add to Release table Name header (doc step)":
     '[data-test-id="cs-table-head-text--0"]:has-text("Name"), [role="columnheader"]:has-text("Name")',
   "Add to Release table Description header (doc step)":
@@ -133,5 +150,5 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Add to Release table Modified At header (doc step)":
     '[data-test-id="cs-table-head-text--3"]:has-text("Modified At"), [role="columnheader"]:has-text("Modified At")',
   "Select Language(s) label in Add to Release modal (doc step)":
-    'label[data-test-id="cs-field-label"]:has-text("Select Language"), label:has-text("Select Language(s)")',
+    '[data-test-id="cs-entry-bulk-add-to-release-select-lang"], label[data-test-id="cs-field-label"]:has-text("Select Language"), label:has-text("Select Language(s)")',
 };

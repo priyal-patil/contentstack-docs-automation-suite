@@ -8,8 +8,6 @@ export const CLICK_SELECTORS: Record<string, string> = {
     ':nth-match([data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-row-selection"] input[type="checkbox"], 1), [data-test-id^="cs-table-body-row-"] input[type="checkbox"]:first-of-type, .Table__body__row input[type="checkbox"]',
   "Floating panel See More (doc step)":
     '[data-test-id="table-see-more-icon"], [data-test-id="cs-dropdown"] [data-test-id="table-see-more-icon"]',
-  "Delete button on floating bar (doc step)":
-    'button[data-test-id="entries_bulk_action_delete"], [data-test-id="entries_bulk_action_delete"], [data-test-id="cs-entry-bulk-panel-delete"], li:has-text("Delete")',
   "Delete in floating panel (doc step)":
     'button[data-test-id="entries_bulk_action_delete"], [data-test-id="entries_bulk_action_delete"], [data-test-id="cs-entry-bulk-panel-delete"], li[data-test-id="cs-dropdown-elements"]:has([data-test-id="entries_bulk_action_delete"]), li[data-test-id="cs-dropdown-elements"]:has-text("Delete")',
   "Delete confirm (doc step)":

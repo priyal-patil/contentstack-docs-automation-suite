@@ -40,6 +40,11 @@
       "target": "Import (doc step)"
     },
     {
+      "action": "click",
+      "target": "Read More until Authorize visible (doc step)",
+      "optional": true
+    },
+    {
       "action": "verify",
       "target": "Stack Name (import doc step)",
       "expected": {

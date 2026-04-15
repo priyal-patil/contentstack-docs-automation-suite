@@ -1,0 +1,86 @@
+{
+  "id": "delete-a-taxonomy",
+  "project": "CMS",
+  "module": "taxonomy",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/delete-a-taxonomy",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy in settings (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy page title (doc step)",
+      "expected": {
+        "labelEquals": "Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Taxonomy listing first row Actions vertical ellipsis (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Taxonomy row vertical menu Delete (doc step)",
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Taxonomy row vertical menu Delete (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Delete Taxonomy modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete Taxonomy",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Taxonomy modal instruction type DELETE (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Please type DELETE below",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Delete Taxonomy type DELETE input (doc step)",
+      "value": "DELETE"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Taxonomy modal Delete button (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Delete Taxonomy modal Delete button (doc step)", "timeoutMs": 90000 }
+  ]
+}

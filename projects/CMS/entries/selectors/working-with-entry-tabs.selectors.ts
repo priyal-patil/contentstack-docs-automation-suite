@@ -2,7 +2,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Content Models (doc step)":
     '[data-test-id="cms-nav-content-models"], button:has-text("Content Models"), a:has-text("Content Models")',
   "Global Fields (doc step)":
-    '[data-test-id="cs-gf-button"], [data-test-id="cs-gf-section"], [data-test-id="cs-page-title"]:has-text("Global Fields")',
+    '[data-test-id="cs-page-layout-leftSidebar"] [data-test-id="cs-gf-button"], [data-test-id="cs-gf-button"], [data-test-id="cs-page-title"]:has-text("Global Fields")',
   "+ New Global Field (doc step)":
     '[data-test-id="cs-cb-new-gf"], button:has-text("New Global Field")',
   "Proceed (doc step)":

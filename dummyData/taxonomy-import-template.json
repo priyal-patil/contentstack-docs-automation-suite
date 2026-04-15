@@ -1,0 +1,9 @@
+{
+  "taxonomy": {
+    "uid": "DOC_UNIQUE_UID_PLACEHOLDER",
+    "name": "Doc Taxonomy Import",
+    "description": "Automation fixture for import-a-taxonomy doc.",
+    "locale": "en-us"
+  },
+  "terms": []
+}

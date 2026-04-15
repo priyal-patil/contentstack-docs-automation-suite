@@ -4,7 +4,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "First Entry row (doc step)":
     '[data-test-id^="cs-table-body-row-0"], [role="row"][data-test-id^="cs-table-body-row-"]',
   "Version icon (doc step)":
-    '[data-test-id="cs-entry-version-icon-wrapper"], [data-test-id="cs-entry-version-header-icon"]',
+    '[data-test-id="cs-entry-version-header-icon"]',
   "Version timeline row (doc step)":
     '[data-test-id="cs-version-timeline"] [data-test-id="cs-version-timeline-version"], [data-test-id="cs-version-timeline-version"]',
   "Rename version icon (doc step)":

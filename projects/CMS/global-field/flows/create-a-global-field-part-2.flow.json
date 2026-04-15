@@ -12,8 +12,13 @@
   "steps": [
     {
       "action": "verify",
-      "target": "Content Models (doc step)"
-
+      "target": "Content Models (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -21,7 +26,13 @@
     },
     {
       "action": "verify",
-      "target": "Global Fields (doc step)"
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -29,7 +40,11 @@
     },
     {
       "action": "verify",
-      "target": "Global Fields page (doc step)"
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -67,7 +82,10 @@
     },
     {
       "action": "verify",
-      "target": "Any Global Field row (doc step)"
+      "target": "Any Global Field row (doc step)",
+      "expected": {
+        "modalTitle": "Select Global Fields"
+      }
     },
     {
       "action": "click",

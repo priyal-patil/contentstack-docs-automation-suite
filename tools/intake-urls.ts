@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import fse from "fs-extra";
+import { upsertDocsUrlsCsv, normalizeCanonicalDocUrl, isDocsHostUrl } from "../core/docsUrlsCsv";
 
 type DocsJson = {
   project: string;
@@ -216,30 +217,14 @@ async function main() {
 
   await fse.writeJson(summary.outputs.summaryFile, summary, { spaces: 2 });
 
-  // Append all ingested URLs to data/docs-urls.csv so docs-audit.spec.ts runs for them
-  if (urls.length > 0) {
+  const docsRows = urls
+    .filter((u) => isDocsHostUrl(u))
+    .map((u) => ({ project: inferProject(u), url: normalizeCanonicalDocUrl(u) }));
+  if (docsRows.length > 0) {
     const docsUrlsCsvPath = path.resolve(process.cwd(), "data", "docs-urls.csv");
-    const commentLines: string[] = [];
-    const existingUrls = new Set<string>();
-    if (await fse.pathExists(docsUrlsCsvPath)) {
-      const lines = (await fse.readFile(docsUrlsCsvPath, "utf-8")).split(/\r?\n/);
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        if (trimmed.startsWith("#")) {
-          commentLines.push(line);
-        } else {
-          existingUrls.add(trimmed);
-        }
-      }
-    }
-    for (const u of urls) existingUrls.add(u);
-    const header = commentLines.length ? commentLines.join("\n") + "\n" : "# Docs to audit (one per line)\n";
-    const urlLines = [...existingUrls].sort();
-    await fse.ensureDir(path.dirname(docsUrlsCsvPath));
-    await fse.writeFile(docsUrlsCsvPath, header + urlLines.join("\n") + "\n", "utf-8");
+    upsertDocsUrlsCsv(docsUrlsCsvPath, docsRows);
     // eslint-disable-next-line no-console
-    console.log(`\n📋 Added ${urls.length} URL(s) to data/docs-urls.csv`);
+    console.log(`\nMerged ${docsRows.length} docs URL row(s) into data/docs-urls.csv`);
   }
 
   // eslint-disable-next-line no-console

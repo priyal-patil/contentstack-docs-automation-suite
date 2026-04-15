@@ -100,4 +100,6 @@ npm run ingest:bulk -- --input data/<your-bulk-urls>.csv && npm run test:all-and
 | Informational URLs | `flows/<Project>/docs.json` and `data/docs-urls.csv` |
 | Dashboard report | `reports/latest/dashboard.html` (after run) |
 
+**`data/docs-urls.csv`** is maintained as **`project,url`** (CSV). Bulk ingest merges docs URLs into this file automatically. If you only edit `docs.json` or flow `source` by hand, run **`npm run sync:docs-urls`** so the CSV matches the repo (see `.cursor/rules/docs-urls-sync.mdc`).
+
 Once you share your **bulk URLs CSV** and **DOM file(s)** (or say where they are), the same steps above can be run to execute all URLs and show the report in the dashboard.

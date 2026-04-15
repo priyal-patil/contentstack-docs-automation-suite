@@ -1,0 +1,10 @@
+{
+  "id": "get-started-with-workflows",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/get-started-with-workflows",
+  "type": "informational",
+  "use": [],
+  "steps": []
+}

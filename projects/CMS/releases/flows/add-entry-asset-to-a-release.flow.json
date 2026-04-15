@@ -33,31 +33,63 @@
       }
     },
     {
-      "action": "verify",
-      "target": "Add to Release table Name header (doc step)",
-      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+      "action": "click",
+      "target": "Select release dropdown in Add to Release modal (doc step)",
+      "timeoutMs": 15000
+    },
+    { "action": "click", "target": "First release row in Add to Release modal (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "click",
+      "target": "Select Release confirmation in release picker modal (doc step)",
+      "timeoutMs": 20000
     },
     {
       "action": "verify",
-      "target": "Add to Release table Description header (doc step)",
-      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+      "target": "Select Language(s) label in Add to Release modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Language",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
-      "target": "Add to Release table Items header (doc step)",
-      "expected": { "labelEquals": "Items", "labelMatch": "contains" }
+      "target": "Publish action in Add to Release modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
-      "target": "Add to Release table Modified At header (doc step)",
-      "expected": { "labelEquals": "Modified At", "labelMatch": "contains" }
+      "target": "Unpublish action in Add to Release modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Unpublish",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "click", "target": "First release row in Add to Release modal (doc step)" },
-    { "action": "verify", "target": "Add for Publishing button in Add to Release modal (doc step)" },
-    { "action": "verify", "target": "Add for Unpublishing button in Add to Release modal (doc step)" },
-    { "action": "click", "target": "Add for Publishing button in Add to Release modal (doc step)" },
-    { "action": "verify", "target": "Add With References button (doc step)" },
-    { "action": "verify", "target": "Add Without References button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Add button in Add to Release modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Add button in Add to Release modal (doc step)", "timeoutMs": 45000 },
+    {
+      "action": "verify",
+      "target": "Add With References button (doc step)",
+      "expected": { "labelEquals": "Add With References", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add Without References button (doc step)",
+      "expected": { "labelEquals": "Add Without References", "labelMatch": "contains" }
+    },
     { "action": "click", "target": "Add With References button (doc step)" }
   ]
 }

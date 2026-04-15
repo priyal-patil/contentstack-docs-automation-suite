@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 
 type FlowMeta = { id: string; source: string };
 type FlowResultRow = { id: string; status: string; error?: string };
@@ -90,7 +91,7 @@ function main() {
   const docsDir = path.resolve(root, arg("--docsDir", outDir));
   const auditDir = path.resolve(root, arg("--auditDir", outDir));
 
-  const flowsResults = readJson<any>(path.join(flowsDir, "flows-results.json"));
+  const flowsResults = readJson<any>(resolveFlowsResultsPath(flowsDir));
   const docsResultsPayload = readJson<{ results?: DocsResult[] }>(path.join(docsDir, "docs-results.json"));
   const stepWarningsPayload = readJson<{ warnings?: StepWarning[] }>(path.join(flowsDir, "doc-step-warnings.json"));
   const docsAuditSummary = readJson<{ results?: DocsAuditPerDoc[] }>(path.join(auditDir, "docs-audit-summary.json"));

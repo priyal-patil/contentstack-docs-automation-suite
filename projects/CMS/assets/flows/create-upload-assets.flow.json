@@ -22,7 +22,7 @@
     },
     { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "New Asset (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Choose Files (doc step)" },
+    { "action": "click", "target": "Choose Files to Upload (doc step)" },
     { "action": "upload", "target": "Asset file input (doc step)", "value": "./dummyData/sample.svg" }
   ]
 }

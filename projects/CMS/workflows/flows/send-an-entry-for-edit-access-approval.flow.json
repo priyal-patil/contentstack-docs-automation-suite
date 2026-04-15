@@ -1,0 +1,66 @@
+{
+  "id": "send-an-entry-for-edit-access-approval",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/send-an-entry-for-edit-access-approval",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Request Edit Access button (doc step)",
+      "expected": {
+        "within": "Main content",
+        "labelEquals": "Request Edit Access",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Request Edit Access button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Request Edit Access modal title (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Request Edit Access",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add comments for approver field (doc step)",
+      "expected": { "within": "Modal" }
+    },
+    {
+      "action": "enter",
+      "target": "Add comments for approver field (doc step)",
+      "value": "Edit access request comment (doc step) - send-an-entry-for-edit-access-approval."
+    },
+    {
+      "action": "verify",
+      "target": "Send Request button in Request Edit Access modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Send Request",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Send Request button in Request Edit Access modal (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "warn",
+      "value": "Doc: After sending, request status (pending, approved, rejected) appears in the Tasks section - not automated here. API-based edit access flows are separate from these UI steps."
+    }
+  ]
+}

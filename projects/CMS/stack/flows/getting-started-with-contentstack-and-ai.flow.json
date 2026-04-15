@@ -1,0 +1,317 @@
+{
+  "id": "getting-started-with-contentstack-and-ai",
+  "project": "CMS",
+  "module": "stack",
+  "stage": "main",
+  "source": "(not yet published — set to official docs URL when content is live)",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS" },
+    {
+      "action": "verify",
+      "target": "+ New Stack (doc step)",
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
+        "labelEquals": "New Stack",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "+ New Stack (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelEquals": "Use Prebuilt", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create New (doc step)" },
+    {
+      "action": "verify",
+      "target": "Name (create stack doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name (create stack doc step)",
+      "value": "My Company Website AI Guide {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (create stack doc step)",
+      "value": "Stack for Building Websites with Contentstack and AI guide {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Stack Color (doc step)",
+      "expected": { "labelEquals": "Stack Color", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Stack Color swatch (doc step)" },
+    { "action": "click", "target": "Create (doc step)" },
+
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelEquals": "Use Prebuilt", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Create New Content Type modal (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Name (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Description (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Single (Type doc step)",
+      "expected": { "labelEquals": "Single", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Multiple (Type doc step)",
+      "expected": { "labelEquals": "Multiple", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and proceed (doc step)",
+      "expected": { "labelEquals": "Save and proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "Blog Post AI Guide {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "Blog Post content type from AI guide {unique}"
+    },
+    { "action": "select", "target": "Type (doc step)", "value": "Single" },
+    { "action": "click", "target": "Save and proceed (doc step)" },
+    {
+      "action": "verify",
+      "target": "Content Type Builder (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insert a field (doc step)",
+      "expected": { "documentedFields": ["Insert a field"], "visible": true }
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Insert a field (doc step)" },
+    { "action": "click", "target": "Multi Line Textbox (doc step)" },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Body"
+    },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
+    { "action": "click", "target": "Insert a field (doc step)" },
+    { "action": "click", "target": "File (doc step)" },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Cover Image"
+    },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
+    { "action": "click", "target": "Save (doc step)" },
+
+    { "action": "click", "target": "Settings (doc step)" },
+    { "action": "click", "target": "Environments from left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Environments from left nav (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Environments",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Environments page (doc step)",
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Environment (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create Environment modal (doc step)",
+      "expected": { "labelEquals": "Create Environment", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Environment Name (doc step)",
+      "value": "development"
+    },
+    {
+      "action": "enter",
+      "target": "Base URL (doc step)",
+      "value": "http://localhost:3000"
+    },
+    { "action": "click", "target": "Create Environment (doc step)" },
+
+    { "action": "click", "target": "Stack in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "API Credentials section (doc step)",
+      "expected": { "labelEquals": "API Credentials", "labelMatch": "contains" }
+    },
+    { "action": "verify", "target": "API Key (doc step)" },
+    {
+      "action": "verify",
+      "target": "Tokens in settings left nav (doc step)",
+      "expected": {
+        "withinStrict": true,
+        "labelEquals": "Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Tokens in settings left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delivery Tokens tab (doc step)",
+      "expected": { "labelEquals": "Delivery Tokens", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Delivery Tokens tab (doc step)" },
+    { "action": "click", "target": "Delivery Token button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create delivery token page marker (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publishing Environments label (doc step)",
+      "expected": { "labelEquals": "Publishing Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name input (delivery token doc step)",
+      "value": "development-token-{unique25}"
+    },
+    {
+      "action": "enter",
+      "target": "Description input (delivery token doc step)",
+      "value": "AI guide development token {unique25}"
+    },
+    { "action": "click", "target": "First publishing environment radio (delivery token doc step)" },
+    { "action": "click", "target": "Generate delivery token button (doc step)" },
+    {
+      "action": "verify",
+      "target": "Delivery Token value in edit page (doc step)",
+      "expected": { "labelEquals": "Delivery Token", "labelMatch": "contains" }
+    },
+
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entries page (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Entry (doc step)" },
+    { "action": "click", "target": "First Content Type row (doc step)" },
+    { "action": "click", "target": "Create Entry (doc step)" },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "AI Guide Sample Post {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Entry Body Multi Line (doc step)",
+      "value": "Sample body text for the AI guide sample entry. {unique}"
+    },
+    {
+      "action": "upload",
+      "target": "Entry Cover Image file input (doc step)",
+      "value": "./dummyData/sample.svg"
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Save (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish (bottom-right) (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Publish (bottom-right) (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Entry modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "modalTitle": "Publish Entry" }
+    },
+    { "action": "click", "target": "First Environment option (doc step)" },
+    { "action": "click", "target": "First Language option (doc step)" },
+    { "action": "click", "target": "Variants dropdown (if available) (doc step)" },
+    { "action": "click", "target": "Now (doc step)" },
+    {
+      "action": "verify",
+      "target": "Send (doc step)",
+      "expected": { "labelEquals": "Send", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Send (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Review or Publish References modal (doc step)"
+    }
+  ]
+}

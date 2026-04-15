@@ -42,7 +42,10 @@
     },
     {
       "action": "verify",
-      "target": "Any label from list (doc step)"
+      "target": "Any label from list (doc step)",
+      "expected": {
+        "documentedStructure": true
+      }
     }
   ]
 }

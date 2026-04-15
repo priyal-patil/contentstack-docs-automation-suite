@@ -1,0 +1,314 @@
+{
+  "id": "quickstart-in-5-mins",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/quickstart-in-5-mins",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS" },
+    {
+      "action": "verify",
+      "target": "+ New Stack (doc step)",
+      "expected": {
+        "within": "Top Bar",
+        "withinStrict": false,
+        "labelEquals": "New Stack",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "+ New Stack (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelEquals": "Use Prebuilt", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create New (doc step)" },
+    {
+      "action": "verify",
+      "target": "Name (create stack doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name (create stack doc step)",
+      "value": "My Website {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (create stack doc step)",
+      "value": "Content for my website {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Master Language (create stack doc step)",
+      "expected": { "labelEquals": "Master Language", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Master Language dropdown (create stack doc step)" },
+    { "action": "click", "target": "English - United States option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Stack Color (doc step)",
+      "expected": { "labelEquals": "Stack Color", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Stack Color swatch (doc step)" },
+    { "action": "click", "target": "Create (doc step)" },
+
+    {
+      "action": "verify",
+      "target": "Content Models (doc step)",
+      "expected": { "within": "Left Navigation", "labelMatch": "Content Model" }
+    },
+    { "action": "click", "target": "Content Models (doc step)" },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": { "labelEquals": "Use Prebuilt", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Create New Content Type modal (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Name (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Description (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Single (Type doc step)",
+      "expected": { "labelEquals": "Single", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Multiple (Type doc step)",
+      "expected": { "labelEquals": "Multiple", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and proceed (doc step)",
+      "expected": { "labelEquals": "Save and proceed", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Name (doc step)", "value": "About Us" },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "Organizational details {unique}"
+    },
+    { "action": "select", "target": "Type (doc step)", "value": "Single" },
+    { "action": "click", "target": "Save and proceed (doc step)" },
+    {
+      "action": "verify",
+      "target": "Content Type Builder (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insert a field (doc step)",
+      "expected": { "documentedFields": ["Insert a field"], "visible": true }
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Insert a field (doc step)" },
+    { "action": "click", "target": "Single Line Textbox (doc step)" },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "URL"
+    },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
+    { "action": "click", "target": "Save and Close (doc step)" },
+
+    { "action": "click", "target": "Settings (doc step)" },
+    {
+      "action": "verify",
+      "target": "Environments from left nav (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Environments",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Environments from left nav (doc step)" },
+    {
+      "action": "verify",
+      "target": "Environments page (doc step)",
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Environment (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create Environment modal (doc step)",
+      "expected": { "labelEquals": "Create Environment", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Environment Name (doc step)",
+      "value": "production"
+    },
+    {
+      "action": "verify",
+      "target": "Environment Label Color (doc step)",
+      "expected": { "labelEquals": "Environment Label Color", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Environment color picker (doc step)" },
+    {
+      "action": "enter",
+      "target": "Base URL (doc step)",
+      "value": "http://localhost:8000"
+    },
+    {
+      "action": "verify",
+      "target": "Language (environment create doc step)",
+      "expected": { "labelEquals": "Language", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create Environment (doc step)" },
+
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entries page (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Entry (doc step)" },
+    {
+      "action": "verify",
+      "target": "Select Content Type modal title (doc step)",
+      "expected": { "within": "Modal", "modalTitle": "Select Content Type" }
+    },
+    { "action": "click", "target": "About Us content type row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Proceed (Select Content Type modal) (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)" },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "Contentstack"
+    },
+    {
+      "action": "enter",
+      "target": "Entry URL (quickstart doc step)",
+      "value": "/about"
+    },
+    { "action": "click", "target": "Save (doc step)" },
+
+    {
+      "action": "verify",
+      "target": "Publish (bottom-right) (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Publish (bottom-right) (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Entry modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "modalTitle": "Publish Entry" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry Select Environment label (doc step)",
+      "expected": { "labelEquals": "Select Environment", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry production environment label (doc step)",
+      "expected": { "labelEquals": "production", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "First Environment option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Entry Select Language label (doc step)",
+      "expected": { "labelEquals": "Select Language", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry English United States language label (doc step)",
+      "expected": { "labelEquals": "English - United States", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "First Language option (doc step)" },
+    {
+      "action": "verify",
+      "target": "Publish Entry Publish schedule label (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry Now option (doc step)",
+      "expected": { "labelEquals": "Now", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry Later option (doc step)",
+      "expected": { "labelEquals": "Later", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Now (doc step)" },
+    {
+      "action": "verify",
+      "target": "Send (doc step)",
+      "expected": { "labelEquals": "Send", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Send (doc step)" },
+
+    { "action": "click", "target": "Entry Information sidebar tab (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entry UID row in info panel (doc step)",
+      "expected": { "labelEquals": "Entry UID", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Content Type UID row in info panel (doc step)",
+      "expected": { "labelEquals": "Content Type UID", "labelMatch": "contains" }
+    }
+  ]
+}

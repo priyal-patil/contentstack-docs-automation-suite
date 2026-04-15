@@ -17,6 +17,12 @@ cd "$ROOT"
 REPORT_DIR="${REPORT_DIR:-reports/latest}"
 export REPORT_DIR
 
+# Always post summary to Slack even when tests fail (set -e would skip the Slack step).
+set +e
 npx playwright test "$@"
+PW_EXIT=$?
+set -e
 
 npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "$REPORT_DIR"
+
+exit "$PW_EXIT"

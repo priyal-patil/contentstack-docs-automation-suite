@@ -19,7 +19,7 @@
     },
     { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "First content type row New Entry modal (doc step)" },
-    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 120000 },
+    { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)", "timeoutMs": 120000 },
     { "action": "enter", "target": "Entry Title (doc step)", "value": "Embed assets doc {unique}" },
     { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
     {

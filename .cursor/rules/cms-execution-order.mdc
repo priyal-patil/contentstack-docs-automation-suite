@@ -1,0 +1,77 @@
+---
+description: CMS full-batch module order, CRUD-style flow ordering per module, delete batch and trash last; align scripts and new runners with this.
+alwaysApply: true
+---
+
+# CMS execution order (full batch & sequencing policy)
+
+When running **all CMS modules** (sequential batch, CI, or any “run everything” workflow), follow this structure. The reference implementation is **`scripts/run-cms-sequential-modules-dashboard.sh`**.
+
+## 1. Cross-module sequence (run in this order)
+
+Execute **Stage=main** for each module **one module at a time** (sequential modules), in this exact order:
+
+1. `environment`  
+2. `language`  
+3. `stack`  
+4. `content-models`  
+5. `content-modeling`  
+6. `global-field`  
+7. `assets`  
+8. `entries`  
+9. `live-preview`  
+10. `releases`  
+11. `search`  
+12. `security`  
+13. `branches`  
+14. `tokens`  
+15. `webhook`  
+16. `workflows`  
+17. `taxonomy`  
+18. `json-rich-text-editor`  
+19. `visual-experience`  
+
+Then (see below): **all delete-related flows** across CMS, then **trash**.
+
+If you add a new CMS module folder, update **both** this rule and `CMS_MAIN_MODULES` in `run-cms-sequential-modules-dashboard.sh`.
+
+## 2. Within each module — CRUD-style order (non-delete flows only)
+
+For flows in **`Project=CMS Module=<name> Stage=main`**, prefer this **logical** order when maintaining flows, ordering `flow.json` / flow ids, or splitting greps:
+
+1. **Create / Add / New** — anything that creates a resource (e.g. create, add, import pre-req, “new X”).  
+2. **Edit / Update / Rename / Customize** — changes to existing resources.  
+3. **Export / Import / Move / Copy / Bulk** (non-delete) — portability and bulk actions that are not removals.  
+4. **Other** — read-only, publish/unpublish, approve, search usage, etc., as documented.  
+5. **Do not** run **delete / remove / bulk-delete / teardown** flows in this phase — they belong in the **delete batch** (next section).
+
+Playwright’s default sort inside a module is defined in `tests/flows.spec.ts` (dependency `flowOrder` + lexical). When adding flows, **name and order steps** so create/edit precede delete in docs and, where possible, align flow id ordering with this CRUD story to keep runs stable.
+
+## 3. Delete flows — after all main modules
+
+After the **last** main module in §1 finishes, run **one batched execution** of **all CMS delete-related flows** (cross-module), using the same **grep set** as `CMS_DELETE_FLOW_GREP` in `run-cms-sequential-modules-dashboard.sh` (delete-a-*, bulk-delete-*, delete-content-type, delete-a-stack, edit-or-delete-a-comment, etc.).
+
+Main module runs MUST **exclude** these (e.g. `--grep-invert` on that pattern) so deletes never run in the middle of the batch.
+
+## 4. Trash module — always last
+
+After the delete batch completes, run:
+
+- **`Project=CMS Module=trash Stage=main`**
+
+Nothing else should follow trash in the same batch.
+
+## 5. Summary checklist
+
+| Phase | What runs |
+|--------|-----------|
+| A | Main modules §1 in order — **non-delete** `Stage=main` flows only |
+| B | **All** delete-related CMS flows (single batch) |
+| C | **Trash** module |
+
+## 6. Where this was documented before
+
+- **Module order + delete batch + trash** were already encoded in **`scripts/run-cms-sequential-modules-dashboard.sh`** (`CMS_MAIN_MODULES`, `CMS_DELETE_FLOW_GREP`, then `99-trash`).  
+- **CRUD-style ordering within a module** and this consolidated spec are captured here in **`.cursor/rules/cms-execution-order.mdc`** for agents and future script changes.
+
+When introducing a new runner (e.g. another `*.sh` or CI job), mirror the same **module list**, **grep-invert deletes** during main phases, **delete batch**, then **trash**.

@@ -7,6 +7,8 @@
 
 import fs from "fs";
 import path from "path";
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
+import { parseExecutableFlowsPreferCumulative } from "../core/report/unifiedReportModel";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -67,8 +69,7 @@ function formatDuration(ms: number): string {
 
 function main() {
   const metaPath = path.join(REPORT_DIR, "run-meta.json");
-  const flowsBackup = path.join(REPORT_DIR, "flows-results-cms.json");
-  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : path.join(REPORT_DIR, "flows-results.json");
+  const flowsPath = resolveFlowsResultsPath(REPORT_DIR);
   const failuresPath = path.join(REPORT_DIR, "doc-step-failures.json");
   const warningsPath = path.join(REPORT_DIR, "doc-step-warnings.json");
 
@@ -89,6 +90,30 @@ function main() {
   const cmsSpecs: NonNullable<PwSuite["specs"]> = [];
   for (const s of pw?.suites || []) collectCmsSpecs(s, cmsSpecs);
 
+  const durationByFlow = new Map<string, { durationMs: number; err: string }>();
+  for (const spec of cmsSpecs) {
+    const flowId = String(spec.title || "");
+    const res = (spec.tests || [])[0]?.results?.[0] || {};
+    const durationMs = Number(res.duration ?? 0);
+    const err = String(res.error?.message || "").slice(0, 500);
+    durationByFlow.set(flowId, { durationMs, err });
+  }
+
+  const docUrlFromCumulative = new Map<string, string>();
+  const cumPath = path.join(REPORT_DIR, "url-run-summary-cumulative.json");
+  if (fs.existsSync(cumPath)) {
+    try {
+      const cum = JSON.parse(fs.readFileSync(cumPath, "utf-8")) as {
+        flows?: Array<{ flowId: string; documentUrl?: string }>;
+      };
+      for (const f of cum.flows || []) {
+        if (f.flowId && f.documentUrl) docUrlFromCumulative.set(f.flowId, f.documentUrl);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   type Row = {
     flowId: string;
     documentUrl: string;
@@ -104,13 +129,15 @@ function main() {
   const warnings = warningsDoc?.warnings || [];
 
   const rows: Row[] = [];
-  for (const spec of cmsSpecs) {
-    const flowId = String(spec.title || "");
-    const res = (spec.tests || [])[0]?.results?.[0] || {};
-    const status = String(res.status || "unknown");
-    const durationMs = Number(res.duration ?? 0);
-    const err = String(res.error?.message || "").slice(0, 500);
-    const documentUrl = sourceByFlow.get(flowId) || "";
+  const execSpecs = parseExecutableFlowsPreferCumulative(REPORT_DIR, pw);
+  for (const ex of execSpecs) {
+    if (ex.project !== "CMS") continue;
+    const flowId = ex.flowId;
+    const status = ex.pwStatus;
+    const timing = durationByFlow.get(flowId);
+    const durationMs = timing?.durationMs ?? 0;
+    const err = timing?.err ?? "";
+    const documentUrl = sourceByFlow.get(flowId) || docUrlFromCumulative.get(flowId) || "";
     const fc = failures.filter((f) => f.flowId === flowId).length;
     const wc = warnings.filter((w) => w.flowId === flowId).length;
     rows.push({
@@ -118,7 +145,7 @@ function main() {
       documentUrl,
       status,
       durationMs,
-      durationHuman: formatDuration(durationMs),
+      durationHuman: durationMs ? formatDuration(durationMs) : "—",
       err,
       wc,
       fc,

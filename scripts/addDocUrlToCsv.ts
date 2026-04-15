@@ -1,64 +1,65 @@
 /**
- * Add one or more contentstack.com/docs URLs to data/docs-urls.csv so they are
- * included in docs-audit (links, table, logo verification). Runs automatically
- * when you pass URLs for testing in bulk (runBulkFromCsv) or here for single URLs.
+ * Add one or more contentstack.com/docs URLs to data/docs-urls.csv (project,url) so they are
+ * included in docs-audit (links, images, table, logo verification).
  *
  * Usage:
- *   npx ts-node scripts/addDocUrlToCsv.ts "https://www.contentstack.com/docs/developers/create-content-types/boolean"
- *   npx ts-node scripts/addDocUrlToCsv.ts --url "https://..." --url "https://..."
+ *   npx ts-node scripts/addDocUrlToCsv.ts "https://www.contentstack.com/docs/..."
+ *   npx ts-node scripts/addDocUrlToCsv.ts --project Launch --url "https://..."
  *   npx ts-node scripts/addDocUrlToCsv.ts --file data/my-urls.csv
  *   npm run add-doc-url -- "https://www.contentstack.com/docs/..."
- *   npm run add-doc-url -- --file data/urls.csv
  *
  * Options:
- *   --run-audit   After adding, run docs-audit for only these URLs (headless).
+ *   --project <Name>   Project column (default CMS). Applies to bare URLs from --file and positional args.
+ *   --run-audit        After adding, run docs-audit for only these URLs (headless).
  */
 
 import fs from "fs";
 import path from "path";
 import { spawnSync } from "child_process";
+import {
+  parseDocsUrlsCsvFile,
+  mergeDocUrlRows,
+  writeDocsUrlsCsv,
+  normalizeCanonicalDocUrl,
+  isDocsHostUrl,
+} from "../core/docsUrlsCsv";
 
 const DOCS_CSV = path.resolve(process.cwd(), "data", "docs-urls.csv");
-const DOCS_HOST = "contentstack.com/docs";
 
 function isDocUrl(u: string): boolean {
-  const t = u.trim();
-  return t.length > 0 && t.includes(DOCS_HOST);
+  return isDocsHostUrl(u.trim());
 }
 
-function readExisting(): { commentLines: string[]; urls: Set<string> } {
-  const commentLines: string[] = [];
-  const urls = new Set<string>();
-  if (!fs.existsSync(DOCS_CSV)) return { commentLines, urls };
-  const lines = fs.readFileSync(DOCS_CSV, "utf-8").split(/\r?\n/);
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    if (trimmed.startsWith("#")) {
-      commentLines.push(line);
-    } else if (isDocUrl(trimmed)) {
-      urls.add(trimmed);
+function parseFileLine(line: string, defaultProject: string): { project: string; url: string } | null {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith("#")) return null;
+  const comma = trimmed.indexOf(",");
+  if (comma > 0) {
+    const maybeProject = trimmed.slice(0, comma).trim();
+    const rest = trimmed.slice(comma + 1).trim();
+    if (/^[A-Za-z][A-Za-z0-9_-]*$/.test(maybeProject) && isDocUrl(rest)) {
+      return { project: maybeProject, url: normalizeCanonicalDocUrl(rest) };
     }
   }
-  return { commentLines, urls };
-}
-
-function writeCsv(urls: Set<string>, commentLines: string[]) {
-  const header = commentLines.length ? commentLines.join("\n") + "\n" : "# Docs to audit (one per line)\n";
-  const sorted = [...urls].sort();
-  fs.mkdirSync(path.dirname(DOCS_CSV), { recursive: true });
-  fs.writeFileSync(DOCS_CSV, header + sorted.join("\n") + "\n", "utf-8");
+  if (isDocUrl(trimmed)) return { project: defaultProject, url: normalizeCanonicalDocUrl(trimmed) };
+  return null;
 }
 
 function main() {
   const argv = process.argv.slice(2);
   const runAudit = argv.includes("--run-audit");
+  let defaultProject = "CMS";
+  const projIdx = argv.indexOf("--project");
+  if (projIdx >= 0 && argv[projIdx + 1] && !argv[projIdx + 1].startsWith("--")) {
+    defaultProject = argv[projIdx + 1].trim();
+  }
+
   const fileIdx = argv.indexOf("--file");
   const urlIdxes = argv
     .map((a, i) => (a === "--url" ? i + 1 : -1))
     .filter((i) => i >= 0 && i < argv.length);
 
-  const toAdd: string[] = [];
+  const toAdd: Array<{ project: string; url: string }> = [];
 
   if (fileIdx >= 0 && argv[fileIdx + 1]) {
     const filePath = path.resolve(process.cwd(), argv[fileIdx + 1]);
@@ -67,51 +68,50 @@ function main() {
       process.exit(1);
     }
     const content = fs.readFileSync(filePath, "utf-8");
-    const lines = content.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-    for (const line of lines) {
-      const u = line.startsWith("#") ? "" : line;
-      if (u && isDocUrl(u)) toAdd.push(u);
+    for (const line of content.split(/\r?\n/)) {
+      const row = parseFileLine(line, defaultProject);
+      if (row) toAdd.push(row);
     }
   }
 
   for (const i of urlIdxes) {
     const u = argv[i];
-    if (u && isDocUrl(u)) toAdd.push(u);
+    if (u && isDocUrl(u)) toAdd.push({ project: defaultProject, url: normalizeCanonicalDocUrl(u) });
   }
 
-  // Positional URLs (no --url or --file)
   if (toAdd.length === 0) {
     for (const a of argv) {
       if (a.startsWith("--")) continue;
-      if (isDocUrl(a)) toAdd.push(a);
+      if (isDocUrl(a)) toAdd.push({ project: defaultProject, url: normalizeCanonicalDocUrl(a) });
     }
   }
 
   if (toAdd.length === 0) {
-    console.error("Usage: addDocUrlToCsv.ts <url> [url...] | --url <url> [--url <url>] | --file <path.csv> [--run-audit]");
+    console.error(
+      "Usage: addDocUrlToCsv.ts [--project CMS] <url> [url...] | --url <url> | --file <path.csv> [--run-audit]"
+    );
     console.error("  URLs must contain contentstack.com/docs");
     process.exit(1);
   }
 
-  const { commentLines, urls } = readExisting();
-  const before = urls.size;
-  toAdd.forEach((u) => urls.add(u));
-  const added = urls.size - before;
-  writeCsv(urls, commentLines);
+  const merged = mergeDocUrlRows(parseDocsUrlsCsvFile(DOCS_CSV), toAdd);
+  writeDocsUrlsCsv(DOCS_CSV, merged);
 
-  console.log(`✅ Added ${added} URL(s) to ${DOCS_CSV} (total: ${urls.size})`);
+  console.log(`Updated ${DOCS_CSV}: merged ${toAdd.length} input row(s); file now has ${merged.length} row(s).`);
 
   if (runAudit && toAdd.length > 0) {
     const tempCsv = path.resolve(process.cwd(), "data", "docs-urls-single-run.csv");
-    const uniqueRun = [...new Set(toAdd)].sort();
-    fs.mkdirSync(path.dirname(tempCsv), { recursive: true });
-    fs.writeFileSync(tempCsv, "# Single-run audit\n" + uniqueRun.join("\n") + "\n", "utf-8");
-    console.log("🔍 Running docs-audit for", uniqueRun.length, "URL(s)...");
+    const uniqueRun = mergeDocUrlRows([], toAdd);
+    writeDocsUrlsCsv(tempCsv, uniqueRun);
+    console.log("Running docs-audit for", uniqueRun.length, "row(s)...");
+    const auditEnv: NodeJS.ProcessEnv = { ...process.env, DOCS_URLS_CSV: "data/docs-urls-single-run.csv" };
+    delete auditEnv.DOCS_AUDIT_PROJECT;
+    delete auditEnv.DOCS_AUDIT_PROJECTS;
     spawnSync("npx", ["playwright", "test", "tests/docs-audit.spec.ts", "--workers=1"], {
       cwd: process.cwd(),
       stdio: "inherit",
       shell: true,
-      env: { ...process.env, DOCS_URLS_CSV: "data/docs-urls-single-run.csv" },
+      env: auditEnv,
     });
   }
 }

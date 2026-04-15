@@ -1,0 +1,121 @@
+{
+  "id": "change-entry-workflow-stage",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/use-workflows/change-entry-workflow-stage",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)" },
+    { "action": "click", "target": "First Entry row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab (doc step)",
+      "expected": { "within": "Status panel" }
+    },
+    {
+      "action": "verify",
+      "target": "Entry editor Status tab Status icon (doc step)",
+      "expected": { "within": "Status panel" }
+    },
+    { "action": "click", "target": "Entry editor Status tab (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Entry editor Workflow Details heading (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Workflow Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry workflow Change link (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Change",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entry workflow Change link (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Entry Workflow Settings section title (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Entry Workflow Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Set Workflow Stage label (doc step)",
+      "expected": {
+        "within": "Status panel",
+        "labelEquals": "Set Workflow Stage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Set Due Date label (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Set Due Date",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Assign to label (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Assign to",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Notify via Email label (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Notify via Email",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Comment label (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Add Comment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry workflow Update button (doc step)",
+      "expected": {
+        "within": "Status panel or Modal",
+        "labelEquals": "Update",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entry workflow Update button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "warn",
+      "value": "Doc: API reference — Set entry workflow stage API is separate from the UI steps above."
+    }
+  ]
+}

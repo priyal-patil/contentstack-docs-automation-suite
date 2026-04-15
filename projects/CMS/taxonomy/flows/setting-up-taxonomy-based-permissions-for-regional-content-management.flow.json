@@ -1,0 +1,70 @@
+{
+  "id": "setting-up-taxonomy-based-permissions-for-regional-content-management",
+  "project": "CMS",
+  "module": "taxonomy",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/setting-up-taxonomy-based-permissions-for-regional-content-management",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Users & Roles from left nav (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Users & Roles", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Users & Roles from left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Roles tab (doc step)",
+      "expected": { "labelEquals": "Roles", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Roles tab (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "New Role button (doc step)",
+      "expected": { "labelEquals": "New Role", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Role button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Role Name input (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Role Name input (doc step)", "value": "Regional taxonomy role {unique}" },
+    { "action": "enter", "target": "Role Description textarea (doc step)", "value": "Doc regional taxonomy permissions (doc step) {unique}" },
+    {
+      "action": "click",
+      "target": "All Entries Content Types Taxonomies section expand (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Specific Taxonomies radio (doc step)",
+      "expected": { "labelEquals": "Specific Taxonomies", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Specific Taxonomies radio (doc step)", "timeoutMs": 30000 },
+    { "action": "click", "target": "Taxonomy picker control (doc step)", "timeoutMs": 30000 },
+    { "action": "click", "target": "Regions taxonomy option (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "Specific Terms radio (doc step)",
+      "expected": { "labelEquals": "Specific Terms", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Specific Terms radio (doc step)", "timeoutMs": 30000 },
+    { "action": "click", "target": "First term checkbox or row (doc step)", "timeoutMs": 30000 },
+    {
+      "action": "verify",
+      "target": "Save new role button (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Save new role button (doc step)", "timeoutMs": 90000 }
+  ]
+}

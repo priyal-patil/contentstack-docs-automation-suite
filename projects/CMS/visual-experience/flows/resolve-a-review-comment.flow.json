@@ -1,0 +1,42 @@
+{
+  "id": "resolve-a-review-comment",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/preview-sharing/resolve-a-review-comment",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "warn",
+      "value": "Doc: Open the shared preview link from email before resolving a review comment."
+    },
+    { "action": "verify", "target": "Shared preview section discussion icon (doc step)", "optional": true },
+    { "action": "click", "target": "Shared preview section discussion icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Discussions tab in preview sharing right panel (doc step)",
+      "expected": {
+        "labelEquals": "Discussions",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Discussions tab in preview sharing right panel (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Shared preview discussion thread (doc step)", "optional": true },
+    {
+      "action": "verify",
+      "target": "Review comment Resolve button (doc step)",
+      "expected": {
+        "labelEquals": "Resolve",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Review comment Resolve button (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: Resolved comments are hidden and can be reopened later if needed."
+    }
+  ]
+}

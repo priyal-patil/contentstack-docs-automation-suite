@@ -1,0 +1,62 @@
+{
+  "id": "preview-entry",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/author-content/preview-entry",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": false,
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries page (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "vertical ellipsis (doc step)" },
+    {
+      "action": "verify",
+      "target": "Preview (doc step)",
+      "expected": { "labelEquals": "Preview", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Preview (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Preview setup dialog after Preview action (doc step)",
+      "optional": true
+    },
+    {
+      "action": "warn",
+      "value": "Depending on the scenario of your entry's publish status you will see different modals (doc): Environment/Locale, Scheduled Publish, Release, and/or tentative Date and Time as described below."
+    },
+    {
+      "action": "warn",
+      "value": "Unpublished Entries (doc): If the entry is not published in any environment and not scheduled, select Environment and Locale to preview. If not added to any release and not scheduled for publishing, input a tentative Date and Time to proceed."
+    },
+    {
+      "action": "warn",
+      "value": "Scheduled Publishing (doc): For scheduled publishes, select Environment and Locale; use the Scheduled Publish dropdown when the entry is scheduled for publishing."
+    },
+    {
+      "action": "warn",
+      "value": "Added to an Undeployed Release (doc): Select Environment and Locale; if part of a release but not deployed, input a tentative Date and Time. From Releases, previewing an undeployed release may prompt for tentative Date and Time."
+    },
+    {
+      "action": "warn",
+      "value": "Added to a Deployed Release (doc): Select Environment and Locale; if already deployed via a release, use the Release dropdown to select the release."
+    },
+    { "action": "verify", "target": "Live Preview window (doc step)" }
+  ]
+}

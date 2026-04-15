@@ -1,0 +1,104 @@
+{
+  "id": "set-edit-access-permissions-for-workflow-stages",
+  "project": "CMS",
+  "module": "workflows",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/set-up-workflows-and-publish-rules/set-edit-access-permissions-for-workflow-stages",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Workflows in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflows in settings left nav (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow page title (doc step)",
+      "expected": {
+        "labelEquals": "Workflow",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflows tab selected Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Workflows",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow listing Name column header (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow listing first workflow row link (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow edit first stage Edit icon (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "click",
+      "target": "Workflow stage modal Stage transition accordion toggle (doc step)",
+      "optional": true,
+      "timeoutMs": 15000
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage Stage transition accordion title (doc step)",
+      "optional": true,
+      "expected": {
+        "labelEquals": "Stage transition",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users who can edit entry in stage label (doc step)",
+      "expected": {
+        "labelEquals": "Users/roles who can edit the entry in this stage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow stage Current stage users edit option (doc step)",
+      "expected": {
+        "labelEquals": "Current stage user(s)",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow stage Current stage users edit option (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow first stage Done button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Workflow editor Save button label (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Workflow editor Save button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "warn",
+      "value": "Doc: Workflow superusers, organization owners, and stack owners/admins can edit or delete entries in any stage regardless of these rules."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "share-a-preview",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/preview-sharing/share-a-preview",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    {
+      "action": "warn",
+      "value": "Doc: Use website navigation or URL bar to find the page you want to share."
+    },
+    { "action": "click", "target": "Visual builder horizontal ellipses (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Share menu item in visual builder (doc step)",
+      "expected": {
+        "labelEquals": "Share",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Share menu item in visual builder (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Share Preview modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Share Preview"
+      },
+      "optional": true
+    },
+    {
+      "action": "enter",
+      "target": "Share Preview invite users field (doc step)",
+      "value": "reviewer@example.com",
+      "optional": true
+    },
+    {
+      "action": "enter",
+      "target": "Share Preview add note field (doc step)",
+      "value": "Please review this preview and share feedback.",
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Share Preview modal Share button (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Share",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Share Preview modal Share button (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    {
+      "action": "warn",
+      "value": "Doc: Share button requires Live Preview SDK v3.2.0+; recipients get preview email link valid for 7 days."
+    }
+  ]
+}

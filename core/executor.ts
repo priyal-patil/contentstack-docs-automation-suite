@@ -9,6 +9,8 @@
  * - Verification warnings (recorded inside actionRules, no throw): execution continues.
  * - optional: true on a step: on failure, log skip and continue (element not present).
  */
+import fs from "fs";
+import path from "path";
 import { Page } from "@playwright/test";
 import crypto from "crypto";
 import { performAction } from "../rules/core/actionRules";
@@ -25,7 +27,7 @@ function uniqueForFlow(flow: any): string {
   return crypto.randomUUID();
 }
 import { runSharedSteps } from "../shared/steps/registry";
-import { recordDocStepFailure } from "./docStepFailureReporter";
+import { buildMissingElementSummary, recordDocStepFailure } from "./docStepFailureReporter";
 import { ensureTrashHasDeletedGlobalFieldIfNeeded } from "./preflightTrashGlobalField";
 import { ensureTrashHasDeletedEntryIfNeeded } from "./preflightTrashEntries";
 import { ensureTrashHasDeletedAssetFolderIfNeeded, ensureTrashHasDeletedFileAssetIfNeeded } from "./preflightTrashAssets";
@@ -95,7 +97,26 @@ export async function executeFlow(page: Page, flow: any) {
         continue;
       }
       const message = err?.message ?? String(err);
-      recordDocStepFailure(documentUrl, flow.id, i, step, message);
+      const missingElementSummary = buildMissingElementSummary(step, message);
+      let screenshotRelativePath: string | undefined;
+      try {
+        const reportDir = process.env.REPORT_DIR || path.join(process.cwd(), "reports/latest");
+        const shotDir = path.join(reportDir, "flow-screenshots");
+        fs.mkdirSync(shotDir, { recursive: true });
+        const safeFlow = String(flow.id || "flow").replace(/[^a-zA-Z0-9_.-]/g, "_");
+        const fileName = `${safeFlow}-step-${i + 1}.png`;
+        const absShot = path.join(shotDir, fileName);
+        await currentPage.screenshot({ path: absShot, fullPage: false, timeout: 20_000 }).catch(() => {});
+        if (fs.existsSync(absShot)) {
+          screenshotRelativePath = path.join("flow-screenshots", fileName).split(path.sep).join("/");
+        }
+      } catch {
+        // screenshot is best-effort
+      }
+      recordDocStepFailure(documentUrl, flow.id, i, step, message, {
+        missingElementSummary,
+        screenshotRelativePath,
+      });
       console.error(`❌ Document step failed (URL: ${documentUrl}, Step ${i + 1}: ${step?.action} "${step?.target}"): ${message}`);
       // Do not run subsequent steps; only warnings (non-throwing) allow the flow to continue.
       throw err;

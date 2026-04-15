@@ -5,6 +5,7 @@
  */
 import fs from "fs";
 import path from "path";
+import { resolveFlowsResultsPath } from "./resolveFlowsResultsPath";
 
 export type UnifiedStatus = "PASS" | "WARNING" | "FAIL";
 export type IssueKind = "None" | "Drift" | "Gap" | "Content";
@@ -97,7 +98,7 @@ export function loadFlowMetaById(cwd: string): Map<string, FlowMeta> {
 
 type PwSuite = { title?: string; file?: string; specs?: PwSpec[]; suites?: PwSuite[] };
 type PwSpec = { title?: string; tests?: Array<{ results?: Array<{ status?: string }>; status?: string }> };
-type PwRoot = { suites?: PwSuite[] };
+export type PwRoot = { suites?: PwSuite[] };
 
 function collectExecutableSpecs(suite: PwSuite, out: Array<{ project: string; flowId: string; pwStatus: string }>) {
   const t = String(suite?.title || "");
@@ -124,6 +125,41 @@ export function parseExecutableFlowsFromResults(pw: PwRoot | null): Array<{ proj
   const out: Array<{ project: string; flowId: string; pwStatus: string }> = [];
   for (const s of pw?.suites || []) walkAllSuites(s, out);
   return out;
+}
+
+type CumulativeSummaryFile = {
+  flows?: Array<{ flowId: string; status: string; project?: string; module?: string }>;
+};
+
+/**
+ * When `url-run-summary-cumulative.json` exists (baseline + partial retry merge), use one row per
+ * baseline flow so dashboards show full batch counts; Playwright JSON in reportDir may only list a subset.
+ */
+export function parseExecutableFlowsPreferCumulative(
+  reportDir: string,
+  pw: PwRoot | null
+): Array<{ project: string; flowId: string; pwStatus: string }> {
+  const cumPath = path.join(reportDir, "url-run-summary-cumulative.json");
+  if (!fs.existsSync(cumPath)) {
+    return parseExecutableFlowsFromResults(pw);
+  }
+  try {
+    const cum = JSON.parse(fs.readFileSync(cumPath, "utf-8")) as CumulativeSummaryFile;
+    if (!cum?.flows?.length) {
+      return parseExecutableFlowsFromResults(pw);
+    }
+    const pwByFlow = new Map<string, string>();
+    for (const x of parseExecutableFlowsFromResults(pw)) {
+      pwByFlow.set(x.flowId, x.pwStatus);
+    }
+    return cum.flows.map((f) => ({
+      project: f.project || "CMS",
+      flowId: f.flowId,
+      pwStatus: pwByFlow.get(f.flowId) ?? f.status,
+    }));
+  } catch {
+    return parseExecutableFlowsFromResults(pw);
+  }
 }
 
 function classifyExecutable(params: {
@@ -207,9 +243,7 @@ export type CollectInputs = {
 
 export function collectUnifiedRows(input: CollectInputs): UnifiedRow[] {
   const { reportDir, cwd } = input;
-  const flowsPath = fs.existsSync(path.join(reportDir, "flows-results-cms.json"))
-    ? path.join(reportDir, "flows-results-cms.json")
-    : path.join(reportDir, "flows-results.json");
+  const flowsPath = resolveFlowsResultsPath(reportDir);
   const failuresPath = path.join(reportDir, "doc-step-failures.json");
   const warningsPath = path.join(reportDir, "doc-step-warnings.json");
   const auditPath = path.join(reportDir, "docs-audit-summary.json");
@@ -217,7 +251,14 @@ export function collectUnifiedRows(input: CollectInputs): UnifiedRow[] {
 
   const pw = readJson<PwRoot>(flowsPath);
   const failuresDoc = readJson<{
-    failures?: Array<{ flowId: string; documentUrl?: string; stepNumber?: number; target?: string; errorMessage?: string }>;
+    failures?: Array<{
+      flowId: string;
+      documentUrl?: string;
+      stepNumber?: number;
+      target?: string;
+      errorMessage?: string;
+      missingElementSummary?: string;
+    }>;
   }>(failuresPath);
   const warningsDoc = readJson<{
     warnings?: Array<{ flowId: string; documentUrl?: string; stepNumber?: number; target?: string; warningMessage?: string }>;
@@ -240,7 +281,7 @@ export function collectUnifiedRows(input: CollectInputs): UnifiedRow[] {
   const warnings = warningsDoc?.warnings || [];
 
   const rows: UnifiedRow[] = [];
-  const execSpecs = parseExecutableFlowsFromResults(pw);
+  const execSpecs = parseExecutableFlowsPreferCumulative(reportDir, pw);
 
   for (const ex of execSpecs) {
     const m = metaById.get(ex.flowId);
@@ -257,7 +298,12 @@ export function collectUnifiedRows(input: CollectInputs): UnifiedRow[] {
     let details = c.details;
     if (fc > 0) {
       const first = failures.find((f) => f.flowId === ex.flowId);
-      if (first) details += ` · First gap: step ${first.stepNumber} — ${first.target}: ${(first.errorMessage || "").slice(0, 240)}`;
+      if (first) {
+        const gap =
+          (first.missingElementSummary || "").trim() ||
+          `${first.target}: ${(first.errorMessage || "").slice(0, 240)}`;
+        details += ` · First gap: step ${first.stepNumber} — ${gap.slice(0, 320)}`;
+      }
     } else if (wc > 0) {
       const first = warnings.find((w) => w.flowId === ex.flowId);
       if (first) details += ` · Example drift: step ${first.stepNumber} — ${(first.warningMessage || "").slice(0, 240)}`;

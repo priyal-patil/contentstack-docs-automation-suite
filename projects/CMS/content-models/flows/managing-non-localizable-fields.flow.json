@@ -4,6 +4,7 @@
   "module": "content-models",
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/create-content-types/managing-non-localizable-fields",
+  "automationNote": "Observed: Group field Properties may have no Non-localizable toggle; align flow with UI or field type.",
   "type": "executable",
   "use": [
     "login",

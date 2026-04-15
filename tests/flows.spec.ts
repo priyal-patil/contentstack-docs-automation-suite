@@ -13,8 +13,8 @@ const ranFlowIds = new Set<string>();
 // Do NOT use test.describe.configure({ mode: "serial" }) at file scope: Playwright skips
 // all remaining tests after the first failure in a serial group (204+ "skipped" in reports).
 //
-// Instead: parallelize by project+module+stage (each group runs serially so publish→unpublish
-// order is preserved *within* that module/stage). Enable fullyParallel + workers in config / PW_WORKERS.
+// Inner groups use describe.parallel (not serial): a failure in one URL must NOT skip the rest
+// in the same module/stage. Order is still deterministic via flow sort, but tests run independently.
 
 const legacyFlowsDir = path.resolve(__dirname, "../flows");
 const projectsDir = path.resolve(__dirname, "../projects");
@@ -60,6 +60,66 @@ function loadFlows(): any[] {
   // Legacy support (until you delete old flows folder)
   walk(legacyFlowsDir);
   return all;
+}
+
+/**
+ * CMS-only tie-breaker when explicit `flowOrder` ties (both 0): create/add → edit/update → export/import/move/bulk → other → delete-like.
+ * Non-zero `flowOrder` wins first (dependency chains). See .cursor/rules/cms-execution-order.mdc.
+ */
+function crudLifecycleRank(f: any): number {
+  if (String(f?.project || "") !== "CMS") return 0;
+  const id = String(f?.id || "").toLowerCase();
+  if (!id) return 50;
+
+  if (
+    /^delete-/.test(id) ||
+    /^bulk-delete-/.test(id) ||
+    id === "edit-or-delete-a-comment" ||
+    id === "delete-entries-and-assets-in-bulk"
+  ) {
+    return 100;
+  }
+
+  if (
+    /^create-/.test(id) ||
+    /^add-/.test(id) ||
+    /^new-/.test(id) ||
+    /^duplicate-/.test(id) ||
+    /^clone-/.test(id) ||
+    /^generate-/.test(id) ||
+    id.startsWith("set-up-") ||
+    id.includes("quickstart") ||
+    id.startsWith("get-started")
+  ) {
+    return 0;
+  }
+
+  if (
+    /^edit-/.test(id) ||
+    /^update-/.test(id) ||
+    /^rename-/.test(id) ||
+    /^customize-/.test(id) ||
+    /^change-/.test(id) ||
+    /^modify-/.test(id)
+  ) {
+    return 10;
+  }
+
+  if (
+    /^export-/.test(id) ||
+    /^import-/.test(id) ||
+    /^move-/.test(id) ||
+    /^copy-/.test(id) ||
+    /^bulk-/.test(id) ||
+    /^publish-/.test(id) ||
+    /^unpublish-/.test(id) ||
+    /^deploy-/.test(id) ||
+    /^remove-/.test(id)
+  ) {
+    return 20;
+  }
+
+  return 30;
 }
 
 const flows = loadFlows().sort((a, b) => {
@@ -194,10 +254,28 @@ const flows = loadFlows().sort((a, b) => {
     if (id === "about-workflows") return 118;
     if (id === "about-workflow-stages") return 119;
     if (id === "add-workflows-and-stages") return 120;
+    if (id === "update-a-workflow") return 121;
+    if (id === "delete-a-workflow") return 122;
+    if (id === "enable-or-disable-a-workflow") return 123;
+    if (id === "set-edit-access-permissions-for-workflow-stages") return 124;
+    if (id === "change-entry-workflow-stage") return 125;
+    if (id === "send-an-entry-for-edit-access-approval") return 126;
+    if (id === "send-an-entry-for-publish-or-unpublish-approval") return 127;
+    if (id === "approve-edit-access-request-for-an-entry") return 128;
+    if (id === "revoke-edit-access-for-an-entry") return 129;
+    if (id === "create-a-taxonomy") return 130;
+    if (id === "edit-a-taxonomy") return 131;
+    if (id === "export-a-taxonomy") return 132;
+    if (id === "import-a-taxonomy") return 133;
+    if (id === "delete-a-taxonomy") return 134;
+    if (id === "add-taxonomy-to-a-content-type") return 135;
     return 0;
   };
   const fd = flowOrder(a) - flowOrder(b);
   if (fd !== 0) return fd;
+
+  const cr = crudLifecycleRank(a) - crudLifecycleRank(b);
+  if (cr !== 0) return cr;
 
   // Stable ordering within stage for determinism
   const aKey = `${a.project || ""}::${a.module || ""}::${a.id || ""}`;
@@ -227,6 +305,8 @@ test.afterAll(() => {
       target: f.target,
       value: f.value,
       errorMessage: f.errorMessage,
+      missingElementSummary: f.missingElementSummary,
+      screenshotRelativePath: f.screenshotRelativePath,
       step: f.step,
     })),
   };
@@ -284,7 +364,7 @@ test.afterAll(() => {
   clearDocStepFailures();
 });
 
-/** Flows in global sort order, grouped for serial execution within each project/module/stage. */
+/** Flows in global sort order, grouped by project/module/stage (each group runs in parallel). */
 function groupFlowsByProjectModuleStage(flowList: any[]): Map<string, any[]> {
   const m = new Map<string, any[]>();
   for (const flow of flowList) {
@@ -300,14 +380,16 @@ function groupFlowsByProjectModuleStage(flowList: any[]): Map<string, any[]> {
 
 const flowGroups = groupFlowsByProjectModuleStage(flows);
 
-test.describe.parallel("Flow suite (parallel across modules, serial within each module/stage)", () => {
+test.describe.parallel("Flow suite (parallel across modules; all URLs in a module/stage run even if one fails)", () => {
+  // Default project timeout is 7m; headed + PW_SLOWMO long JSON RTE flows can exceed 20m wall time.
+  test.describe.configure({ timeout: 1_800_000 });
   for (const [, groupFlows] of flowGroups) {
     const first = groupFlows[0];
     const projectName = first.project || "UnknownProject";
     const moduleName = first.module || "unknown-module";
     const stage = first.stage || "main";
 
-    test.describe.serial(`Project=${projectName} Module=${moduleName} Stage=${stage}`, () => {
+    test.describe.parallel(`Project=${projectName} Module=${moduleName} Stage=${stage}`, () => {
       for (const flow of groupFlows) {
         const testName = flow.id || path.basename(flow.source || "unknown-flow");
 

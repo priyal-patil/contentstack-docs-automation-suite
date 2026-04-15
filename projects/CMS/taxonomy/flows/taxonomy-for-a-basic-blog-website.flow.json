@@ -1,0 +1,191 @@
+{
+  "id": "taxonomy-for-a-basic-blog-website",
+  "project": "CMS",
+  "module": "taxonomy",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/taxonomy/taxonomy-for-a-basic-blog-website",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy in settings (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy page title (doc step)",
+      "expected": { "labelEquals": "Taxonomy", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "New Taxonomy button (doc step)",
+      "expected": { "labelEquals": "New Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "New Taxonomy button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy New Taxonomy menu Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Taxonomy New Taxonomy menu Create New (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create New Taxonomy modal title (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Create new Taxonomy", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Taxonomy Name field label (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Taxonomy UID field label (doc step)",
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Unique ID",
+        "labelMatch": "contains",
+        "labelMismatchWarnOnly": true
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Taxonomy Description field label (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Create Taxonomy Name input (doc step)", "value": "Blog Posts {unique}" },
+    { "action": "enter", "target": "Create Taxonomy Description textarea (doc step)", "value": "Blog website taxonomy (doc step) {unique}" },
+    {
+      "action": "verify",
+      "target": "Create Taxonomy modal Create Taxonomy button (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Create Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create Taxonomy modal Create Taxonomy button (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Taxonomy listing first taxonomy row open edit (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Add Term button on taxonomy details (doc step)",
+      "expected": {
+        "labelEquals": "Add Term",
+        "labelMatch": "contains",
+        "labelMismatchWarnOnly": true
+      }
+    },
+    { "action": "click", "target": "Add Term button on taxonomy details (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Term Details section title (doc step)",
+      "expected": { "labelEquals": "Term Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Term Term Name field label (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Term Name", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Artificial Intelligence {unique}" },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Term details Create a Sibling Term button (doc step)",
+      "expected": {
+        "labelEquals": "Create a Child Term",
+        "labelMatch": "contains",
+        "labelMismatchWarnOnly": true
+      }
+    },
+    { "action": "click", "target": "Create a Child Term button on taxonomy details (doc step)", "timeoutMs": 60000 },
+
+    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Data Science {unique}" },
+    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy terms outline left panel (doc step)",
+      "expected": { "labelEquals": "Artificial Intelligence", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Content Models (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    {
+      "action": "verify",
+      "target": "Create New (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create New (doc step)", "expected": { "modalTitle": "Create New Content Type" } },
+    { "action": "enter", "target": "Name (doc step)", "value": "Blog Posts {unique}" },
+    { "action": "enter", "target": "UID (doc step)", "value": "blog_posts_{unique25}" },
+    { "action": "click", "target": "Save and proceed" },
+    {
+      "action": "verify",
+      "target": "Content Type Builder (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insert a field (doc step)",
+      "expected": { "documentedFields": ["Insert a field"], "visible": true }
+    },
+    { "action": "click", "target": "Insert a field" },
+    {
+      "action": "verify",
+      "target": "Taxonomy field tile label (doc step)",
+      "expected": { "labelEquals": "Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Taxonomy (doc step)" },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
+    { "action": "click", "target": "Properties (Taxonomy field) (doc step)" },
+    { "action": "enter", "target": "Taxonomy field Display Name input (doc step)", "value": "Categories" },
+    {
+      "action": "verify",
+      "target": "+ Add Taxonomy (doc step)",
+      "expected": { "labelEquals": "Add Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ Add Taxonomy (doc step)" },
+    {
+      "action": "verify",
+      "target": "Select Taxonomy field label (doc step)",
+      "expected": { "labelEquals": "Select Taxonomy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Select Taxonomy dropdown (doc step)" },
+    { "action": "click", "target": "Select first available taxonomy from dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "Apply in Add Taxonomy modal (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Apply", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Apply taxonomy field properties (doc step)" },
+    { "action": "click", "target": "Taxonomy field properties Advanced tab (doc step)", "timeoutMs": 15000, "optional": true },
+    { "action": "click", "target": "Taxonomy field Optional field switch (doc step)", "timeoutMs": 15000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Save and Close (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "expected": { "within": "Left Navigation", "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Blog Posts content type row in new entry modal (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Create Entry (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Categories field Select Term(s) (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "First term in term picker (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Apply term selection (doc step)", "timeoutMs": 60000 }
+  ]
+}

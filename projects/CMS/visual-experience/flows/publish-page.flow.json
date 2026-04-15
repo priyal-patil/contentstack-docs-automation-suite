@@ -1,0 +1,38 @@
+{
+  "id": "publish-page",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/publish-page",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "verify", "target": "Publish changes header button (doc step)" },
+    { "action": "click", "target": "Publish changes header button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Publish entries modal (doc step)",
+      "optional": true,
+      "expected": { "modalTitle": "Publish" }
+    }
+  ]
+}

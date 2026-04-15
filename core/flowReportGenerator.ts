@@ -13,6 +13,24 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** Relative URL from a flow report HTML file to a file under reportDir (e.g. flow-screenshots/x.png). */
+function hrefFromReportHtmlToReportFile(reportHtmlAbs: string, fileRelativeToReportDir: string, reportDirAbs: string): string {
+  const absFile = path.join(reportDirAbs, fileRelativeToReportDir);
+  let rel = path.relative(path.dirname(reportHtmlAbs), absFile);
+  rel = rel.split(path.sep).join("/");
+  return encodeURI(rel);
+}
+
+/** Renders document link only for http(s) URLs; plain text for placeholders (e.g. unpublished docs). */
+function formatDocumentUrlForHtml(documentUrl: string): string {
+  const s = String(documentUrl || "").trim();
+  if (!s) return escapeHtml("(no document URL)");
+  if (/^https?:\/\//i.test(s)) {
+    return `<a href="${escapeHtml(s)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s)}</a>`;
+  }
+  return escapeHtml(s);
+}
+
 function findFlowFile(root: string, flowId: string): string | null {
   const projectsDir = path.join(root, "projects");
   if (!fs.existsSync(projectsDir)) return null;
@@ -63,7 +81,15 @@ export function generateFlowReportHtml(
   }
 
   const failuresPath = path.join(dir, "doc-step-failures.json");
-  let failures: Array<{ flowId?: string; stepNumber?: number; stepIndex?: number; target?: string; errorMessage?: string }> = [];
+  let failures: Array<{
+    flowId?: string;
+    stepNumber?: number;
+    stepIndex?: number;
+    target?: string;
+    errorMessage?: string;
+    missingElementSummary?: string;
+    screenshotRelativePath?: string;
+  }> = [];
   if (fs.existsSync(failuresPath)) {
     try {
       const payload = JSON.parse(fs.readFileSync(failuresPath, "utf-8"));
@@ -73,8 +99,13 @@ export function generateFlowReportHtml(
     }
   }
 
+  const reportDirAbs = path.resolve(dir);
+
   /** Latest failure per step for this flow (last in JSON array wins; avoids duplicate rows from merged runs). */
-  const failureByStep = new Map<number, { msg: string; target: string }>();
+  const failureByStep = new Map<
+    number,
+    { msg: string; target: string; missing?: string; screenshotRel?: string }
+  >();
   for (const f of failures) {
     const stepNum = Number(f.stepNumber ?? (typeof f.stepIndex === "number" ? f.stepIndex + 1 : 0));
     if (stepNum > 0) {
@@ -83,6 +114,8 @@ export function generateFlowReportHtml(
         failureByStep.set(stepNum, {
           msg: escapeHtml(msg),
           target: escapeHtml(String(f.target || "")),
+          missing: (f.missingElementSummary || "").trim() ? escapeHtml(String(f.missingElementSummary).trim()) : "",
+          screenshotRel: (f.screenshotRelativePath || "").trim() ? String(f.screenshotRelativePath).trim() : "",
         });
     }
   }
@@ -100,6 +133,9 @@ export function generateFlowReportHtml(
   const failedStepNums = [...failureByStep.keys()];
   const firstFailedStep = failedStepNums.length > 0 ? Math.min(...failedStepNums) : null;
 
+  const outDir = options?.subdir ? path.join(dir, options.subdir) : dir;
+  const reportHtmlAbsForHref = path.join(outDir, `${flowId}-report.html`);
+
   const stepsHtml = steps
     .map((s: any, i: number) => {
       const stepNum = i + 1;
@@ -113,7 +149,18 @@ export function generateFlowReportHtml(
       const value = s.value ? escapeHtml(String(s.value)) : "—";
       let statusCell = "<td>—</td>";
       if (fail) {
-        statusCell = `<td class="fail-msg"><strong>Failed</strong><br/>${fail.msg}</td>`;
+        const missingBlock = fail.missing
+          ? `<div class="missing-on-page"><strong>Not found on page:</strong> ${fail.missing}</div>`
+          : "";
+        const shot =
+          fail.screenshotRel
+            ? (() => {
+                const href = hrefFromReportHtmlToReportFile(reportHtmlAbsForHref, fail.screenshotRel, reportDirAbs);
+                const label = escapeHtml(fail.screenshotRel.split("/").pop() || "screenshot");
+                return `<div class="fail-shot"><a href="${escapeHtml(href)}" target="_blank" rel="noopener">Open screenshot</a> · <span class="mono small">${label}</span></div><a href="${escapeHtml(href)}" target="_blank" rel="noopener"><img class="fail-thumb" src="${escapeHtml(href)}" alt="Failure screenshot step ${stepNum}" loading="lazy" /></a>`;
+              })()
+            : "";
+        statusCell = `<td class="fail-msg"><strong>Failed</strong>${missingBlock}<div class="err-detail">${fail.msg}</div>${shot}</td>`;
       } else if (skippedAfterFail) {
         statusCell = `<td class="skipped-msg">Skipped — not executed after step ${firstFailedStep} failed. Warnings do not stop the flow; hard failures do.</td>`;
       } else if (warn) {
@@ -163,6 +210,10 @@ export function generateFlowReportHtml(
     .step-skipped{background:#f3f4f6}
     .skipped-msg{color:#4b5563;font-size:12px}
     .fail-msg{color:#b91c1c;font-size:12px}
+    .missing-on-page{background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:8px;margin:6px 0;font-size:12px;color:#9a3412}
+    .err-detail{margin-top:6px;font-size:11px;color:#7f1d1d;word-break:break-word}
+    .fail-shot{margin-top:8px;font-size:12px}
+    .fail-thumb{max-width:100%;max-height:280px;margin-top:6px;border-radius:6px;border:1px solid #fecaca;cursor:zoom-in}
     .warn-msg{color:#b45309;font-size:12px}
     .warnings-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px;margin-top:12px}
     .warnings-box h3{font-size:14px;margin:0 0 8px 0;color:#b45309}
@@ -173,7 +224,7 @@ export function generateFlowReportHtml(
   <div class="wrap">
     <h1>Flow Report: ${escapeHtml(flowId)}</h1>
     <div class="meta">
-      Document: <a href="${escapeHtml(documentUrl)}" target="_blank">${escapeHtml(documentUrl)}</a><br/>
+      Document: ${formatDocumentUrlForHtml(documentUrl)}<br/>
       Generated: ${escapeHtml(new Date().toISOString())}
     </div>
     <div class="cards">
@@ -202,10 +253,17 @@ export function generateFlowReportHtml(
       <ul style="margin:0;padding-left:18px">
         ${[...failureByStep.entries()]
           .sort((a, b) => a[0] - b[0])
-          .map(
-            ([stepNum, { msg, target }]) =>
-              `<li><strong>Step ${stepNum}</strong> (${target}): ${msg}</li>`
-          )
+          .map(([stepNum, row]) => {
+            const { msg, target, missing, screenshotRel } = row;
+            const miss = missing ? `<br/><em>Not on page:</em> ${missing}` : "";
+            const pic = screenshotRel
+              ? (() => {
+                  const href = hrefFromReportHtmlToReportFile(reportHtmlAbsForHref, screenshotRel, reportDirAbs);
+                  return `<br/><a href="${escapeHtml(href)}">Screenshot</a> <span class="mono">(${escapeHtml(screenshotRel)})</span>`;
+                })()
+              : "";
+            return `<li><strong>Step ${stepNum}</strong> (${target}): ${msg}${miss}${pic}</li>`;
+          })
           .join("")}
       </ul>
     </section>
@@ -230,7 +288,6 @@ export function generateFlowReportHtml(
 </body>
 </html>`;
 
-  const outDir = options?.subdir ? path.join(dir, options.subdir) : dir;
   fs.mkdirSync(outDir, { recursive: true });
   const outPath = path.join(outDir, `${flowId}-report.html`);
   fs.writeFileSync(outPath, html, "utf-8");

@@ -11,6 +11,7 @@
 
 import fs from "fs";
 import path from "path";
+import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 
 const REPORT_DIR = path.resolve(
   process.cwd(),
@@ -109,16 +110,36 @@ function collectFlowResults(pw: any): FlowRow[] {
   return rows;
 }
 
+/** When url-run-summary-cumulative.json exists, expand flow rows to full baseline count (retry dirs). */
+function collectFlowResultsPreferCumulative(reportDir: string, pw: any): FlowRow[] {
+  const fromPw = pw ? collectFlowResults(pw) : [];
+  const cumPath = path.join(reportDir, "url-run-summary-cumulative.json");
+  if (!fs.existsSync(cumPath)) return fromPw;
+  try {
+    const cum = JSON.parse(fs.readFileSync(cumPath, "utf-8")) as {
+      flows?: Array<{ flowId: string; status: string; error?: string }>;
+    };
+    if (!cum.flows?.length) return fromPw;
+    const pwById = new Map(fromPw.map((r) => [r.id, r]));
+    return cum.flows.map((f) => {
+      const p = pwById.get(f.flowId);
+      if (p) return p;
+      return { id: f.flowId, status: f.status, error: f.error };
+    });
+  } catch {
+    return fromPw;
+  }
+}
+
 function main() {
-  const flowsBackup = path.join(REPORT_DIR, "flows-results-cms.json");
-  const flowsPath = fs.existsSync(flowsBackup) ? flowsBackup : path.join(REPORT_DIR, "flows-results.json");
+  const flowsPath = resolveFlowsResultsPath(REPORT_DIR);
   const failuresPath = path.join(REPORT_DIR, "doc-step-failures.json");
 
   const pw = readJson<{ suites?: any[] }>(flowsPath);
   const audit = loadDocsAuditSummary();
   const failures = readJson<{ failures?: Array<{ flowId: string; stepNumber: number; target: string; errorMessage?: string }> }>(failuresPath);
 
-  const flowRows = pw ? collectFlowResults(pw) : [];
+  const flowRows = collectFlowResultsPreferCumulative(REPORT_DIR, pw);
   const flowPassed = flowRows.filter((r) => r.status === "passed").length;
   const flowFailed = flowRows.filter((r) => r.status === "failed" || r.status === "timedOut").length;
 

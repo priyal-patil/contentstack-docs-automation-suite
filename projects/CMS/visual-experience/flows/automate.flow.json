@@ -1,0 +1,90 @@
+{
+  "id": "automate",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/automate",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "VE sidebar Automate tab (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false,
+        "labelEquals": "Automate",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "VE sidebar Automate tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Automate panel extension iframe (doc step)" },
+    {
+      "action": "verify",
+      "target": "Automate run icon (doc step)",
+      "expected": {
+        "labelEquals": "Run",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Automate run icon (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Automate run confirmation modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Confirm"
+      },
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Automate confirm Yes button (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Yes",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Automate confirm Yes button (doc step)", "timeoutMs": 90000, "optional": true },
+    {
+      "action": "verify",
+      "target": "Automate back button (doc step)",
+      "expected": {
+        "labelEquals": "Back",
+        "labelMatch": "contains"
+      },
+      "optional": true
+    },
+    { "action": "click", "target": "Automate back button (doc step)", "timeoutMs": 90000, "optional": true },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)", "optional": true },
+    {
+      "action": "warn",
+      "value": "Doc: To trigger automation for a different entry, use Back to return to entries and select another entry, or switch entries via URL Bar."
+    }
+  ]
+}

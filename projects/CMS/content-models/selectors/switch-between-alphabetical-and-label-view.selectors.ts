@@ -4,11 +4,16 @@
  * Generated/updated by bulkIngestFromUrls. Prefer data-test-id selectors.
  */
 
+/** Label view: “All Labels” heading / control (switch to label list). */
+export const SWITCH_VIEW_LABELS_LIST_TITLE_SELECTOR =
+  "[data-test-id='cs-ct-labels-list-title'], .conttypelist-alllable [data-test-id='cs-ct-labels-list-title']";
+
+/** Label view: list body — click opens a label bucket (automation uses first match). */
+export const SWITCH_VIEW_LABELS_LIST_ELEMENTS_SELECTOR = "[data-test-id='cs-ct-labels-list-elements']";
+
 export const CLICK_SELECTORS: Record<string, string> = {
-  "All Labels (doc step)":
-    "[data-test-id='cs-ct-labels-list-title'], .conttypelist-alllable [data-test-id='cs-ct-labels-list-title']",
-  "Any label from list (doc step)":
-    "[data-test-id='cs-ct-labels-list-elements']",
+  "All Labels (doc step)": SWITCH_VIEW_LABELS_LIST_TITLE_SELECTOR,
+  "Any label from list (doc step)": SWITCH_VIEW_LABELS_LIST_ELEMENTS_SELECTOR,
   "cms button": "[data-test-id=\"cs-cms-button\"]",
   "TopNavbar__content__product__button svg logo": "[data-test-id=\"TopNavbar__content__product__button-svg-logo\"]",
   "ProductLogoHeadlessCMS": "[data-test-id=\"cs-icon\"]",

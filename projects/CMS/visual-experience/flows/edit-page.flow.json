@@ -1,0 +1,92 @@
+{
+  "id": "edit-page",
+  "project": "CMS",
+  "module": "visual-experience",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/visual-editor/edit-page",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
+    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience top nav (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual Experience top nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Visual Experience page title (doc step)",
+      "expected": {
+        "labelEquals": "Visual Experience",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Visual editor URL bar (doc step)" },
+    {
+      "action": "warn",
+      "value": "Doc: Use the URL bar to open the page you want to edit (choose or type the page URL / path)."
+    },
+    { "action": "verify", "target": "Visual editor canvas workspace (doc step)" },
+    {
+      "action": "hover",
+      "target": "Visual editor canvas field hover target (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Visual editor canvas first component block (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    { "action": "verify", "target": "Visual editor contextual toolbar (doc step)", "optional": true },
+    {
+      "action": "click",
+      "target": "Visual editor canvas add component plus icon (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Components menu first component option (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "VE sidebar Form tab (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Visual editor Form sidebar root (doc step)",
+      "expected": {
+        "within": "Right sidebar",
+        "withinStrict": false
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Page component first field input in Form sidebar (doc step)",
+      "value": "Doc edit page {unique}"
+    },
+    { "action": "click", "target": "Save changes header button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Save changes modal (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "modalTitle": "Save Changes"
+      }
+    },
+    { "action": "click", "target": "Save changes modal Confirm Save button (doc step)", "timeoutMs": 90000 }
+  ]
+}

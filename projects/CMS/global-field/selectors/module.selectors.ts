@@ -1,3 +1,12 @@
+/**
+ * Copy Global Field modal — primary **Copy** CTA (`data-test-id="cs-cb-copy-gf"`, `aria-label="Copy Global Field"`).
+ * Import these for custom flows/tests; flow steps use keys `"Copy (doc step)"` / `"Copy (global field modal) (doc step)"` in CLICK_SELECTORS.
+ * @see data/dom/CMS/content-models/copy-global-field-copy-button.html
+ */
+export const GLOBAL_FIELD_COPY_MODAL_PRIMARY_BUTTON = '[data-test-id="cs-cb-copy-gf"]';
+export const GLOBAL_FIELD_COPY_MODAL_COPY_CTA_LOCATOR =
+  `${GLOBAL_FIELD_COPY_MODAL_PRIMARY_BUTTON}, button[aria-label="Copy Global Field"], [role="dialog"] button.Button--primary:has-text("Copy"), [role="dialog"] button:has-text("Copy")`;
+
 export const CLICK_SELECTORS: Record<string, string> = {
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
@@ -9,10 +18,13 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id^="cs-table-body-row-"]',
   "Any Content Type Row (or builder) (doc step)":
     '[data-test-id^="cs-table-body-row-"], [href*="/content-type/"][href*="content-type-builder"]',
+  // Prefer sidebar-scoped cs-gf-button (see global-fields-content-models-sidebar-section.html). A broad
+  // comma-union with cs-gf-section caused .first() to hit the wrapper; unreliably toggling the radio.
+  // @see data/dom/CMS/content-models/global-fields-content-models-sidebar-section.html
   "Global Fields (doc step)":
-    '[data-test-id="cs-gf-button"], [data-test-id="cs-gf-section"], label:has-text("GLOBAL FIELDS"), [role="radio"]:has-text("GLOBAL FIELDS"), [role="tab"]:has-text("GLOBAL FIELDS"), [data-test-id="cs-page-title"]:has-text("Global Fields")',
+    '[data-test-id="cs-page-layout-leftSidebar"] [data-test-id="cs-gf-button"], [data-test-id="cs-gf-button"]',
   "Global Fields page (doc step)":
-    '[data-test-id="cs-page-title"]:has-text("Global Fields"), .PageTitle:has-text("Global Fields")',
+    '[data-test-id="cs-page-layout-contentBody"] .globalField-contentlist, [data-test-id="cs-page-title"]:has-text("Global Fields"), .PageTitle:has-text("Global Fields"), .contmoduleList.globalField-contentlist, [data-test-id="cs-page-layout-contentBody"] [title="Import Global Field"]',
   "Content Types (doc step)":
     'button:has-text("New Content Type"), button[aria-label="Create New Content Type"]',
   "Content Types tab (doc step)":
@@ -51,8 +63,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'button[data-test-id="cs-cb-delete-gf"], button[aria-label="Delete Global Field"], button:has-text("Delete")',
   "Copy Global Field modal (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Copy Global Field"), .GF_copy_modal:has-text("Copy Global Field")',
-  "Copy (global field modal) (doc step)":
-    '[data-test-id="cs-cb-copy-gf"], button:has-text("Copy")',
+  /** Primary Copy CTA in Copy Global Field modal — uses {@link GLOBAL_FIELD_COPY_MODAL_COPY_CTA_LOCATOR}. */
+  "Copy (doc step)": GLOBAL_FIELD_COPY_MODAL_COPY_CTA_LOCATOR,
+  "Copy (global field modal) (doc step)": GLOBAL_FIELD_COPY_MODAL_COPY_CTA_LOCATOR,
   "Edit Global Field modal (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Edit Global Field"), [data-testid="cs-modal"][role="dialog"]:has-text("Edit Global Field")',
   "Update (edit global field) (doc step)":
