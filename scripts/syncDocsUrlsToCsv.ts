@@ -1,10 +1,13 @@
 /**
  * Sync all contentstack.com/docs URLs into data/docs-urls.csv from:
- * - data/docs-urls.csv (existing rows, project,url or legacy)
  * - flows/<Project>/docs.json url arrays (project = folder name)
  * - projects/<Project>/.../flows/*.flow.json "source" fields
+ * - data/docs-urls.csv rows with optional third column `keep` (pinned manual URLs not in repo lists)
  *
- * Output format: CSV with header project,url (one row per project+URL).
+ * Rows that are not backed by any current flow `source` or docs.json URL are **removed**, except
+ * `project,url,keep` pins (see core/docsUrlsCsv.ts).
+ *
+ * Output format: CSV with header project,url (optional third field `keep`).
  *
  * Usage:
  *   npx ts-node scripts/syncDocsUrlsToCsv.ts
@@ -14,8 +17,9 @@
 import fs from "fs";
 import path from "path";
 import {
-  DocUrlRow,
+  type DocUrlRow,
   mergeDocUrlRows,
+  docRowsDedupeKey,
   normalizeCanonicalDocUrl,
   parseDocsUrlsCsvFile,
   writeDocsUrlsCsv,
@@ -85,7 +89,15 @@ function main() {
   const fromDocsJson = collectFromDocsJson(FLOWS_DIR);
   const fromFlows = collectFromFlowSources(PROJECTS_DIR);
 
-  const merged = mergeDocUrlRows(mergeDocUrlRows(fromCsv, fromDocsJson), fromFlows);
+  const fromRepo = mergeDocUrlRows(fromDocsJson, fromFlows);
+  const repoKeySet = new Set(fromRepo.map((r) => docRowsDedupeKey(r)));
+  const pinned = fromCsv.filter((r) => r.keep === true);
+  const merged = mergeDocUrlRows(fromRepo, pinned);
+
+  const pruned = fromCsv.filter((r) => {
+    const k = docRowsDedupeKey(r);
+    return !r.keep && !repoKeySet.has(k);
+  }).length;
 
   fs.mkdirSync(path.dirname(DOCS_CSV), { recursive: true });
   writeDocsUrlsCsv(DOCS_CSV, merged);
@@ -94,7 +106,7 @@ function main() {
   console.log(`Synced ${merged.length} row(s) to ${DOCS_CSV}`);
   // eslint-disable-next-line no-console
   console.log(
-    `   (from CSV: ${fromCsv.length}, docs.json: ${fromDocsJson.length}, flow sources: ${fromFlows.length})`
+    `   (repo: ${fromRepo.length} from docs.json + flow sources, pinned: ${pinned.length} from CSV, pruned stale CSV rows: ${pruned})`
   );
 }
 

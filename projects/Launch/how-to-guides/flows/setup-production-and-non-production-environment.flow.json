@@ -1,0 +1,146 @@
+{
+  "id": "setup-production-and-non-production-environment",
+  "project": "Launch",
+  "module": "how-to-guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/setup-production-and-non-production-environment",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: https://www.contentstack.com/docs/developers/launch/setup-production-and-non-production-environment — production path through open Production on Deployments. **Auto Deploy on Commits** / **Save Deployment Settings** (Deployments tab) are optional steps: the doc shows them for **Git-based** Launch projects; **file-upload** projects often omit that toggle (env-deployments.html). Optional steps skip when the control is absent. Domains → New Domain → dismiss modal; then Environments → Production row. If you extend this flow with a Development env, repeat optional auto-deploy enable for Git projects only.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first project card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Environments page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments first table row environment name visible (doc step)",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Launch first environment row Actions ellipsis (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment row actions menu Settings option (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment actions Settings menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Environments active (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch environment settings General tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "General", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings General tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Environment Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environment Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch environment settings General Environment Name input edit (doc step)",
+      "value": "Production"
+    },
+    {
+      "action": "verify",
+      "target": "Launch Save Environment Details button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save Environment Details", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Save Environment Details button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Deployments tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Deployments", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Deployments tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Auto Deploy on Commits toggle label visible (doc step)",
+      "optional": true,
+      "timeoutMs": 15000,
+      "expected": { "labelEquals": "Auto Deploy on Commits", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Auto Deploy on Commits toggle (doc step)", "optional": true, "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Save Deployment Settings button visible (doc step)",
+      "optional": true,
+      "timeoutMs": 15000,
+      "expected": { "labelEquals": "Save Deployment Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Save Deployment Settings button (doc step)", "optional": true, "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Domains tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Domains", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Domains tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings New Domain button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Domain", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings New Domain button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create Custom Domain modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Custom Domain",
+        "labelEquals": "Create Custom Domain",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Launch Create Custom Domain modal dismiss without saving (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Launch left navigation Environments entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Environments page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch named environment row name cell visible (doc step)",
+      "value": "Production",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Production", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch named environment table row open (doc step)", "value": "Production", "timeoutMs": 90000 }
+  ]
+}

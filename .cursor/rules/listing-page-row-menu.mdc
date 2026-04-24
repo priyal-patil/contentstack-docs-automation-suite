@@ -1,0 +1,39 @@
+---
+description: Listing row ⋯ / dropdown — matches rules/core/actionRules.ts (openRowActionMenu, getDOMLocator, getRowActionMenuRoot)
+alwaysApply: true
+---
+
+# Listing page row menus
+
+Behavior described here mirrors **`rules/core/actionRules.ts`** (`openRowActionMenu`, `getDOMLocator`, `ROW_ELLIPSIS_DOM_LOCATOR_LABELS`, `getRowActionMenuRoot`, `clickRowActionMenuItem`).
+
+## Ellipsis targeting
+
+- **Primary:** `data-test-id="cs-table-action-options"` scoped to the row via `getByRole("row", { name: rowContains regex }).first()` when **`expected.rowContains`** is set on the step (see `openRowActionMenu`).
+- **Fallback (only when no visible `cs-table-action-options` exist on the page):** `getDOMLocator()` is tried with labels in order: **`"More options"` → `"More"` → `"Open menu"`** (`ROW_ELLIPSIS_DOM_LOCATOR_LABELS`).
+- **Last resort:** Phosphor **`DotsThreeLargeVertical`** icon locator (ancestor `button` / role).
+- **Never** target the ellipsis by CSS class, `nth-child`, or position alone.
+
+## Dropdown wait behavior
+
+- After the ellipsis click, the runner waits for **`#tableRowActionNode, .VerticalActionTooltip, [role="menu"]`** (`ROW_MENU_VISIBLE_AFTER_ELLIPSIS`) to reach **`state: visible`**, **`timeout: 10000`** (`page.waitForSelector`).
+- If not visible after 10s, the step fails hard. **Target diagnostic message (use when wrapping errors or extending the runner):** `Row menu did not open — check ellipsis scope or rowContains value`. *Today the failure is typically Playwright’s `waitForSelector` timeout unless the code is wrapped to throw that string.*
+- **Never** fire a second ellipsis click to re-open a closed dropdown (no retry loop on the ⋯ after this wait).
+
+## Menu item resolution
+
+- Call **`getRowActionMenuRoot(page, rowHint)`** with **`rowHint` = `step.expected?.rowContains`** whenever that value is set (Copy Content Type, Delete, Settings/Edit verify path, `clickRowActionMenuItem`). If row-scoped resolution fails, the code falls back to **`body`** (portaled menus), then **`[role="menu"].last()`**.
+- **`clickRowActionMenuItem` (Settings / Edit)** picks the first **visible** candidate in this order: **`getByText` (exact)** → **`data-test-id`** (`cs-ct-action-settings` / `cs-ct-action-edit`) → **`li:has-text`** → **`getByRole("menuitem")`**. Copy/Delete branches use **`li[data-test-id="…"]`** (and related candidates) under the same `menuRoot`.
+- **`force: true` is not used** on row menu item clicks; use **`scrollIntoViewIfNeeded()`** then **`click()`** (ellipsis may still use `force: true` only as a **second** attempt when a normal click fails but the control is visible).
+
+## Flow JSON rules
+
+- Every ellipsis step **must** have **`expected.rowContains`** set.
+- Every follow-on dropdown item step **must** pass the **same** **`rowContains`** value.
+- **Never** write a dropdown item step without a preceding **rowContains**-scoped ellipsis step.
+
+## When given an HTML file for a listing page
+
+- Look for **`data-test-id`**, **`aria-label`**, **`role="button"`** on the ellipsis — **in that priority order**.
+- Do not use **`nth-child`** or position-based selectors.
+- If none of the above exist, use the **`title`** attribute as last resort.

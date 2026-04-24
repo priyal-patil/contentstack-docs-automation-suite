@@ -10,6 +10,7 @@
  *
  * Options:
  *   --project <Name>   Project column (default CMS). Applies to bare URLs from --file and positional args.
+ *   --no-keep          Do not add `,keep`; next `sync:docs-urls` may drop the URL if it is not in a flow/docs.json.
  *   --run-audit        After adding, run docs-audit for only these URLs (headless).
  */
 
@@ -48,6 +49,7 @@ function parseFileLine(line: string, defaultProject: string): { project: string;
 function main() {
   const argv = process.argv.slice(2);
   const runAudit = argv.includes("--run-audit");
+  const pinRows = !argv.includes("--no-keep");
   let defaultProject = "CMS";
   const projIdx = argv.indexOf("--project");
   if (projIdx >= 0 && argv[projIdx + 1] && !argv[projIdx + 1].startsWith("--")) {
@@ -88,13 +90,14 @@ function main() {
 
   if (toAdd.length === 0) {
     console.error(
-      "Usage: addDocUrlToCsv.ts [--project CMS] <url> [url...] | --url <url> | --file <path.csv> [--run-audit]"
+      "Usage: addDocUrlToCsv.ts [--project CMS] [--no-keep] <url> [url...] | --url <url> | --file <path.csv> [--run-audit]"
     );
     console.error("  URLs must contain contentstack.com/docs");
     process.exit(1);
   }
 
-  const merged = mergeDocUrlRows(parseDocsUrlsCsvFile(DOCS_CSV), toAdd);
+  const toMerge = pinRows ? toAdd.map((r) => ({ ...r, keep: true as const })) : toAdd;
+  const merged = mergeDocUrlRows(parseDocsUrlsCsvFile(DOCS_CSV), toMerge);
   writeDocsUrlsCsv(DOCS_CSV, merged);
 
   console.log(`Updated ${DOCS_CSV}: merged ${toAdd.length} input row(s); file now has ${merged.length} row(s).`);

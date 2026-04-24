@@ -7,8 +7,9 @@ alwaysApply: true
 
 ## Format
 
-- Master list for **docs-audit** (links, images, tables, logo checks): CSV with header **`project,url`** (see `core/docsUrlsCsv.ts`).
+- Master list for **docs-audit** (links, images, tables, logo checks): CSV with header **`project,url`** and optional third field **`keep`** (see `core/docsUrlsCsv.ts`).
 - **`project`** is the automation project (`CMS`, `Launch`, `Personalize`, …), derived from folder names under `projects/<Project>/` or `flows/<Project>/`.
+- **`project,url,keep`:** pins the row across **`npm run sync:docs-urls`** when that URL is **not** listed in any `flows/<Project>/docs.json` or **`source`** field under **`projects/**/flows/*.flow.json`**. Use for intentional CSV-only audit URLs, or use **`npm run add-doc-url`** (defaults to pinned rows unless **`--no-keep`**).
 
 ## When `docs-urls.csv` updates **automatically** (no separate sync step)
 
@@ -35,13 +36,19 @@ Then commit `data/docs-urls.csv` if you want the repo to stay the single source 
 
 ## What sync does
 
-**`npm run sync:docs-urls`** merges:
+**`npm run sync:docs-urls`** rebuilds the list from the repo, then reapplies **pinned** CSV rows:
 
-1. Existing `data/docs-urls.csv`
-2. All URLs in **`flows/*/docs.json`**
-3. All **`source`** fields in **`projects/**/flows/*.flow.json`** that contain `contentstack.com/docs`
+1. **Authoritative set:** all URLs in **`flows/*/docs.json`** plus every **`source`** in **`projects/**/flows/*.flow.json`** that contains `contentstack.com/docs`, deduped by **`(project, normalized url)`**.
+2. **Plus** any existing CSV row marked **`project,url,keep`** (pinned manual / tooling-added URLs that must survive without a backing flow).
+3. **Removes** any other prior CSV row whose **`(project, url)`** is not in that authoritative set—e.g. after you **delete a flow JSON**, its doc URL is dropped on the next sync unless you also list the URL in **`docs.json`**, restore a flow, or add **`...,keep`** to that CSV line.
 
-Dedupes by **`(project, normalized url)`** and rewrites the CSV.
+Then rewrites **`data/docs-urls.csv`** (console logs how many stale rows were pruned).
+
+## Removing a flow (delete case)
+
+1. Delete the **`projects/.../flows/<id>.flow.json`** (and related selector files) as usual.
+2. If the doc URL should **no longer** be audited, run **`npm run sync:docs-urls`** and commit the updated CSV—the URL row is removed automatically unless it is still listed in **`flows/<Project>/docs.json`** or pinned with **`keep`**.
+3. If the URL must **stay** in docs-audit without a flow file, add it to **`flows/<Project>/docs.json`** `urls`, or add a **`project,url,keep`** row (or **`npm run add-doc-url`** without **`--no-keep`**).
 
 ## Agent behavior
 

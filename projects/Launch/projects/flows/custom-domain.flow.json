@@ -1,0 +1,89 @@
+{
+  "id": "custom-domain",
+  "project": "Launch",
+  "module": "projects",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/custom-domain",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc section 'Adding a Custom Domain': Launch → project card → Environments → first row ⋮ → Settings → Settings sidebar Environments → Domains tab → + New Domain → Domain Name (subdomain.example.com style) → Create Custom Domain. DOM: data/dom/Launch/env-domain-tab.html (domains-tab, add-domain-button), data/dom/Launch/env-settings-bar.html (tab strip). Uses the first environment row. Real DNS validation may stay Pending — flow completes UI steps only.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first project card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Environments page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first environment row Actions ellipsis (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment row actions menu Settings option (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment actions Settings menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Environments active (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Domains tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Domains", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Domains tab (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings New Domain button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Domain", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings New Domain button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create Custom Domain modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Custom Domain",
+        "labelEquals": "Create Custom Domain",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Create Custom Domain Domain Name input (doc step)",
+      "value": "doc-auto-{unique}.example.com"
+    },
+    {
+      "action": "verify",
+      "target": "Launch Create Custom Domain primary button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Create Custom Domain", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Create Custom Domain modal submit (doc step)", "timeoutMs": 90000 }
+  ]
+}

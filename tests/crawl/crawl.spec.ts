@@ -175,6 +175,7 @@ const urlsToCrawl = limit ? allUrls.slice(0, limit) : allUrls;
 console.log("[Crawl] CSV:", csvPath, "| URLs to crawl:", urlsToCrawl.length, limit ? `(limit=${limit})` : "");
 
 test.describe("Crawl", () => {
+  test.describe.configure({ timeout: 1_800_000 });
   for (const initialUrl of urlsToCrawl) {
     test(`Crawl: ${initialUrl}`, async ({ page }, testInfo) => {
       const report: CrawlUrlReport = {

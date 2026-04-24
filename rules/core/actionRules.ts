@@ -10,10 +10,31 @@ import {
 import { rowIsTrashAssetFolder, rowIsTrashFileAsset } from "../../core/preflightTrashAssets";
 
 type Step = {
-  action: "click" | "enter" | "select" | "upload" | "verify" | "navigate" | "drag" | "warn" | "hover" | "press";
+  action:
+    | "click"
+    | "enter"
+    | "select"
+    | "upload"
+    | "verify"
+    | "navigate"
+    | "drag"
+    | "warn"
+    | "hover"
+    | "press"
+    | "detect";
     target: string;
     value?: string;
     optional?: boolean;
+    /** Per-step timeout (ms); also read by getStepTimeoutMs. */
+    timeoutMs?: number;
+    /** If this anchor target is visible, skip this step (e.g. GitHub already connected → skip Connect Account). */
+    skipIfTargetVisible?: string;
+    /** Run this step only when this anchor target is visible (e.g. click GitHub card only when Connected). */
+    onlyIfTargetVisible?: string;
+    /** Skip when `flow[skipIfFlowFlagTrue] === true` (e.g. after `detect` sets launchGithubAlreadyConnected). */
+    skipIfFlowFlagTrue?: string;
+    /** Run only when `flow[onlyIfFlowFlagTrue] === true`. */
+    onlyIfFlowFlagTrue?: string;
     nth?: number; // 0-based index when target matches multiple elements
     expected?: {
       within?: "Left Navigation" | "Top Bar" | "Modal" | string;
@@ -42,10 +63,484 @@ function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+async function assertPageOpen(page: Page, context: string): Promise<void> {
+  if (page.isClosed()) {
+    throw new Error(
+      `[${context}] Playwright lost page handle — ` +
+        `browser context was closed or navigated away. ` +
+        `Check if a navigation occurred mid-step.`,
+    );
+  }
+}
+
+/**
+ * Env-row ⋮ menu (data/dom/Launch/envrionment-verticle-menu.html).
+ * Launch keeps multiple `[data-test-id="cs-vertical-action-tooltip"]` nodes in the DOM; most are hidden.
+ * Resolving `.last()` without `filter({ visible: true })` often attaches to a stale tooltip — Playwright then
+ * waits on a non-visible node so headed runs look idle until timeout (or the user closes the browser → "page closed").
+ * Prefer the visible menu that includes "Deployment Details" when present; otherwise any visible env-row menu.
+ */
+async function resolveVisibleLaunchEnvironmentRowActionsMenu(page: Page): Promise<Locator> {
+  const base = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({
+    has: page.locator('[data-testid="environment-settings-action-selector"]'),
+  });
+  const withDeployDetails = base.filter({
+    has: page.locator('[data-test-id="cs-vertical-action-tooltip-actions"]').getByText(/Deployment Details/i),
+  });
+  const preferred = withDeployDetails.filter({ visible: true }).last();
+  if (await preferred.isVisible({ timeout: 1_200 }).catch(() => false)) {
+    return preferred;
+  }
+  return base.filter({ visible: true }).last();
+}
+
+type LaunchEnvRowMenuReopenRow = "first" | "default";
+
+/** Open env table row ⋮ if no visible Settings menu; return tooltip that contains the gear icon. */
+async function getOrReopenLaunchEnvironmentRowActionsMenu(
+  page: Page,
+  t0: number,
+  opts?: { reopenRow?: LaunchEnvRowMenuReopenRow }
+): Promise<Locator> {
+  await assertPageOpen(page, "getOrReopen");
+  let menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  if (await menu.isVisible({ timeout: 4_000 }).catch(() => false)) {
+    return menu;
+  }
+  menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  if (await menu.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    return menu;
+  }
+  const reopenRow = opts?.reopenRow ?? "first";
+  const row =
+    reopenRow === "default"
+      ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, t0)
+      : await resolveLaunchEnvironmentsFirstTableRow(page, t0);
+  await row.scrollIntoViewIfNeeded().catch(() => {});
+  const dotsPrecise = row
+    .locator(
+      'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+    )
+    .first();
+  const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+  const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+  await expect(dots).toBeVisible({ timeout: Math.min(t0, 30_000) });
+  await dots.click({ timeout: t0, force: true });
+  await page.waitForTimeout(550);
+  menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  return menu;
+}
+
+/** Table is often sorted by date — "Default" is not row 1. Close overlays and filter by name so the row mounts. */
+async function prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page: Page) {
+  const menuWithSettings = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  if (await menuWithSettings.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    return;
+  }
+  await assertPageOpen(page, "prepare:default");
+  const safeWait = (ms: number) =>
+    page.isClosed() ? Promise.resolve() : page.waitForTimeout(ms).catch(() => {});
+  const pressEscape = async () => {
+    if (page.isClosed()) return;
+    await page.keyboard.press("Escape").catch(() => {});
+  };
+  await pressEscape();
+  await assertPageOpen(page, "prepare:default");
+  await safeWait(200);
+  await pressEscape();
+  await assertPageOpen(page, "prepare:default");
+  await safeWait(200);
+  if (page.isClosed()) {
+    throw new Error(
+      "Launch environments: browser page closed during table prep (close the run only after the flow finishes, or avoid closing the Playwright window mid-test)."
+    );
+  }
+  const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
+  if (await searchInput.isVisible({ timeout: 12_000 }).catch(() => false)) {
+    await searchInput.click({ timeout: 10_000 }).catch(() => {});
+    await searchInput.fill("").catch(() => {});
+    await searchInput.fill("Default").catch(() => {});
+    await searchInput.press("Enter").catch(() => {});
+    await safeWait(900);
+  }
+}
+
+function locatorLaunchEnvironmentsDefaultEnvironmentBodyRow(page: Page): Locator {
+  return page.locator('[data-test-id^="cs-table-body-row"]').filter({
+    has: page.locator(".env-column-name").filter({ hasText: /^Default$/i }),
+  });
+}
+
+/** Alternate when data-test-id differs — same visual row (environments-page.html Table__body__row). */
+function locatorLaunchEnvironmentsDefaultEnvironmentTableRow(page: Page): Locator {
+  return page
+    .locator('div.Table__body__row[role="row"]')
+    .filter({ has: page.locator(".env-column-name").filter({ hasText: /^Default$/i }) });
+}
+
+async function resolveLaunchEnvironmentsDefaultEnvironmentRow(
+  page: Page,
+  timeoutMs: number,
+  opts?: { skipTablePrep?: boolean; minimalResolve?: boolean }
+): Promise<Locator> {
+  const t = Math.min(timeoutMs, 90_000);
+  if (!opts?.skipTablePrep) {
+    await prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page);
+  }
+  let row = locatorLaunchEnvironmentsDefaultEnvironmentBodyRow(page).first();
+  if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
+    await row.scrollIntoViewIfNeeded().catch(() => {});
+    await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });
+    return row;
+  }
+  if (opts?.minimalResolve) {
+    row = locatorLaunchEnvironmentsDefaultEnvironmentTableRow(page).first();
+    await row.scrollIntoViewIfNeeded().catch(() => {});
+    await expect(
+      row,
+      'Launch doc flow needs an environment named exactly "Default". If your project no longer has it, rename or recreate that environment, then re-run.'
+    ).toBeVisible({ timeout: t });
+    return row;
+  }
+  const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
+  await searchInput.fill("").catch(() => {});
+  await page.locator('[data-test-id="cs-table-refresh-icon"]').click({ timeout: 15_000 }).catch(() => {});
+  await page.waitForTimeout(1000);
+  await searchInput.click({ timeout: 10_000 }).catch(() => {});
+  await searchInput.fill("Default");
+  await searchInput.press("Enter").catch(() => {});
+  await page.waitForTimeout(1200);
+  row = locatorLaunchEnvironmentsDefaultEnvironmentBodyRow(page).first();
+  if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
+    await row.scrollIntoViewIfNeeded().catch(() => {});
+    await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });
+    return row;
+  }
+  row = locatorLaunchEnvironmentsDefaultEnvironmentTableRow(page).first();
+  await row.scrollIntoViewIfNeeded().catch(() => {});
+  await expect(
+    row,
+    'Launch doc flow needs an environment named exactly "Default". If your project no longer has it, rename or recreate that environment, then re-run.'
+  ).toBeVisible({ timeout: t });
+  return row;
+}
+
+function locatorLaunchEnvironmentsNamedEnvironmentBodyRow(page: Page, name: string): Locator {
+  const re = new RegExp(`^${escapeRegex(name)}$`, "i");
+  return page.locator('[data-test-id^="cs-table-body-row"]').filter({
+    has: page.locator(".env-column-name").filter({ hasText: re }),
+  });
+}
+
+function locatorLaunchEnvironmentsNamedEnvironmentTableRow(page: Page, name: string): Locator {
+  const re = new RegExp(`^${escapeRegex(name)}$`, "i");
+  return page
+    .locator('div.Table__body__row[role="row"]')
+    .filter({ has: page.locator(".env-column-name").filter({ hasText: re }) });
+}
+
+/** Clear search/filters so row 1 reflects list default sort (not a named-environment filter). */
+async function prepareLaunchEnvironmentsTableForFirstEnvironmentRow(page: Page) {
+  const menuWithSettings = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  if (await menuWithSettings.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    return;
+  }
+  await assertPageOpen(page, "prepare:first");
+  const safeWait = (ms: number) =>
+    page.isClosed() ? Promise.resolve() : page.waitForTimeout(ms).catch(() => {});
+  const pressEscape = async () => {
+    if (page.isClosed()) return;
+    await page.keyboard.press("Escape").catch(() => {});
+  };
+  await pressEscape();
+  await assertPageOpen(page, "prepare:first");
+  await safeWait(200);
+  await pressEscape();
+  await assertPageOpen(page, "prepare:first");
+  await safeWait(200);
+  if (page.isClosed()) {
+    throw new Error(
+      "Launch environments: browser page closed during table prep (close the run only after the flow finishes, or avoid closing the Playwright window mid-test)."
+    );
+  }
+  await assertPageOpen(page, "prepare:first");
+  const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
+  if (await searchInput.isVisible({ timeout: 12_000 }).catch(() => false)) {
+    await searchInput.click({ timeout: 10_000 }).catch(() => {});
+    await searchInput.fill("").catch(() => {});
+    await searchInput.press("Enter").catch(() => {});
+    await safeWait(900);
+  }
+}
+
+function locatorLaunchEnvironmentsFirstBodyRow(page: Page): Locator {
+  return page.locator('[data-test-id^="cs-table-body-row"]').filter({
+    has: page.locator(".env-column-name"),
+  });
+}
+
+function locatorLaunchEnvironmentsFirstTableRowAlt(page: Page): Locator {
+  return page
+    .locator('div.Table__body__row[role="row"]')
+    .filter({ has: page.locator(".env-column-name") });
+}
+
+async function resolveLaunchEnvironmentsFirstTableRow(page: Page, timeoutMs: number): Promise<Locator> {
+  const openSettingsMenu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+  if (!(await openSettingsMenu.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    await prepareLaunchEnvironmentsTableForFirstEnvironmentRow(page);
+  }
+  const t = Math.min(timeoutMs, 90_000);
+  let row = locatorLaunchEnvironmentsFirstBodyRow(page).first();
+  if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
+    await row.scrollIntoViewIfNeeded().catch(() => {});
+    await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });
+    return row;
+  }
+  row = locatorLaunchEnvironmentsFirstTableRowAlt(page).first();
+  await row.scrollIntoViewIfNeeded().catch(() => {});
+  await expect(
+    row,
+    "Launch Environments table must have at least one environment row (first row used for row actions)."
+  ).toBeVisible({ timeout: t });
+  return row;
+}
+
+async function resolveLaunchEnvironmentsNamedEnvironmentRow(page: Page, name: string, timeoutMs: number): Promise<Locator> {
+  const trimmed = String(name || "").trim();
+  if (!trimmed) {
+    throw new Error("Launch named environment: step.value must be the environment name.");
+  }
+  const t = Math.min(timeoutMs, 90_000);
+  const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
+  if (await searchInput.isVisible({ timeout: 8_000 }).catch(() => false)) {
+    await searchInput.click({ timeout: 10_000 }).catch(() => {});
+    await searchInput.fill("").catch(() => {});
+    await searchInput.fill(trimmed).catch(() => {});
+    await searchInput.press("Enter").catch(() => {});
+    await page.waitForTimeout(900);
+  }
+  let row = locatorLaunchEnvironmentsNamedEnvironmentBodyRow(page, trimmed).first();
+  if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
+    await row.scrollIntoViewIfNeeded().catch(() => {});
+    await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });
+    return row;
+  }
+  row = locatorLaunchEnvironmentsNamedEnvironmentTableRow(page, trimmed).first();
+  await row.scrollIntoViewIfNeeded().catch(() => {});
+  await expect(
+    row,
+    `Launch: environment list must include "${trimmed}" (doc). For Development, create it first per Create an Environment / environments flow.`
+  ).toBeVisible({ timeout: t });
+  return row;
+}
+
+/** Row ⋮ menu has no `<a href>` in captured DOM — scan Default row HTML for `/envs/{mongoId}/` (data attrs, React props). */
+function extractLaunchDefaultEnvMongoIdFromDom(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const nodes = document.querySelectorAll(
+      '[data-test-id^="cs-table-body-row"], div.Table__body__row[role="row"]'
+    );
+    const max = Math.min(nodes.length, 80);
+    for (let i = 0; i < max; i++) {
+      const el = nodes[i] as HTMLElement;
+      if (!/\bDefault\b/i.test(el.textContent || "")) continue;
+      const html = el.outerHTML;
+      const m =
+        html.match(/\/envs\/([a-f0-9]{24})\b/i) ??
+        html.match(
+          /\/envs\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/i
+        );
+      if (m) return m[1];
+      const link = el.querySelector('a[href*="/envs/"]');
+      if (link) {
+        const h = link.getAttribute("href") || "";
+        const m2 = h.match(/\/envs\/([^/?#'"]+)/i);
+        if (m2) return m2[1];
+      }
+    }
+    return null;
+  });
+}
+
+/** First data row with an environment name cell — for hash nav after row ⋮ → Settings (first-row flows). */
+function extractLaunchFirstEnvironmentRowEnvIdFromDom(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const nodes = document.querySelectorAll(
+      '[data-test-id^="cs-table-body-row"], div.Table__body__row[role="row"]'
+    );
+    const max = Math.min(nodes.length, 80);
+    for (let i = 0; i < max; i++) {
+      const el = nodes[i] as HTMLElement;
+      if (!el.querySelector(".env-column-name")) continue;
+      const html = el.outerHTML;
+      const m =
+        html.match(/\/envs\/([a-f0-9]{24})\b/i) ??
+        html.match(
+          /\/envs\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/i
+        );
+      if (m) return m[1];
+      const link = el.querySelector('a[href*="/envs/"]');
+      if (link) {
+        const h = link.getAttribute("href") || "";
+        const m2 = h.match(/\/envs\/([^/?#'"]+)/i);
+        if (m2) return m2[1];
+      }
+    }
+    return null;
+  });
+}
+
+/** After env row ⋮ → Settings: full URL (incl. hash) should mention settings, e.g. `.../settings/general`. */
+function launchUrlIndicatesProjectSettings(page: Page): boolean {
+  return /settings/i.test(page.url());
+}
+
+/** react-select menu (listbox or portaled .Select__menu): pick first non-loading option. */
+async function pickFirstSelectMenuOption(page: Page, timeoutMs: number) {
+  const lb = page.getByRole("listbox").last();
+  if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    const opts = lb.getByRole("option");
+    const n = await opts.count();
+    for (let i = 0; i < n; i++) {
+      const o = opts.nth(i);
+      const txt = ((await o.textContent().catch(() => "")) || "").trim();
+      if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+      await o.click({ timeout: timeoutMs, force: true });
+      return;
+    }
+    await opts.first().click({ timeout: timeoutMs, force: true });
+    return;
+  }
+  const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+  await expect(menu).toBeVisible({ timeout: Math.min(timeoutMs, 35_000) });
+  const candidates = menu.locator(".Select__option");
+  const n = await candidates.count();
+  for (let i = 0; i < n; i++) {
+    const o = candidates.nth(i);
+    const txt = ((await o.textContent().catch(() => "")) || "").trim();
+    if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+    await o.click({ timeout: timeoutMs, force: true });
+    return;
+  }
+  await candidates.first().click({ timeout: timeoutMs, force: true });
+}
+
+async function ensureLaunchCreateNewEnvironmentCreateEnabled(page: Page, dlg: Locator, overallMs: number) {
+  const btn = dlg.locator('[data-testid="new-env-save"]').first();
+  await expect(btn).toBeVisible({ timeout: Math.min(overallMs, 60_000) });
+  const deadline = Date.now() + Math.min(overallMs, 120_000);
+  // File-upload modal: Create often enables after zip validation — avoid opening Framework Preset until this settles.
+  const settleUntil = Date.now() + 45_000;
+  while (Date.now() < settleUntil && Date.now() < deadline) {
+    if (await btn.isEnabled().catch(() => false)) return btn;
+    await page.waitForTimeout(600);
+  }
+  while (Date.now() < deadline) {
+    if (await btn.isEnabled().catch(() => false)) return btn;
+    const presetCtrl = dlg.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
+    if (await presetCtrl.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await presetCtrl.click({ timeout: 15_000, force: true });
+      await page.waitForTimeout(400);
+      try {
+        await pickFirstSelectMenuOption(page, 20_000);
+      } catch {
+        /* Preset may already be set — menu might not open; Create can still become enabled. */
+      }
+      await page.waitForTimeout(1_200);
+      continue;
+    }
+    await page.waitForTimeout(500);
+  }
+  return btn;
+}
+
+/** Create New Environment modal: choose Other or Angular so Server Command field appears (doc). */
+async function pickFrameworkPresetOtherOrAngular(page: Page, timeoutMs: number) {
+  const lb = page.getByRole("listbox").last();
+  if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    const opts = lb.getByRole("option");
+    const n = await opts.count();
+    for (let i = 0; i < n; i++) {
+      const o = opts.nth(i);
+      const txt = ((await o.textContent().catch(() => "")) || "").trim();
+      if (/^other$/i.test(txt) || /^angular$/i.test(txt)) {
+        await o.click({ timeout: timeoutMs, force: true });
+        return;
+      }
+    }
+  }
+  const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+  await expect(menu).toBeVisible({ timeout: Math.min(timeoutMs, 35_000) });
+  const candidates = menu.locator(".Select__option");
+  const n = await candidates.count();
+  for (let i = 0; i < n; i++) {
+    const o = candidates.nth(i);
+    const txt = ((await o.textContent().catch(() => "")) || "").trim();
+    if (/^other$/i.test(txt) || /^angular$/i.test(txt)) {
+      await o.click({ timeout: timeoutMs, force: true });
+      return;
+    }
+  }
+  const fallback = menu.getByText(/^Other$/i).first();
+  await expect(fallback).toBeVisible({ timeout: 12_000 });
+  await fallback.click({ timeout: timeoutMs, force: true });
+}
+
+/** deploy-hooks + Launch redeploy-on-CMS + tags/releases deploy hook doc (same Launch Deploy Hook UI). */
+function isDeployHooksStyleFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    id === "deploy-hooks" ||
+    id === "redeploy-automatically-when-content-is-published-on-cms" ||
+    id === "trigger-deployments-on-launch-based-on-tags-releases"
+  );
+}
+
+/** Shared Environments list + row ⋮ → Settings chain: deploy-hooks, environments, environment-variables docs. */
+function isLaunchProjectsEnvironmentsFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    id === "deploy-hooks" ||
+    id === "redeploy-automatically-when-content-is-published-on-cms" ||
+    id === "trigger-deployments-on-launch-based-on-tags-releases" ||
+    id === "environments" ||
+    id === "environment-variables" ||
+    id === "auto-populate-environment-variables-from-a-linked-stack" ||
+    id === "custom-domain" ||
+    id === "password-protection" ||
+    id === "event-tracking-in-contentstack-launch" ||
+    id === "disable-automatic-redeployment" ||
+    id === "setup-production-and-non-production-environment"
+  );
+}
+
+/** environments + setup-production doc share Create New Environment / General settings verify branches. */
+function isLaunchEnvironmentsExtendedFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return id === "environments" || id === "setup-production-and-non-production-environment";
+}
+
+/**
+ * Local iteration: set `FAST_FAIL=1` or `PLAYWRIGHT_FAST_FAIL=1` to cap per-step timeouts and long inner waits
+ * (default cap 12s, override with `FAST_FAIL_STEP_TIMEOUT_MS`).
+ */
+function isFastFailMode(): boolean {
+  return process.env.FAST_FAIL === "1" || process.env.PLAYWRIGHT_FAST_FAIL === "1";
+}
+
+function fastFailCap(ms: number): number {
+  if (!isFastFailMode()) return ms;
+  const cap = Number(process.env.FAST_FAIL_STEP_TIMEOUT_MS);
+  const c = Number.isFinite(cap) && cap > 0 ? cap : 12_000;
+  return Math.min(ms, c);
+}
+
 function getStepTimeoutMs(step: Step, fallback = 30_000): number {
   const raw = (step as any)?.timeoutMs ?? step?.expected?.timeoutMs;
   const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? n : fallback;
+  const base = Number.isFinite(n) && n > 0 ? n : fallback;
+  return fastFailCap(base);
 }
 
 /** Workflows Use Case 1 — multi-stage workflow + publish rule (workflows-use-cases doc). */
@@ -844,8 +1339,25 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
   ],
   /** Entry editor right rail tabs (entry-right-nav.html — Status, Workflow, etc.). */
   "Entry editor right sidebar": [".SidebarWindow", ".SidebarWindow__tabs-container", ".SidebarWindow__tabs-container--border"],
+  /** Launch deployment detail / deployments doc: primary page landmark. */
+  main: ["main", '[role="main"]'],
+  /** Launch project shell: Environments / Deployments icons (deploy-hooks doc). */
+  "Launch left panel": ['.PageLayout__leftSidebar', '[data-test-id="cs-page-layout-leftSidebar"]'],
 };
 
+/** Deployments doc / file-upload panel: product often has no `<main>`; scope must match role=main or layout body (see data/dom/Launch — no `<main>` in captures). */
+const LAUNCH_DEPLOYMENT_INFORMATION_SCOPE =
+  'main, [role="main"], [data-test-id="cs-page-layout-contentBody"], .PageLayout__body, #PageLayout__body';
+
+function launchDeploymentInformationScope(page: Page): Locator {
+  return page.locator(LAUNCH_DEPLOYMENT_INFORMATION_SCOPE).first();
+}
+
+/**
+ * Per-flow selector maps: shallow-merge each existing layer into `click` / `input` via `{ ...prev, ...next }`.
+ * Same target key from a **later** step wins (**last-wins**); nested objects inside values are not merged.
+ * Order must stay in sync with `.cursor/rules/doc-step-parity.mdc` (Selector override layers).
+ */
 function loadOverrides(flow?: any): { click: Record<string, string>; input: Record<string, string> } {
   let click: Record<string, string> = {};
   let input: Record<string, string> = {};
@@ -1048,6 +1560,7 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       .evaluate((node) => {
         const self = node as HTMLElement;
         const dt = self?.getAttribute?.("data-test-id") || "";
+        if (dt === "launch-nav-settings") return true;
         if (dt.startsWith("cms-nav-") || dt === "cs-cms-button" || dt === "cms-nav-apps") return true;
         return !!self?.closest?.(
           'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], #topnav, .header, #header-content-wrapper-id, #navbar-items-wrapper-id'
@@ -1123,6 +1636,17 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       })
       .catch(() => false);
     if (inRhs) return;
+  }
+
+  if (expectedWithin === "Launch left panel") {
+    const inLaunchLeft = await el
+      .evaluate((node) => {
+        return !!(node as HTMLElement)?.closest?.(
+          '.PageLayout__leftSidebar, [data-test-id="cs-page-layout-leftSidebar"]'
+        );
+      })
+      .catch(() => false);
+    if (inLaunchLeft) return;
   }
 
   for (const sel of containers) {
@@ -1260,75 +1784,162 @@ async function waitForContentTypeBuilder(page: Page) {
   }
   
   
-async function getRowActionMenuRoot(page: Page): Promise<Locator> {
-  const tableRowActionNode = page.locator('#tableRowActionNode').filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
-  if (await tableRowActionNode.isVisible().catch(() => false)) return tableRowActionNode;
+/** Row ⋯ open: wait for menu/tooltip/node (Problem 3 — single wait, no follow-up ellipsis click). */
+const ROW_MENU_VISIBLE_AFTER_ELLIPSIS = '#tableRowActionNode, .VerticalActionTooltip, [role="menu"]';
 
-  const tooltipMenu = page.locator(".VerticalActionTooltip").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
-  if (await tooltipMenu.isVisible().catch(() => false)) return tooltipMenu;
+/** Try each label when `[data-test-id="cs-table-action-options"]` has no visible matches (listing pages). */
+const ROW_ELLIPSIS_DOM_LOCATOR_LABELS = ["More options", "More", "Open menu"] as const;
 
-  // Some stacks render the popover as a role="menu" container with text items.
-  const roleMenu = page.getByRole("menu").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
-  if (await roleMenu.isVisible().catch(() => false)) return roleMenu;
-
-  return page.locator("body");
+async function firstVisibleMatch(root: Locator): Promise<Locator | null> {
+  const n = await root.count().catch(() => 0);
+  if (n === 0) return null;
+  for (let i = 0; i < n; i++) {
+    const cand = root.nth(i);
+    if (await cand.isVisible().catch(() => false)) return cand;
+  }
+  return null;
 }
 
-async function clickRowActionMenuItem(page: Page, item: "Settings" | "Edit", flow?: any) {
-  // This menu is flaky: first click can close the menu without firing the intended action.
-  // Strategy: open menu → click item inside the menu root → if Settings UI not visible, retry once.
+/**
+ * Priority-based locator for listing rows (ellipsis / menu items) when stable test-ids are absent.
+ * Never returns a non-visible locator; returns null if nothing matches.
+ */
+async function getDOMLocator(page: Page, labelText: string): Promise<Locator | null> {
+  const label = String(labelText ?? "").trim();
+  if (!label) return null;
+
+  const strategies: Array<{ id: string; root: Locator }> = [
+    { id: "getByRole('button', exact: true)", root: page.getByRole("button", { name: label, exact: true }) },
+    { id: "[aria-label]", root: page.locator(`[aria-label=${JSON.stringify(label)}]`) },
+    { id: "[title]", root: page.locator(`[title=${JSON.stringify(label)}]`) },
+    { id: "getByRole('menuitem', exact: true)", root: page.getByRole("menuitem", { name: label, exact: true }) },
+    { id: "getByText(exact: true)", root: page.getByText(label, { exact: true }) },
+  ];
+
+  for (let si = 0; si < strategies.length; si++) {
+    const { id, root } = strategies[si];
+    const n = await root.count().catch(() => 0);
+    if (n === 0) continue;
+    const vis = await firstVisibleMatch(root);
+    if (vis) {
+      if (si >= 2) {
+        console.warn(
+          `[getDOMLocator] labelText=${JSON.stringify(label)} fell back past option 2; matched via ${id}.`,
+        );
+      }
+      return vis;
+    }
+  }
+
+  return null;
+}
+
+async function visibleCsTableActionOptionsCount(page: Page): Promise<number> {
+  const all = page.locator('[data-test-id="cs-table-action-options"]');
+  const n = await all.count().catch(() => 0);
+  let c = 0;
+  for (let i = 0; i < n; i++) {
+    if (await all.nth(i).isVisible().catch(() => false)) c++;
+  }
+  return c;
+}
+
+async function tryResolveRowActionMenuRoot(root: Locator): Promise<Locator | null> {
+  const menuLast = root.locator('[role="menu"]').last();
+  try {
+    await menuLast.waitFor({ state: "visible", timeout: 10_000 });
+    return menuLast;
+  } catch {
+    /* continue */
+  }
+
+  const tooltip = root.locator(".VerticalActionTooltip").last();
+  try {
+    await tooltip.waitFor({ state: "visible", timeout: 10_000 });
+    return tooltip;
+  } catch {
+    /* continue */
+  }
+
+  const node = root.locator("#tableRowActionNode").last();
+  try {
+    await node.waitFor({ state: "visible", timeout: 10_000 });
+    return node;
+  } catch {
+    /* continue */
+  }
+
+  const tableRowActionNode = root.locator("#tableRowActionNode").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
+  if (await tableRowActionNode.isVisible().catch(() => false)) return tableRowActionNode;
+
+  const tooltipMenu = root.locator(".VerticalActionTooltip").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
+  if (await tooltipMenu.isVisible().catch(() => false)) return tooltipMenu;
+
+  const roleMenu = root.getByRole("menu").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).last();
+  if (await roleMenu.isVisible().catch(() => false)) return roleMenu;
+
+  return null;
+}
+
+/** When `rowHint` is set, prefer menu surfaces under the same row as `openRowActionMenu`; else page `body` (portaled menus). */
+async function getRowActionMenuRoot(page: Page, rowHint?: string): Promise<Locator> {
+  const hint = rowHint?.trim();
+  if (hint) {
+    const row = page.getByRole("row", { name: new RegExp(hint, "i") }).first();
+    const scoped = await tryResolveRowActionMenuRoot(row);
+    if (scoped) return scoped;
+  }
+  const bodyScoped = await tryResolveRowActionMenuRoot(page.locator("body"));
+  if (bodyScoped) return bodyScoped;
+  return page.locator('[role="menu"]').last();
+}
+
+async function clickRowActionMenuItem(page: Page, item: "Settings" | "Edit", flow?: any, menuStep?: Step) {
+  // Open menu → wait for dropdown → click item scoped under getRowActionMenuRoot (not page-level / not coordinate clicks).
+  const rowHint = menuStep?.expected?.rowContains;
   for (let attempt = 1; attempt <= 2; attempt++) {
-    // If menu already open (from a preceding verify), don’t re-open it.
-    let menuRoot = await getRowActionMenuRoot(page);
+    let menuRoot = await getRowActionMenuRoot(page, rowHint);
     const alreadyOpen =
       item === "Settings"
         ? await menuRoot.getByText("Settings", { exact: true }).first().isVisible().catch(() => false)
         : await menuRoot.getByText("Edit", { exact: true }).first().isVisible().catch(() => false);
 
     if (!alreadyOpen) {
-      await openRowActionMenu(page, undefined, flow);
-      menuRoot = await getRowActionMenuRoot(page);
+      await openRowActionMenu(page, menuStep, flow);
+      menuRoot = await getRowActionMenuRoot(page, rowHint);
     }
 
-    // First: respect doc/module overrides (your selector: [id="tableRowActionNode"] [data-test-id="cs-ct-action-settings"])
-    const mapped = await resolveTarget(page, item, flow).catch(() => null);
-    if (mapped && (await mapped.isVisible().catch(() => false))) {
-      await mapped.hover({ timeout: 30_000 }).catch(() => {});
-      await mapped.click({ timeout: 30_000, force: true });
-    } else {
     const candidates: Locator[] =
       item === "Settings"
         ? [
-            // Most reliable (matches your screenshot/menu)
-            menuRoot.getByText("Settings", { exact: true }).first(),
-            menuRoot.locator('[data-test-id="cs-ct-action-settings"]').first(),
-            menuRoot.locator('li:has-text("Settings")').first(),
-            menuRoot.getByRole("menuitem", { name: /^Settings$/i }).first(),
+            menuRoot.getByText("Settings", { exact: true }),
+            menuRoot.locator('[data-test-id="cs-ct-action-settings"]'),
+            menuRoot.locator('li:has-text("Settings")'),
+            menuRoot.getByRole("menuitem", { name: /^Settings$/i }),
           ]
         : [
-            menuRoot.getByText("Edit", { exact: true }).first(),
-            menuRoot.locator('[data-test-id="cs-ct-action-edit"]').first(),
-            menuRoot.getByRole("menuitem", { name: /^Edit$/i }).first(),
-            menuRoot.locator('li:has-text("Edit")').first(),
+            menuRoot.getByText("Edit", { exact: true }),
+            menuRoot.locator('[data-test-id="cs-ct-action-edit"]'),
+            menuRoot.getByRole("menuitem", { name: /^Edit$/i }),
+            menuRoot.locator('li:has-text("Edit")'),
           ];
 
     let itemLoc: Locator | null = null;
     for (const c of candidates) {
-      if ((await c.count().catch(() => 0)) > 0 && (await c.isVisible().catch(() => false))) {
-        itemLoc = c;
+      const first = c.first();
+      if ((await first.count().catch(() => 0)) > 0 && (await first.isVisible().catch(() => false))) {
+        itemLoc = first;
         break;
       }
     }
-    if (!itemLoc) itemLoc = candidates[0];
+    if (!itemLoc) itemLoc = candidates[0].first();
 
     await expect(itemLoc).toBeVisible({ timeout: 30_000 });
-      await itemLoc.hover({ timeout: 30_000 }).catch(() => {});
-      await itemLoc.click({ timeout: 30_000, force: true });
-    }
+    await itemLoc.scrollIntoViewIfNeeded();
+    await itemLoc.click({ timeout: 30_000 });
 
     if (item !== "Settings") return;
 
-    // If Settings UI shows up, we're done; else retry once.
     const markers = [
       page.locator('[data-test-id="cs-cb-edit-ct-details"]').first(),
       page.getByRole("dialog").filter({ hasText: /Edit Content Type/i }).first(),
@@ -1408,75 +2019,63 @@ async function waitForCreateContentTypeForm(page: Page) {
 }
 
 /**
- * ✅ Robust menu open (tooltip menus close on blur)
+ * Row-scoped ⋯ click, then wait for dropdown (role=listbox/menu/tooltip) before menu item steps.
  */
 async function openRowActionMenu(page: Page, step?: Step, flow?: any) {
-    const rowHint = step?.expected?.rowContains;
-  
-    const ellipsis = rowHint
-      ? page
-          .getByRole("row", { name: new RegExp(rowHint, "i") })
-          .first()
-          .locator('[data-test-id="cs-table-action-options"]')
-          .first()
-      : await resolveTarget(page, "vertical ellipsis", flow);
+  const rowHint = step?.expected?.rowContains;
 
-    // Fallback: some stacks don’t expose data-test-id on the action menu.
-    const ellipsisFallback = page
-      .locator('[name="DotsThreeLargeVertical"]')
-      .first()
-      .locator("xpath=ancestor-or-self::*[@role='menu' or @role='button' or self::button][1]")
-      .first();
-  
-    // If resolveTarget returned a hidden element (virtualized row), pick the first visible 3-dots button.
-    let ellipsisToClick: Locator | null = (await ellipsis.isVisible().catch(() => false)) ? ellipsis : null;
-    if (!ellipsisToClick) {
-      const all = page.locator('[data-test-id="cs-table-action-options"]');
-      const n = await all.count().catch(() => 0);
-      for (let i = 0; i < n; i++) {
-        const cand = all.nth(i);
-        if (await cand.isVisible().catch(() => false)) {
-          ellipsisToClick = cand;
-          break;
-        }
+  const ellipsis = rowHint
+    ? page
+        .getByRole("row", { name: new RegExp(rowHint, "i") })
+        .first()
+        .locator('[data-test-id="cs-table-action-options"]')
+        .first()
+    : await resolveTarget(page, "vertical ellipsis", flow);
+
+  const ellipsisFallback = page
+    .locator('[name="DotsThreeLargeVertical"]')
+    .first()
+    .locator("xpath=ancestor-or-self::*[@role='menu' or @role='button' or self::button][1]")
+    .first();
+
+  let ellipsisToClick: Locator | null = (await ellipsis.isVisible().catch(() => false)) ? ellipsis : null;
+  if (!ellipsisToClick) {
+    const all = page.locator('[data-test-id="cs-table-action-options"]');
+    const n = await all.count().catch(() => 0);
+    for (let i = 0; i < n; i++) {
+      const cand = all.nth(i);
+      if (await cand.isVisible().catch(() => false)) {
+        ellipsisToClick = cand;
+        break;
       }
     }
-    if (!ellipsisToClick) ellipsisToClick = ellipsisFallback;
-
-    await expect(ellipsisToClick).toBeVisible({ timeout: 30_000 });
-
-    const menuMarkers = [
-      page.locator('[data-test-id="cs-ct-action-settings"]').first(),
-      page.locator('[data-test-id="cs-ct-action-edit"]').first(),
-      page.getByRole("menuitem").first(),
-      page.getByText("Edit", { exact: true }).first(),
-      page.getByText("Copy UID", { exact: true }).first(),
-      page.getByText("Copy Content Type", { exact: true }).first(),
-      page.getByText("Export", { exact: true }).first(),
-      page.getByText("Settings", { exact: true }).first(),
-      page.getByText("Delete", { exact: true }).first(),
-      page.locator(".VerticalActionTooltip").first(),
-    ];
-
-    // The first click sometimes closes the popover (observed manually).
-    // Strategy: click once, quick-check; if not open, click again and then wait longer.
-    for (const [idx, waitMs] of [
-      [0, 1500],
-      [1, 30_000],
-    ] as const) {
-      await ellipsisToClick.click({ timeout: 30_000, force: true });
-
-      const start = Date.now();
-      while (Date.now() - start < waitMs) {
-        for (const m of menuMarkers) {
-          if (await m.isVisible().catch(() => false)) return;
-        }
-        await page.waitForTimeout(100);
-      }
-    }
-
-    throw new Error("Row action menu did not open (no menu markers became visible).");
   }
+  if ((await visibleCsTableActionOptionsCount(page)) === 0) {
+    for (const lbl of ROW_ELLIPSIS_DOM_LOCATOR_LABELS) {
+      const domLoc = await getDOMLocator(page, lbl);
+      if (domLoc) {
+        ellipsisToClick = domLoc;
+        break;
+      }
+    }
+  }
+  if (!ellipsisToClick) ellipsisToClick = ellipsisFallback;
+
+  await expect(ellipsisToClick).toBeVisible({ timeout: 30_000 });
+
+  const el = ellipsisToClick;
+  const clickEllipsis = async () => {
+    try {
+      await el.click({ timeout: 30_000 });
+    } catch {
+      await expect(el).toBeVisible({ timeout: 5_000 });
+      await el.click({ timeout: 30_000, force: true });
+    }
+  };
+
+  await clickEllipsis();
+  await page.waitForSelector(ROW_MENU_VISIBLE_AFTER_ELLIPSIS, { state: "visible", timeout: 10_000 });
+}
   
   
 
@@ -1578,6 +2177,476 @@ async function ensureManageLabelDeleteMode(page: Page, flow: any, unique: string
   await deleteBtn.waitFor({ state: "visible", timeout: timeoutMs }).catch(() => {});
 }
 
+function resolveStepAnchorLocator(page: Page, anchorTarget: string, flow?: any): Locator {
+  const { click, input } = loadOverrides(flow);
+  const c = click[anchorTarget] || CLICK_SELECTORS[anchorTarget];
+  const inp = input[anchorTarget] || INPUT_SELECTORS[anchorTarget];
+  if (c) return page.locator(c).first();
+  if (inp) return page.locator(inp).first();
+  return page.getByText(new RegExp(escapeRegex(anchorTarget), "i")).first();
+}
+
+const LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG = "launchGithubAlreadyConnected";
+const LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG = "launchBitbucketAlreadyConnected";
+
+/**
+ * After "Import from a Git Repository", poll until either GitHub shows Connected or Connect Account is available.
+ * Sets `flow.launchGithubAlreadyConnected` for `skipIfFlowFlagTrue` / branching (Launch import-from-GitHub doc flow).
+ */
+async function detectLaunchGithubImportConnectionState(page: Page, flow: any, timeoutMs: number) {
+  if (!flow || typeof flow !== "object") {
+    throw new Error("detect launch-github-import-connection-state requires flow object");
+  }
+  const deadline = Date.now() + timeoutMs;
+  const githubCard = page.locator('[data-test-id="launch-click-btn-primary-action-survey-select-github-project"]').first();
+  const connectedInCard = githubCard.locator('[data-testid="provider-connected"], .connectedFlag').first();
+
+  while (Date.now() < deadline) {
+    if (await connectedInCard.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG] = true;
+      // eslint-disable-next-line no-console
+      console.log(`✅ ${LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG}=true (Connected on GitHub provider card)`);
+      return;
+    }
+
+    const badgeGlobal = resolveStepAnchorLocator(page, "GitHub Connected badge (doc step)", flow);
+    if (await badgeGlobal.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG] = true;
+      // eslint-disable-next-line no-console
+      console.log(`✅ ${LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG}=true (Connected badge selector)`);
+      return;
+    }
+
+    const importModal = page.locator(".ReactModal__Content").filter({ hasText: /Import Git Repository/i }).first();
+    if (await importModal.isVisible({ timeout: 250 }).catch(() => false)) {
+      const inModal = importModal.locator('[data-testid="provider-connected"], .connectedFlag').first();
+      if (await inModal.isVisible({ timeout: 400 }).catch(() => false)) {
+        (flow as any)[LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG] = true;
+        // eslint-disable-next-line no-console
+        console.log(`✅ ${LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG}=true (Connected inside Import Git Repository modal)`);
+        return;
+      }
+    }
+
+    const connectLoc = resolveStepAnchorLocator(page, "Connect Account (doc step)", flow);
+    if (await connectLoc.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG] = false;
+      // eslint-disable-next-line no-console
+      console.log(`ℹ️ ${LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG}=false (Connect Account visible)`);
+      return;
+    }
+
+    await page.waitForTimeout(320);
+  }
+
+  (flow as any)[LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG] = false;
+  // eslint-disable-next-line no-console
+  console.warn(
+    `⚠️ detect launch-github-import: timeout ${timeoutMs}ms — defaulting ${LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG}=false`
+  );
+}
+
+/**
+ * After "Import from a Git Repository", poll until Bitbucket Cloud card shows Connected or Connect Account is available.
+ * Sets `flow.launchBitbucketAlreadyConnected` for `skipIfFlowFlagTrue` (import-a-project-using-bitbucket-cloud).
+ */
+async function detectLaunchBitbucketImportConnectionState(page: Page, flow: any, timeoutMs: number) {
+  if (!flow || typeof flow !== "object") {
+    throw new Error("detect launch-bitbucket-import-connection-state requires flow object");
+  }
+  const deadline = Date.now() + timeoutMs;
+  const bitbucketCard = page
+    .getByRole("dialog")
+    .locator("div.providerCardWrapper")
+    .filter({ hasText: /Bitbucket Cloud/i })
+    .first();
+  const connectedInCard = bitbucketCard.locator('[data-testid="provider-connected"], .connectedFlag').first();
+
+  while (Date.now() < deadline) {
+    if (await connectedInCard.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = true;
+      // eslint-disable-next-line no-console
+      console.log(`✅ ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=true (Connected on Bitbucket Cloud provider card)`);
+      return;
+    }
+
+    const importModal = page.locator(".ReactModal__Content").filter({ hasText: /Import Git Repository/i }).first();
+    if (await importModal.isVisible({ timeout: 250 }).catch(() => false)) {
+      const cardInModal = importModal.locator("div.providerCardWrapper").filter({ hasText: /Bitbucket Cloud/i }).first();
+      const inModal = cardInModal.locator('[data-testid="provider-connected"], .connectedFlag').first();
+      if (await inModal.isVisible({ timeout: 400 }).catch(() => false)) {
+        (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = true;
+        // eslint-disable-next-line no-console
+        console.log(`✅ ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=true (Connected inside Import Git Repository modal)`);
+        return;
+      }
+    }
+
+    const connectLoc = resolveStepAnchorLocator(page, "Connect Account (doc step)", flow);
+    if (await connectLoc.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = false;
+      // eslint-disable-next-line no-console
+      console.log(`ℹ️ ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=false (Connect Account visible)`);
+      return;
+    }
+
+    // Bitbucket doc path often goes straight to provider cards (no separate "Connect Account" like GitHub).
+    const bbProviderCard = page
+      .getByRole("dialog")
+      .locator("div.providerCardWrapper")
+      .filter({ hasText: /Bitbucket Cloud/i })
+      .first();
+    if (await bbProviderCard.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = true;
+      // eslint-disable-next-line no-console
+      console.log(
+        `✅ ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=true (Bitbucket Cloud provider card visible — skip global Connect Account / OAuth preamble)`
+      );
+      return;
+    }
+
+    await page.waitForTimeout(320);
+  }
+
+  const bbFallback = page
+    .getByRole("dialog")
+    .locator("div.providerCardWrapper")
+    .filter({ hasText: /Bitbucket Cloud/i })
+    .first();
+  if (await bbFallback.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `⚠️ detect launch-bitbucket-import: timeout ${timeoutMs}ms but Bitbucket Cloud card is visible — ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=true`
+    );
+    return;
+  }
+
+  (flow as any)[LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG] = false;
+  // eslint-disable-next-line no-console
+  console.warn(
+    `⚠️ detect launch-bitbucket-import: timeout ${timeoutMs}ms — defaulting ${LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG}=false`
+  );
+}
+
+type LaunchStep2FieldSpec = {
+  key: string;
+  visibleText: string;
+  docMatch: string[];
+};
+
+type LaunchStep2FieldsFile = {
+  sourceDom?: string;
+  docUrl?: string;
+  modalScope?: string;
+  fields: LaunchStep2FieldSpec[];
+};
+
+function normalizeDocCoverageHtml(html: string): string {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Compare Create New Project step-2 UI labels (from DOM snapshot list in data/launch) to live modal + public doc HTML.
+ * Emits recordVerificationWarning only (doc gaps and missing live labels); does not fail the step.
+ */
+async function detectLaunchImportStep2UiFieldsVsDoc(
+  page: Page,
+  flow: any,
+  context: ActionContext | undefined,
+  step: Step,
+  timeoutMs: number
+) {
+  const docUrl = String(flow?.source || context?.documentUrl || "").trim();
+  if (!docUrl || !/^https?:\/\//i.test(docUrl)) {
+    recordVerificationWarning(
+      step,
+      context,
+      "launch-import-step2-ui-fields-vs-doc: no document URL on flow; skipped doc vs UI field comparison."
+    );
+    return;
+  }
+
+  const jsonPath = path.join(process.cwd(), "data/launch/import-project-github-step2-ui-fields.json");
+  if (!fs.existsSync(jsonPath)) {
+    recordVerificationWarning(step, context, `launch-import-step2-ui-fields-vs-doc: missing data file ${jsonPath}`);
+    return;
+  }
+
+  let spec: LaunchStep2FieldsFile;
+  try {
+    spec = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as LaunchStep2FieldsFile;
+  } catch (e) {
+    recordVerificationWarning(
+      step,
+      context,
+      `launch-import-step2-ui-fields-vs-doc: invalid JSON ${jsonPath}: ${e instanceof Error ? e.message : String(e)}`
+    );
+    return;
+  }
+
+  const modalSel = (spec.modalScope || ".importProjectStep2").trim();
+  const scope = page.locator(modalSel).first();
+  const scopeTimeout = Math.min(Math.max(10_000, timeoutMs), 90_000);
+  await scope.waitFor({ state: "visible", timeout: scopeTimeout }).catch(() => {});
+
+  let docNorm = "";
+  try {
+    const resp = await page.request.get(docUrl, { timeout: Math.min(timeoutMs, 90_000) });
+    if (!resp.ok()) {
+      recordVerificationWarning(
+        step,
+        context,
+        `launch-import-step2-ui-fields-vs-doc: could not fetch doc (${resp.status()} ${docUrl}); doc coverage checks skipped.`
+      );
+    } else {
+      docNorm = normalizeDocCoverageHtml(await resp.text());
+    }
+  } catch (e) {
+    recordVerificationWarning(
+      step,
+      context,
+      `launch-import-step2-ui-fields-vs-doc: doc fetch failed (${e instanceof Error ? e.message : String(e)}); doc coverage checks skipped.`
+    );
+  }
+
+  const flowIdLower = String(flow?.id || "").toLowerCase();
+  const runDocPhraseCoverage =
+    flowIdLower === "import-project-using-github" ||
+    flowIdLower === "auto-populate-environment-variables-from-a-linked-stack" ||
+    flowIdLower === "quick-start-remix" ||
+    flowIdLower === "quick-start-vue" ||
+    flowIdLower === "quick-start-nextjs" ||
+    flowIdLower === "quick-start-nuxt" ||
+    flowIdLower === "quick-start-angular" ||
+    flowIdLower === "quick-start-analog" ||
+    flowIdLower === "quick-start-react" ||
+    flowIdLower === "quick-start-gatsby" ||
+    flowIdLower === "quick-start-generic-csr" ||
+    flowIdLower === "quick-start-astro";
+
+  for (const f of spec.fields) {
+    const labelRe = new RegExp(escapeRegex(f.visibleText), "i");
+    const vis = scope.getByText(labelRe).first();
+    if (!(await vis.isVisible({ timeout: 5_000 }).catch(() => false))) {
+      recordVerificationWarning(
+        step,
+        context,
+        `Create New Project (import, step 2): UI label/control "${f.visibleText}" (${f.key}) not visible in ${modalSel} — compare with ${spec.sourceDom || "DOM snapshot"}.`
+      );
+    }
+
+    if (docNorm && runDocPhraseCoverage) {
+      const documented = f.docMatch.some((m) => {
+        const needle = m.trim().toLowerCase();
+        return needle.length > 0 && docNorm.includes(needle);
+      });
+      if (!documented) {
+        recordVerificationWarning(
+          step,
+          context,
+          `Documentation gap (${flowIdLower}): the app shows "${f.visibleText}" on Create New Project step 2, but ${docUrl} has no passage matching any of: ${f.docMatch.join(" | ")}. Consider updating the doc.`
+        );
+      }
+    }
+  }
+}
+
+type LaunchDeploymentsPanelFieldSpec = {
+  key: string;
+  /** Label as shown in the Launch UI (Playwright lookup). */
+  visibleText: string;
+  /** Doc bullet lead (e.g. Redeploy button) — documentation only; optional in JSON. */
+  docListLabel?: string;
+  /** Full doc sentence for writers; optional in JSON. Verification still uses docMatch. */
+  docDescription?: string;
+  docMatch: string[];
+  /** Default "any": at least one docMatch needle; "all": every needle must appear (file-upload doc bullets). */
+  docMatchMode?: "any" | "all";
+  optional?: boolean;
+};
+
+type LaunchDeploymentsPanelFile = {
+  sourceDoc?: string;
+  deployContext?: string;
+  panelScope?: string;
+  /** If these Git-import labels appear on a file-upload deployment screen, warn (doc lists them only for Git). */
+  gitOnlyPanelLabels?: string[];
+  fields: LaunchDeploymentsPanelFieldSpec[];
+};
+
+function docCoversFieldPhrases(
+  docNorm: string,
+  needles: string[],
+  mode: "any" | "all" | undefined
+): boolean {
+  const cleaned = needles.map((m) => m.trim().toLowerCase()).filter((n) => n.length > 0);
+  if (cleaned.length === 0) return true;
+  if (mode === "all") {
+    return cleaned.every((n) => docNorm.includes(n));
+  }
+  return cleaned.some((n) => docNorm.includes(n));
+}
+
+/**
+ * After file-upload Deploy, compare the deployment detail screen to the Deployments doc (file-upload panel).
+ * Emits recordVerificationWarning only (UI missing vs doc; doc missing expected phrases).
+ */
+async function detectLaunchDeploymentsFileUploadPanelVsDoc(
+  page: Page,
+  flow: any,
+  context: ActionContext | undefined,
+  step: Step,
+  timeoutMs: number
+) {
+  const jsonPath = path.join(process.cwd(), "data/launch/deployments-file-upload-panel-fields.json");
+  if (!fs.existsSync(jsonPath)) {
+    recordVerificationWarning(step, context, `launch-deployments-file-upload-panel-vs-doc: missing ${jsonPath}`);
+    return;
+  }
+
+  let spec: LaunchDeploymentsPanelFile;
+  try {
+    spec = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as LaunchDeploymentsPanelFile;
+  } catch (e) {
+    recordVerificationWarning(
+      step,
+      context,
+      `launch-deployments-file-upload-panel-vs-doc: invalid JSON ${jsonPath}: ${e instanceof Error ? e.message : String(e)}`
+    );
+    return;
+  }
+
+  const docUrl = String(spec.sourceDoc || flow?.source || context?.documentUrl || "").trim();
+  if (!docUrl || !/^https?:\/\//i.test(docUrl)) {
+    recordVerificationWarning(step, context, "launch-deployments-file-upload-panel-vs-doc: no doc URL; skipped.");
+    return;
+  }
+
+  const deadline = Date.now() + Math.min(Math.max(20_000, timeoutMs), 180_000);
+  let ready = false;
+  while (Date.now() < deadline && !ready) {
+    const panel = launchDeploymentInformationScope(page);
+    const domains = panel.getByText(/^Domains$/i).first();
+    const logs = panel.getByText(/^Logs$/i).first();
+    const heading = page.getByRole("heading", { name: /Deployments/i }).first();
+    if (await domains.isVisible({ timeout: 400 }).catch(() => false)) ready = true;
+    else if (await logs.isVisible({ timeout: 400 }).catch(() => false)) ready = true;
+    else if (await heading.isVisible({ timeout: 400 }).catch(() => false)) ready = true;
+    else await page.waitForTimeout(450);
+  }
+  if (!ready) {
+    recordVerificationWarning(
+      step,
+      context,
+      "Launch deployments (file-upload): after Deploy, expected deployment detail UI (Domains, Logs, or Deployments heading) — not visible in time; cannot compare to Deployments doc."
+    );
+    return;
+  }
+
+  const scopeSel = (spec.panelScope || "main").trim();
+  const scope =
+    scopeSel === "main" ? launchDeploymentInformationScope(page) : page.locator(scopeSel).first();
+  await scope.waitFor({ state: "visible", timeout: Math.min(timeoutMs, 30_000) }).catch(() => {});
+
+  let docNorm = "";
+  try {
+    const resp = await page.request.get(docUrl, { timeout: Math.min(timeoutMs, 90_000) });
+    if (!resp.ok()) {
+      recordVerificationWarning(
+        step,
+        context,
+        `launch-deployments-file-upload-panel-vs-doc: could not fetch doc (${resp.status()} ${docUrl}).`
+      );
+    } else {
+      docNorm = normalizeDocCoverageHtml(await resp.text());
+    }
+  } catch (e) {
+    recordVerificationWarning(
+      step,
+      context,
+      `launch-deployments-file-upload-panel-vs-doc: doc fetch failed (${e instanceof Error ? e.message : String(e)}).`
+    );
+  }
+
+  for (const f of spec.fields) {
+    const labelRe = new RegExp(escapeRegex(f.visibleText), "i");
+    const vis = scope.getByText(labelRe).first();
+    let visible = await vis.isVisible({ timeout: 6_000 }).catch(() => false);
+    let labelLocator = vis;
+    if (!visible && /redeploy|download code/i.test(f.visibleText)) {
+      const btn = scope.getByRole("button", { name: labelRe }).first();
+      visible = await btn.isVisible({ timeout: 4_000 }).catch(() => false);
+      if (visible) labelLocator = btn;
+    }
+    if (!visible) {
+      if (f.optional) {
+        recordVerificationWarning(
+          step,
+          context,
+          `Launch deployments (file-upload): "${f.visibleText}" not visible — Deployments doc notes Download Code may appear only when status is Live, Deployed, or Failed.`
+        );
+      } else {
+        recordVerificationWarning(
+          step,
+          context,
+          `Launch deployments (file-upload): UI does not show "${f.visibleText}" (${f.key}) in ${scopeSel} — compare with ${docUrl} (deployment information for file upload).`
+        );
+      }
+    } else {
+      const raw = ((await labelLocator.innerText().catch(() => "")) || "").split("\n")[0].trim();
+      const normUi = raw.replace(/\s+/g, " ").toLowerCase();
+      const exp = f.visibleText.trim().toLowerCase();
+      const uiMatchesDocFieldName =
+        normUi === exp ||
+        normUi.startsWith(`${exp}:`) ||
+        normUi.startsWith(`${exp} `) ||
+        (f.visibleText === "Redeploy" && /^redeploy\b/i.test(raw)) ||
+        (f.visibleText === "Download Code" && /^download code\b/i.test(raw));
+      if (!uiMatchesDocFieldName) {
+        recordVerificationWarning(
+          step,
+          context,
+          `Launch deployments (file-upload): UI label "${raw}" does not match doc field name "${f.visibleText}" (${f.key}) — verification only.`
+        );
+      }
+    }
+
+    if (docNorm && Array.isArray(f.docMatch) && f.docMatch.length > 0) {
+      const documented = docCoversFieldPhrases(docNorm, f.docMatch, f.docMatchMode);
+      if (!documented) {
+        const modeHint = f.docMatchMode === "all" ? "all of" : "at least one of";
+        recordVerificationWarning(
+          step,
+          context,
+          `Documentation gap (deployments / file-upload panel): expected ${docUrl} to describe "${f.key}" (${f.visibleText}) with ${modeHint}: ${f.docMatch.join(" | ")}.`
+        );
+      }
+    }
+  }
+
+  const gitOnly = Array.isArray(spec.gitOnlyPanelLabels) ? spec.gitOnlyPanelLabels : [];
+  for (const gitLabel of gitOnly) {
+    const g = String(gitLabel || "").trim();
+    if (!g) continue;
+    const gitRe = new RegExp(`^${escapeRegex(g)}(:|\\s|$)`, "i");
+    const hit = scope.getByText(gitRe).first();
+    if (await hit.isVisible({ timeout: 800 }).catch(() => false)) {
+      recordVerificationWarning(
+        step,
+        context,
+        `Launch deployments (file-upload): UI shows "${g}" (Git-import field). File-upload doc section at ${docUrl} does not list it — confirm product vs documentation.`
+      );
+    }
+  }
+
+}
 
 export async function performAction(
   page: Page,
@@ -1586,8 +2655,1598 @@ export async function performAction(
   flow?: any,
   context?: ActionContext
 ): Promise<Page | void> {
+  /** Wait long enough for slow Git provider UI before branching (capped). */
+  const gateTimeout = Math.min(90_000, Math.max(5_000, getStepTimeoutMs(step)));
+  if (step.skipIfTargetVisible?.trim()) {
+    const anchor = resolveStepAnchorLocator(page, step.skipIfTargetVisible.trim(), flow);
+    if (await anchor.isVisible({ timeout: gateTimeout }).catch(() => false)) {
+      // eslint-disable-next-line no-console
+      console.log(`⏭️ skipIfTargetVisible("${step.skipIfTargetVisible}"): skipping ${step.action} "${step.target}"`);
+      return;
+    }
+  }
+  if (step.onlyIfTargetVisible?.trim()) {
+    const anchor = resolveStepAnchorLocator(page, step.onlyIfTargetVisible.trim(), flow);
+    if (!(await anchor.isVisible({ timeout: gateTimeout }).catch(() => false))) {
+      // eslint-disable-next-line no-console
+      console.log(`⏭️ onlyIfTargetVisible("${step.onlyIfTargetVisible}"): anchor not visible, skipping ${step.action} "${step.target}"`);
+      return;
+    }
+  }
+
+  if (step.skipIfFlowFlagTrue?.trim() && flow && typeof flow === "object") {
+    const k = step.skipIfFlowFlagTrue.trim();
+    if ((flow as any)[k] === true) {
+      // eslint-disable-next-line no-console
+      console.log(`⏭️ skipIfFlowFlagTrue("${k}"): skipping ${step.action} "${step.target}"`);
+      return;
+    }
+  }
+  if (step.onlyIfFlowFlagTrue?.trim() && flow && typeof flow === "object") {
+    const k = step.onlyIfFlowFlagTrue.trim();
+    if ((flow as any)[k] !== true) {
+      // eslint-disable-next-line no-console
+      console.log(`⏭️ onlyIfFlowFlagTrue("${k}"): flag not true, skipping ${step.action} "${step.target}"`);
+      return;
+    }
+  }
+
   switch (step.action) {
+    case "detect": {
+      const target = String(step.target || "").trim();
+      if (target === "launch-github-import-connection-state (doc step)") {
+        const t = getStepTimeoutMs(step, 120_000);
+        await detectLaunchGithubImportConnectionState(page, flow, t);
+        break;
+      }
+      if (target === "launch-bitbucket-import-connection-state (doc step)") {
+        const t = getStepTimeoutMs(step, 120_000);
+        await detectLaunchBitbucketImportConnectionState(page, flow, t);
+        break;
+      }
+      if (target === "launch-import-step2-ui-fields-vs-doc (doc step)") {
+        const fid = String(flow?.id || "").toLowerCase();
+        if (
+          fid !== "import-project-using-github" &&
+          fid !== "auto-populate-environment-variables-from-a-linked-stack" &&
+          fid !== "quick-start-remix" &&
+          fid !== "quick-start-vue" &&
+          fid !== "quick-start-nextjs" &&
+          fid !== "quick-start-nuxt" &&
+          fid !== "quick-start-angular" &&
+          fid !== "quick-start-analog" &&
+          fid !== "quick-start-react" &&
+          fid !== "quick-start-gatsby" &&
+          fid !== "quick-start-generic-csr" &&
+          fid !== "quick-start-astro"
+        ) {
+          throw new Error(
+            `detect "${target}" is only supported for flows import-project-using-github, auto-populate-environment-variables-from-a-linked-stack, quick-start-remix, quick-start-vue, quick-start-nextjs, quick-start-nuxt, quick-start-angular, quick-start-analog, quick-start-react, quick-start-gatsby, quick-start-generic-csr, or quick-start-astro (got: ${String(flow?.id || "")}).`
+          );
+        }
+        await detectLaunchImportStep2UiFieldsVsDoc(page, flow, context, step, getStepTimeoutMs(step, 90_000));
+        break;
+      }
+      if (target === "launch-create-new-environment-modal-variant (doc step)") {
+        if (String(flow?.id || "").toLowerCase() !== "environments") {
+          throw new Error(
+            `detect "${target}" is only supported for flow environments (got: ${String(flow?.id || "")}).`
+          );
+        }
+        const t = getStepTimeoutMs(step, 45_000);
+        const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const uploadBody = dlg.locator('.newFileUploadEnvModal, [data-test-id="cs-modal-description"].newFileUploadEnvModal');
+        const isUpload = await uploadBody.first().isVisible({ timeout: 5_000 }).catch(() => false);
+        if (flow && typeof flow === "object") {
+          (flow as any).launchCreateNewEnvIsFileUpload = isUpload;
+          (flow as any).launchCreateNewEnvIsGit = !isUpload;
+        }
+        await page.waitForTimeout(200);
+        break;
+      }
+      if (target === "launch-deployments-file-upload-panel-vs-doc (doc step)") {
+        if (String(flow?.id || "").toLowerCase() !== "deployments") {
+          throw new Error(
+            `detect "${target}" is only supported for flow deployments (got: ${String(flow?.id || "")}).`
+          );
+        }
+        await detectLaunchDeploymentsFileUploadPanelVsDoc(page, flow, context, step, getStepTimeoutMs(step, 180_000));
+        break;
+      }
+      throw new Error(`Unknown detect target: ${step.target}`);
+    }
+
     case "click": {
+      // Org dashboard → Launch SPA: must click the product tile only, then wait for hash route (generic comma selector + .first() could click the wrong "Launch" and leave the run on #!/dashboard).
+      if (step.target === "Launch dashboard entry (doc step)") {
+        const tLaunch = getStepTimeoutMs(step, 120_000);
+        const tile = page.locator('[data-test-id="cs-global-dashboard-product-tile-launch"]').first();
+        await expect(tile).toBeVisible({ timeout: tLaunch });
+        await tile.click({ timeout: tLaunch });
+        await page.waitForURL(/#!\/launch/i, { timeout: tLaunch });
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        await page.waitForTimeout(600);
+        break;
+      }
+
+      // Launch Users — project card → top bar Settings → left nav Users → Invite User modal (users doc).
+      // repair-github-connection-for-projects / repair-git-provider-connection-for-projects: same shell → left nav General → Git Connection; Repair optional when broken.
+      const launchUsersOrRepairFlowId = String(flow?.id || "").toLowerCase();
+      const isLaunchRepairGitConnectionFlow =
+        launchUsersOrRepairFlowId === "repair-github-connection-for-projects" ||
+        launchUsersOrRepairFlowId === "repair-git-provider-connection-for-projects";
+      if (launchUsersOrRepairFlowId === "users" || isLaunchRepairGitConnectionFlow) {
+        const t0 = getStepTimeoutMs(step, 90_000);
+        if (step.target === "Launch first project card (doc step)") {
+          const card = page.locator('[data-testid^="project-settings-"]').first();
+          await expect(card).toBeVisible({ timeout: t0 });
+          await card.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (
+          step.target === "Launch project top navigation Settings (doc step)" ||
+          step.target === "Launch left-hand primary navigation Settings icon (doc step)"
+        ) {
+          const btn = page.locator('[data-test-id="launch-nav-settings"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Launch Settings left navigation Users row (doc step)") {
+          const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+          await nav.waitFor({ state: "visible", timeout: Math.min(t0, 30_000) }).catch(() => {});
+          const row = nav.locator('[data-test-id="cs-list-row"]#collaborators').first();
+          await expect(row).toBeVisible({ timeout: t0 });
+          await row.click({ timeout: t0 });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Launch Users page Invite User button (doc step)") {
+          const btn = page.locator('[data-testid="invite-users-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Invite User modal Invite button (doc step)") {
+          const dlg = page
+            .locator('[data-testid="cs-modal"][role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="invite-users-form-submit-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (step.target === "Launch Users collaborators row actions ellipsis for invited user (doc step)") {
+          const email = String((flow as any)?.__launchUsersInvitedEmail || "").trim();
+          if (!email) {
+            throw new Error(
+              "users: invited email not stored — run Launch Invite User modal email field before Remove steps."
+            );
+          }
+          const row = page
+            .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"]')
+            .filter({ hasText: email })
+            .first();
+          await expect(row).toBeVisible({ timeout: t0 });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const dots = row.locator('button[data-test-id="cs-table-action-options"]').first();
+          await expect(dots).toBeVisible({ timeout: t0 });
+          await dots.click({ timeout: t0, force: true });
+          await page.waitForTimeout(450);
+          await expect
+            .poll(
+              async () => {
+                const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').last();
+                if (!(await tip.isVisible().catch(() => false))) return false;
+                const rm = tip
+                  .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li')
+                  .filter({ hasText: /\bRemove\b/i })
+                  .first();
+                return await rm.isVisible().catch(() => false);
+              },
+              { timeout: Math.min(t0, 18_000), intervals: [120, 300, 500] }
+            )
+            .toBeTruthy();
+          break;
+        }
+        if (step.target === "Launch Users collaborators Remove menu item (doc step)") {
+          const emailRm = String((flow as any)?.__launchUsersInvitedEmail || "").trim();
+          if (!emailRm) {
+            throw new Error(
+              "users: invited email not stored — run Launch Invite User modal email field before Remove steps."
+            );
+          }
+          // Step 23 may leave a stale mounted tooltip in the DOM; Escape + a fresh ⋮ open
+          // avoids clicking Remove on a hidden duplicate (clicks no-op, modal never opens).
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(200);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(200);
+          const rowRm = page
+            .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"]')
+            .filter({ hasText: emailRm })
+            .first();
+          await expect(rowRm).toBeVisible({ timeout: t0 });
+          await rowRm.scrollIntoViewIfNeeded().catch(() => {});
+          const dotsRm = rowRm.locator('button[data-test-id="cs-table-action-options"]').first();
+          await expect(dotsRm).toBeVisible({ timeout: t0 });
+          await dotsRm.click({ timeout: t0, force: true });
+          await page.waitForTimeout(700);
+          // Avoid `.count()` on all tooltips — large DOMs make Playwright resolve thousands of nodes and hang.
+          // Newest menu is typically the last matching root; poll until Remove is painted (empty popover first paint).
+          await expect
+            .poll(
+              async () => {
+                const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').last();
+                if (!(await tip.isVisible().catch(() => false))) return false;
+                const rm = tip
+                  .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li')
+                  .filter({ hasText: /\bRemove\b/i })
+                  .first();
+                return await rm.isVisible().catch(() => false);
+              },
+              { timeout: Math.min(t0, 22_000), intervals: [120, 250, 400] }
+            )
+            .toBeTruthy();
+          const tipOpen = page.locator('[data-test-id="cs-vertical-action-tooltip"]').last();
+          const removeLiScoped = tipOpen
+            .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li')
+            .filter({ hasText: /\bRemove\b/i })
+            .first();
+          await removeLiScoped.click({ timeout: t0 }).catch(() => {});
+          const modalOpened = await page
+            .locator(
+              '[data-test-id="cs-modal-title-remove-user"], h3[title="Remove User"], [role="dialog"] [data-testid="remove-button"]'
+            )
+            .first()
+            .isVisible({ timeout: 3_500 })
+            .catch(() => false);
+          if (!modalOpened) {
+            await removeLiScoped.evaluate((el: HTMLElement) => {
+              el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+            });
+          }
+          const removeTitle = page
+            .locator('[data-test-id="cs-modal-title-remove-user"], h3[title="Remove User"]')
+            .first();
+          const removeDestructiveBtn = page.locator('[role="dialog"] [data-testid="remove-button"]').first();
+          await expect(removeTitle.or(removeDestructiveBtn)).toBeVisible({ timeout: Math.min(t0, 45_000) });
+          break;
+        }
+        if (step.target === "Launch Remove User modal Yes Remove button (doc step)") {
+          const dlg = page
+            .locator('[data-testid="cs-modal"][role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-remove-user"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="remove-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 45_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (isLaunchRepairGitConnectionFlow) {
+          if (step.target === "Launch Settings left navigation General row (doc step)") {
+            const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+            await nav.waitFor({ state: "visible", timeout: Math.min(t0, 30_000) }).catch(() => {});
+            const row = nav.locator('[data-test-id="cs-list-row"]#general').first();
+            await expect(row).toBeVisible({ timeout: t0 });
+            await row.click({ timeout: t0 });
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Launch project settings Repair Connection button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Repair Connection$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 45_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(800);
+            break;
+          }
+        }
+      }
+
+      // log-targets doc — Launch projects list → org Settings (top bar) → Log Targets (no project card).
+      if (String(flow?.id || "").toLowerCase() === "log-targets") {
+        const t0 = getStepTimeoutMs(step, 90_000);
+        if (step.target === "Launch org app Settings top bar (doc step)") {
+          const btn = page.locator('[data-test-id="launch-nav-app-settings"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForURL(/log-targets/i, { timeout: t0 });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Log Targets Set up Log Target button (doc step)") {
+          const btn = page.locator('[data-testid="new-log-target-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          // Org/list API can keep the CTA in Button--state-loading briefly after navigation.
+          const spinDeadline = Date.now() + Math.min(t0, 120_000);
+          while (Date.now() < spinDeadline) {
+            const cls = (await btn.getAttribute("class")) || "";
+            if (!cls.includes("Button--state-loading")) break;
+            await page.waitForTimeout(400);
+          }
+          await expect(btn).toBeEnabled({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Set up Log Target modal Continue Setup button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-set-up-log-target"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="log-target-next-button"]').first();
+          const deadline = Date.now() + Math.min(t0, 90_000);
+          while (Date.now() < deadline) {
+            if (await btn.isEnabled().catch(() => false)) break;
+            await page.waitForTimeout(250);
+          }
+          if (!(await btn.isEnabled().catch(() => false))) {
+            throw new Error(
+              "log-targets: Continue Setup stayed disabled — ensure required modal fields (name, endpoint, headers) are filled."
+            );
+          }
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Log Target Set up modal switch Delivery Protocol to HTTP (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-set-up-log-target"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const protocolField = dlg
+            .locator('[data-test-id="cs-field"]')
+            .filter({ hasText: /Delivery Protocol/i })
+            .first();
+          const protocolControlLegacy = protocolField.locator('[data-test-id="cs-select"] .Select__control').first();
+          // Live UI may omit cs-field; react-select keeps the aria input hidden — click the visible control.
+          const protocolOpen =
+            (await protocolControlLegacy.isVisible().catch(() => false))
+              ? protocolControlLegacy
+              : dlg.locator(".Select__control").filter({ hasText: /Select a delivery protocol|HTTP|gRPC/i }).first();
+          await expect(protocolOpen).toBeVisible({ timeout: t0 });
+          await protocolOpen.click({ timeout: t0 });
+          await page.waitForTimeout(350);
+          const menu = page.locator(".Select__menu, [class*='Select__menu']").last();
+          let httpOpt = menu.getByRole("option", { name: /^HTTP$/i }).first();
+          if (!(await httpOpt.isVisible().catch(() => false))) {
+            httpOpt = dlg.locator("div").filter({ hasText: /^HTTP$/ }).last();
+          }
+          await expect(httpOpt).toBeVisible({ timeout: Math.min(t0, 25_000) });
+          await httpOpt.click({ timeout: t0 });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch Log Target Set up modal Payload Format select first option (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-set-up-log-target"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const payloadField = dlg
+            .locator('[data-test-id="cs-field"]')
+            .filter({ hasText: /Payload Format/i })
+            .first();
+          const payControlLegacy = payloadField.locator('[data-test-id="cs-select"] .Select__control').first();
+          const payControlByLabel = dlg
+            .locator(".Select__control")
+            .filter({ hasText: /Select a payload format|Protobuf|JSON/i })
+            .first();
+          const payControl =
+            (await payControlLegacy.isVisible().catch(() => false)) ? payControlLegacy : payControlByLabel;
+          await expect(payControl).toBeVisible({ timeout: t0 });
+          await payControl.click({ timeout: t0 });
+          await page.waitForTimeout(300);
+          const menu = page.locator(".Select__menu, [class*='Select__menu']").last();
+          let firstOpt = menu.locator('[role="option"]').first();
+          if (!(await firstOpt.isVisible().catch(() => false))) {
+            firstOpt = dlg.getByRole("option").first();
+          }
+          if (!(await firstOpt.isVisible().catch(() => false))) {
+            firstOpt = dlg.locator("div").filter({ hasText: /^Protobuf \(Recommended\)$/i }).first();
+          }
+          if (!(await firstOpt.isVisible().catch(() => false))) {
+            firstOpt = page.getByRole("listbox").locator('[role="option"]').first();
+          }
+          await expect(firstOpt).toBeVisible({ timeout: 15_000 });
+          await firstOpt.click({ timeout: t0 });
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Cancel button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="log-target-modal-cancel"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Test Connection button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="log-target-test-connection-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Save Log Target button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="log-target-save-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Launch Log Targets row actions ellipsis (doc step)") {
+          const name = String((flow as any)?.__launchLogTargetName || "").trim();
+          const rowHint = String(step.expected?.rowContains || "").trim() || name;
+          if (!rowHint) {
+            throw new Error(
+              "log-targets: Log Target name not stored — run Launch Log Target Name input (doc step) first."
+            );
+          }
+          const row = page
+            .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"]')
+            .filter({ hasText: new RegExp(escapeRegex(rowHint), "i") })
+            .first();
+          await expect(row).toBeVisible({ timeout: t0 });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const dots = row.locator('[data-test-id="cs-table-action-options"]').first();
+          await expect(dots).toBeVisible({ timeout: t0 });
+          await dots.click({ timeout: t0, force: true });
+          await page.waitForTimeout(450);
+          // Several tooltips can stay mounted; scope to Log Targets row menu (ver-ellipses-menu.html).
+          await expect(
+            page
+              .locator('[data-test-id="cs-vertical-action-tooltip"]')
+              .filter({ has: page.locator('[data-testid="edit-log-target"]') })
+              .last()
+          ).toBeVisible({
+            timeout: Math.min(t0, 22_000),
+          });
+          break;
+        }
+        if (step.target === "Launch Log Targets row Edit menu item (doc step)") {
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-testid="edit-log-target"]') })
+            .last();
+          const editIcon = tip.locator('[data-testid="edit-log-target"]').first();
+          await expect(editIcon).toBeVisible({ timeout: t0 });
+          await editIcon.click({ timeout: t0 });
+          await page.waitForTimeout(1000);
+          break;
+        }
+        if (step.target === "Launch Log Targets row Verify Connection menu item (doc step)") {
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-testid="verify-log-target"]') })
+            .last();
+          const verifyIcon = tip.locator('[data-testid="verify-log-target"]').first();
+          await expect(verifyIcon).toBeVisible({ timeout: t0 });
+          await verifyIcon.click({ timeout: t0 });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Launch Log Target row status enable toggle (doc step)") {
+          const name = String((flow as any)?.__launchLogTargetName || "").trim();
+          const rowHint = String(step.expected?.rowContains || "").trim() || name;
+          if (!rowHint) {
+            throw new Error("log-targets: Log Target name not stored — cannot find row for enable toggle.");
+          }
+          // Toggle + status live in the Verify Log Target Connection dialog table (not the main page table).
+          const verifyDlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(verifyDlg).toBeVisible({ timeout: t0 });
+          const row = verifyDlg
+            .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"], [role="row"]')
+            .filter({ hasText: new RegExp(escapeRegex(rowHint), "i") })
+            .first();
+          await expect(row).toBeVisible({ timeout: t0 });
+          const statusSpan = row.locator("span.status-log-target[data-testid^='log-target-status-']").first();
+          await expect(statusSpan).toBeVisible({ timeout: Math.min(t0, 45_000) });
+          const toggleHost = row.locator('[data-test-id="toggle-log-target"]').first();
+          await expect(toggleHost).toBeVisible({ timeout: Math.min(t0, 45_000) });
+          const box = toggleHost.locator('input[type="checkbox"]').first();
+          await expect(box).toBeVisible({ timeout: t0 });
+          await box.click({ timeout: t0 });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Enable Log Target button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.getByRole("button", { name: /^Enable Log Target$/i }).first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t0, 45_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Launch Edit Log Target modal Save Changes button (doc step)") {
+          const dlg = page
+            .getByRole("dialog", { name: /Edit Log Target/i })
+            .or(
+              page
+                .locator(".ReactModal__Content")
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .or(
+              page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-testid="log-target-save-button"]').first();
+          const deadline = Date.now() + Math.min(t0, 60_000);
+          while (Date.now() < deadline) {
+            if (await btn.isEnabled().catch(() => false)) break;
+            await page.waitForTimeout(200);
+          }
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Launch Log Targets row Delete menu item (doc step)") {
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-testid="delete-log-target"]') })
+            .last();
+          const delIcon = tip.locator('[data-testid="delete-log-target"]').first();
+          await expect(delIcon).toBeVisible({ timeout: t0 });
+          await delIcon.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Launch Delete Log Target confirm Yes button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"][data-testid="cs-modal"], [role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-log-target"], h3:has-text("Delete Log Target")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const byTestId = dlg.locator('[data-testid="log-target-delete-button"]').first();
+          const byRole = dlg.getByRole("button", { name: /Yes,\s*Delete/i }).first();
+          const btn = (await byTestId.isVisible().catch(() => false)) ? byTestId : byRole;
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+      }
+
+      // Launch Environments list + Settings: deploy-hooks, environments (Launch → projects).
+      if (isLaunchProjectsEnvironmentsFlow(flow)) {
+        const t0 = getStepTimeoutMs(step, 90_000);
+        const flowIdLower = String(flow?.id || "").toLowerCase();
+        if (step.target === "Launch first project card (doc step)") {
+          const card = page.locator('[data-testid^="project-settings-"]').first();
+          await expect(card).toBeVisible({ timeout: t0 });
+          await card.click({ timeout: t0 });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Launch left navigation Environments entry (doc step)") {
+          const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+          await nav.waitFor({ state: "visible", timeout: Math.min(t0, 30_000) }).catch(() => {});
+          const link = nav
+            .getByRole("link", { name: /^Environments$/i })
+            .or(nav.locator('a[href*="environment" i]'))
+            .or(nav.getByText(/^Environments$/i))
+            .first();
+          await expect(link).toBeVisible({ timeout: t0 });
+          await link.click({ timeout: t0 });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Launch Default environment row Actions ellipsis (doc step)") {
+          // environment-verticle.html: row ⋮ for the Default environment (search + scroll — sort order hides it).
+          const row = await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, t0);
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const dotsPrecise = row
+            .locator(
+              'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+            )
+            .first();
+          const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+          const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+          await expect(dots).toBeVisible({ timeout: t0 });
+          await dots.click({ timeout: t0, force: true });
+          await page.waitForTimeout(550);
+          const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+          await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch first environment row Actions ellipsis (doc step)") {
+          const row = await resolveLaunchEnvironmentsFirstTableRow(page, t0);
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const dotsPrecise = row
+            .locator(
+              'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+            )
+            .first();
+          const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+          const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+          await expect(dots).toBeVisible({ timeout: t0 });
+          await dots.click({ timeout: t0, force: true });
+          await page.waitForTimeout(550);
+          const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+          await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch named environment row Actions ellipsis (doc step)") {
+          const raw = String((step as any).value ?? "").trim();
+          if (!raw) throw new Error('Launch named environment: set step.value (e.g. "Development").');
+          const row = await resolveLaunchEnvironmentsNamedEnvironmentRow(page, raw, t0);
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const dotsPrecise = row
+            .locator(
+              'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+            )
+            .first();
+          const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+          const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+          await expect(dots).toBeVisible({ timeout: t0 });
+          await dots.click({ timeout: t0, force: true });
+          await page.waitForTimeout(550);
+          const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+          await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch named environment table row open (doc step)") {
+          const raw = String((step as any).value ?? "").trim();
+          if (!raw) throw new Error("Launch named environment open: set step.value to the environment name.");
+          const row = await resolveLaunchEnvironmentsNamedEnvironmentRow(page, raw, t0);
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const link = row.locator('a[href*="/envs/"]').first();
+          if (await link.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await link.click({ timeout: t0 });
+          } else {
+            await row.click({ timeout: t0 });
+          }
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (step.target === "Launch first environment table row open (doc step)") {
+          const row = await resolveLaunchEnvironmentsFirstTableRow(page, t0);
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const link = row.locator('a[href*="/envs/"]').first();
+          if (await link.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await link.click({ timeout: t0 });
+          } else {
+            await row.click({ timeout: t0 });
+          }
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (step.target === "Launch environment settings General tab (doc step)") {
+          const tab = page.locator('[data-testid="general-tab"]').first();
+          await expect(tab).toBeVisible({ timeout: t0 });
+          await tab.click({ timeout: t0 });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Launch environment actions Settings menu item (doc step)") {
+          // Row: <li class="flex-v-center">…<svg data-test-id="cs-icon" data-testid="environment-settings-action-selector" name="Setting">…</svg><div class="ml-8">Settings</div></li>
+          // Prefer clicking the label cell (div.ml-8, exact "Settings"); fall back to <li> or SVG. Do not use
+          // filter({ has: page.locator(...) }) — inner page.locator is not scoped per li and can attach to the wrong row.
+          const rowContainsRaw = String((step as any).expected?.rowContains ?? "").trim();
+          const menuReopenRow: LaunchEnvRowMenuReopenRow = /^default$/i.test(rowContainsRaw) ? "default" : "first";
+          const settingsChromeFast = page.locator(
+            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deployments-tab"], [data-testid="lytics-tab"]'
+          );
+          const onEnvSettingsUrl = /\/envs\/[^/]+\/settings/i.test(page.url());
+          const skipDefaultEnvHash = (step as any)?.expected?.launchSkipDefaultEnvHashNav === true;
+          // Fast path: project id from URL + env row id — first row or Default row per expected.rowContains.
+          const projFromUrl =
+            page.url().match(/\/launch\/projects\/([a-f0-9]{24})\b/i)?.[1] ??
+            page.url().match(/\/launch\/projects\/([a-f0-9-]{36})\b/i)?.[1] ??
+            null;
+          const envIdForHash =
+            menuReopenRow === "default"
+              ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
+              : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null);
+          if (!skipDefaultEnvHash && projFromUrl && envIdForHash && !onEnvSettingsUrl) {
+            await page.evaluate(
+              (h) => {
+                window.location.hash = h.startsWith("#") ? h : `#${h}`;
+              },
+              `#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`
+            );
+            await page.waitForTimeout(900);
+            await page.waitForURL(/\/envs\/.+\/settings/i, { timeout: fastFailCap(45_000) }).catch(() => {});
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(35_000) }).catch(() => false)) {
+              await page.waitForTimeout(300);
+              break;
+            }
+            const origin = page.url().replace(/#.*$/, "");
+            await page
+              .goto(`${origin}#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`, {
+                waitUntil: "domcontentloaded",
+                timeout: fastFailCap(60_000),
+              })
+              .catch(() => {});
+            await page.waitForTimeout(700);
+            await page.waitForURL(/\/envs\/.+\/settings/i, { timeout: fastFailCap(35_000) }).catch(() => {});
+            if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(30_000) }).catch(() => false)) {
+              await page.waitForTimeout(300);
+              break;
+            }
+          }
+          if (onEnvSettingsUrl && (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(4_000) }).catch(() => false))) {
+            await page.waitForTimeout(300);
+            break;
+          }
+          // Step 8 often leaves the row ⋮ menu open — click Settings <li> scoped to the visible tooltip only (not global .last()).
+          const menuRootFast = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+          if (await menuRootFast.isVisible({ timeout: fastFailCap(12_000) }).catch(() => false)) {
+            const settingsLiDirect = menuRootFast
+              .locator('li:has([data-testid="environment-settings-action-selector"])')
+              .first();
+            if (await settingsLiDirect.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
+              const settingsLabelFast = settingsLiDirect.locator("div.ml-8").filter({ hasText: /^Settings$/i }).first();
+              const settingsClickFast = (await settingsLabelFast.isVisible({ timeout: 2_000 }).catch(() => false))
+                ? settingsLabelFast
+                : settingsLiDirect;
+              await settingsClickFast.scrollIntoViewIfNeeded().catch(() => {});
+              await settingsClickFast.click({ timeout: Math.min(t0, fastFailCap(45_000)) });
+              await page.waitForTimeout(450);
+              try {
+                await Promise.race([
+                  page.waitForURL(/\/envs\/.+\/settings/, { timeout: 15_000 }),
+                  page.waitForSelector('[data-testid="environment-settings-action-selector"]', { state: "detached", timeout: 15_000 }),
+                ]);
+              } catch {
+                throw new Error("Settings navigation did not complete — URL never matched /envs/.+/settings");
+              }
+              if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(28_000) }).catch(() => false)) {
+                await page.waitForTimeout(300);
+                break;
+              }
+            }
+          }
+          const menu = await getOrReopenLaunchEnvironmentRowActionsMenu(page, t0, { reopenRow: menuReopenRow });
+          await expect(menu).toBeVisible({ timeout: Math.min(t0, fastFailCap(25_000)) });
+          const menuSettingsHref =
+            (await menu
+              .locator('a[href*="/envs/"][href*="settings" i]')
+              .first()
+              .getAttribute("href")
+              .catch(() => null)) ??
+            (await menu.locator('a[href*="/envs/"]').first().getAttribute("href").catch(() => null));
+          const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+          const settingsRowByIcon = actionsRoot.locator('li:has([data-testid="environment-settings-action-selector"])').first();
+          const settingsRowByLabel = actionsRoot.locator("li").filter({ hasText: /^\s*Settings\s*$/i }).first();
+          const resolveSettingsRow = async () => {
+            if (await settingsRowByIcon.isVisible({ timeout: fastFailCap(3_000) }).catch(() => false)) return settingsRowByIcon;
+            if (await settingsRowByLabel.isVisible({ timeout: fastFailCap(3_000) }).catch(() => false)) return settingsRowByLabel;
+            return settingsRowByIcon;
+          };
+          let settingsMenuItemLi = await resolveSettingsRow();
+          const settingsGearSvg = menu
+            .locator('svg[data-testid="environment-settings-action-selector"], [data-testid="environment-settings-action-selector"]')
+            .first();
+          const resolveSettingsClickTarget = async (li: Locator) => {
+            const labelDiv = li.locator("div.ml-8").filter({ hasText: /^Settings$/i }).first();
+            if (await labelDiv.isVisible({ timeout: fastFailCap(2_500) }).catch(() => false)) return labelDiv;
+            return li;
+          };
+          const navigateToEnvSettings = async () => {
+            if (page.isClosed()) {
+              console.warn(
+                "[navigateToEnvSettings] page already closed at entry — before any menu check",
+              );
+              throw new Error("[navigateToEnvSettings] page was closed before step 10 could start");
+            }
+            console.warn("[navigateToEnvSettings] page is open at entry — proceeding");
+            if (!(await settingsMenuItemLi.isVisible({ timeout: fastFailCap(10_000) }).catch(() => false))) {
+              const existingMenu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+              const menuAlreadyOpen = await existingMenu.isVisible({ timeout: 2_000 }).catch(() => false);
+              console.warn(
+                menuAlreadyOpen
+                  ? "[navigateToEnvSettings] menu already open — skipping getOrReopen"
+                  : "[navigateToEnvSettings] menu not open — calling getOrReopen",
+              );
+              console.warn("[navigateToEnvSettings] existingMenu visible:", menuAlreadyOpen);
+
+              // Broader fallback — check if ANY row action menu is visible
+              let menuToUse = menuAlreadyOpen ? existingMenu : null;
+              if (!menuToUse) {
+                const broadMenu = page
+                  .locator('#tableRowActionNode, .VerticalActionTooltip, [role="menu"]')
+                  .last();
+                const broadVisible = await broadMenu.isVisible({ timeout: 2_000 }).catch(() => false);
+                console.warn("[navigateToEnvSettings] broadMenu visible:", broadVisible);
+                if (broadVisible) menuToUse = broadMenu;
+              }
+
+              const menu2 =
+                menuToUse ?? (await getOrReopenLaunchEnvironmentRowActionsMenu(page, t0, { reopenRow: menuReopenRow }));
+              await expect(menu2).toBeVisible({ timeout: Math.min(t0, fastFailCap(20_000)) });
+              const ar = menu2.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+              const byIcon = ar.locator('li:has([data-testid="environment-settings-action-selector"])').first();
+              const byLabel = ar.locator("li").filter({ hasText: /^\s*Settings\s*$/i }).first();
+              settingsMenuItemLi = (await byIcon.isVisible({ timeout: fastFailCap(4_000) }).catch(() => false)) ? byIcon : byLabel;
+            }
+            await expect(settingsMenuItemLi).toBeVisible({ timeout: Math.min(t0, fastFailCap(25_000)) });
+            const settingsClickTarget = await resolveSettingsClickTarget(settingsMenuItemLi);
+            await settingsClickTarget.scrollIntoViewIfNeeded();
+            await settingsClickTarget.click({ timeout: t0 });
+            await page.waitForTimeout(400);
+            let onSettingsUrl = await page
+              .waitForFunction(
+                () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
+                null,
+                { timeout: fastFailCap(10_000) }
+              )
+              .then(() => true)
+              .catch(() => false);
+            if (!onSettingsUrl) {
+              await settingsClickTarget.click({ timeout: t0, force: true });
+              await page.waitForTimeout(350);
+              onSettingsUrl = await page
+                .waitForFunction(
+                  () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
+                  null,
+                  { timeout: fastFailCap(6_000) }
+                )
+                .then(() => true)
+                .catch(() => false);
+            }
+            if (!onSettingsUrl) {
+              await expect(settingsGearSvg).toBeVisible({ timeout: fastFailCap(12_000) });
+              await settingsGearSvg.scrollIntoViewIfNeeded();
+              await settingsGearSvg.click({ timeout: t0, force: true });
+              await page.waitForTimeout(350);
+              onSettingsUrl = await page
+                .waitForFunction(
+                  () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
+                  null,
+                  { timeout: fastFailCap(5_000) }
+                )
+                .then(() => true)
+                .catch(() => false);
+            }
+            if (!onSettingsUrl) {
+              await settingsGearSvg.evaluate((el) => (el as HTMLElement).click());
+              await page.waitForTimeout(300);
+            }
+            if (!(await page
+              .waitForFunction(
+                () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
+                null,
+                { timeout: fastFailCap(4_000) }
+              )
+              .then(() => true)
+              .catch(() => false))) {
+              await settingsMenuItemLi.evaluate((el) => (el as HTMLElement).click());
+            }
+          };
+          await navigateToEnvSettings();
+          await page
+            .waitForFunction(
+              () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
+              null,
+              { timeout: fastFailCap(22_000) }
+            )
+            .catch(() => {});
+          // Environment settings (tabs + name-field) — not project Settings (`.../settings/general` alone).
+          const settingsChrome = page.locator(
+            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
+          );
+          const tryNavToEnvSettingsHref = async (href: string | null) => {
+            if (!href || !/\/envs\//i.test(href)) return;
+            const origin = page.url().replace(/#.*$/, "");
+            const d = href.trim();
+            const fullUrl = d.startsWith("http")
+              ? d
+              : d.startsWith("#")
+                ? origin + d
+                : d.startsWith("/")
+                  ? `${origin}#!${d}`
+                  : `${origin}#${d.replace(/^#/, "")}`;
+            await page.goto(fullUrl, { waitUntil: "domcontentloaded", timeout: Math.min(t0, fastFailCap(60_000)) }).catch(() => {});
+            await page.waitForTimeout(700);
+            if (await settingsChrome.first().isVisible({ timeout: fastFailCap(14_000) }).catch(() => false)) return;
+            const hashM = d.match(/#(!(?:\/launch\/[^#'"]+))/i) || fullUrl.match(/#(!(?:\/launch\/[^#'"]+))/i);
+            const seg = hashM?.[1];
+            if (seg) {
+              await page
+                .evaluate((hash) => {
+                  window.location.hash = hash.startsWith("#") ? hash : `#${hash}`;
+                }, seg)
+                .catch(() => {});
+              await page.waitForTimeout(1100);
+            }
+          };
+          if (!(await settingsChrome.first().isVisible({ timeout: fastFailCap(20_000) }).catch(() => false))) {
+            await tryNavToEnvSettingsHref(menuSettingsHref);
+            if (!skipDefaultEnvHash) {
+              const projNav = page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
+              const envFromDom =
+                menuReopenRow === "default"
+                  ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
+                  : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null);
+              if (projNav && envFromDom) {
+                await tryNavToEnvSettingsHref(`#!/launch/projects/${projNav}/envs/${envFromDom}/settings/general`);
+              }
+            }
+          }
+          if (!skipDefaultEnvHash && !(await settingsChrome.first().isVisible({ timeout: fastFailCap(8_000) }).catch(() => false))) {
+            const row2 =
+              menuReopenRow === "default"
+                ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, Math.min(t0, fastFailCap(45_000)))
+                : await resolveLaunchEnvironmentsFirstTableRow(page, Math.min(t0, fastFailCap(45_000)));
+            let deep = await row2
+              .locator('a[href*="/envs/"][href*="settings" i]')
+              .first()
+              .getAttribute("href")
+              .catch(() => null);
+            if (!deep) {
+              deep = await row2
+                .locator('a[href*="/envs/"]')
+                .first()
+                .getAttribute("href")
+                .catch(() => null);
+            }
+            if (!deep) {
+              deep = await row2
+                .evaluate((el) => {
+                  const a = el.querySelector(
+                    'a[href*="/envs/"][href*="settings" i], a[href*="/envs/"]'
+                  ) as HTMLAnchorElement | null;
+                  return a?.getAttribute("href") ?? null;
+                })
+                .catch(() => null);
+            }
+            if (deep && /\/envs\/.+\/settings/i.test(deep)) {
+              await tryNavToEnvSettingsHref(deep);
+            } else {
+              const rowHtml = await row2.evaluate((el) => (el as HTMLElement).outerHTML).catch(() => "");
+              const envId =
+                rowHtml.match(/\/envs\/([a-f0-9]{24})\b/i)?.[1] ??
+                rowHtml.match(/\/envs\/([a-f0-9-]{36})\b/i)?.[1] ??
+                rowHtml.match(/\/envs\/([^/"'\s>]+)/i)?.[1];
+              const projId = page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
+              if (envId && projId) {
+                await tryNavToEnvSettingsHref(`#!/launch/projects/${projId}/envs/${envId}/settings/general`);
+              }
+            }
+          }
+          await expect(settingsChrome.first()).toBeVisible({ timeout: Math.min(t0, fastFailCap(90_000)) });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (
+          flowIdLower === "environment-variables" ||
+          flowIdLower === "auto-populate-environment-variables-from-a-linked-stack"
+        ) {
+          if (step.target === "Launch environment settings Environment Variables tab (doc step)") {
+            const tab = page.locator('[data-testid="environment-variables-tab"]').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch environment settings Add Environment Variable button (doc step)") {
+            const btn = page.locator('[data-testid="add-variable-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 30_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch environment settings Save Environment Variables button (doc step)") {
+            const btn = page.locator('[data-testid="envvariables-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 90_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(600);
+            break;
+          }
+        }
+        // auto-populate linked stack doc — post-Deploy: Settings → Stack Integration → Connect Stack; Environments → Default → Env Vars → Sync Stack Variables.
+        if (flowIdLower === "auto-populate-environment-variables-from-a-linked-stack") {
+          if (
+            step.target === "Launch project top navigation Settings (doc step)" ||
+            step.target === "Launch left-hand primary navigation Settings icon (doc step)"
+          ) {
+            const btn = page.locator('[data-test-id="launch-nav-settings"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Launch Settings left navigation Stack Integration row (doc step)") {
+            const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+            await nav.waitFor({ state: "visible", timeout: Math.min(t0, 60_000) }).catch(() => {});
+            const row = nav.locator('[data-test-id="cs-list-row"]#stackIntegration').first();
+            await expect(row).toBeVisible({ timeout: t0 });
+            await row.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+          if (step.target === "Launch Stack Integration project stack Select control (doc step)") {
+            const main = page
+              .locator('[data-test-id="cs-page-layout-main"], .PageLayout__mainContent, main')
+              .first();
+            let ctrl = main
+              .locator(
+                'div.Field:has(label:has-text("Stack")) div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            if (!(await ctrl.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              ctrl = page
+                .locator(
+                  'div.Field:has(label:has-text("Stack")) div.Select__control:not(.Select__control--is-disabled)'
+                )
+                .first();
+            }
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Stack Integration project stack menu pick option (doc step)") {
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: Math.min(t0, 45_000) });
+            const candidates = menu.locator(".Select__option");
+            const n = await candidates.count();
+            let pickIdx = 0;
+            if (n >= 2) pickIdx = 1;
+            let picked = false;
+            for (let attempt = 0; attempt < Math.max(1, n); attempt++) {
+              const idx = (pickIdx + attempt) % Math.max(1, n);
+              const o = candidates.nth(idx);
+              const txt = ((await o.textContent().catch(() => "")) || "").trim();
+              if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+              await o.click({ timeout: t0, force: true });
+              picked = true;
+              break;
+            }
+            if (!picked && n > 0) {
+              await candidates.first().click({ timeout: t0, force: true });
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch Stack Integration Connect Stack button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Connect Stack$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Launch environment settings Sync Stack Variables button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Sync Stack Variables$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 60_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(550);
+            break;
+          }
+          if (step.target === "Launch sync stack variables modal Delivery Token Select control (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            let ctrl = wiz
+              .locator(
+                'div.Field:has(label:has-text("Delivery Token")) div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            if (!(await ctrl.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              ctrl = wiz
+                .locator(
+                  'div.Field:has(label:has-text("Delivery Token")) div.Select__control:not(.Select__control--is-disabled)'
+                )
+                .first();
+            }
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch sync stack variables modal Delivery Token menu first option (doc step)") {
+            const lb = page.getByRole("listbox").last();
+            let picked = false;
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const opts = lb.getByRole("option");
+              const n = await opts.count();
+              for (let i = 0; i < n; i++) {
+                const o = opts.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                await o.click({ timeout: t0, force: true });
+                picked = true;
+                break;
+              }
+              if (!picked) {
+                await lb.getByRole("option").first().click({ timeout: t0, force: true });
+              }
+            } else {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+              await expect(menu).toBeVisible({ timeout: 30_000 });
+              const candidates = menu.locator(".Select__option");
+              const n = await candidates.count();
+              for (let i = 0; i < n; i++) {
+                const o = candidates.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                await o.click({ timeout: t0, force: true });
+                picked = true;
+                break;
+              }
+              if (!picked) {
+                await candidates.first().click({ timeout: t0, force: true });
+              }
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch sync stack variables modal Sync Stack Variables confirm button (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            let btn = wiz.getByRole("button", { name: /^Sync Stack Variables$/i }).first();
+            if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              btn = wiz.locator('[data-testid="sync-stack-variables"], button:has-text("Sync Stack Variables")').first();
+            }
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 90_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (flowIdLower === "custom-domain" || flowIdLower === "setup-production-and-non-production-environment") {
+          if (step.target === "Launch environment settings Domains tab (doc step)") {
+            const tab = page.locator('[data-testid="domains-tab"]').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch environment settings New Domain button (doc step)") {
+            const btn = page.locator('[data-testid="add-domain-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 30_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch Create Custom Domain modal dismiss without saving (doc step)") {
+            const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create Custom Domain|Custom Domain/i }).first();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const close = dlg.locator('[data-test-id="cs-modal-close"]').first();
+            await expect(close).toBeVisible({ timeout: Math.min(t0, 25_000) });
+            await close.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Create Custom Domain modal submit (doc step)") {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ hasText: /custom domain|domain name|new domain/i })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const btn = dlg.getByRole("button", { name: /Create Custom Domain/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 60_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (flowIdLower === "password-protection") {
+          if (step.target === "Launch environment settings Password Protection tab (doc step)") {
+            const tab = page.locator('[data-testid="password-protection-tab"]').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (
+            step.target === "Launch Password Protection enable toggle (doc step)" ||
+            step.target === "Launch Password Protection disable toggle (doc step)"
+          ) {
+            const toggle = page
+              .locator(
+                '[data-test-id="cs-toggle-switch"] input[type="checkbox"], [data-test-id="cs-toggle-switch"] input[aria-label="aria-toggle-switch"]'
+              )
+              .first();
+            await expect(toggle).toBeVisible({ timeout: t0 });
+            await toggle.click({ timeout: t0 });
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "Launch Password Protection Save Password Protection Settings button (doc step)") {
+            const btn = page.locator('[data-testid="password-protection-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 90_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Launch Password Protection Yes Disable button (doc step)") {
+            const dlg = page.locator('[role="dialog"]').first();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const byTestId = dlg.locator('[data-testid="disable-password-protection-button"]').first();
+            const byName = dlg.getByRole("button", { name: /^Yes, Disable$/i }).first();
+            const btn = (await byTestId.isVisible().catch(() => false)) ? byTestId : byName;
+            await expect(btn).toBeVisible({ timeout: Math.min(t0, 20_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 30_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(600);
+            break;
+          }
+        }
+        if (flowIdLower === "event-tracking-in-contentstack-launch") {
+          if (step.target === "Launch environment settings Event Tracking tab (doc step)") {
+            const tab = page.locator('[data-test-id="cs-tabs-item"]:has([data-testid="lytics-tab"])').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          const eventTrackingPanel = page.locator(".Tab__Info").first();
+          if (
+            step.target === "Launch Event Tracking enable toggle (doc step)" ||
+            step.target === "Launch Event Tracking disable toggle (doc step)"
+          ) {
+            const byId = eventTrackingPanel.locator("#lytics").first();
+            const inSwitch = eventTrackingPanel
+              .locator('[data-test-id="cs-toggle-switch"] input[type="checkbox"]')
+              .first();
+            const el = (await byId.isVisible({ timeout: 5_000 }).catch(() => false)) ? byId : inSwitch;
+            await expect(el).toBeVisible({ timeout: t0 });
+            await el.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Event Tracking enable consent checkbox (doc step)") {
+            const dlg = page.locator('[role="dialog"]').first();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const cb = dlg.locator('input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: Math.min(t0, 30_000) });
+            if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: t0 });
+            await page.waitForTimeout(350);
+            break;
+          }
+          if (step.target === "Launch Event Tracking Yes Enable Event Tracking button (doc step)") {
+            const dlg = page.locator('[role="dialog"]').first();
+            const btn = dlg.getByRole("button", { name: /^Yes, Enable Event Tracking$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 90_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+          if (step.target === "Launch Event Tracking Yes Disable Event Tracking button (doc step)") {
+            const dlg = page.locator('[role="dialog"]').first();
+            const btn = dlg.getByRole("button", { name: /^Yes, Disable Event Tracking$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 90_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (flowIdLower === "disable-automatic-redeployment" || flowIdLower === "setup-production-and-non-production-environment") {
+          if (step.target === "Launch environment settings Deployments tab (doc step)") {
+            const tab = page.locator('[data-testid="deployments-tab"]').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch Auto Deploy on Commits toggle (doc step)") {
+            const byRole = page.getByRole("checkbox", { name: /Auto Deploy on Commits/i });
+            if (await byRole.isVisible({ timeout: 6_000 }).catch(() => false)) {
+              if (await byRole.isChecked()) await byRole.click({ timeout: t0 });
+            } else {
+              const scope = page
+                .locator(".Form__item, .Field, [data-test-id=\"cs-field\"]")
+                .filter({ hasText: /Auto Deploy on Commits/i })
+                .first();
+              const toggle = scope
+                .locator(
+                  '[data-test-id="cs-toggle-switch"] input[type="checkbox"], [data-test-id="cs-toggle-switch"] input[aria-label="aria-toggle-switch"]'
+                )
+                .first();
+              await expect(toggle).toBeVisible({ timeout: t0 });
+              if (await toggle.isChecked()) await toggle.click({ timeout: t0 });
+            }
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "Launch Auto Deploy on Commits toggle enable if off (doc step)") {
+            const byRole = page.getByRole("checkbox", { name: /Auto Deploy on Commits/i });
+            if (await byRole.isVisible({ timeout: 6_000 }).catch(() => false)) {
+              if (!(await byRole.isChecked())) await byRole.click({ timeout: t0 });
+            } else {
+              const scope = page
+                .locator(".Form__item, .Field, [data-test-id=\"cs-field\"]")
+                .filter({ hasText: /Auto Deploy on Commits/i })
+                .first();
+              const toggle = scope
+                .locator(
+                  '[data-test-id="cs-toggle-switch"] input[type="checkbox"], [data-test-id="cs-toggle-switch"] input[aria-label="aria-toggle-switch"]'
+                )
+                .first();
+              await expect(toggle).toBeVisible({ timeout: t0 });
+              if (!(await toggle.isChecked())) await toggle.click({ timeout: t0 });
+            }
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "Launch Save Deployment Settings button (doc step)") {
+            const btn = page
+              .locator('[data-testid="settings-save-button"]')
+              .filter({ hasText: /Save Deployment Settings/i })
+              .first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            if (await btn.isEnabled({ timeout: 8_000 }).catch(() => false)) {
+              await expect(btn).toBeEnabled({ timeout: Math.min(t0, 60_000) });
+              await btn.click({ timeout: t0 });
+            }
+            await page.waitForTimeout(600);
+            break;
+          }
+        }
+        if (
+          flowIdLower === "redeploy-automatically-when-content-is-published-on-cms" ||
+          flowIdLower === "trigger-deployments-on-launch-based-on-tags-releases"
+        ) {
+          if (
+            step.target === "Launch redeploy doc store deploy hook URL and copy (doc step)" ||
+            step.target === "Launch copy generated Deploy Hook URL (doc step)"
+          ) {
+            const urlCell = page.locator('[data-testid^="deploy-hook-url"]').first();
+            const link = urlCell.locator('a[href*="http"]').first();
+            await expect(link).toBeVisible({ timeout: t0 });
+            const href = await link.getAttribute("href");
+            if (!href?.trim()) {
+              throw new Error("Launch deploy hook doc: could not read Deploy Hook URL from the Deploy Hooks table.");
+            }
+            if (flow && typeof flow === "object") (flow as any).redeployCmsDeployHookUrl = href.trim();
+            const copyBtn = urlCell.locator('[data-test-id="cs-clipboard"] button').first();
+            await expect(copyBtn).toBeVisible({ timeout: t0 });
+            await copyBtn.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+        }
+        if (flowIdLower === "redeploy-automatically-when-content-is-published-on-cms") {
+          if (step.target === "CMS redeploy doc open stack from org dashboard (doc step)") {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { ensureOnStacksAndSelectStack } = require("../../core/navigation");
+            await ensureOnStacksAndSelectStack(page);
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Enable Webhook toggle (doc step)") {
+            const cb = page.locator('[data-test-id="cs-webhook-switch-enabled"] input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: t0 });
+            if (!(await cb.isChecked())) await cb.click({ timeout: t0 });
+            await page.waitForTimeout(350);
+            break;
+          }
+        }
+        if (isDeployHooksStyleFlow(flow)) {
+          if (step.target === "Launch environment settings Deploy Hooks tab (doc step)") {
+            const tab = page.locator('[data-testid="deploy-hooks-tab"]').first();
+            await expect(tab).toBeVisible({ timeout: t0 });
+            await tab.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "+ New Deploy Hook (doc step)") {
+            const emptyBtn = page.locator('[data-testid="empty-state-add-deploy-hook-button"]').first();
+            const primary = page.getByRole("button", { name: /New Deploy Hook/i }).first();
+            if (await emptyBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await emptyBtn.click({ timeout: t0 });
+            } else {
+              await expect(primary).toBeVisible({ timeout: t0 });
+              await primary.click({ timeout: t0 });
+            }
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Create Deploy Hook modal submit (doc step)") {
+            const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create Deploy Hook/i }).first();
+            const btn = dlg.locator('[data-testid="save-deploy-hook-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 30_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (isLaunchEnvironmentsExtendedFlow(flow)) {
+          // create-new-env-git-m.html — Git path: name → Git Branch → Build/Output → Env vars → Create (doc order).
+          const createNewEnvDlg = () =>
+            page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          if (step.target === "Launch + New Environment button (doc step)") {
+            const btn = page.locator('[data-testid="create-new-env"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Git Branch Select control (doc step)") {
+            const dlg = createNewEnvDlg();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const ctrl = dlg
+              .locator(
+                'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled), div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Git Branch menu first option (doc step)") {
+            await pickFirstSelectMenuOption(page, t0);
+            await page.waitForTimeout(800);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Add Environment Variable button (doc step)") {
+            const dlg = createNewEnvDlg();
+            const addBtn = dlg.locator('[data-testid="add-variable-button"]').first();
+            await expect(addBtn).toBeVisible({ timeout: t0 });
+            await expect(addBtn).toBeEnabled({ timeout: Math.min(t0, 30_000) });
+            await addBtn.click({ timeout: t0 });
+            await page.waitForTimeout(500);
+            const keyInput = dlg
+              .locator('input[placeholder*="Key" i], input[name="key" i], [data-testid*="env-var"] input')
+              .first();
+            if (await keyInput.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await keyInput.fill(`DOC_AUTO_KEY_${unique.replace(/-/g, "_")}`);
+              const valInput = dlg
+                .locator('input[placeholder*="Value" i], input[name="value" i]')
+                .first();
+              if (await valInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                await valInput.fill("1");
+              }
+            }
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Create button (doc step)") {
+            const dlg = createNewEnvDlg();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const btn = await ensureLaunchCreateNewEnvironmentCreateEnabled(page, dlg, t0);
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Framework Preset Select control for Server Command doc (doc step)") {
+            const dlg = createNewEnvDlg();
+            await expect(dlg).toBeVisible({ timeout: t0 });
+            const ctrl = dlg.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Create New Environment Framework Preset Other or Angular menu option (doc step)") {
+            await pickFrameworkPresetOtherOrAngular(page, t0);
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Launch Create New Environment file upload Framework Preset Select control (doc step)") {
+            const dlg = createNewEnvDlg();
+            const ctrl = dlg.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Create New Environment file upload Framework Preset menu first option (doc step)") {
+            await pickFirstSelectMenuOption(page, t0);
+            await page.waitForTimeout(800);
+            break;
+          }
+          if (step.target === "Launch Environments Table Settings button (doc step)") {
+            const btn = page.locator('[data-test-id="cs-table-settings-wrapper"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch Environments Manage columns menu item (doc step)") {
+            const item = page.locator('[data-test-id="table-panel-action-list-item_manage_columns"]').first();
+            await expect(item).toBeVisible({ timeout: t0 });
+            await item.hover().catch(() => {});
+            await item.click({ timeout: t0, force: true });
+            await page.waitForTimeout(500);
+            await expect(page.locator("li#autoDeploy").first()).toBeVisible({ timeout: Math.min(t0, 25_000) });
+            break;
+          }
+          if (step.target === "Launch Environments Manage columns Auto Deploy checkbox (doc step)") {
+            const cb = page.locator("li#autoDeploy").first().locator('input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: t0 });
+            if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: t0, force: true });
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (step.target === "Launch Environments Manage columns Created At checkbox (doc step)") {
+            const cb = page.locator("li#createdAt").first().locator('input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: t0 });
+            if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: t0, force: true });
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (step.target === "Launch environment settings Git Branch Select control (doc step)") {
+            const ctrl = page
+              .locator(
+                'form.environment-details-section div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled), .environment-details-section div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            await expect(ctrl).toBeVisible({ timeout: t0 });
+            await ctrl.click({ timeout: t0, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Launch environment settings Git Branch menu first option (doc step)") {
+            await pickFirstSelectMenuOption(page, t0);
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch environment settings Save Environment Details button (doc step)") {
+            const btn = page.locator('[data-testid="settings-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: t0 });
+            await expect(btn).toBeEnabled({ timeout: Math.min(t0, 60_000) });
+            await btn.click({ timeout: t0 });
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Launch Create New Environment modal Cancel (doc step)") {
+            const dlg = createNewEnvDlg();
+            const cancel = dlg.locator('[data-testid="new-env-cancel"]').first();
+            await expect(cancel).toBeVisible({ timeout: t0 });
+            await cancel.click({ timeout: t0 });
+            await page.waitForTimeout(450);
+            break;
+          }
+        }
+      }
+
       // about-workflow-tasks / use-task-filter — Top Bar Tasks beside Help (tasks-icon.html: data-test-id="cms-nav-tasks").
       if (
         (isAboutWorkflowTasksFlow(flow) || isUseTaskFilterFlow(flow)) &&
@@ -2089,7 +4748,7 @@ export async function performAction(
 
       // If user clicks Settings/Edit from that menu, do a safe menu-item click
       if (step.target === "Settings" || step.target === "Edit") {
-        await clickRowActionMenuItem(page, step.target, flow);
+        await clickRowActionMenuItem(page, step.target, flow, step);
         break;
       }
 
@@ -4900,26 +7559,20 @@ export async function performAction(
         const copyBtn = page.locator('button[data-test-id="cs-cb-copy-ct"]').first();
 
         for (let attempt = 1; attempt <= 2; attempt++) {
-          // Always open the menu fresh for this action (avoids "menu is half-closed" flake).
-          await openRowActionMenu(page, { action: "click", target: "vertical ellipsis" } as Step, flow);
+          await openRowActionMenu(page, {
+            action: "click",
+            target: "vertical ellipsis",
+            expected: step.expected,
+          } as Step, flow);
 
-          const menuRoot = await getRowActionMenuRoot(page);
+          const menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
           const itemText = menuRoot.locator('li[data-test-id="cs-ct-action-copy"] .ml-8').first();
           const itemLi = menuRoot.locator('li[data-test-id="cs-ct-action-copy"]').first();
 
           const item = (await itemText.isVisible().catch(() => false)) ? itemText : itemLi;
           await expect(item).toBeVisible({ timeout: 5_000 });
+          await item.click({ timeout: 5_000 });
 
-          // Real mouse click at center (matches manual behavior better than locator.click in this popover)
-          const box = await item.boundingBox().catch(() => null);
-          if (box) {
-            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
-            await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { delay: 30 }).catch(() => {});
-          } else {
-            await item.click({ timeout: 2_000, force: true }).catch(() => {});
-          }
-
-          // Wait briefly for modal marker
           await expect(copyBtn).toBeVisible({ timeout: 6_000 }).catch(() => {});
           if (await copyBtn.isVisible().catch(() => false)) break;
         }
@@ -4933,28 +7586,43 @@ export async function performAction(
 
       // Special case: row action menu -> "Delete" should open a confirmation modal
       if (step.target === "Delete") {
-        const deleteDialog = page.getByRole("dialog").filter({ hasText: /delete/i }).first();
+        const delFlowId = String(flow?.id || "").toLowerCase();
+        const studioCompositionDelete =
+          delFlowId === "manage-a-composition-part-1" || delFlowId === "manage-a-composition-part-2";
+        const deleteDialog = studioCompositionDelete
+          ? page.getByRole("dialog").filter({ hasText: /Delete Composition/i }).first()
+          : page.getByRole("dialog").filter({ hasText: /delete/i }).first();
 
         for (let attempt = 1; attempt <= 2; attempt++) {
           // Always open the menu fresh for this action (avoids "menu is half-closed" flake).
           await openRowActionMenu(page, { action: "click", target: "vertical ellipsis", expected: step.expected } as Step, flow);
 
-          const menuRoot = await getRowActionMenuRoot(page);
-          const itemText = menuRoot.locator('li[data-test-id="cs-ct-action-delete"] .ml-8').first();
-          const itemLi = menuRoot.locator('li[data-test-id="cs-ct-action-delete"]').first();
-
-          const item = (await itemText.isVisible().catch(() => false)) ? itemText : itemLi;
-          await expect(item).toBeVisible({ timeout: 5_000 });
-
-          const box = await item.boundingBox().catch(() => null);
-          if (box) {
-            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2).catch(() => {});
-            await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { delay: 30 }).catch(() => {});
+          const menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
+          let item: Locator;
+          if (studioCompositionDelete) {
+            const candidates: Locator[] = [
+              menuRoot.locator('[data-test-id="cs-vertical-action-tooltip-actions"] li').filter({ hasText: /^Delete$/i }).first(),
+              menuRoot.locator('[data-test-id*="studio" i][data-test-id*="delete" i]').first(),
+              menuRoot.locator('li[data-test-id*="delete" i]').first(),
+              menuRoot.getByRole("menuitem", { name: /^Delete$/i }).first(),
+              menuRoot.getByText("Delete", { exact: true }).first(),
+            ];
+            let picked: Locator | null = null;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                picked = c;
+                break;
+              }
+            }
+            item = picked ?? menuRoot.getByText("Delete", { exact: true }).first();
           } else {
-            await item.click({ timeout: 2_000, force: true }).catch(() => {});
+            const itemText = menuRoot.locator('li[data-test-id="cs-ct-action-delete"] .ml-8').first();
+            const itemLi = menuRoot.locator('li[data-test-id="cs-ct-action-delete"]').first();
+            item = (await itemText.isVisible().catch(() => false)) ? itemText : itemLi;
           }
+          await expect(item).toBeVisible({ timeout: 5_000 });
+          await item.click({ timeout: 5_000 });
 
-          // Wait briefly for modal marker
           await expect(deleteDialog).toBeVisible({ timeout: 6_000 }).catch(() => {});
           if (await deleteDialog.isVisible().catch(() => false)) break;
         }
@@ -7178,6 +9846,1460 @@ export async function performAction(
         break;
       }
 
+      // Launch create project — Git import (GitHub / Bitbucket), file upload (zip + Next + deploy).
+      if (
+        step.action === "click" &&
+        (String(flow?.id || "").toLowerCase() === "import-project-using-github" ||
+          String(flow?.id || "").toLowerCase() === "import-a-project-using-bitbucket-cloud" ||
+          String(flow?.id || "").toLowerCase() === "import-project-using-file-upload" ||
+          String(flow?.id || "").toLowerCase() === "deploy-a-project-from-a-monorepo" ||
+          String(flow?.id || "").toLowerCase() === "auto-populate-environment-variables-from-a-linked-stack" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-remix" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-vue" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-nextjs" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-nuxt" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-angular" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-analog" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-react" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-gatsby" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-generic-csr" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-astro")
+      ) {
+        const tImport = getStepTimeoutMs(step);
+        const launchImportFlowId = String(flow?.id || "").toLowerCase();
+        const isLaunchGitStyleImport =
+          launchImportFlowId === "import-project-using-github" ||
+          launchImportFlowId === "import-a-project-using-bitbucket-cloud" ||
+          launchImportFlowId === "deploy-a-project-from-a-monorepo" ||
+          launchImportFlowId === "auto-populate-environment-variables-from-a-linked-stack" ||
+          launchImportFlowId === "quick-start-remix" ||
+          launchImportFlowId === "quick-start-vue" ||
+          launchImportFlowId === "quick-start-nextjs" ||
+          launchImportFlowId === "quick-start-nuxt" ||
+          launchImportFlowId === "quick-start-angular" ||
+          launchImportFlowId === "quick-start-analog" ||
+          launchImportFlowId === "quick-start-react" ||
+          launchImportFlowId === "quick-start-gatsby" ||
+          launchImportFlowId === "quick-start-generic-csr" ||
+          launchImportFlowId === "quick-start-astro";
+
+        if (launchImportFlowId === "import-project-using-file-upload" && step.target === "Launch file upload Next (doc step)") {
+          const btn = page.getByRole("dialog").locator('[data-testid="next-button"]').first();
+          await expect(btn).toBeVisible({ timeout: tImport });
+          await expect(btn).toBeEnabled({ timeout: Math.max(tImport, 180_000) });
+          await btn.click({ timeout: tImport });
+          await page.waitForTimeout(600);
+          const projectNameLabel = page
+            .getByRole("dialog")
+            .last()
+            .locator(
+              'form[data-test-id="cs-form"] label[data-test-id="cs-field-label"]:has-text("Project Name"), .importProjectStep2 label.FieldLabel:has-text("Project Name")'
+            )
+            .first();
+          await expect(projectNameLabel).toBeVisible({ timeout: 120_000 });
+          break;
+        }
+
+        if (launchImportFlowId === "import-a-project-using-bitbucket-cloud" && step.target === "Bitbucket Cloud provider card (doc step)") {
+          const modal = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+          await modal.waitFor({ state: "visible", timeout: tImport }).catch(() => {});
+          const card = modal
+            .locator(
+              '[data-testid="provider-card-bitbucket-cloud"], [data-test-id="launch-click-btn-primary-action-survey-select-bitbucket-cloud-project"]'
+            )
+            .first();
+          await expect(card).toBeVisible({ timeout: tImport });
+          await card.scrollIntoViewIfNeeded().catch(() => {});
+          const box = await card.boundingBox();
+          if (box) {
+            await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.58);
+          } else {
+            await card.locator(".text-center").first().click({ timeout: tImport, force: true });
+          }
+          await page.waitForTimeout(400);
+          const repoLabel = page
+            .getByRole("dialog")
+            .last()
+            .locator(
+              'form[data-test-id="cs-form"] label[data-test-id="cs-field-label"]:has-text("Repository"), .importProjectStep2 label.FieldLabel:has-text("Repository")'
+            )
+            .first();
+          await expect(repoLabel).toBeVisible({ timeout: Math.min(Math.max(tImport, 45_000), 120_000) });
+          break;
+        }
+
+        if (
+          (launchImportFlowId === "import-project-using-github" ||
+            launchImportFlowId === "deploy-a-project-from-a-monorepo" ||
+            launchImportFlowId === "auto-populate-environment-variables-from-a-linked-stack" ||
+            launchImportFlowId === "quick-start-remix" ||
+            launchImportFlowId === "quick-start-vue" ||
+            launchImportFlowId === "quick-start-nextjs" ||
+            launchImportFlowId === "quick-start-nuxt" ||
+            launchImportFlowId === "quick-start-angular" ||
+            launchImportFlowId === "quick-start-analog" ||
+            launchImportFlowId === "quick-start-react" ||
+            launchImportFlowId === "quick-start-gatsby" ||
+            launchImportFlowId === "quick-start-generic-csr" ||
+            launchImportFlowId === "quick-start-astro") &&
+          step.target === "GitHub card on Create New Project (doc step)"
+        ) {
+          const modal = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+          await modal.waitFor({ state: "visible", timeout: tImport }).catch(() => {});
+          const card = modal
+            .locator(
+              'div.providerCardWrapper.cardHover[data-test-id="launch-click-btn-primary-action-survey-select-github-project"][data-testid="provider-card-0"]'
+            )
+            .first();
+          await expect(card).toBeVisible({ timeout: tImport });
+          await card.scrollIntoViewIfNeeded().catch(() => {});
+          // Connected + ⋮ live in the top band; use a point on the logo/GitHub title stack (lower-middle of card).
+          const box = await card.boundingBox();
+          if (box) {
+            await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.58);
+          } else {
+            await card.locator(".text-center").first().click({ timeout: tImport, force: true });
+          }
+          await page.waitForTimeout(400);
+          const repoLabel = page
+            .getByRole("dialog")
+            .last()
+            .locator(
+              'form[data-test-id="cs-form"] label[data-test-id="cs-field-label"]:has-text("Repository"), .importProjectStep2 label.FieldLabel:has-text("Repository")'
+            )
+            .first();
+          await expect(repoLabel).toBeVisible({ timeout: Math.min(Math.max(tImport, 45_000), 120_000) });
+          break;
+        }
+        if (isLaunchGitStyleImport && step.target === "Launch repository Select control (doc step)") {
+          const ctrl = page
+            .locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository")) div.Select__control')
+            .first();
+          await expect(ctrl).toBeVisible({ timeout: tImport });
+          await ctrl.click({ timeout: tImport, force: true });
+          await page.waitForTimeout(450);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+          await expect(menu).toBeVisible({ timeout: 45_000 });
+          break;
+        }
+        if (
+          isLaunchGitStyleImport &&
+          launchImportFlowId !== "deploy-a-project-from-a-monorepo" &&
+          step.target === "Launch import Repository menu first option (doc step)"
+        ) {
+          const pickFirstRealOption = async () => {
+            const lb = page.getByRole("listbox").last();
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const opts = lb.getByRole("option");
+              const n = await opts.count();
+              for (let i = 0; i < n; i++) {
+                const o = opts.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                await o.click({ timeout: tImport, force: true });
+                return;
+              }
+              await opts.first().click({ timeout: tImport, force: true });
+              return;
+            }
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 35_000 });
+            const candidates = menu.locator(".Select__option");
+            const n = await candidates.count();
+            for (let i = 0; i < n; i++) {
+              const o = candidates.nth(i);
+              const txt = ((await o.textContent().catch(() => "")) || "").trim();
+              if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+              await o.click({ timeout: tImport, force: true });
+              return;
+            }
+            await candidates.first().click({ timeout: tImport, force: true });
+          };
+          await pickFirstRealOption();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "deploy-a-project-from-a-monorepo" && step.target === "Launch import Repository menu turborepo-npm-demo option (doc step)") {
+          const pickTurborepo = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            // Doc repo: https://github.com/contentstack-launch-examples/turborepo-npm-demo — async list must be filtered (typing).
+            // Placeholder div can intercept pointer events on the input; fill with force focuses and types.
+            const repoOptionMatch =
+              process.env.LAUNCH_MONOREPO_REPO_OPTION_MATCH?.trim() || "turborepo-npm-demo";
+            const optionRe = new RegExp(escapeRegex(repoOptionMatch), "i");
+            const queries = process.env.LAUNCH_MONOREPO_REPO_SEARCH_QUERIES?.trim()
+              ? process.env.LAUNCH_MONOREPO_REPO_SEARCH_QUERIES.split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : ["turborepo-npm-demo", "contentstack-launch-examples", "turborepo"];
+            for (const q of queries) {
+              await input.fill("", { force: true });
+              await input.fill(q, { force: true });
+              await page.waitForTimeout(900);
+              const opt = page.locator('[role="option"]').filter({ hasText: optionRe }).first();
+              try {
+                await expect(opt).toBeVisible({ timeout: 45_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return;
+              } catch {
+                /* try next query */
+              }
+            }
+            throw new Error(
+              `Launch monorepo flow: repository matching "${repoOptionMatch}" not found after search. Grant the GitHub integration access to github.com/contentstack-launch-examples/turborepo-npm-demo, fork the repo into your org, or set LAUNCH_MONOREPO_REPO_SEARCH_QUERIES and LAUNCH_MONOREPO_REPO_OPTION_MATCH (see deploy-a-project-from-a-monorepo doc).`
+            );
+          };
+          await pickTurborepo();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-remix" && step.target === "Launch import Repository menu remix-portfolio option (doc step)") {
+          const pickRemixPortfolio = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            // Doc example: github.com/contentstack-launch-examples/remix-portfolio — async repo list must be filtered (typing).
+            const repoOptionMatch =
+              process.env.LAUNCH_REMIX_REPO_OPTION_MATCH?.trim() || "remix-portfolio";
+            const optionRe = new RegExp(escapeRegex(repoOptionMatch), "i");
+            const queries = process.env.LAUNCH_REMIX_REPO_SEARCH_QUERIES?.trim()
+              ? process.env.LAUNCH_REMIX_REPO_SEARCH_QUERIES.split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : ["remix-portfolio", "remix portfolio", "contentstack-launch-examples"];
+            const menuVisible = async (): Promise<boolean> => {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if (await menu.isVisible({ timeout: 2_000 }).catch(() => false)) return true;
+              if (await lb.isVisible({ timeout: 2_000 }).catch(() => false)) return true;
+              return false;
+            };
+            const clickMatchingOption = async (): Promise<boolean> => {
+              const skipLoading = /^(loading|no options|no results)/i;
+              const tryLocators = [
+                page.locator('[role="option"]').filter({ hasText: optionRe }),
+                page.getByRole("listbox").last().getByRole("option").filter({ hasText: optionRe }),
+                page
+                  .locator("div.Select__menu")
+                  .filter({ has: page.locator(".Select__option") })
+                  .last()
+                  .locator(".Select__option")
+                  .filter({ hasText: optionRe }),
+                page.locator('[id^="react-select"][id*="-option-"]').filter({ hasText: optionRe }),
+              ];
+              for (const group of tryLocators) {
+                const n = await group.count().catch(() => 0);
+                for (let i = 0; i < n; i++) {
+                  const opt = group.nth(i);
+                  const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                  if (!txt || skipLoading.test(txt)) continue;
+                  if (!optionRe.test(txt)) continue;
+                  await opt.scrollIntoViewIfNeeded().catch(() => {});
+                  await expect(opt).toBeVisible({ timeout: 8_000 });
+                  await opt.click({ timeout: tImport, force: true });
+                  return true;
+                }
+              }
+              return false;
+            };
+            for (const q of queries) {
+              await input.click({ force: true }).catch(() => {});
+              await input.fill("", { force: true });
+              await input.pressSequentially(q, { delay: 35 });
+              await page.waitForTimeout(400);
+              const deadline = Date.now() + 50_000;
+              while (Date.now() < deadline) {
+                if (await menuVisible()) break;
+                await page.waitForTimeout(200);
+              }
+              await page.waitForTimeout(600);
+              if (await clickMatchingOption()) return;
+              await input.press("Enter").catch(() => {});
+              await page.waitForTimeout(500);
+              if (await clickMatchingOption()) return;
+            }
+            throw new Error(
+              `Launch quick-start-remix: repository matching "${repoOptionMatch}" not found after search. Grant the GitHub integration access to github.com/contentstack-launch-examples/remix-portfolio, fork the repo, or set LAUNCH_REMIX_REPO_SEARCH_QUERIES and LAUNCH_REMIX_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickRemixPortfolio();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-vue" && step.target === "Launch import Repository menu type vue pick dropdown option (doc step)") {
+          const pickVueRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_VUE_REPO_SEARCH?.trim() || "vue";
+            const optionMatchEnv = process.env.LAUNCH_VUE_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /vue/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-vue: no repository option after searching "${searchText}". Grant GitHub access to a Vue repo or set LAUNCH_VUE_REPO_SEARCH / LAUNCH_VUE_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickVueRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-nextjs" && step.target === "Launch import Repository menu type getting-started pick dropdown option (doc step)") {
+          const pickNextjsRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_NEXTJS_REPO_SEARCH?.trim() || "getting-started";
+            const optionMatchEnv = process.env.LAUNCH_NEXTJS_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /getting-started/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-nextjs: no repository option after searching "${searchText}". Grant GitHub access to a Next.js starter repo or set LAUNCH_NEXTJS_REPO_SEARCH / LAUNCH_NEXTJS_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickNextjsRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-nuxt" && step.target === "Launch import Repository menu type nuxt pick dropdown option (doc step)") {
+          const pickNuxtRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_NUXT_REPO_SEARCH?.trim() || "nuxt";
+            const optionMatchEnv = process.env.LAUNCH_NUXT_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /nuxt/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-nuxt: no repository option after searching "${searchText}". Grant GitHub access to a Nuxt sample repo or set LAUNCH_NUXT_REPO_SEARCH / LAUNCH_NUXT_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickNuxtRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-angular" && step.target === "Launch import Repository menu type angular pick dropdown option (doc step)") {
+          const pickAngularRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_ANGULAR_REPO_SEARCH?.trim() || "angular";
+            const optionMatchEnv = process.env.LAUNCH_ANGULAR_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /angular/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-angular: no repository option after searching "${searchText}". Grant GitHub access to the Angular starter repo or set LAUNCH_ANGULAR_REPO_SEARCH / LAUNCH_ANGULAR_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickAngularRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-analog" && step.target === "Launch import Repository menu type analog pick dropdown option (doc step)") {
+          const pickAnalogRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_ANALOG_REPO_SEARCH?.trim() || "analog";
+            const optionMatchEnv = process.env.LAUNCH_ANALOG_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /analog/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-analog: no repository option after searching "${searchText}". Grant GitHub access to the Analog starter repo or set LAUNCH_ANALOG_REPO_SEARCH / LAUNCH_ANALOG_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickAnalogRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-astro" && step.target === "Launch import Repository menu type astro pick dropdown option (doc step)") {
+          const pickAstroRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_ASTRO_REPO_SEARCH?.trim() || "astro";
+            const optionMatchEnv = process.env.LAUNCH_ASTRO_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /astro/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch quick-start-astro: no repository option after searching "${searchText}". Grant GitHub access to the Astro starter repo or set LAUNCH_ASTRO_REPO_SEARCH / LAUNCH_ASTRO_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickAstroRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (
+          (launchImportFlowId === "quick-start-react" || launchImportFlowId === "import-project-using-github") &&
+          step.target === "Launch import Repository menu type react pick dropdown option (doc step)"
+        ) {
+          const pickReactRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const searchText = process.env.LAUNCH_REACT_REPO_SEARCH?.trim() || "react";
+            const optionMatchEnv = process.env.LAUNCH_REACT_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /react/i;
+            await input.click({ force: true }).catch(() => {});
+            await input.fill("", { force: true });
+            await input.pressSequentially(searchText, { delay: 40 });
+            await page.waitForTimeout(400);
+            const deadline = Date.now() + 55_000;
+            while (Date.now() < deadline) {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+              const lb = page.getByRole("listbox").last();
+              if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+              await page.waitForTimeout(200);
+            }
+            await page.waitForTimeout(500);
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            await input.press("Enter").catch(() => {});
+            await page.waitForTimeout(450);
+            if (await tryPick(true)) return;
+            if (await tryPick(false)) return;
+            throw new Error(
+              `Launch ${launchImportFlowId}: no repository option after searching "${searchText}". Grant GitHub access to a matching repo or set LAUNCH_REACT_REPO_SEARCH / LAUNCH_REACT_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickReactRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-gatsby" && step.target === "Launch import Repository menu type gatsby pick dropdown option (doc step)") {
+          const pickGatsbyRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const optionMatchEnv = process.env.LAUNCH_GATSBY_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /gatsby/i;
+            const queries = process.env.LAUNCH_GATSBY_REPO_SEARCH_QUERIES?.trim()
+              ? process.env.LAUNCH_GATSBY_REPO_SEARCH_QUERIES.split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : process.env.LAUNCH_GATSBY_REPO_SEARCH?.trim()
+                ? [process.env.LAUNCH_GATSBY_REPO_SEARCH.trim()]
+                : ["gatsby-starter", "contentstack-gatsby", "gatsby", "contentstack-launch-examples"];
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            for (const searchText of queries) {
+              await input.click({ force: true }).catch(() => {});
+              await input.fill("", { force: true });
+              await input.pressSequentially(searchText, { delay: 40 });
+              await page.waitForTimeout(400);
+              const deadline = Date.now() + 55_000;
+              while (Date.now() < deadline) {
+                const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+                const lb = page.getByRole("listbox").last();
+                if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+                await page.waitForTimeout(200);
+              }
+              await page.waitForTimeout(500);
+              if (await tryPick(true)) return;
+              if (await tryPick(false)) return;
+              await input.press("Enter").catch(() => {});
+              await page.waitForTimeout(450);
+              if (await tryPick(true)) return;
+              if (await tryPick(false)) return;
+            }
+            throw new Error(
+              `Launch quick-start-gatsby: no repository option matched ${preferRe} after queries: ${queries.join(", ")}. Grant GitHub access to the Contentstack Gatsby starter or set LAUNCH_GATSBY_REPO_SEARCH_QUERIES / LAUNCH_GATSBY_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickGatsbyRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (launchImportFlowId === "quick-start-generic-csr" && step.target === "Launch import Repository menu type stencil-starter pick dropdown option (doc step)") {
+          const pickStencilStarterRepoBySearch = async () => {
+            const repoField = page.locator('div[data-test-id="cs-select-async"]:has(label:has-text("Repository"))').first();
+            const input = repoField
+              .locator(
+                'input[aria-label="cs-select-aria"], input[aria-label="cs-async-select-aria"], .Select__input input, input[id^="react-select"]'
+              )
+              .first();
+            await expect(input).toBeVisible({ timeout: 25_000 });
+            const optionMatchEnv = process.env.LAUNCH_GENERIC_CSR_REPO_OPTION_MATCH?.trim();
+            const preferRe = optionMatchEnv ? new RegExp(escapeRegex(optionMatchEnv), "i") : /stencil/i;
+            const queries = process.env.LAUNCH_GENERIC_CSR_REPO_SEARCH_QUERIES?.trim()
+              ? process.env.LAUNCH_GENERIC_CSR_REPO_SEARCH_QUERIES.split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : process.env.LAUNCH_GENERIC_CSR_REPO_SEARCH?.trim()
+                ? [process.env.LAUNCH_GENERIC_CSR_REPO_SEARCH.trim()]
+                : ["stencil-starter", "stencil starter", "contentstack-launch-examples", "stencil"];
+            const skipLoading = /^(loading|no options|no results)/i;
+            const clickFromGroup = async (group: Locator, preferMatch: boolean): Promise<boolean> => {
+              const n = await group.count().catch(() => 0);
+              for (let i = 0; i < n; i++) {
+                const opt = group.nth(i);
+                const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                if (!txt || skipLoading.test(txt)) continue;
+                if (preferMatch && !preferRe.test(txt)) continue;
+                await opt.scrollIntoViewIfNeeded().catch(() => {});
+                await expect(opt).toBeVisible({ timeout: 8_000 });
+                await opt.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const tryPick = async (preferMatch: boolean): Promise<boolean> => {
+              const lbOpts = page.getByRole("listbox").last().locator("[role=option]");
+              if (await clickFromGroup(lbOpts, preferMatch)) return true;
+              const menuOpts = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last().locator(".Select__option");
+              if (await clickFromGroup(menuOpts, preferMatch)) return true;
+              const portalOpts = page.locator('[id^="react-select"][id*="-option-"]');
+              if (await clickFromGroup(portalOpts, preferMatch)) return true;
+              return false;
+            };
+            for (const searchText of queries) {
+              await input.click({ force: true }).catch(() => {});
+              await input.fill("", { force: true });
+              await input.pressSequentially(searchText, { delay: 40 });
+              await page.waitForTimeout(400);
+              const deadline = Date.now() + 55_000;
+              while (Date.now() < deadline) {
+                const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option, [role='option']") }).last();
+                const lb = page.getByRole("listbox").last();
+                if ((await menu.isVisible().catch(() => false)) || (await lb.isVisible().catch(() => false))) break;
+                await page.waitForTimeout(200);
+              }
+              await page.waitForTimeout(500);
+              if (await tryPick(true)) return;
+              if (await tryPick(false)) return;
+              await input.press("Enter").catch(() => {});
+              await page.waitForTimeout(450);
+              if (await tryPick(true)) return;
+              if (await tryPick(false)) return;
+            }
+            throw new Error(
+              `Launch quick-start-generic-csr: no repository option matched ${preferRe} after queries: ${queries.join(", ")}. Grant GitHub access to the Stencil starter repo or set LAUNCH_GENERIC_CSR_REPO_SEARCH_QUERIES / LAUNCH_GENERIC_CSR_REPO_OPTION_MATCH.`
+            );
+          };
+          await pickStencilStarterRepoBySearch();
+          await page.waitForTimeout(800);
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const branchEnabled = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await branchEnabled.waitFor({ state: "visible", timeout: 30_000 });
+          break;
+        }
+        if (isLaunchGitStyleImport && step.target === "Launch import Git Branch select first value from dropdown (doc step)") {
+          const branchField = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"], div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"]'
+            )
+            .first();
+          await expect(branchField.locator(".Select--is-disabled")).toHaveCount(0, { timeout: 120_000 });
+          const ctrl = branchField.locator("div.Select__control:not(.Select__control--is-disabled)").first();
+          await expect(ctrl).toBeVisible({ timeout: tImport });
+          await ctrl.click({ timeout: tImport, force: true });
+          await page.waitForTimeout(400);
+          const lb = page.getByRole("listbox").last();
+          if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            const opt = lb.getByRole("option").first();
+            await expect(opt).toBeVisible({ timeout: 20_000 });
+            await opt.click({ timeout: tImport, force: true });
+          } else {
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 30_000 });
+            await menu.locator(".Select__option").first().click({ timeout: tImport, force: true });
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (isLaunchGitStyleImport && step.target === "Launch Git Branch Select control (doc step)") {
+          const ctrl = page
+            .locator(
+              'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled), div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled)'
+            )
+            .first();
+          await expect(ctrl).toBeVisible({ timeout: tImport });
+          await ctrl.click({ timeout: tImport, force: true });
+          await page.waitForTimeout(400);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+          await expect(menu).toBeVisible({ timeout: 45_000 });
+          break;
+        }
+        if (isLaunchGitStyleImport && step.target === "Launch import Git Branch menu first option (doc step)") {
+          const lb = page.getByRole("listbox").last();
+          if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            const opt = lb.getByRole("option").first();
+            await expect(opt).toBeVisible({ timeout: 20_000 });
+            await opt.click({ timeout: tImport, force: true });
+          } else {
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 30_000 });
+            await menu.locator(".Select__option").first().click({ timeout: tImport, force: true });
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch Framework Preset Select control (doc step)") {
+          const ctrl = page.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
+          await expect(ctrl).toBeVisible({ timeout: tImport });
+          await ctrl.click({ timeout: tImport, force: true });
+          await page.waitForTimeout(400);
+          const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+          await expect(menu).toBeVisible({ timeout: 45_000 });
+          break;
+        }
+        if (
+          step.target === "Launch import Framework Preset menu first option (doc step)" &&
+          launchImportFlowId !== "deploy-a-project-from-a-monorepo"
+        ) {
+          const lb = page.getByRole("listbox").last();
+          if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            const opt = lb.getByRole("option").first();
+            await expect(opt).toBeVisible({ timeout: 20_000 });
+            await opt.click({ timeout: tImport, force: true });
+          } else {
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 30_000 });
+            await menu.locator(".Select__option").first().click({ timeout: tImport, force: true });
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (launchImportFlowId === "deploy-a-project-from-a-monorepo" && step.target === "Launch import Framework Preset menu Next.js option (doc step)") {
+          const pickNextJs = async () => {
+            const lb = page.getByRole("listbox").last();
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const opt = lb.getByRole("option").filter({ hasText: /next\.js/i }).first();
+              await expect(opt).toBeVisible({ timeout: 25_000 });
+              await opt.click({ timeout: tImport, force: true });
+              return;
+            }
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 35_000 });
+            const opt = menu.locator(".Select__option").filter({ hasText: /next\.js/i }).first();
+            await expect(opt).toBeVisible({ timeout: 25_000 });
+            await opt.click({ timeout: tImport, force: true });
+          };
+          await pickNextJs();
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (launchImportFlowId === "quick-start-generic-csr" && step.target === "Launch import Framework Preset menu CSR Client-Side Rendered option (doc step)") {
+          const pickCsrPreset = async () => {
+            const lb = page.getByRole("listbox").last();
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const opt = lb.getByRole("option").filter({ hasText: /CSR|Client-Side Rendered/i }).first();
+              await expect(opt).toBeVisible({ timeout: 25_000 });
+              await opt.click({ timeout: tImport, force: true });
+              return;
+            }
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 35_000 });
+            const opt = menu.locator(".Select__option").filter({ hasText: /CSR|Client-Side Rendered/i }).first();
+            await expect(opt).toBeVisible({ timeout: 25_000 });
+            await opt.click({ timeout: tImport, force: true });
+          };
+          await pickCsrPreset();
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (launchImportFlowId === "auto-populate-environment-variables-from-a-linked-stack") {
+          if (step.target === "Launch Create New Project Connect and Import Variables button (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+            let btn = dlg.locator("button").filter({ hasText: /Connect and Import Variables/i }).first();
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-testid="connect-to-cms"]').first();
+            }
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-testid="import-env-variables"]').first();
+            }
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(btn).toBeVisible({ timeout: tImport });
+            await expect(btn).toBeEnabled({ timeout: Math.max(tImport, 120_000) });
+            await btn.click({ timeout: tImport });
+            await page.waitForTimeout(700);
+            break;
+          }
+          if (step.target === "Launch linked stack import Stack Select control (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            const asyncCtrl = wiz
+              .locator(
+                'div[data-test-id="cs-select-async"]:has(label:has-text("Stack")) div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            let ctrl: Locator = asyncCtrl;
+            if (!(await asyncCtrl.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              ctrl = wiz
+                .locator('div.Field:has(label:has-text("Stack")) div.Select__control:not(.Select__control--is-disabled)')
+                .first();
+            }
+            await expect(ctrl).toBeVisible({ timeout: tImport });
+            await ctrl.click({ timeout: tImport, force: true });
+            await page.waitForTimeout(450);
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 45_000 });
+            break;
+          }
+          if (step.target === "Launch linked stack import Stack menu pick option (doc step)") {
+            const stackEnv = String(process.env.DEFAULT_STACK || "").trim();
+            const pickFirstReal = async (container: Locator): Promise<boolean> => {
+              const opts = container.locator("[role=option], .Select__option");
+              const n = await opts.count();
+              for (let i = 0; i < n; i++) {
+                const o = opts.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                if (stackEnv) {
+                  const needle = stackEnv.slice(0, Math.min(40, stackEnv.length));
+                  if (!new RegExp(escapeRegex(needle), "i").test(txt)) continue;
+                }
+                await o.click({ timeout: tImport, force: true });
+                return true;
+              }
+              return false;
+            };
+            const lb = page.getByRole("listbox").last();
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              if (!(await pickFirstReal(lb))) {
+                await lb.getByRole("option").first().click({ timeout: tImport, force: true });
+              }
+            } else {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+              await expect(menu).toBeVisible({ timeout: 35_000 });
+              if (stackEnv) {
+                const needle = stackEnv.slice(0, Math.min(40, stackEnv.length));
+                const opt = menu
+                  .locator(".Select__option")
+                  .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+                  .first();
+                if (await opt.isVisible({ timeout: 10_000 }).catch(() => false)) {
+                  await opt.click({ timeout: tImport, force: true });
+                } else if (!(await pickFirstReal(menu))) {
+                  await menu.locator(".Select__option").first().click({ timeout: tImport, force: true });
+                }
+              } else if (!(await pickFirstReal(menu))) {
+                await menu.locator(".Select__option").first().click({ timeout: tImport, force: true });
+              }
+            }
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Launch linked stack import Delivery Token Select control (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            const asyncCtrl = wiz
+              .locator(
+                'div[data-test-id="cs-select-async"]:has(label:has-text("Delivery Token")) div.Select__control:not(.Select__control--is-disabled)'
+              )
+              .first();
+            let ctrl: Locator = asyncCtrl;
+            if (!(await asyncCtrl.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              ctrl = wiz
+                .locator(
+                  'div.Field:has(label:has-text("Delivery Token")) div.Select__control:not(.Select__control--is-disabled)'
+                )
+                .first();
+            }
+            await expect(ctrl).toBeVisible({ timeout: tImport });
+            await ctrl.click({ timeout: tImport, force: true });
+            await page.waitForTimeout(450);
+            const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+            await expect(menu).toBeVisible({ timeout: 45_000 });
+            break;
+          }
+          if (step.target === "Launch linked stack import Delivery Token menu first option (doc step)") {
+            const lb = page.getByRole("listbox").last();
+            let picked = false;
+            if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const opts = lb.getByRole("option");
+              const n = await opts.count();
+              for (let i = 0; i < n; i++) {
+                const o = opts.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                await o.click({ timeout: tImport, force: true });
+                picked = true;
+                break;
+              }
+              if (!picked) {
+                await lb.getByRole("option").first().click({ timeout: tImport, force: true });
+              }
+            } else {
+              const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
+              await expect(menu).toBeVisible({ timeout: 30_000 });
+              const candidates = menu.locator(".Select__option");
+              const n = await candidates.count();
+              for (let i = 0; i < n; i++) {
+                const o = candidates.nth(i);
+                const txt = ((await o.textContent().catch(() => "")) || "").trim();
+                if (!txt || /^loading/i.test(txt) || /^no options/i.test(txt)) continue;
+                await o.click({ timeout: tImport, force: true });
+                picked = true;
+                break;
+              }
+              if (!picked) {
+                await candidates.first().click({ timeout: tImport, force: true });
+              }
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Launch linked stack import wizard Import Variables confirm button (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            let btn = wiz.getByRole("button", { name: /^Import Variables$/i }).first();
+            if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              btn = wiz.locator('[data-testid="import-env-variables"]').first();
+            }
+            await expect(btn).toBeVisible({ timeout: tImport });
+            await expect(btn).toBeEnabled({ timeout: 90_000 });
+            await btn.click({ timeout: tImport });
+            await page.waitForTimeout(900);
+            const dlg = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+            await expect(dlg).toBeVisible({ timeout: Math.min(tImport, 90_000) });
+            break;
+          }
+        }
+        if (step.target === "Deploy (doc step)") {
+          const btn = page.locator('[data-testid="deploy-button"]').first();
+          await expect(btn).toBeVisible({ timeout: tImport });
+          await expect(btn).toBeEnabled({ timeout: 120_000 });
+          await btn.click({ timeout: tImport });
+          await page.waitForTimeout(400);
+          break;
+        }
+      }
+
+      // Studio — get-started (create-a-project, manage-a-composition parts): App Switcher → Studio uses common selectors; stack/composition steps need explicit UI handling.
+      if (String(flow?.project || "") === "Studio") {
+        const t0 = getStepTimeoutMs(step, 90_000);
+        const fid = String(flow?.id || "").toLowerCase();
+
+        if (fid === "create-a-project" && step.target === "Studio New Project Select Stack control (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-studio-project"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const ctl = dlg.locator('[data-test-id="cs-select"] .Portal__control, [data-test-id="cs-select"] .Select__control').first();
+          await expect(ctl).toBeVisible({ timeout: t0 });
+          await ctl.click({ timeout: t0, force: true });
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (fid === "create-a-project" && step.target === "Studio New Project pick DEFAULT_STACK option (doc step)") {
+          const stack = String(process.env.DEFAULT_STACK || "").trim();
+          if (!stack) {
+            throw new Error("DEFAULT_STACK must be set in .env for Studio create-a-project (doc: select Contentstack stack).");
+          }
+          const menu = page.locator(".Select__menu, [role='listbox']").last();
+          await expect(menu).toBeVisible({ timeout: t0 });
+          const needle = stack.slice(0, Math.min(28, stack.length));
+          const opt = menu
+            .locator("[role=option], .Select__option")
+            .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+            .first();
+          if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await opt.click({ timeout: t0, force: true });
+          } else {
+            const inp = page.locator('input[aria-label="cs-select-aria"]').last();
+            await expect(inp).toBeVisible({ timeout: 15_000 });
+            await inp.fill("");
+            await inp.pressSequentially(stack.slice(0, 48), { delay: 12 });
+            await page.waitForTimeout(400);
+            await page.keyboard.press("Enter");
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (fid === "create-a-project" && step.target === "Studio New Project Advanced Settings accordion expand (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-studio-project"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const acc = dlg.locator('[data-test-id="cs-accordion"]').first();
+          await expect(acc).toBeVisible({ timeout: t0 });
+          const ctNameInput = dlg.locator('input[name="contentTypeName"]').first();
+          if (await ctNameInput.isVisible({ timeout: 1_500 }).catch(() => false)) {
+            await page.waitForTimeout(200);
+            break;
+          }
+          const toggle = acc.locator(".Accordion__heading__toggle").first();
+          await expect(toggle).toBeVisible({ timeout: t0 });
+          await toggle.click({ timeout: t0 });
+          await page.waitForTimeout(450);
+          await expect(ctNameInput).toBeVisible({ timeout: Math.min(t0, 30_000) });
+          break;
+        }
+        if (fid === "create-a-project" && step.target === "Studio Create New Project modal Create submit (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-studio-project"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-test-id="cs-button-group"] button.Button--primary').filter({ hasText: /^Create$/ }).first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(1_000);
+          break;
+        }
+
+        if ((fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") && step.target === "Studio first project card open compositions (doc step)") {
+          const link = page.locator('a.projectList__link-T53is2, a[href*="/studio/projects/"][href*="/compositions"]').first();
+          await expect(link).toBeVisible({ timeout: t0 });
+          await link.click({ timeout: t0 });
+          await page.waitForURL(/\/compositions/i, { timeout: t0 }).catch(() => {});
+          await page.waitForTimeout(600);
+          break;
+        }
+        if ((fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") && step.target === "Studio New Composition button (doc step)") {
+          let btn = page.locator("button").filter({ hasText: /New Composition/i }).first();
+          if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            btn = page.getByRole("button", { name: /^New Composition$/i }).first();
+          }
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+
+        if (fid === "manage-a-composition-part-1" && step.target === "Studio Create Linked Composition primary button (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-composition"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          let btn = dlg.getByRole("button", { name: /^Create Linked Composition$/i }).first();
+          if (!(await btn.isVisible({ timeout: 2_000 }).catch(() => false))) {
+            btn = dlg.locator("button").filter({ hasText: /^Create Linked Composition$/i }).first();
+          }
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (fid === "manage-a-composition-part-1" && step.target === "Studio Linked composition Select Content Type control (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-linked-composition"]') })
+            .first();
+          const ctl = dlg.locator('[data-test-id="cs-click-select-composition-form-content-type-selector"] .Select__control').first();
+          await expect(ctl).toBeVisible({ timeout: t0 });
+          await ctl.click({ timeout: t0, force: true });
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (fid === "manage-a-composition-part-1" && step.target === "Studio Linked composition first Content Type option (doc step)") {
+          await pickFirstSelectMenuOption(page, t0);
+          await page.waitForTimeout(350);
+          break;
+        }
+
+        if (fid === "manage-a-composition-part-2" && step.target === "Studio Create a Freeform Composition link (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-composition"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          let btn = dlg.getByRole("button", { name: /^Create a Freeform Composition$/i }).first();
+          if (!(await btn.isVisible({ timeout: 2_000 }).catch(() => false))) {
+            btn = dlg.locator("button").filter({ hasText: /Create a Freeform Composition/i }).first();
+          }
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(500);
+          break;
+        }
+
+        if (
+          (fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") &&
+          step.target === "Studio composition form Create submit (doc step)"
+        ) {
+          let dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-linked-composition"]') })
+            .first();
+          if (!(await dlg.isVisible({ timeout: 2_000 }).catch(() => false))) {
+            dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-create-freeform-composition"]') })
+              .first();
+          }
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-test-id="cs-click-btn-primary-action-composition-form-create-composition"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(1_200);
+          break;
+        }
+
+        if (
+          (fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") &&
+          step.target === "Studio Edit Composition Advanced Options expand (doc step)"
+        ) {
+          const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const acc = dlg.locator('[data-test-id="cs-accordion"]').first();
+          await expect(acc).toBeVisible({ timeout: t0 });
+          const toggle = acc.locator(".Accordion__heading__toggle, .Accordion__heading").first();
+          await expect(toggle).toBeVisible({ timeout: t0 });
+          await toggle.click({ timeout: t0 });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (
+          (fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") &&
+          step.target === "Studio Edit Composition Save button (doc step)"
+        ) {
+          const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          const btn = dlg.locator('[data-test-id="cs-button-group"] button.Button--primary').filter({ hasText: /^Save$/i }).first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 120_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (
+          (fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") &&
+          step.target === "Studio Delete Composition modal confirm button (doc step)"
+        ) {
+          const dlg = page.getByRole("dialog").filter({ hasText: /Delete Composition/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t0 });
+          let btn = dlg.getByRole("button", { name: /^Delete$/i }).first();
+          if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            btn = dlg.locator('[data-test-id="cs-button-group"] button.Button--primary').first();
+          }
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(900);
+          break;
+        }
+      }
+
       const { click } = loadOverrides(flow);
       const mapped = click[step.target] || CLICK_SELECTORS[step.target];
       let el: Locator;
@@ -8707,6 +12829,1611 @@ export async function performAction(
     }
 
     case "verify": {
+      // deployments (Launch): explicit flow steps verify each deployment-information label in main; doc-vs-app phrases stay in detect.
+      {
+        const flowId = String(flow?.id || "").toLowerCase();
+        if (flowId === "deployments" && step.target.endsWith("(doc step)")) {
+          const deploymentVerifyTargets: Record<
+            string,
+            { label: string; role?: "button"; optional?: boolean }
+          > = {
+            "Launch deployment information Domains label (doc step)": { label: "Domains" },
+            "Launch deployment information Created At label (doc step)": { label: "Created At" },
+            "Launch deployment information Commit Message label (doc step)": { label: "Commit Message" },
+            "Launch deployment information Logs label (doc step)": { label: "Logs" },
+            "Launch deployment information Redeploy control (doc step)": { label: "Redeploy", role: "button" },
+            "Launch deployment information Download Code control (doc step)": {
+              label: "Download Code",
+              role: "button",
+              optional: true,
+            },
+          };
+          const spec = deploymentVerifyTargets[step.target];
+          if (spec) {
+            const t = getStepTimeoutMs(step, 120_000);
+            const main = launchDeploymentInformationScope(page);
+            await main.waitFor({ state: "visible", timeout: Math.min(t, 30_000) }).catch(() => {});
+            const labelRe = new RegExp(`^${escapeRegex(spec.label)}$`, "i");
+            let el: Locator = spec.role === "button" ? main.getByRole("button", { name: labelRe }).first() : main.getByText(labelRe).first();
+            let visible = await el.isVisible({ timeout: spec.optional ? 6_000 : t }).catch(() => false);
+            if (!visible && spec.role === "button") {
+              el = main.getByText(labelRe).first();
+              visible = await el.isVisible({ timeout: 4_000 }).catch(() => false);
+            }
+            if (!visible) {
+              if (spec.optional) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Deployments (doc): "${spec.label}" not visible in main — Download Code may appear only when status is Live, Deployed, or Failed.`
+                );
+              } else {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Deployments (doc): deployment information "${spec.label}" not visible in main — compare with deployment detail after file upload.`
+                );
+              }
+              break;
+            }
+            await expect(el).toBeVisible({ timeout: Math.min(t, 15_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // Studio manage-a-composition: Edit Composition modal — UID read-only note, Advanced / convert copy from doc.
+      {
+        const mc = String(flow?.id || "").toLowerCase();
+        if (mc === "manage-a-composition-part-1" || mc === "manage-a-composition-part-2") {
+          const tMc = getStepTimeoutMs(step, 90_000);
+          if (step.target === "Studio Edit Composition Composition UID field read-only (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+            await expect(dlg).toBeVisible({ timeout: tMc });
+            const inp = dlg.locator('input[name="composableUid"]').first();
+            await expect(inp).toBeVisible({ timeout: Math.min(tMc, 30_000) });
+            const editable = await inp.isEditable().catch(() => true);
+            if (editable) {
+              recordVerificationWarning(
+                step,
+                context,
+                'Edit Composition (doc): Note states the UID cannot be edited; field appears editable in the app.'
+              );
+            }
+            break;
+          }
+          if (step.target === "Studio Edit Composition Advanced Options section visible (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+            await expect(dlg).toBeVisible({ timeout: tMc });
+            const accTitle = dlg.locator('[data-test-id="cs-accordion"] .Accordion__heading__title').filter({ hasText: /Advanced Options/i }).first();
+            await expect(accTitle).toBeVisible({ timeout: Math.min(tMc, 30_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(accTitle, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Studio Edit linked composition convert to freeform option described (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+            await expect(dlg).toBeVisible({ timeout: tMc });
+            const line = dlg.getByText(/convert it to a freeform composition/i).first();
+            await expect(line).toBeVisible({ timeout: Math.min(tMc, 30_000) });
+            break;
+          }
+          if (step.target === "Studio Edit freeform composition convert to linked option described (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ hasText: /Edit Composition/i }).first();
+            await expect(dlg).toBeVisible({ timeout: tMc });
+            const line = dlg.getByText(/convert it to a linked composition/i).first();
+            await expect(line).toBeVisible({ timeout: Math.min(tMc, 30_000) });
+            break;
+          }
+        }
+      }
+      if (String(flow?.id || "").toLowerCase() === "users" && step.target === "Launch Invite User modal Invite button ready (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const dlg = page
+          .locator('[data-testid="cs-modal"][role="dialog"]')
+          .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+          .first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const btn = dlg.locator('[data-testid="invite-users-form-submit-button"]').first();
+        await expect(btn).toBeVisible({ timeout: t });
+        await expect(btn).toBeEnabled({ timeout: Math.min(t, 120_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (String(flow?.id || "").toLowerCase() === "users" && step.target === "Launch Remove User modal title (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const dlg = page
+          .locator('[role="dialog"][data-testid="cs-modal"]')
+          .filter({ hasText: /Remove User/i })
+          .first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const h = dlg.locator('[data-test-id="cs-modal-title-remove-user"], h3[title="Remove User"]').first();
+        await expect(h).toBeVisible({ timeout: Math.min(t, 30_000) });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, h, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.modalTitle) {
+          try {
+            if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
+            else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Modal title verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (String(flow?.id || "").toLowerCase() === "users" && step.target === "Launch Users invited collaborator row visible (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const email = String((flow as any)?.__launchUsersInvitedEmail || "").trim();
+        if (!email) {
+          recordVerificationWarning(
+            step,
+            context,
+            "users (doc): cannot verify invited user row — invite email was not captured on flow (email field step)."
+          );
+          break;
+        }
+        const refreshBtn = page.locator('[data-test-id="cs-table-refresh-icon"]').first();
+        if (await refreshBtn.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          await refreshBtn.click({ timeout: 10_000 }).catch(() => {});
+          await page.waitForTimeout(1_200);
+        }
+        const searchUsers = page.locator('[data-test-id="cs-search-input-field"]').first();
+        if (await searchUsers.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          const token = email.includes("@") ? email.split("@")[0]! : email;
+          await searchUsers.click({ timeout: 5_000 }).catch(() => {});
+          await searchUsers.fill("");
+          await searchUsers.fill(token);
+          await page.waitForTimeout(500);
+        }
+        await page
+          .locator(".Table__body")
+          .first()
+          .evaluate((el) => {
+            el.scrollTop = el.scrollHeight;
+          })
+          .catch(() => {});
+        const row = page
+          .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"]')
+          .filter({ hasText: email })
+          .first();
+        await expect(row).toBeVisible({ timeout: t });
+        break;
+      }
+      if (String(flow?.id || "").toLowerCase() === "log-targets") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlgSetup = page
+          .locator('[role="dialog"]')
+          .filter({ has: page.locator('[data-test-id="cs-modal-title-set-up-log-target"]') })
+          .first();
+        const labelSpecs: Array<{ target: string; re: RegExp }> = [
+          { target: "Launch Log Target Name field label (doc step)", re: /Log Target Name/i },
+          { target: "Launch Log Target Delivery Protocol field label (doc step)", re: /Delivery Protocol/i },
+          { target: "Launch Log Target Endpoint URL field label (doc step)", re: /Endpoint URL/i },
+          { target: "Launch Log Target Authentication Headers field label (doc step)", re: /Authentication\s+Headers/i },
+          { target: "Launch Log Target Payload Format field label (doc step)", re: /Payload Format/i },
+        ];
+        const spec = labelSpecs.find((s) => s.target === step.target);
+        if (spec) {
+          await expect(dlgSetup).toBeVisible({ timeout: t });
+          const lbl = dlgSetup.locator("label[data-test-id='cs-field-label']").filter({ hasText: spec.re }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Set up Log Target modal Continue Setup button visible (doc step)") {
+          await expect(dlgSetup).toBeVisible({ timeout: t });
+          const btn = dlgSetup.locator('[data-testid="log-target-next-button"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Test Connection button visible (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.locator('[data-testid="log-target-test-connection-button"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Save Log Target button visible (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.locator('[data-testid="log-target-save-button"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Edit Log Target modal title (doc step)") {
+          // Title may live under .ReactModal__Content while role="dialog" is on a different node (or missing).
+          const h = page
+            .locator('[data-test-id="cs-modal-title-edit-log-target"], h3[title="Edit Log Target"]')
+            .first();
+          await expect(h).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Edit Log Target modal Save Changes button visible (doc step)") {
+          const dlg = page
+            .getByRole("dialog", { name: /Edit Log Target/i })
+            .or(
+              page
+                .locator(".ReactModal__Content")
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .or(
+              page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.locator('[data-testid="log-target-save-button"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal Enable Log Target button visible (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.getByRole("button", { name: /^Enable Log Target$/i }).first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 90_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Log Targets page visible before Edit row actions (doc step)") {
+          const tPage = Math.min(getStepTimeoutMs(step, 90_000), 60_000);
+          await expect(page).toHaveURL(/log-targets/i, { timeout: tPage });
+          const mainTable = page.locator('[data-test-id="cs-table"]').first();
+          await expect(mainTable).toBeVisible({ timeout: Math.min(tPage, 35_000) });
+          break;
+        }
+        if (step.target === "Launch Log Targets table Actions column header (doc step)") {
+          const hdr = page
+            .locator(
+              '[data-test-id^="cs-table-head-text--"]:has-text("Actions"), [data-test-id^="cs-table-row-action-column-text--"]:has-text("Actions")'
+            )
+            .first();
+          await expect(hdr).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(hdr, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Log Targets row vertical ellipses action button visible (doc step)") {
+          const rowHint =
+            String(step.expected?.rowContains || "").trim() || String((flow as any)?.__launchLogTargetName || "").trim();
+          if (!rowHint) {
+            recordVerificationWarning(
+              step,
+              context,
+              "log-targets: row scope missing — set expected.rowContains or ensure Log Target name was captured."
+            );
+            break;
+          }
+          const row = page
+            .locator('.Table__body [role="row"], [data-test-id^="cs-table-body-row"]')
+            .filter({ hasText: new RegExp(escapeRegex(rowHint), "i") })
+            .first();
+          await expect(row).toBeVisible({ timeout: Math.min(t, 35_000) });
+          const dots = row.locator('button[data-test-id="cs-table-action-options"]').first();
+          await expect(dots).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(dots, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Log Targets row Edit menu item visible (doc step)") {
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-testid="edit-log-target"]') })
+            .last();
+          await expect(tip).toBeVisible({ timeout: Math.min(t, 20_000) });
+          const editLi = tip.locator("li").filter({ hasText: /^Edit$/i }).first();
+          await expect(editLi).toBeVisible({ timeout: Math.min(t, 15_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(editLi, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Log Targets row Delete menu item visible (doc step)") {
+          const tip = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ has: page.locator('[data-testid="delete-log-target"]') })
+            .last();
+          await expect(tip).toBeVisible({ timeout: Math.min(t, 20_000) });
+          const delLi = tip.locator("li").filter({ hasText: /^Delete$/i }).first();
+          await expect(delLi).toBeVisible({ timeout: Math.min(t, 15_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(delLi, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Delete Log Target modal title visible (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"][data-testid="cs-modal"], [role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-log-target"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const title = dlg.locator('[data-test-id="cs-modal-title-delete-log-target"]').first();
+          await expect(title).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Delete Log Target confirm Yes Delete button visible (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"][data-testid="cs-modal"], [role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-log-target"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const byTestId = dlg.locator('[data-testid="log-target-delete-button"]').first();
+          const byRole = dlg.getByRole("button", { name: /Yes,\s*Delete/i }).first();
+          const btn = (await byTestId.isVisible().catch(() => false)) ? byTestId : byRole;
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Verify Log Target Connection modal title (doc step)") {
+          const dlg = page
+            .locator('[role="dialog"]')
+            .filter({ has: page.locator('h3:has-text("Verify Log Target Connection")') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const h = dlg.locator('h3:has-text("Verify Log Target Connection")').first();
+          await expect(h).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+      }
+      // deploy-hooks (Launch): after Create Deploy Hook, table lists the new hook name (Create section step 7 doc).
+      if (String(flow?.id || "").toLowerCase() === "deploy-hooks" && step.target === "Launch deploy hooks list shows created hook (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const name = `Auto Doc Deploy Hook ${unique}`;
+        const hit = page.locator('[data-test-id="cs-table"]').getByText(name, { exact: false }).first();
+        await expect(hit).toBeVisible({ timeout: t });
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Environments first row Default environment (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const row = await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, t);
+        const defaultCell = row.locator(".env-column-name").filter({ hasText: /^Default$/i }).first();
+        await expect(defaultCell).toBeVisible({ timeout: Math.min(t, 30_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(defaultCell, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Environments first table row environment name visible (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const row = await resolveLaunchEnvironmentsFirstTableRow(page, t);
+        const nameCell = row.locator(".env-column-name").first();
+        await expect(nameCell).toBeVisible({ timeout: Math.min(t, 30_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(nameCell, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (
+        isLaunchProjectsEnvironmentsFlow(flow) &&
+        step.target === "Launch Default environment row Actions vertical ellipsis visible (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const row = await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, t);
+        const dotsPrecise = row
+          .locator(
+            'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+          )
+          .first();
+        const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+        const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+        await expect(dots).toBeVisible({ timeout: Math.min(t, 30_000) });
+        await expect(dots.locator('svg[name="DotsThreeLargeVertical"]')).toBeVisible({ timeout: Math.min(t, 15_000) });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, dots, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(dots, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (
+        isLaunchProjectsEnvironmentsFlow(flow) &&
+        step.target === "Launch first environment row Actions vertical ellipsis visible (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const row = await resolveLaunchEnvironmentsFirstTableRow(page, t);
+        const dotsPrecise = row
+          .locator(
+            'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+          )
+          .first();
+        const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
+        const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
+        await expect(dots).toBeVisible({ timeout: Math.min(t, 30_000) });
+        await expect(dots.locator('svg[name="DotsThreeLargeVertical"]')).toBeVisible({ timeout: Math.min(t, 15_000) });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, dots, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(dots, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch named environment row name cell visible (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const raw = String((step as any).value ?? "").trim();
+        if (!raw) {
+          throw new Error('Launch named environment verify: set step.value to the environment name (e.g. "Production").');
+        }
+        const row = await resolveLaunchEnvironmentsNamedEnvironmentRow(page, raw, t);
+        const cell = row.locator(".env-column-name").filter({ hasText: new RegExp(`^${escapeRegex(raw)}$`, "i") }).first();
+        await expect(cell).toBeVisible({ timeout: Math.min(t, 30_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(cell, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (
+        String(flow?.id || "").toLowerCase() === "deploy-hooks" &&
+        step.target === "Launch Create Deploy Hook modal Create Deploy Hook button (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create Deploy Hook/i }).first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const btn = dlg.locator('[data-testid="save-deploy-hook-button"]').first();
+        await expect(btn).toBeVisible({ timeout: Math.min(t, 30_000) });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchEnvironmentsExtendedFlow(flow)) {
+        const t = getStepTimeoutMs(step, 60_000);
+        if (step.target === "Launch Environments doc help link (doc step)") {
+          const a = page.locator('a[data-testid="launch-environments-help-button"]').first();
+          await expect(a).toBeVisible({ timeout: t });
+          const href = (await a.getAttribute("href")) || "";
+          if (!/developers\/launch\/environments/i.test(href)) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Help link (doc): href should reference developers/launch/environments; got "${href}"`
+            );
+          }
+          break;
+        }
+        if (step.target === "Launch + New Environment button visible (doc step)") {
+          const btn = page.locator('[data-testid="create-new-env"]').first();
+          await expect(btn).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment modal title (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const title = dlg.locator('[data-test-id="cs-modal-title-create-new-environment"]').first();
+          await expect(title).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, title, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Environment Name field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Environment Name/i }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, lbl, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Git Branch field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg
+            .locator('label[data-test-id="cs-field-label"], label.FieldLabel')
+            .filter({ hasText: /^Git Branch\s*/i })
+            .first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, lbl, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Build and Output Settings heading (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const h = dlg.locator('[data-test-id="cs-heading-tag"]').filter({ hasText: /Build and Output Settings/i }).first();
+          await expect(h).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Framework Preset field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Framework Preset/i }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Build Command field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Build Command/i }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Output Directory field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Output Directory/i }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Server Command field label (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Server Command/i }).first();
+          await expect(lbl).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, lbl, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Create button visible (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.locator('[data-testid="new-env-save"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Environments list page view (doc step)") {
+          await expect(page.locator('[data-test-id="cs-page-title"]').filter({ hasText: /^Environments$/i })).toBeVisible({
+            timeout: Math.min(t, 60_000),
+          });
+          const newEnvBtn = page.locator('[data-testid="create-new-env"]').first();
+          await expect(newEnvBtn).toBeVisible({ timeout: Math.min(t, 30_000) });
+          const url = page.url();
+          if (/\/settings\//i.test(url)) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Expected Launch project Environments list (doc); URL looks like settings view: ${url}`
+            );
+          }
+          break;
+        }
+        if (step.target === "Launch environment settings Git Branch field label (doc step)") {
+          const lbl = page
+            .locator(
+              'form.environment-details-section label[data-test-id="cs-field-label"], .environment-details-section label[data-test-id="cs-field-label"]'
+            )
+            .filter({ hasText: /Git Branch/i })
+            .first();
+          const vis = await lbl.isVisible({ timeout: 12_000 }).catch(() => false);
+          if (!vis) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Git Branch label not found in General settings (doc: field omitted when project was imported by file upload).'
+            );
+            break;
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment file upload Upload a file section heading (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const h = dlg.locator('[data-test-id="cs-heading-tag"]').filter({ hasText: /Upload a file/i }).first();
+          await expect(h).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment file upload browse to upload visible (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const el = dlg.getByText(/browse to upload/i).first();
+          await expect(el).toBeVisible({ timeout: Math.min(t, 20_000) });
+          break;
+        }
+        if (step.target === "Launch Create New Environment Environment Variables heading (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const h = dlg.locator('[data-test-id="cs-heading-tag"]').filter({ hasText: /Environment Variables/i }).first();
+          await expect(h).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Import Variables button visible (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          let btn = dlg.locator("button").filter({ hasText: /Connect and Import Variables/i }).first();
+          if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            btn = dlg.locator('[data-testid="connect-to-cms"]').first();
+          }
+          if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            btn = dlg.locator('[data-testid="import-env-variables"]').first();
+          }
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment Add Environment Variable button visible (doc step)") {
+          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const btn = dlg.locator('[data-testid="add-variable-button"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Create New Environment success new row on Environments list (doc step)") {
+          const name = String((flow as any)?.__launchCreateEnvName || "").trim();
+          const modal = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+          await expect(modal).toBeHidden({ timeout: Math.min(t, 120_000) });
+          if (name) {
+            // Title column truncates long names (e.g. "Doc QA Env 91cdaa98-6cce-4b…"); full string may not match.
+            const uuidHead = /([0-9a-f]{8}-[0-9a-f]{4})/i.exec(name);
+            const rowText =
+              uuidHead != null
+                ? `Doc QA Env ${uuidHead[1]}`
+                : name.length > 32
+                  ? name.slice(0, 32)
+                  : name;
+            const row = page
+              .locator('[data-test-id^="cs-table-body-row"]')
+              .filter({ hasText: new RegExp(escapeRegex(rowText), "i") })
+              .first();
+            await expect(row).toBeVisible({ timeout: Math.min(t, 90_000) });
+          }
+          break;
+        }
+        if (step.target === "Launch environment settings General tab label (doc step)") {
+          const tab = page.locator('[data-testid="general-tab"]').first();
+          await expect(tab).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(tab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch environment settings Environment Name field label (doc step)") {
+          const lbl = page.locator('label[data-testid="name-field"]').first();
+          await expect(lbl).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (step.target === "Launch Save Environment Details button visible (doc step)") {
+          const btn = page.locator('[data-testid="settings-save-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment settings Password Protection tab label (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const tab = page.locator('[data-testid="password-protection-tab"]').first();
+        await expect(tab).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(tab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment settings Event Tracking tab label (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const tab = page.locator('[data-testid="lytics-tab"]').first();
+        await expect(tab).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(tab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (
+        String(flow?.id || "").toLowerCase() === "event-tracking-in-contentstack-launch" &&
+        step.target === "Launch Event Tracking Real-Time User Event Tracking field label visible (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const lbl = page.locator('label[data-test-id="cs-field-label"][for="lytics"], label.FieldLabel[for="lytics"]').first();
+        await expect(lbl).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (
+        String(flow?.id || "").toLowerCase() === "event-tracking-in-contentstack-launch" &&
+        step.target === "Launch Event Tracking Enable Real-Time User Event Tracking toggle label visible (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const panel = page.locator(".Tab__Info").first();
+        const bySwitch = panel.getByRole("switch", { name: /Enable Real-Time User Event Tracking/i }).first();
+        const byRole = panel.getByRole("checkbox", { name: /Enable Real-Time User Event Tracking/i }).first();
+        let target: Locator = byRole;
+        if (await bySwitch.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          target = bySwitch;
+        } else if (await byRole.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          target = byRole;
+        } else {
+          target = panel.locator('[data-test-id="cs-toggle-switch"] input[type="checkbox"]').first();
+        }
+        await expect(target).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(target, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment settings Deployments tab label (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const tab = page.locator('[data-testid="deployments-tab"]').first();
+        await expect(tab).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(tab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Auto Deploy on Commits toggle label visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        // Deployments tab: label may not use FieldLabel (matches toggle click scope in disable/setup flows).
+        const scope = page
+          .locator(".Form__item, .Field, [data-test-id=\"cs-field\"]")
+          .filter({ hasText: /Auto Deploy on Commits/i })
+          .first();
+        const lbl = page
+          .locator("label.FieldLabel, div.Label--color--primary, .FieldLabel, label[data-test-id=\"cs-field-label\"]")
+          .filter({ hasText: /Auto Deploy on Commits/i })
+          .first();
+        const byRole = page.getByRole("checkbox", { name: /Auto Deploy on Commits/i }).first();
+        let target: Locator = scope;
+        if (await scope.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          target = scope;
+        } else if (await lbl.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          target = lbl;
+        } else if (await byRole.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          target = byRole;
+        } else {
+          const anyText = page.getByText(/Auto Deploy on Commits/i).first();
+          target = anyText;
+        }
+        await expect(target).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(target, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Save Deployment Settings button visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const btn = page
+          .locator('[data-testid="settings-save-button"]')
+          .filter({ hasText: /Save Deployment Settings/i })
+          .first();
+        await expect(btn).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Settings left sidebar Settings section header visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const sidebar = page.locator('[data-test-id="cs-page-layout-leftSidebar"]');
+        const h = sidebar
+          .locator('[data-test-id="cs-section-header"], [data-testid="cs-section-header"]')
+          .filter({ hasText: /^\s*Settings\s*$/i })
+          .first();
+        await expect(h).toBeVisible({ timeout: t });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, h, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Password Protection Username field label visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const lbl = page.locator('[data-testid="password-protection-username-label"]').first();
+        await expect(lbl).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Password Protection Password field label visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const lbl = page.locator('[data-testid="password-protection-password-label"]').first();
+        await expect(lbl).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Disable Password Protection modal title (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const h = page
+          .locator('[data-test-id="cs-modal-title-disable-password-protection"]')
+          .or(page.locator('[role="dialog"] h3[title="Disable Password Protection"]'))
+          .first();
+        await expect(h).toBeVisible({ timeout: t });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, h, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(h, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Password Protection Enable toggle label visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const lbl = page.locator("div.Label--color--primary").filter({ hasText: /Enable Password Protection/i }).first();
+        await expect(lbl).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Password Protection Save settings button visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const btn = page.locator('[data-testid="password-protection-save-button"]').first();
+        await expect(btn).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Password Protection Yes Disable button visible (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlg = page.locator('[role="dialog"]').first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const byTestId = dlg.locator('[data-testid="disable-password-protection-button"]').first();
+        const byName = dlg.getByRole("button", { name: /^Yes, Disable$/i }).first();
+        const btn = (await byTestId.isVisible().catch(() => false)) ? byTestId : byName;
+        await expect(btn).toBeVisible({ timeout: Math.min(t, 20_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment row actions menu Settings option (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+        await expect(menu).toBeVisible({ timeout: t });
+        const settingsPrimary = menu
+          .locator(
+            '[data-test-id="cs-vertical-action-tooltip-actions"] li:has([data-testid="environment-settings-action-selector"])'
+          )
+          .first();
+        const settingsFallback = menu
+          .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li')
+          .filter({ hasText: /^Settings$/i })
+          .first();
+        const hasPrimary = await settingsPrimary.isVisible({ timeout: 8_000 }).catch(() => false);
+        const settings = hasPrimary ? settingsPrimary : settingsFallback;
+        await expect(settings).toBeVisible({ timeout: Math.min(t, 20_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(settings, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch left navigation Environments entry (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+        const link = nav
+          .getByRole("link", { name: /^Environments$/i })
+          .or(nav.locator('a[href*="environment" i]'))
+          .or(nav.getByText(/^Environments$/i))
+          .first();
+        await expect(link).toBeVisible({ timeout: t });
+        if (step.expected?.within) {
+          try {
+            await ensureWithin(page, link, step.expected.within, step.expected?.withinStrict === true);
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(link, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch Settings left navigation Environments active (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        await expect
+          .poll(() => launchUrlIndicatesProjectSettings(page), {
+            timeout: Math.min(t, 20_000),
+            message:
+              "Expected Launch URL to include /settings/ (environment row ⋮ → Settings). If this fails, the menu click did not navigate.",
+          })
+          .toBe(true);
+        const sidebar = page.locator('[data-test-id="cs-page-layout-leftSidebar"]');
+        const envRow = sidebar.locator('[data-test-id="cs-list-row"][id="environments"]').first();
+        if (await envRow.isVisible().catch(() => false)) {
+          const activeEnv = sidebar.locator('[data-test-id="cs-list-row"][id="environments"].ListRowV2--active').first();
+          const looksActive = await activeEnv.isVisible().catch(() => false);
+          if (!looksActive) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Launch Settings left nav (doc): "Environments" row is visible but not marked active (.ListRowV2--active); treating as verification mismatch only.'
+            );
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(envRow, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+        } else {
+          const title = page.locator('[data-test-id="cs-page-title"]').first();
+          await expect(title).toBeVisible({ timeout: t });
+          recordVerificationWarning(
+            step,
+            context,
+            'Launch Settings (doc): left navigation row id=environments not present; using tabbed environment settings layout (see env-settings.html). Verifying page title only.'
+          );
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+        }
+        break;
+      }
       // add-entry-asset-to-a-release — “Add Reference(s) to Release” only when the entry has references (doc).
       {
         const flowId = String(flow?.id || "").toLowerCase();
@@ -10578,8 +16305,8 @@ export async function performAction(
       }
       // If verifying Settings/Edit, ensure the row action menu is open and the item is visible.
       if (step.target === "Settings" || step.target === "Edit") {
-        await openRowActionMenu(page, undefined, flow);
-        const menuRoot = await getRowActionMenuRoot(page);
+        await openRowActionMenu(page, step, flow);
+        const menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
 
         const candidates: Locator[] =
           step.target === "Settings"
@@ -12645,6 +18372,227 @@ export async function performAction(
         }
       }
 
+      // Launch file upload: verify Next + Deploy. Bitbucket Cloud flow (doc): verify Deploy only — modal + label + enabled.
+      {
+        const fid = String(flow?.id || "").toLowerCase();
+        const fileUploadVerify =
+          fid === "import-project-using-file-upload" &&
+          (step.target === "Launch file upload Next (doc step)" || step.target === "Deploy (doc step)");
+        const bitbucketDeployVerify = fid === "import-a-project-using-bitbucket-cloud" && step.target === "Deploy (doc step)";
+        const monorepoDeployVerify = fid === "deploy-a-project-from-a-monorepo" && step.target === "Deploy (doc step)";
+        const remixDeployVerify = fid === "quick-start-remix" && step.target === "Deploy (doc step)";
+        const vueDeployVerify = fid === "quick-start-vue" && step.target === "Deploy (doc step)";
+        const nextjsDeployVerify = fid === "quick-start-nextjs" && step.target === "Deploy (doc step)";
+        const nuxtDeployVerify = fid === "quick-start-nuxt" && step.target === "Deploy (doc step)";
+        const angularDeployVerify = fid === "quick-start-angular" && step.target === "Deploy (doc step)";
+        const analogDeployVerify = fid === "quick-start-analog" && step.target === "Deploy (doc step)";
+        const reactDeployVerify = fid === "quick-start-react" && step.target === "Deploy (doc step)";
+        const gatsbyDeployVerify = fid === "quick-start-gatsby" && step.target === "Deploy (doc step)";
+        const genericCsrDeployVerify = fid === "quick-start-generic-csr" && step.target === "Deploy (doc step)";
+        const astroDeployVerify = fid === "quick-start-astro" && step.target === "Deploy (doc step)";
+        if (
+          step.action === "verify" &&
+          (fileUploadVerify ||
+            bitbucketDeployVerify ||
+            monorepoDeployVerify ||
+            remixDeployVerify ||
+            vueDeployVerify ||
+            nextjsDeployVerify ||
+            nuxtDeployVerify ||
+            angularDeployVerify ||
+            analogDeployVerify ||
+            reactDeployVerify ||
+            gatsbyDeployVerify ||
+            genericCsrDeployVerify ||
+            astroDeployVerify)
+        ) {
+          const t = getStepTimeoutMs(step);
+          const btn =
+            step.target === "Launch file upload Next (doc step)"
+              ? page.getByRole("dialog").locator('[data-testid="next-button"]').first()
+              : page.locator('[data-testid="deploy-button"]').first();
+          await expect(btn).toBeVisible({ timeout: t });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          const enableTimeout =
+            step.target === "Launch file upload Next (doc step)" ? Math.max(t, 180_000) : Math.max(t, 120_000);
+          await expect(btn).toBeEnabled({ timeout: enableTimeout });
+          break;
+        }
+      }
+
+      // Launch: auto-populate env vars from linked stack (Create New Project step 2 + stack/token wizard).
+      {
+        const fid = String(flow?.id || "").toLowerCase();
+        if (fid === "auto-populate-environment-variables-from-a-linked-stack" && step.action === "verify") {
+          const t = getStepTimeoutMs(step);
+          const step2Dlg = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+          if (step.target === "Launch Create New Project Connect and Import Variables button visible (doc step)") {
+            let btn = step2Dlg.locator("button").filter({ hasText: /Connect and Import Variables/i }).first();
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = step2Dlg.locator('[data-testid="connect-to-cms"]').first();
+            }
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = step2Dlg.locator('[data-testid="import-env-variables"]').first();
+            }
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(btn).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch linked stack import wizard Stack field label (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            const lbl = wiz.locator('label:has-text("Stack"), label.FieldLabel:has-text("Stack")').first();
+            await expect(lbl).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch linked stack import wizard Delivery Token field label (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            const lbl = wiz
+              .locator('label:has-text("Delivery Token"), label.FieldLabel:has-text("Delivery Token")')
+              .first();
+            await expect(lbl).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch linked stack import wizard Import Variables button visible (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            let btn = wiz.getByRole("button", { name: /^Import Variables$/i }).first();
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = wiz.locator('[data-testid="import-env-variables"]').first();
+            }
+            await expect(btn).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch Settings left navigation Stack Integration row visible (doc step)") {
+            const nav = page.locator('[data-test-id="cs-page-layout-leftSidebar"], .PageLayout__leftSidebar').first();
+            const row = nav.locator('[data-test-id="cs-list-row"]#stackIntegration').first();
+            await expect(row).toBeVisible({ timeout: t });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, row, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(row, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch environment settings Sync Stack Variables button visible (doc step)") {
+            const btn = page.getByRole("button", { name: /^Sync Stack Variables$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          if (step.target === "Launch sync stack variables modal Sync Stack Variables confirm button visible (doc step)") {
+            const wiz = page.locator('[role="dialog"]').last();
+            let btn = wiz.getByRole("button", { name: /^Sync Stack Variables$/i }).first();
+            if (!(await btn.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              btn = wiz.locator('[data-testid="sync-stack-variables"], button:has-text("Sync Stack Variables")').first();
+            }
+            await expect(btn).toBeVisible({ timeout: t });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+        }
+      }
+
       const { click, input } = loadOverrides(flow);
       const clickMapped = click[step.target] || CLICK_SELECTORS[step.target];
       const inputMapped = input[step.target] || INPUT_SELECTORS[step.target];
@@ -13217,6 +19165,374 @@ export async function performAction(
     }
 
     case "enter": {
+      if (
+        (String(flow?.id || "").toLowerCase() === "quick-start-vue" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-remix" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-nextjs" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-nuxt" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-angular" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-analog" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-react" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-gatsby" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-generic-csr" ||
+          String(flow?.id || "").toLowerCase() === "quick-start-astro") &&
+        step.target === "Launch Create New Project env variables bulk editor (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 90_000);
+        const dlg = page.getByRole("dialog").filter({ hasText: /Create New Project/i }).first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const raw = String(step.value ?? "").trim();
+        const fid = String(flow?.id || "").toLowerCase();
+        if (!raw) throw new Error(`${fid}: bulk environment variables text is empty.`);
+        const tryFillTextarea = async (loc: Locator): Promise<boolean> => {
+          if (!(await loc.isVisible({ timeout: 4_000 }).catch(() => false))) return false;
+          await loc.click({ force: true }).catch(() => {});
+          await loc.fill("");
+          await loc.fill(raw);
+          return true;
+        };
+        const monacoInner = dlg.locator(".monaco-editor textarea").first();
+        if (await tryFillTextarea(monacoInner)) {
+          await page.waitForTimeout(350);
+          break;
+        }
+        const step2Ta = dlg.locator(".importProjectStep2 textarea").first();
+        if (await tryFillTextarea(step2Ta)) {
+          await page.waitForTimeout(350);
+          break;
+        }
+        const anyTa = dlg.locator("textarea").first();
+        if (await tryFillTextarea(anyTa)) {
+          await page.waitForTimeout(350);
+          break;
+        }
+        const cm = dlg.locator(".cm-content").first();
+        if (await cm.isVisible({ timeout: 6_000 }).catch(() => false)) {
+          await cm.click({ force: true });
+          if (process.platform === "darwin") {
+            await page.keyboard.press("Meta+a");
+          } else {
+            await page.keyboard.press("Control+a");
+          }
+          await page.keyboard.insertText(raw);
+          await page.waitForTimeout(350);
+          break;
+        }
+        throw new Error(
+          `${fid}: could not find Bulk Edit editor (textarea, Monaco inner textarea, or CodeMirror .cm-content) in Create New Project.`
+        );
+      }
+
+      if (isDeployHooksStyleFlow(flow) && step.target === "Launch Create Deploy Hook name field (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create Deploy Hook/i }).first();
+        const inp = dlg.locator('input[data-testid="name-input"]').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        const val = String(step.value ?? "Auto Doc Deploy Hook {unique}").split("{unique}").join(unique);
+        await inp.fill(val);
+        await page.waitForTimeout(350);
+        break;
+      }
+
+      if (
+        String(flow?.id || "").toLowerCase() === "redeploy-automatically-when-content-is-published-on-cms" &&
+        step.target === "URL to Notify input (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 60_000);
+        const url = String((flow as any)?.redeployCmsDeployHookUrl || "").trim();
+        if (!url) {
+          throw new Error(
+            "URL to Notify: deploy hook URL not set. Run Launch redeploy doc store deploy hook URL and copy (doc step) first."
+          );
+        }
+        const inp = page.locator('[data-test-id="cs-webhook-url-input"] input, input[name="url"]').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.fill("");
+        await inp.fill(url);
+        await page.waitForTimeout(350);
+        break;
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "environments" && step.target === "Launch Create New Environment environment name input (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
+        const inp = dlg.locator('[data-testid="env-input"]').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        const val = String(step.value ?? "Doc QA Env {unique}").split("{unique}").join(unique);
+        if (flow && typeof flow === "object") (flow as any).__launchCreateEnvName = val;
+        await inp.fill(val);
+        await page.waitForTimeout(350);
+        break;
+      }
+
+      if (isLaunchEnvironmentsExtendedFlow(flow) && step.target === "Launch environment settings General Environment Name input edit (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const inp = page.locator('[data-testid="name-input"]').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        const raw = String(step.value ?? "Doc QA Env {unique} edited").split("{unique}").join(unique);
+        if (flow && typeof flow === "object") (flow as any).__launchEnvSettingsEditedName = raw;
+        await inp.fill("");
+        await inp.fill(raw);
+        await page.waitForTimeout(350);
+        break;
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "environment-variables") {
+        if (step.target === "Launch environment settings env variables key input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const inp = page.locator('[data-testid="env-variables-key"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const u = unique.replace(/-/g, "_");
+          const val = String(step.value ?? "DOC_STACK_KEY_{unique}").split("{unique}").join(u);
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch environment settings env variables value input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const inp = page.locator('[data-testid="env-variables-value"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "doc_env_value_{unique}").split("{unique}").join(unique);
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "custom-domain" && step.target === "Launch Create Custom Domain Domain Name input (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const dlg = page
+          .locator('[role="dialog"]')
+          .filter({ hasText: /custom domain|domain name|new domain/i })
+          .first();
+        await expect(dlg).toBeVisible({ timeout: t });
+        const inp = dlg
+          .getByLabel(/^Domain Name$/i)
+          .or(dlg.locator('input[placeholder*="Domain" i]'))
+          .or(dlg.locator('input[type="text"]'))
+          .first();
+        await expect(inp).toBeVisible({ timeout: t });
+        const u = unique.replace(/-/g, "").slice(0, 12);
+        const val = String(step.value ?? "doc-auto-{unique}.example.com").split("{unique}").join(u);
+        await inp.click({ timeout: 15_000 });
+        await inp.fill("");
+        await inp.fill(val);
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "password-protection") {
+        if (step.target === "Launch Password Protection Username field (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const inp = page.locator('[data-testid="password-protection-username"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "doc-pp-user-{unique}@example.com").split("{unique}").join(unique);
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch Password Protection Password field (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const inp = page.locator('[data-testid="password-protection-password"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "DocPpSec1{unique}!").split("{unique}").join(unique);
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "log-targets") {
+        const dlg = page
+          .locator('[role="dialog"]')
+          .filter({ has: page.locator('[data-test-id="cs-modal-title-set-up-log-target"]') })
+          .first();
+        if (step.target === "Launch Log Target Name input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          await expect(dlg).toBeVisible({ timeout: t });
+          const inp = dlg.locator('[data-testid="name-input"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "Doc LT {unique}").split("{unique}").join(unique).trim();
+          if (flow && typeof flow === "object") (flow as any).__launchLogTargetName = val;
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch Log Target Endpoint URL input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          await expect(dlg).toBeVisible({ timeout: t });
+          const inp = dlg.locator('[data-testid="endpoint-input"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "https://example.com/v1/logs").trim();
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch Log Target header key input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          await expect(dlg).toBeVisible({ timeout: t });
+          const inp = dlg.locator('[data-testid="header-key-input-0"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "Authorization").trim();
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch Log Target header value input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          await expect(dlg).toBeVisible({ timeout: t });
+          const inp = dlg.locator('[data-testid="header-value-input-0"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "doc-placeholder").trim();
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+        if (step.target === "Launch Edit Log Target Name input (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const editDlg = page
+            .getByRole("dialog", { name: /Edit Log Target/i })
+            .or(
+              page
+                .locator(".ReactModal__Content")
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .or(
+              page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-edit-log-target"]') })
+            )
+            .first();
+          await expect(editDlg).toBeVisible({ timeout: t });
+          const inp = editDlg.locator('[data-testid="name-input"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const base = String((flow as any)?.__launchLogTargetName || "").trim() || `Doc LT ${unique}`.trim();
+          const val = String(step.value ?? "{base} edited").split("{base}").join(base).trim();
+          if (flow && typeof flow === "object") (flow as any).__launchLogTargetName = val;
+          await inp.click({ timeout: 15_000 });
+          await inp.fill("");
+          await inp.fill(val);
+          await page.waitForTimeout(250);
+          break;
+        }
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "users") {
+        if (step.target === "Launch Invite User modal email field (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const dlg = page
+            .locator('[data-testid="cs-modal"][role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const raw = String(step.value ?? process.env.CS_INVITE_TEST_EMAIL ?? "doc-launch-users-{unique}@example.com")
+            .split("{unique}")
+            .join(unique);
+          const email = raw.trim();
+          if (!email) {
+            throw new Error("users: set step.value or CS_INVITE_TEST_EMAIL for the invite email (doc step).");
+          }
+          if (flow && typeof flow === "object") (flow as any).__launchUsersInvitedEmail = email;
+          const pill = dlg.locator('[data-test-id="cs-pill"], #cs-pill').first();
+          await expect(pill).toBeVisible({ timeout: t });
+          await pill.click({ timeout: t });
+          await page.waitForTimeout(250);
+          const tryInputs = [
+            dlg.locator("input#userEmails"),
+            dlg.locator('input[name="userEmails"]'),
+            dlg.locator('[data-test-id="cs-pill"] input'),
+            dlg.locator('input[placeholder*="email" i]'),
+          ];
+          let filled = false;
+          for (const loc of tryInputs) {
+            const inp = loc.first();
+            if (await inp.isVisible({ timeout: 3_000 }).catch(() => false)) {
+              await inp.fill("");
+              await inp.fill(email);
+              filled = true;
+              break;
+            }
+          }
+          if (!filled) {
+            await page.keyboard.type(email, { delay: 15 });
+            await page.keyboard.press("Enter");
+          } else {
+            await page.keyboard.press("Enter").catch(() => {});
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch Invite User modal Roles field (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const roleName = String(step.value ?? "Admin").trim();
+          const dlg = page
+            .locator('[data-testid="cs-modal"][role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const control = dlg.locator('[data-test-id="cs-select"] .Select__control').first();
+          await expect(control).toBeVisible({ timeout: t });
+          await control.click({ timeout: t });
+          await page.waitForTimeout(350);
+          const menu = page.locator(".Select__menu, [class*='Select__menu']").last();
+          const opt = menu.getByRole("option", { name: new RegExp(`^${escapeRegex(roleName)}$`, "i") }).first();
+          if ((await menu.isVisible({ timeout: 8_000 }).catch(() => false)) && (await opt.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            await opt.click({ timeout: Math.min(t, 20_000) });
+          } else {
+            const rsInput = dlg
+              .locator('[data-test-id="cs-select"] input[aria-label="cs-select-aria"], [data-test-id="cs-select"] input[type="text"]')
+              .first();
+            await expect(rsInput).toBeVisible({ timeout: 12_000 });
+            await rsInput.fill("");
+            await rsInput.fill(roleName);
+            await page.waitForTimeout(400);
+            const portalOpt = page
+              .locator(`[id^="react-select"][id*="-option-"]`)
+              .filter({ hasText: new RegExp(`^${escapeRegex(roleName)}$`, "i") })
+              .first();
+            if (await portalOpt.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await portalOpt.click({ timeout: Math.min(t, 20_000) });
+            } else {
+              await page.keyboard.press("Enter");
+            }
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Launch Invite User modal Message field (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const dlg = page
+            .locator('[data-testid="cs-modal"][role="dialog"]')
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+            .first();
+          await expect(dlg).toBeVisible({ timeout: t });
+          const inp = dlg.locator('[data-testid="invitation-message-input"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const val = String(step.value ?? "Doc automation optional invite message {unique}")
+            .split("{unique}")
+            .join(unique);
+          await inp.fill(val);
+          await page.waitForTimeout(200);
+          break;
+        }
+      }
+
       // send-an-entry-for-edit-access-approval — Add comments in modal (doc step 3).
       if (isSendEntryForEditAccessApprovalFlow(flow) && step.target === "Add comments field in Request Edit Access modal (doc step)") {
         const t = getStepTimeoutMs(step);
@@ -14501,8 +20817,15 @@ export async function performAction(
       if (!step.value) throw new Error("upload step missing 'value' file path");
       const { input } = loadOverrides(flow);
       const uploadSel = (step.target && input[step.target]) || 'input[type="file"]';
+      let filePath = String(step.value).trim();
+      if (!path.isAbsolute(filePath)) {
+        filePath = path.join(process.cwd(), filePath.replace(/^\.\//, ""));
+      }
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`upload: file not found: ${filePath}`);
+      }
       const fileInput = page.locator(uploadSel).first();
-      await fileInput.setInputFiles(step.value);
+      await fileInput.setInputFiles(filePath);
       break;
     }
 

@@ -9,7 +9,7 @@ import path from "path";
 
 export const DOCS_HOST_FRAGMENT = "contentstack.com/docs";
 
-export type DocUrlRow = { project: string; url: string };
+export type DocUrlRow = { project: string; url: string; /** When true (CSV column `keep`), row survives sync even if no flow/docs.json lists this URL. */ keep?: boolean };
 
 export function normalizeCanonicalDocUrl(u: string): string {
   const raw = String(u || "").trim();
@@ -37,8 +37,11 @@ function legacyDefaultProject(): string {
   return (process.env.DOCS_URL_LEGACY_PROJECT || "CMS").trim() || "CMS";
 }
 
+/** Optional third CSV field: `...,keep` pins a row across sync when it is not in any flow `source` or `docs.json`. */
+const KEEP_SUFFIX = /^(.+),keep\s*$/i;
+
 /**
- * Parse CSV body: supports `project,url` rows and legacy bare doc URLs.
+ * Parse CSV body: supports `project,url` or `project,url,keep` rows and legacy bare doc URLs.
  */
 export function parseDocsUrlsCsvContent(raw: string, legacyProject?: string): DocUrlRow[] {
   const leg = legacyProject ?? legacyDefaultProject();
@@ -46,14 +49,20 @@ export function parseDocsUrlsCsvContent(raw: string, legacyProject?: string): Do
   for (let line of raw.split(/\r?\n/)) {
     line = line.trim();
     if (!line || line.startsWith("#")) continue;
-    if (/^project\s*,\s*url\s*$/i.test(line)) continue;
+    if (/^project\s*,\s*url(\s*,\s*keep)?\s*$/i.test(line)) continue;
 
     const comma = line.indexOf(",");
     if (comma > 0) {
       const maybeProject = line.slice(0, comma).trim();
-      const rest = line.slice(comma + 1).trim();
+      let rest = line.slice(comma + 1).trim();
+      let keep = false;
+      const km = rest.match(KEEP_SUFFIX);
+      if (km) {
+        keep = true;
+        rest = km[1]!.trim();
+      }
       if (/^[A-Za-z][A-Za-z0-9_-]*$/.test(maybeProject) && isDocsHostUrl(rest)) {
-        rows.push({ project: maybeProject, url: normalizeCanonicalDocUrl(rest) });
+        rows.push({ project: maybeProject, url: normalizeCanonicalDocUrl(rest), ...(keep ? { keep: true } : {}) });
         continue;
       }
     }
@@ -76,22 +85,32 @@ export function docRowsDedupeKey(r: DocUrlRow): string {
 export function mergeDocUrlRows(existing: DocUrlRow[], additions: DocUrlRow[]): DocUrlRow[] {
   const map = new Map<string, DocUrlRow>();
   for (const r of existing) {
-    const row = { project: r.project, url: normalizeCanonicalDocUrl(r.url) };
-    map.set(docRowsDedupeKey(row), row);
+    const row = { project: r.project, url: normalizeCanonicalDocUrl(r.url), keep: r.keep };
+    const key = docRowsDedupeKey(row);
+    const prev = map.get(key);
+    map.set(key, {
+      ...row,
+      keep: !!(row.keep || prev?.keep),
+    });
   }
   for (const r of additions) {
-    const row = { project: r.project, url: normalizeCanonicalDocUrl(r.url) };
-    map.set(docRowsDedupeKey(row), row);
+    const row = { project: r.project, url: normalizeCanonicalDocUrl(r.url), keep: r.keep };
+    const key = docRowsDedupeKey(row);
+    const prev = map.get(key);
+    map.set(key, {
+      ...row,
+      keep: !!(row.keep || prev?.keep),
+    });
   }
   return [...map.values()].sort((a, b) => a.project.localeCompare(b.project) || a.url.localeCompare(b.url));
 }
 
 export function formatDocsUrlsCsv(rows: DocUrlRow[]): string {
   const lines = [
-    "# Docs audit URL list: project,url",
+    "# Docs audit URL list: project,url optional third field \"keep\" (pins row when not in any flow source / docs.json)",
     "# Sync: npm run sync:docs-urls | Legacy bare URLs are read as project CMS (override with DOCS_URL_LEGACY_PROJECT).",
     "project,url",
-    ...rows.map((r) => `${r.project},${r.url}`),
+    ...rows.map((r) => (r.keep ? `${r.project},${r.url},keep` : `${r.project},${r.url}`)),
   ];
   return lines.join("\n") + "\n";
 }

@@ -42,7 +42,8 @@ echo "{\"startedAt\":\"$(date -Iseconds 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:
 
 echo "=== Rerun timedOut flows → $REPORT_DIR (baseline: $SUMMARY_PATH) ===" | tee "$REPORT_DIR/retry.log"
 set +e
-npx playwright test tests/flows.spec.ts --project=default -g "$GREP" 2>&1 | tee -a "$REPORT_DIR/retry.log"
+# flows.spec.ts is only included in the "flows" project (default explicitly ignores it).
+npx playwright test tests/flows.spec.ts --project=flows -g "$GREP" 2>&1 | tee -a "$REPORT_DIR/retry.log"
 PW_EXIT=${PIPESTATUS[0]}
 set -e
 

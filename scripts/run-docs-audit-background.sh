@@ -7,6 +7,7 @@
 #
 # Env:
 #   AUDIT_REPORT_DIR — override output directory (default: reports/docs-audit-<Project>-<timestamp>)
+#   DOCS_URLS_CSV — default data/docs-urls.csv; set e.g. data/launch-urls.csv for a project-only CSV
 
 set -uo pipefail
 
@@ -27,9 +28,18 @@ cd "$ROOT"
 
 npx ts-node "$ROOT/scripts/syncDocsUrlsToCsv.ts" >>"$AUDIT_REPORT_DIR/docs-audit-run.log" 2>&1 || true
 
+# CMS batch: scope audit to executable + flows/CMS/docs.json URLs unless caller set DOCS_URLS_CSV.
+if [[ -n "${DOCS_URLS_CSV:-}" ]]; then
+  DOCS_CSV_FOR_AUDIT="$DOCS_URLS_CSV"
+elif [[ "$PROJECT" == "CMS" ]]; then
+  DOCS_CSV_FOR_AUDIT="$ROOT/data/cms-urls.csv"
+else
+  DOCS_CSV_FOR_AUDIT="$ROOT/data/docs-urls.csv"
+fi
+
 set +e
 REPORT_DIR="$AUDIT_REPORT_DIR" \
-  DOCS_URLS_CSV="$ROOT/data/docs-urls.csv" \
+  DOCS_URLS_CSV="$DOCS_CSV_FOR_AUDIT" \
   DOCS_AUDIT_PROJECT="$PROJECT" \
   npx playwright test tests/docs-audit.spec.ts --project=docs-audit >>"$AUDIT_REPORT_DIR/docs-audit-run.log" 2>&1
 EX=$?

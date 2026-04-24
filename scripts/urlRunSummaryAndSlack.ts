@@ -28,6 +28,7 @@ import fs from "fs";
 import path from "path";
 import { loadFlowMetaById } from "../core/report/unifiedReportModel";
 import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
+import { expandPlaywrightSpecToFlowResults } from "../core/report/playwrightFlowStepExpansion";
 import { resolveSlackBotToken, resolveSlackChannelId } from "./lib/encryptionData";
 
 type FlowRow = {
@@ -56,11 +57,13 @@ function collectFlowResults(pw: any): Array<{ id: string; status: string; error?
     for (const spec of suite?.specs || []) {
       const title = String(spec?.title || "");
       if (!title) continue;
-      for (const t of spec?.tests || []) {
-        const res = (t?.results || [])[0];
-        const status = res?.status || t?.status || (spec?.ok === false ? "failed" : "passed");
-        const err = (res?.error?.message || t?.error?.message || "").slice(0, 500);
-        rows.push({ id: title, status, error: err || undefined });
+      const expanded = expandPlaywrightSpecToFlowResults(spec);
+      for (const e of expanded) {
+        rows.push({
+          id: e.flowId,
+          status: e.status,
+          error: e.error ? e.error.slice(0, 500) : undefined,
+        });
       }
     }
     for (const child of suite?.suites || []) walk(child);

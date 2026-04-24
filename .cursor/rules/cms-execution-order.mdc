@@ -1,77 +1,88 @@
 ---
-description: CMS full-batch module order, CRUD-style flow ordering per module, delete batch and trash last; align scripts and new runners with this.
+description: CMS full-batch module order, serial CRUD per module, retry-before-delete, delete batch, trash, merge; agents and npm test:cms follow scripts/run-cms-sequential-modules-dashboard.sh.
 alwaysApply: true
 ---
 
 # CMS execution order (full batch & sequencing policy)
 
-When running **all CMS modules** (sequential batch, CI, or any “run everything” workflow), follow this structure. The reference implementation is **`scripts/run-cms-sequential-modules-dashboard.sh`**.
+When the user says **Run CMS**, **`npm run test:cms`**, or **`npm run test:cms:headless:report`**, the repo runs **`scripts/run-cms-headless-background.sh`** (returns immediately; work continues under `nohup`), which invokes **`scripts/run-cms-headless-report.sh`** → **`scripts/run-cms-sequential-modules-dashboard.sh`**. Use **`npm run test:cms:foreground`** to run the same pipeline in the foreground. Do not use a single flat `Project=CMS` Playwright grep for full batches unless debugging.
 
-## 1. Cross-module sequence (run in this order)
+## 1. Cross-module sequence (strict, one module at a time)
 
-Execute **Stage=main** for each module **one module at a time** (sequential modules), in this exact order:
+Run **`Project=CMS Module=<name> Stage=main`** in this order (skip if `projects/CMS/<name>` does not exist):
 
 1. `environment`  
 2. `language`  
-3. `stack`  
-4. `content-models`  
-5. `content-modeling`  
-6. `global-field`  
-7. `assets`  
-8. `entries`  
-9. `live-preview`  
-10. `releases`  
-11. `search`  
-12. `security`  
-13. `branches`  
-14. `tokens`  
-15. `webhook`  
-16. `workflows`  
-17. `taxonomy`  
-18. `json-rich-text-editor`  
-19. `visual-experience`  
+3. `branches`  
+4. `stack`  
+5. `content-models`  
+6. `releases`  
+7. `global-field`  
+8. `assets`  
+9. `entries`  
+10. `labels` — only when that folder exists; otherwise skipped automatically  
+11. `json-rich-text-editor`  
+12. `users-and-roles`  
+13. `live-preview`  
+14. **Remaining modules**: `content-modeling`, `search`, `security`, `tokens`, `webhook`, `workflows`, `taxonomy`, `visual-experience`
 
-Then (see below): **all delete-related flows** across CMS, then **trash**.
+**After the `workflows` module step**, run the **publish rules serial chain** (grep: `publish rules chain \(serial\)`).
 
-If you add a new CMS module folder, update **both** this rule and `CMS_MAIN_MODULES` in `run-cms-sequential-modules-dashboard.sh`.
+**After the `users-and-roles` module step**, run the **role lifecycle serial chain** (grep: `role lifecycle chain \(serial\)`).
 
-## 2. Within each module — CRUD-style order (non-delete flows only)
+## 2. Within each module — CRUD order
 
-For flows in **`Project=CMS Module=<name> Stage=main`**, prefer this **logical** order when maintaining flows, ordering `flow.json` / flow ids, or splitting greps:
+- Flow JSON is sorted globally in `tests/flows.spec.ts` (`flowOrder`, `crudLifecycleRank`, stable keys).
+- For sequential CMS batches, **`CMS_SEQUENTIAL_MODULE_ORDER=1`** and **`CMS_CONTINUE_ON_FAIL=1`** (set by **`scripts/run-cms-sequential-modules-dashboard.sh`**). Then **`Project=CMS` + `Stage=main`** module buckets use **one test with `test.step` per flow** so **every URL still runs after a failure** (no `describe.serial` fail-fast skip). URLs still run **one after another** in CRUD sort order inside that batch (create/add before edit/update before move/import/export-style ids; **delete-like ids are excluded** from these runs — see §4).
+- **`CMS_CONTINUE_ON_FAIL`** lets later URLs in the module run after a **hard fail** but **does not suppress** it: each execution error **still fails** its **`test.step`** and the **module batch test** fails when done, **rethrowing** the original error or an **`AggregateError`** when several flows fail; only **doc verification** mismatches stay **warning-only** (non-throwing) per **`core/executor.ts`**.
 
-1. **Create / Add / New** — anything that creates a resource (e.g. create, add, import pre-req, “new X”).  
-2. **Edit / Update / Rename / Customize** — changes to existing resources.  
-3. **Export / Import / Move / Copy / Bulk** (non-delete) — portability and bulk actions that are not removals.  
-4. **Other** — read-only, publish/unpublish, approve, search usage, etc., as documented.  
-5. **Do not** run **delete / remove / bulk-delete / teardown** flows in this phase — they belong in the **delete batch** (next section).
+## 3. Retry pass (failed / timedOut / interrupted) — **before delete batch**
 
-Playwright’s default sort inside a module is defined in `tests/flows.spec.ts` (dependency `flowOrder` + lexical). When adding flows, **name and order steps** so create/edit precede delete in docs and, where possible, align flow id ordering with this CRUD story to keep runs stable.
+- Unless **`SKIP_RETRY=1`**, after **§1** completes (all main modules + both serial chains), scan **`playwright-parts/*.json`** with **`scripts/collectRetryFlowTitlesFromJson.ts --partsDir <dir> --exportShell`**.
+- **`eval`** the printed `export` lines: **`CMS_RETRY_FLOW_IDS`** (comma-separated flow ids from failed `test.step` leaves and non-batched failures), **`CMS_RETRY_PUBLISH_CHAIN`**, **`CMS_RETRY_ROLES_CHAIN`**, and optionally **`PLAYWRIGHT_RETRY_GREP`** for title-based cases. **`--grep` alone cannot retry individual URLs** inside the continue-on-fail module batch (one Playwright test per module).
+- Run **one** Playwright pass; save part as **`89-retry-before-delete.json`**. Use **`CMS_SEQUENTIAL_MODULE_ORDER=0`** for this pass (parallel speed). Pass **`--grep`** only when **`PLAYWRIGHT_RETRY_GREP`** is set.
+- Unset retry env vars after the pass. **Then** run the delete batch (§4). **Do not** run retry after delete or after trash.
 
-## 3. Delete flows — after all main modules
+## 4. Delete flows — one batched pass (after main modules + optional retry)
 
-After the **last** main module in §1 finishes, run **one batched execution** of **all CMS delete-related flows** (cross-module), using the same **grep set** as `CMS_DELETE_FLOW_GREP` in `run-cms-sequential-modules-dashboard.sh` (delete-a-*, bulk-delete-*, delete-content-type, delete-a-stack, edit-or-delete-a-comment, etc.).
+Run **one** Playwright pass over **all** CMS tests whose titles match **`CMS_DELETE_FLOW_GREP`** in `run-cms-sequential-modules-dashboard.sh` (delete-a-*, bulk-delete-*, `delete-content-type`, `edit-or-delete-a-comment`, etc.).
 
-Main module runs MUST **exclude** these (e.g. `--grep-invert` on that pattern) so deletes never run in the middle of the batch.
+Main module runs use **`--grep-invert`** that pattern so deletes never run during §1.
 
-## 4. Trash module — always last
+## 5. Trash — always last (among Playwright flow phases)
 
-After the delete batch completes, run:
+After the delete batch, run:
 
 - **`Project=CMS Module=trash Stage=main`**
 
-Nothing else should follow trash in the same batch.
+## 5b. CMS informational coverage (executable + doc list)
 
-## 5. Summary checklist
+- **`.flow.json` with `"type": "informational"`** and **no steps**: the executor loads **`source`** in the browser (public doc; no login) so the URL runs in the same **module batch order** as other flows in that module.
+- **`flows/CMS/docs.json`** URLs (not backed by a flow file): after trash, **`tests/docs.spec.ts`** runs with **`--grep "Docs Project=CMS"`** (HTTP + title checks). Set **`SKIP_CMS_DOCS_SPEC=1`** to skip.
+- **`data/cms-urls.csv`** is rebuilt at the start of each batch (**`buildCmsUrlsCsv.ts`**: all CMS `*.flow.json` `source` values + **`flows/CMS/docs.json`**). **Background docs-audit** uses **`DOCS_URLS_CSV=data/cms-urls.csv`** so link/image/table audit is **CMS-scoped** (executable + informational URLs together).
+
+## 6. Merge JSON, then docs audit (CMS URLs / broken links), reports, Slack, open dashboard
+
+- **Single merge** of **`playwright-parts/*.json`** → **`flows-results.json`** (includes retry part if present, then delete batch, then trash). *Note:* `docs.spec` and docs-audit write separate artifacts (`docs-results.json`, audit dir); they are not part of this merge.
+- Copy **`flows-results-cms.json`** before docs-audit if that backup step is still used.
+- **Broken-links / docs quality audit for CMS** (part of **Run CMS** by default): unless **`SKIP_DOCS_AUDIT=1`**, docs-audit runs for CMS URLs. **Default:** **`DOCS_AUDIT_BACKGROUND=1`** — start **`run-docs-audit-background.sh`** early with **`DOCS_URLS_CSV=data/cms-urls.csv`** (separate **`AUDIT_REPORT_DIR`**, logs under main **`REPORT_DIR`**); main pipeline skips inline audit so flow reports and bundle finish without waiting on crawl. **`DOCS_AUDIT_BACKGROUND=0`** runs **`tests/docs-audit.spec.ts`** inline after merge with **`DOCS_AUDIT_PROJECT=CMS`** and **`DOCS_URLS_CSV`** defaulting to **`data/cms-urls.csv`** so results land in the same **`REPORT_DIR`** for Excel / dashboards.
+- Generate Excel, `cms-dashboard.html`, shared dashboard, **`report-bundle/`**, unified report, **`urlRunSummaryAndSlack`**.
+- Open **`report-bundle/index.html`** when **`OPEN_CMS_DASHBOARD≠0`** and `open` exists (macOS). **`SKIP_OPEN_DASHBOARD=1`** (e.g. from **`run-project-batch-background.sh`**) forces **`OPEN_CMS_DASHBOARD=0`** so the bundle is not auto-opened.
+
+## 7. Checklist (always follow this order)
 
 | Phase | What runs |
 |--------|-----------|
-| A | Main modules §1 in order — **non-delete** `Stage=main` flows only |
-| B | **All** delete-related CMS flows (single batch) |
-| C | **Trash** module |
+| A | Main modules §1 — **non-delete** `Stage=main` only, **CRUD order** within module (**`CMS_CONTINUE_ON_FAIL`**: every URL runs; no serial fail-fast skip) |
+| A2 | Publish rules chain (after workflows module) |
+| A3 | Roles chain (after users-and-roles module) |
+| B | **Retry** failed/timedOut/interrupted (`--exportShell` → **`CMS_RETRY_*`** env + optional **`PLAYWRIGHT_RETRY_GREP`**) — optional if `SKIP_RETRY=1` or nothing to retry |
+| C | **Delete** batch (`CMS_DELETE_FLOW_GREP`) |
+| D | **Trash** module |
+| D2 | **`docs.spec`** CMS only (`flows/CMS/docs.json` HTTP checks) unless **`SKIP_CMS_DOCS_SPEC=1`** |
+| E | **Merge** all `playwright-parts/*.json` once |
+| F | **Docs audit** (default: background; use **`DOCS_AUDIT_BACKGROUND=0`** for inline in **`REPORT_DIR`**) + dashboards + bundle + Slack + open bundle — if background, audit may still be running after bundle opens; check **`docs-audit-background.log`** / **`AUDIT_REPORT_DIR`** |
 
-## 6. Where this was documented before
+## 8. Changing this policy
 
-- **Module order + delete batch + trash** were already encoded in **`scripts/run-cms-sequential-modules-dashboard.sh`** (`CMS_MAIN_MODULES`, `CMS_DELETE_FLOW_GREP`, then `99-trash`).  
-- **CRUD-style ordering within a module** and this consolidated spec are captured here in **`.cursor/rules/cms-execution-order.mdc`** for agents and future script changes.
-
-When introducing a new runner (e.g. another `*.sh` or CI job), mirror the same **module list**, **grep-invert deletes** during main phases, **delete batch**, then **trash**.
+Update **`CMS_MAIN_MODULES`**, **`CMS_DELETE_FLOW_GREP`**, and phase order in **`scripts/run-cms-sequential-modules-dashboard.sh`**. Update **`tests/flows.spec.ts`** only if CRUD sort rules change. **Keep this `.mdc` in sync** with the script.

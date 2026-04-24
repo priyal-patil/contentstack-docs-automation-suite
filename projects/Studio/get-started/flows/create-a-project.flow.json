@@ -1,0 +1,104 @@
+{
+  "id": "create-a-project",
+  "project": "Studio",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/studio/create-a-project",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Open Studio via App Switcher, New Project, modal (Name, Description, Select Stack). Expand Advanced Settings; set Content Type Name and Content Type UID for the compositions content type (DOM: create-new-studio-project-m.html cs-accordion). UID uses {unique25} (lowercase, no spaces). Stack must match DEFAULT_STACK in .env.",
+  "steps": [
+    { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Projects page heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Studio Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Studio New Project primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Project", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio New Project primary button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create New Studio Project modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Studio Project",
+        "labelEquals": "New Studio Project",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Studio New Project Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio New Project Name field (doc step)",
+      "value": "Doc Studio Project {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio New Project Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio New Project Description field (doc step)",
+      "value": "Automation description {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio New Project Select Stack field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Contentstack Stack", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio New Project Select Stack control (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Studio New Project pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Studio New Project Advanced Settings section title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Advanced Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio New Project Advanced Settings accordion expand (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio New Project Content Type Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Content Type Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Studio New Project Content Type UID field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "UID", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio New Project Advanced Content Type Name field (doc step)",
+      "value": "Compositions Doc {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Studio New Project Advanced Content Type UID field (doc step)",
+      "value": "compositions_doc_{unique25}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio Create New Project modal Create button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio Create New Project modal Create submit (doc step)", "timeoutMs": 120000 }
+  ]
+}

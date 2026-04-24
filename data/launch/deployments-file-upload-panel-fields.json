@@ -1,0 +1,67 @@
+{
+  "sourceDoc": "https://www.contentstack.com/docs/developers/launch/deployments",
+  "deployContext": "file-upload",
+  "panelScope": "main",
+  "gitOnlyPanelLabels": ["Source", "Git Repository"],
+  "fields": [
+    {
+      "key": "domains",
+      "visibleText": "Domains",
+      "docListLabel": "Domains",
+      "docDescription": "Your project can be accessed at this URL once it has been built.",
+      "docMatch": ["your project can be accessed at this url once it has been built"],
+      "docMatchMode": "all"
+    },
+    {
+      "key": "createdAt",
+      "visibleText": "Created At",
+      "docListLabel": "Created At",
+      "docDescription": "Displays the time when the project build succeeded.",
+      "docMatch": ["displays the time when the project build succeeded"],
+      "docMatchMode": "all"
+    },
+    {
+      "key": "commitMessage",
+      "visibleText": "Commit Message",
+      "docListLabel": "Commit Message",
+      "docDescription": "Displays a commit message which indicates that deployment was triggered by file upload.",
+      "docMatch": [
+        "displays a commit message which indicates that deployment was triggered by file upload"
+      ],
+      "docMatchMode": "all"
+    },
+    {
+      "key": "redeploy",
+      "visibleText": "Redeploy",
+      "docListLabel": "Redeploy button",
+      "docDescription": "Allows you to redeploy your project.",
+      "docMatch": ["allows you to redeploy your project"],
+      "docMatchMode": "all"
+    },
+    {
+      "key": "downloadCode",
+      "visibleText": "Download Code",
+      "docListLabel": "Download Code button",
+      "docDescription": "Allows you to download the code (.zip file) used for creating your project.",
+      "docMatch": [
+        "allows you to download the code",
+        ".zip file) used for creating your project"
+      ],
+      "docMatchMode": "all",
+      "optional": true
+    },
+    {
+      "key": "logs",
+      "visibleText": "Logs",
+      "docListLabel": "Logs",
+      "docDescription": "Deployment logs (below Deployment Information per doc).",
+      "docMatch": [
+        "deployment logs",
+        "logs below deployment information",
+        "installing the dependencies",
+        "build creation"
+      ],
+      "docMatchMode": "any"
+    }
+  ]
+}

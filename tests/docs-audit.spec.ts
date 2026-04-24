@@ -382,6 +382,8 @@ function safeFileNameFromUrl(url: string) {
 
 // ✅ Suite: each doc = one test => Playwright can run docs in parallel
 test.describe.parallel("Docs Audit", () => {
+  // Per-doc work (many link/image checks) can exceed the global 3m default
+  test.describe.configure({ timeout: 900_000 });
   test.beforeAll(async () => {
     refLogoData = await loadReferenceLogo();
     if (!refLogoData) console.warn("[Docs Audit] Old logo check skipped: no reference at data/reference-old-logo.png");

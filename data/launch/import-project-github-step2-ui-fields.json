@@ -1,0 +1,92 @@
+{
+  "sourceDom": "data/dom/Launch/create-new-project-page.html",
+  "docUrl": "https://www.contentstack.com/docs/developers/launch/import-project-using-github",
+  "modalScope": ".importProjectStep2",
+  "fields": [
+    {
+      "key": "repository",
+      "visibleText": "Repository",
+      "docMatch": ["repository", "select repository"]
+    },
+    {
+      "key": "git_branch",
+      "visibleText": "Git Branch",
+      "docMatch": ["git branch"]
+    },
+    {
+      "key": "detected_framework",
+      "visibleText": "Detected framework",
+      "docMatch": ["detected framework"]
+    },
+    {
+      "key": "project_name",
+      "visibleText": "Project Name",
+      "docMatch": ["project name"]
+    },
+    {
+      "key": "environment_name",
+      "visibleText": "Environment Name",
+      "docMatch": ["environment name"]
+    },
+    {
+      "key": "build_output_settings",
+      "visibleText": "Build and Output Settings",
+      "docMatch": ["build and output"]
+    },
+    {
+      "key": "framework_preset",
+      "visibleText": "Framework Preset",
+      "docMatch": ["framework preset"]
+    },
+    {
+      "key": "build_command",
+      "visibleText": "Build Command",
+      "docMatch": ["build command"]
+    },
+    {
+      "key": "output_directory",
+      "visibleText": "Output Directory",
+      "docMatch": ["output directory"]
+    },
+    {
+      "key": "environment_variables_section",
+      "visibleText": "Environment Variables",
+      "docMatch": ["environment variables"]
+    },
+    {
+      "key": "connect_and_import_variables",
+      "visibleText": "Connect and Import Variables",
+      "docMatch": ["connect and import variables"]
+    },
+    {
+      "key": "key_value_edit",
+      "visibleText": "Key Value Edit",
+      "docMatch": ["key value edit"]
+    },
+    {
+      "key": "bulk_edit",
+      "visibleText": "Bulk Edit",
+      "docMatch": ["bulk edit"]
+    },
+    {
+      "key": "add_environment_variable",
+      "visibleText": "Add Environment Variable",
+      "docMatch": ["add environment variable"]
+    },
+    {
+      "key": "cancel",
+      "visibleText": "Cancel",
+      "docMatch": ["cancel"]
+    },
+    {
+      "key": "back",
+      "visibleText": "Back",
+      "docMatch": ["navigate back", "back to contentstack", "back arrow"]
+    },
+    {
+      "key": "deploy",
+      "visibleText": "Deploy",
+      "docMatch": ["deploy"]
+    }
+  ]
+}

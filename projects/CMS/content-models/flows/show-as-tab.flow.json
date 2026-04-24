@@ -8,8 +8,8 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models" },
-    { "action": "click", "target": "vertical ellipsis" },
-    { "action": "click", "target": "Edit" },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Group (doc step)" },
     { "action": "click", "target": "Properties (doc step)" },

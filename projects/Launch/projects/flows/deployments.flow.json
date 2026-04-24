@@ -1,0 +1,96 @@
+{
+  "id": "deployments",
+  "project": "Launch",
+  "module": "projects",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/deployments",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Same Launch entry as other Launch docs: org dashboard → verify/click Launch tile → verify Launch Projects page (leading steps). Then preflight import-project-using-file-upload skips duplicate Launch open (skipFirstStepsInExecuteFlowBefore: 2) and runs New Project → file upload → Deploy. Finally verifies deployment information in main + detect vs data/launch/deployments-file-upload-panel-fields.json. Verification mismatches are warnings.",
+  "preflight": {
+    "executeFlowBefore": "import-project-using-file-upload",
+    "leadingStepsBeforeExecuteFlowBefore": 3,
+    "skipFirstStepsInExecuteFlowBefore": 2
+  },
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Domains label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Domains",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Created At label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Created At",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Commit Message label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Commit Message",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Logs label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Logs",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Redeploy control (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Redeploy",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch deployment information Download Code control (doc step)",
+      "timeoutMs": 120000,
+      "optional": true,
+      "expected": {
+        "within": "main",
+        "labelEquals": "Download Code",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "detect",
+      "target": "launch-deployments-file-upload-panel-vs-doc (doc step)",
+      "timeoutMs": 180000
+    }
+  ]
+}

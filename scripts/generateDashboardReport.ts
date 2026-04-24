@@ -12,6 +12,7 @@
 import fs from "fs";
 import path from "path";
 import { flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
+import { expandPlaywrightSpecToFlowResults } from "../core/report/playwrightFlowStepExpansion";
 import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 
 const REPORT_DIR = path.resolve(
@@ -90,12 +91,20 @@ function loadDocsAuditSummary(): DocAuditSummary {
 }
 
 type FlowRow = { id: string; status: string; error?: string };
+
 function collectFlowResults(pw: any): FlowRow[] {
   const rows: FlowRow[] = [];
   function walk(suite: any) {
     for (const spec of suite?.specs || []) {
       const title = String(spec?.title || "");
       if (!title) continue;
+      const expanded = expandPlaywrightSpecToFlowResults(spec);
+      if (expanded.length > 0) {
+        for (const e of expanded) {
+          rows.push({ id: e.flowId, status: e.status, error: e.error?.slice(0, 500) });
+        }
+        continue;
+      }
       for (const t of spec?.tests || []) {
         const res = (t?.results || [])[0];
         const status = res?.status || t?.status || (spec?.ok === false ? "failed" : "passed");

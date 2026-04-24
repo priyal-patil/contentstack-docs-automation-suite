@@ -1,0 +1,236 @@
+{
+  "id": "log-targets",
+  "project": "Launch",
+  "module": "security",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/log-targets",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Payload Format appears only when Delivery Protocol is HTTP (DOM: edit-log-target.html); gRPC setup modal omits it — see data/dom/Launch/settings/set-up-log-target.html vs edit HTML. Flow switches to HTTP so Payload Format can be verified and the select exercised. Continue Setup, Test Connection, and Save Log Target are explicitly verified before clicks. Edit doc: after create/save, verify Log Targets route + table, then row ⋮ → Edit → Save Changes. Then Verify Connection (⋮) with Test Connection + Cancel, then Enable (toggle → Verify modal → Test Connection → Enable Log Target). Test Connection / Enable require a reachable OTLP endpoint in some orgs — failures are execution errors. Delete confirms via data-testid log-target-delete-button (delete-log-target.html). Assumes empty Log Targets list at start.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch org app Settings top bar visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch org app Settings top bar (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets Set up Log Target button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Set up Log Target", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Log Targets Set up Log Target button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Set up Log Target modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Set up Log Target", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Target Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Log Target Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Target Delivery Protocol field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Delivery Protocol", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Launch Log Target Name input (doc step)", "value": "Doc LT {unique}" },
+    { "action": "click", "target": "Launch Log Target Set up modal switch Delivery Protocol to HTTP (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Log Target Endpoint URL field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Endpoint URL", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Target Authentication Headers field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Authentication Headers", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Target Payload Format field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Payload Format", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Launch Log Target Endpoint URL input (doc step)", "value": "https://example.com/v1/logs" },
+    { "action": "enter", "target": "Launch Log Target header key input (doc step)", "value": "Authorization" },
+    { "action": "enter", "target": "Launch Log Target header value input (doc step)", "value": "doc-placeholder" },
+    { "action": "click", "target": "Launch Log Target Set up modal Payload Format select first option (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Set up Log Target modal Continue Setup button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Continue Setup", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Set up Log Target modal Continue Setup button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Verify Log Target Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal Test Connection button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Test Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal Save Log Target button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save Log Target", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Verify Log Target Connection modal Test Connection button (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Launch Verify Log Target Connection modal Save Log Target button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets page visible before Edit row actions (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "exact" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets row vertical ellipses action button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    {
+      "action": "click",
+      "target": "Launch Log Targets row actions ellipsis (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets row Edit menu item visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Edit", "labelMatch": "exact" }
+    },
+    { "action": "click", "target": "Launch Log Targets row Edit menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Edit Log Target modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Edit Log Target", "labelMatch": "contains" }
+    },
+    { "action": "enter", "target": "Launch Edit Log Target Name input (doc step)", "value": "{base} edited" },
+    {
+      "action": "verify",
+      "target": "Launch Edit Log Target modal Save Changes button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save Changes", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Edit Log Target modal Save Changes button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch Log Targets row actions ellipsis (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    { "action": "click", "target": "Launch Log Targets row Verify Connection menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Verify Log Target Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal Test Connection button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Test Connection", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Verify Log Target Connection modal Test Connection button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch Log Target row status enable toggle (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Verify Log Target Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal Test Connection button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Test Connection", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Verify Log Target Connection modal Test Connection button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Verify Log Target Connection modal Enable Log Target button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Enable Log Target", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Verify Log Target Connection modal Enable Log Target button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "exact" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets row vertical ellipses action button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    {
+      "action": "click",
+      "target": "Launch Log Targets row actions ellipsis (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc LT" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Log Targets row Delete menu item visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Delete", "labelMatch": "exact" }
+    },
+    { "action": "click", "target": "Launch Log Targets row Delete menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Delete Log Target modal title visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Delete Log Target", "labelMatch": "exact" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Delete Log Target confirm Yes Delete button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Yes, Delete", "labelMatch": "exact" }
+    },
+    { "action": "click", "target": "Launch Delete Log Target confirm Yes button (doc step)", "timeoutMs": 90000 }
+  ]
+}

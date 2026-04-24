@@ -10,7 +10,9 @@ import {
   flowIdFromPlaywrightSpecTitle,
   projectFromPlaywrightSpecTitle,
 } from "./parseFlowSpecTitle";
+import { expandPlaywrightSpecToFlowResults, type PwStepJson } from "./playwrightFlowStepExpansion";
 import { resolveFlowsResultsPath } from "./resolveFlowsResultsPath";
+
 export type UnifiedStatus = "PASS" | "WARNING" | "FAIL";
 export type IssueKind = "None" | "Drift" | "Gap" | "Content";
 export type UrlKind = "Executable" | "Informational";
@@ -101,7 +103,19 @@ export function loadFlowMetaById(cwd: string): Map<string, FlowMeta> {
 }
 
 type PwSuite = { title?: string; file?: string; specs?: PwSpec[]; suites?: PwSuite[] };
-type PwSpec = { title?: string; tests?: Array<{ results?: Array<{ status?: string }>; status?: string }> };
+type PwSpec = {
+  title?: string;
+  tests?: Array<{
+    title?: string;
+    results?: Array<{
+      status?: string;
+      duration?: number;
+      error?: { message?: string };
+      steps?: PwStepJson[];
+    }>;
+    status?: string;
+  }>;
+};
 export type PwRoot = { suites?: PwSuite[] };
 
 export function parseExecutableFlowsFromResults(pw: PwRoot | null): Array<{ project: string; flowId: string; pwStatus: string }> {
@@ -109,8 +123,16 @@ export function parseExecutableFlowsFromResults(pw: PwRoot | null): Array<{ proj
   for (const spec of collectAllFlowSpecs(pw)) {
     const title = String(spec.title || "");
     const project = projectFromPlaywrightSpecTitle(title) || "";
+    if (!project) continue;
+    const expanded = expandPlaywrightSpecToFlowResults(spec);
+    if (expanded.length > 0) {
+      for (const e of expanded) {
+        out.push({ project, flowId: e.flowId, pwStatus: String(e.status || "unknown") });
+      }
+      continue;
+    }
     const flowId = flowIdFromPlaywrightSpecTitle(title);
-    if (!project || !flowId) continue;
+    if (!flowId) continue;
     const tr = (spec.tests || [])[0];
     const res = (tr?.results || [])[0];
     const pwStatus = String(res?.status || tr?.status || "unknown");

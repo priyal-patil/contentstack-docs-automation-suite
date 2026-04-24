@@ -1,0 +1,121 @@
+{
+  "id": "users",
+  "project": "Launch",
+  "module": "projects",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/users",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Invite: optional Message (`invitation-message-input`). Remove: after Invite, the UI stays on Project Settings → Users; we verify left-nav Settings shell + Users row (doc placement), Actions, invitee row, then ⋮ → Remove → Yes, Remove per users-ver-*.html / remove-user-m.html. Doc wording for Remove uses “left navigation” for Settings — product enters settings via top bar, then left sidebar shows the Settings section.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first project card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch project top navigation Settings visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Top Bar", "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch project top navigation Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Users row visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Users", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Settings left navigation Users row (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Users page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Users", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Users page Invite User button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Invite User", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Users page Invite User button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Invite User modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Invite User",
+        "labelEquals": "Invite User",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "enter", "target": "Launch Invite User modal email field (doc step)", "value": "doc-launch-users-{unique}@example.com" },
+    { "action": "enter", "target": "Launch Invite User modal Roles field (doc step)", "value": "Admin" },
+    {
+      "action": "enter",
+      "target": "Launch Invite User modal Message field (doc step)",
+      "value": "Doc automation optional invite message {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Launch Invite User modal Invite button ready (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Invite", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Invite User modal Invite button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Users page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Users", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Settings left sidebar Settings section header visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Users row visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Users", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Users table Actions column header for remove-user doc (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Users invited collaborator row visible (doc step)",
+      "timeoutMs": 90000
+    },
+    { "action": "click", "target": "Launch Users collaborators row actions ellipsis for invited user (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Launch Users collaborators Remove menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Remove User modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Remove User",
+        "labelEquals": "Remove User",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Launch Remove User modal Yes Remove button (doc step)", "timeoutMs": 90000 }
+  ]
+}

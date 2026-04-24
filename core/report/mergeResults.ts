@@ -1,7 +1,9 @@
 import path from "path";
 import fse from "fs-extra";
 import { flowIdFromPlaywrightSpecTitle, projectFromPlaywrightSpecTitle } from "./parseFlowSpecTitle";
+import { expandPlaywrightSpecToFlowResults } from "./playwrightFlowStepExpansion";
 import { resolveFlowsResultsPath } from "./resolveFlowsResultsPath";
+
 type CombinedRow = {
   kind: "doc_only" | "flow";
   project: string;
@@ -52,6 +54,23 @@ function flattenPlaywrightJson(root: any): CombinedRow[] {
     for (const spec of suite?.specs || []) {
       const specTitle = String(spec?.title || "");
       const projectForRow = projectFromPlaywrightSpecTitle(specTitle) || projectHere;
+      const file = String(spec?.file || suite?.file || "");
+      if (file.endsWith("docs.spec.ts")) continue;
+
+      const expanded = expandPlaywrightSpecToFlowResults(spec);
+      if (expanded.length > 0) {
+        for (const e of expanded) {
+          out.push({
+            kind: "flow",
+            project: projectForRow || "Unknown",
+            id: e.flowId,
+            source: file,
+            status: mapPwStatus(e.status),
+          });
+        }
+        continue;
+      }
+
       const flowId =
         projectFromPlaywrightSpecTitle(specTitle) !== undefined
           ? flowIdFromPlaywrightSpecTitle(specTitle)
@@ -59,11 +78,6 @@ function flattenPlaywrightJson(root: any): CombinedRow[] {
       for (const t of spec?.tests || []) {
         const finalResult = (t?.results || [])[0] || {};
         const status = mapPwStatus(finalResult?.status || t?.status);
-        const file = String(spec?.file || suite?.file || "");
-
-        // Filter out docs.spec.ts (doc-only suite produces its own docs-results.json).
-        // The JSON reporter may emit bare filenames ("docs.spec.ts") or full paths.
-        if (file.endsWith("docs.spec.ts")) continue;
 
         out.push({
           kind: "flow",

@@ -8,8 +8,10 @@
 import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
-import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
+import { collectCmsFlowSpecs } from "../core/report/parseFlowSpecTitle";
+import { expandPlaywrightSpecToFlowResults } from "../core/report/playwrightFlowStepExpansion";
 import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
+
 const REPORT_DIR = path.resolve(
   process.cwd(),
   process.argv.includes("--reportDir") ? process.argv[process.argv.indexOf("--reportDir") + 1] : "reports/latest"
@@ -148,25 +150,26 @@ function main() {
   const auditResults: DocAuditRow[] = docsAudit?.results || [];
 
   for (const spec of cmsSpecs) {
-    const flowId = flowIdFromPlaywrightSpecTitle(String(spec.title || ""));
-    const test = (spec.tests || [])[0];
-    const res = (test?.results || [])[0] || {};
-    const status = String(res.status || "unknown");
-    const durationMs = Number(res.duration ?? 0);
-    const err = String(res.error?.message || "").slice(0, 2000);
-    const documentUrl = sourceByFlow.get(flowId) || "";
-    const fc = failures.filter((f) => f.flowId === flowId).length;
-    const wc = warnings.filter((w) => w.flowId === flowId).length;
-    rows.push({
-      flowId,
-      documentUrl,
-      status,
-      durationMs,
-      durationHuman: formatDuration(durationMs),
-      errorSummary: err,
-      docStepFailureCount: fc,
-      docStepWarningCount: wc,
-    });
+    const expanded = expandPlaywrightSpecToFlowResults(spec);
+    for (const e of expanded) {
+      const flowId = e.flowId;
+      const status = String(e.status || "unknown");
+      const durationMs = Number(e.durationMs ?? 0);
+      const err = String(e.error || "").slice(0, 2000);
+      const documentUrl = sourceByFlow.get(flowId) || "";
+      const fc = failures.filter((f) => f.flowId === flowId).length;
+      const wc = warnings.filter((w) => w.flowId === flowId).length;
+      rows.push({
+        flowId,
+        documentUrl,
+        status,
+        durationMs,
+        durationHuman: formatDuration(durationMs),
+        errorSummary: err,
+        docStepFailureCount: fc,
+        docStepWarningCount: wc,
+      });
+    }
   }
 
   const totalDurationMs = rows.reduce((a, r) => a + r.durationMs, 0);

@@ -7,14 +7,14 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models" },
-    { "action": "click", "target": "vertical ellipsis" },
-    { "action": "verify", "target": "Settings" },
-    { "action": "click", "target": "Settings" },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "verify", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
     { "action": "enter", "target": "Description", "value": "AUTO-{unique}" },
     { "action": "click", "target": "Update" },
-    { "action": "click", "target": "vertical ellipsis" },
-    { "action": "verify", "target": "Edit" },
-    { "action": "click", "target": "Edit" },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "verify", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Save" }
   ]

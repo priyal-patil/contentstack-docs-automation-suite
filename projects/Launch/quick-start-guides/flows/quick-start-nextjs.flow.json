@@ -1,0 +1,133 @@
+{
+  "id": "quick-start-nextjs",
+  "project": "Launch",
+  "module": "quick-start-guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/quick-start-nextjs",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: https://www.contentstack.com/docs/developers/launch/quick-start-nextjs — GitHub import through Deploy (OAuth/Connect omitted in JSON). Repository: search getting-started in Repository field and pick a dropdown row (LAUNCH_NEXTJS_REPO_SEARCH, LAUNCH_NEXTJS_REPO_OPTION_MATCH). Build/Output label verifies only (auto-populated per doc). Bulk Edit: CONTENTSTACK_* vars per NextJS starter doc with shared QA values. Verifies Deploy before click.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "+ New Project (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Project", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Project (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create New Project modal heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "modalTitle": "Create New Project" }
+    },
+    {
+      "action": "verify",
+      "target": "Import from a Git Repository (doc step)",
+      "expected": { "labelEquals": "Import from a Git Repository", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Import from a Git Repository (doc step)" },
+    {
+      "action": "click",
+      "target": "GitHub card on Create New Project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Repository field label (doc step)",
+      "expected": { "labelEquals": "Repository", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch repository Select control (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch import Repository menu type getting-started pick dropdown option (doc step)",
+      "timeoutMs": 150000
+    },
+    {
+      "action": "verify",
+      "target": "Git Branch field label (doc step)",
+      "expected": { "labelEquals": "Git Branch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Git Branch Select control (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch import Git Branch menu first option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Launch Project Name (doc step)",
+      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Project Name (doc step)",
+      "value": "NextJS Starter {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environment Name (doc step)",
+      "expected": { "labelEquals": "Environment Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Environment Name (doc step)",
+      "value": "Default"
+    },
+    {
+      "action": "verify",
+      "target": "Build and Output Settings section (doc step)",
+      "expected": { "labelEquals": "Build and Output Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Framework Preset field label (doc step)",
+      "expected": { "labelEquals": "Framework Preset", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Build Command field label (doc step)",
+      "expected": { "labelEquals": "Build Command", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Output Directory field label (doc step)",
+      "expected": { "labelEquals": "Output Directory", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Environment Variables section (doc step)",
+      "expected": { "labelEquals": "Environment Variables", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Key Value Edit tab (doc step)",
+      "expected": { "labelEquals": "Key Value Edit", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Bulk Edit tab (doc step)",
+      "expected": { "labelEquals": "Bulk Edit", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Bulk Edit tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "enter",
+      "target": "Launch Create New Project env variables bulk editor (doc step)",
+      "value": "CONTENTSTACK_API_HOST=api.domain.io\nCONTENTSTACK_CDN=https://cdn.contentstack.io\nCONTENTSTACK_API_KEY=bltfa11df3d678c005c\nCONTENTSTACK_DELIVERY_TOKEN=csc2e98f0f9e904d21aa6390dc\nCONTENTSTACK_ENVIRONMENT=preview"
+    },
+    {
+      "action": "verify",
+      "target": "Deploy (doc step)",
+      "timeoutMs": 150000,
+      "expected": { "labelEquals": "Deploy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Deploy (doc step)", "timeoutMs": 150000 }
+  ]
+}

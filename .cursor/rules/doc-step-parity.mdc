@@ -42,6 +42,20 @@ When creating or updating automation flows based on a documentation URL, the flo
 - **Label doc-derived targets** with `"(doc step)"` so reporting stays traceable to docs.
 - You may stabilize selectors for a doc step, but **do not change document intent** and do not add extra verification beyond what the doc supports.
 
+### Selector override layers (`loadOverrides` in `rules/core/actionRules.ts`)
+
+Maps **`CLICK_SELECTORS`** and **`INPUT_SELECTORS`** are merged in this **exact order**; each step **shallow-merges** into the running object (`{ ...existing, ...layer }`), so for the **same target key**, a **later** file **wins** (**last-wins**). There is **no deep merge** of nested structures.
+
+1. `shared/overrides/common.selectors.ts`  
+2. `rules/overrides/common.selectors.ts` (uses `COMMON_CLICK_SELECTORS` or `CLICK_SELECTORS`)  
+3. `projects/<project>/selectors/project.selectors.ts` (if present)  
+4. `projects/<project>/<module>/selectors/module.selectors.ts` (if present)  
+5. `rules/overrides/modules/<module>.selectors.ts` (legacy; if present)  
+6. `projects/<project>/<module>/selectors/<flow-id>.selectors.ts` (if present)  
+7. `rules/overrides/docs/<flow-id>.selectors.ts` (legacy; if present)  
+
+`performAction` may still apply **inline string fallbacks** when a target has no map entry—that is separate from this merge order.
+
 ## Allowed “generic” steps (can be implicit)
 
 These can be included even if not repeated in every doc:

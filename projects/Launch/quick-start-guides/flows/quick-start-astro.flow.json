@@ -1,0 +1,133 @@
+{
+  "id": "quick-start-astro",
+  "project": "Launch",
+  "module": "quick-start-guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/launch/quick-start-astro",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: https://www.contentstack.com/docs/launch/quick-start-astro — GitHub import through Deploy (OAuth/Connect omitted in JSON). Repository: search astro in Repository field and pick a dropdown row (LAUNCH_ASTRO_REPO_SEARCH, LAUNCH_ASTRO_REPO_OPTION_MATCH). Build/Output fields auto-populate per doc; only Output Directory is updated to ./dist. Doc note: Server Command npm run start for SSR; blank for CSR — not scripted here. Bulk Edit: ENVIRONMENT=Production and SAMPLE_KEY=SAMPLE_VALUE per doc example. Verifies Deploy before click.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "+ New Project (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Project", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Project (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create New Project modal heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "modalTitle": "Create New Project" }
+    },
+    {
+      "action": "verify",
+      "target": "Import from a Git Repository (doc step)",
+      "expected": { "labelEquals": "Import from a Git Repository", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Import from a Git Repository (doc step)" },
+    {
+      "action": "click",
+      "target": "GitHub card on Create New Project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Repository field label (doc step)",
+      "expected": { "labelEquals": "Repository", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch repository Select control (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch import Repository menu type astro pick dropdown option (doc step)",
+      "timeoutMs": 150000
+    },
+    {
+      "action": "verify",
+      "target": "Git Branch field label (doc step)",
+      "expected": { "labelEquals": "Git Branch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Git Branch Select control (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Launch import Git Branch menu first option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Launch Project Name (doc step)",
+      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Project Name (doc step)",
+      "value": "Astro {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environment Name (doc step)",
+      "expected": { "labelEquals": "Environment Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Environment Name (doc step)",
+      "value": "Default"
+    },
+    {
+      "action": "verify",
+      "target": "Build and Output Settings section (doc step)",
+      "expected": { "labelEquals": "Build and Output Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Output Directory field label (doc step)",
+      "expected": { "labelEquals": "Output Directory", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Output Directory input (doc step)",
+      "expected": { "labelEquals": "Output Directory", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Output Directory input (doc step)",
+      "value": "./dist"
+    },
+    {
+      "action": "verify",
+      "target": "Environment Variables section (doc step)",
+      "expected": { "labelEquals": "Environment Variables", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Key Value Edit tab (doc step)",
+      "expected": { "labelEquals": "Key Value Edit", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Bulk Edit tab (doc step)",
+      "expected": { "labelEquals": "Bulk Edit", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Bulk Edit tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "enter",
+      "target": "Launch Create New Project env variables bulk editor (doc step)",
+      "value": "ENVIRONMENT=Production\nSAMPLE_KEY=SAMPLE_VALUE"
+    },
+    {
+      "action": "verify",
+      "target": "Deploy (doc step)",
+      "timeoutMs": 150000,
+      "expected": { "labelEquals": "Deploy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Deploy (doc step)", "timeoutMs": 150000 }
+  ]
+}

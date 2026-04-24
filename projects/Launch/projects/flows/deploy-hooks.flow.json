@@ -1,0 +1,105 @@
+{
+  "id": "deploy-hooks",
+  "project": "Launch",
+  "module": "projects",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/deploy-hooks",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Create a Deploy Hook (doc steps 1–7): dashboard → Launch → project card → confirm Environments screen → verify first-row ⋮ → click ⋮ → Settings → environment settings → Deploy Hooks tab → + New Deploy Hook → modal title + Name label + verify Create Deploy Hook footer button (env-create-deployhook.html) → enter name → Create Deploy Hook → submit. Assumes opening a project lands on the Environments list (doc screenshots).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first project card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Environments page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+
+    {
+      "action": "verify",
+      "target": "Launch first environment row Actions vertical ellipsis visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Main content",
+        "labelEquals": "row 1 action",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Launch first environment row Actions ellipsis (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment row actions menu Settings option (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment actions Settings menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Environments active (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Deploy Hooks tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Deploy Hooks", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Deploy Hooks tab (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "+ New Deploy Hook (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create Deploy Hook modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Deploy Hook",
+        "labelEquals": "Create Deploy Hook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Create Deploy Hook Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Modal", "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Create Deploy Hook modal Create Deploy Hook button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Create Deploy Hook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Launch Create Deploy Hook name field (doc step)",
+      "value": "Auto Doc Deploy Hook {unique}"
+    },
+    { "action": "click", "target": "Launch Create Deploy Hook modal submit (doc step)", "timeoutMs": 60000 }
+
+  ]
+}

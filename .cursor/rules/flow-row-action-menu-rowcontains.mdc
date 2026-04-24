@@ -26,3 +26,20 @@ Use the **same `<token>`** the doc/automation uses to identify that row (e.g. a 
 ## When editing any doc URL flow
 
 Before saving a flow that touches **table row actions**, check: **ellipsis + later menu item** → **both** carry matching `rowContains` if the table can have multiple rows.
+
+## Dropdown stability rules (enforced in actionRules.ts)
+
+1. `openRowActionMenu` owns all ellipsis clicking and dropdown waiting — never replicate this logic inline in a flow step or elsewhere
+
+2. `getRowActionMenuRoot` must always receive the `rowContains` hint when it is present in the step — calling it without the hint when `rowContains` is set is a bug
+
+3. `force: true` is banned on dropdown menu items — confirmed fix in `actionRules.ts` uses `scrollIntoViewIfNeeded()` + `click()` instead
+
+4. The DOM locator fallback (`getDOMLocator`) tries these labels in order when no visible `cs-table-action-options` exist:
+   `"More options"` → `"More"` → `"Open menu"`
+   If all return null, the `DotsThreeLargeVertical` phosphor fallback runs
+
+5. If the dropdown closes before item selection, hard fail message must be:
+   `"Row menu closed before item selection — verify rowContains value matches visible row text exactly"`
+
+6. `console.warn` is emitted when `getDOMLocator` falls back past `aria-label` — monitor these warnings to identify listing pages missing `data-test-id` on their ellipsis icons

@@ -8,6 +8,10 @@
  *   Remaining steps are NOT executed; the Playwright test fails.
  * - Verification warnings (recorded inside actionRules, no throw): execution continues.
  * - optional: true on a step: on failure, log skip and continue (element not present).
+ *
+ * Selector maps for step targets (`CLICK_SELECTORS` / `INPUT_SELECTORS`) are **not** resolved here;
+ * they are merged in **`loadOverrides()`** in **`rules/core/actionRules.ts`**: fixed layer order, **shallow**
+ * object spread per layer—**duplicate keys are last-wins** (not a deep merge).
  */
 import fs from "fs";
 import path from "path";
@@ -46,7 +50,48 @@ import { ensureTrashHasDeletedGlobalFieldIfNeeded } from "./preflightTrashGlobal
 import { ensureTrashHasDeletedEntryIfNeeded } from "./preflightTrashEntries";
 import { ensureTrashHasDeletedAssetFolderIfNeeded, ensureTrashHasDeletedFileAssetIfNeeded } from "./preflightTrashAssets";
 
-export async function executeFlow(page: Page, flow: any) {
+const projectsRootDir = path.resolve(__dirname, "../projects");
+
+/** Resolve projects tree for flows matching JSON id (first .flow.json match). */
+export function findFlowPathByFlowId(flowId: string): string | null {
+  const want = String(flowId || "").trim();
+  if (!want) return null;
+  let found: string | null = null;
+  const walk = (dir: string) => {
+    if (found || !fs.existsSync(dir)) return;
+    for (const name of fs.readdirSync(dir)) {
+      const p = path.join(dir, name);
+      let st: fs.Stats;
+      try {
+        st = fs.statSync(p);
+      } catch {
+        continue;
+      }
+      if (st.isDirectory()) walk(p);
+      else if (name.endsWith(".flow.json")) {
+        try {
+          const j = JSON.parse(fs.readFileSync(p, "utf-8")) as { id?: string };
+          if (String(j?.id || "") === want) {
+            found = p;
+            return;
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  };
+  walk(projectsRootDir);
+  return found;
+}
+
+export type ExecuteFlowOptions = {
+  /** When true, skip `runSharedSteps` and `preflight.executeFlowBefore` (used for nested runs). */
+  skipSharedSteps?: boolean;
+};
+
+export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOptions) {
+  const skipShared = !!options?.skipSharedSteps;
   const unique = uniqueForFlow(flow);
   const documentUrl = flow?.source || flow?.documentUrl || "(no source URL)";
   let currentPage = page;
@@ -55,8 +100,39 @@ export async function executeFlow(page: Page, flow: any) {
   console.log(`Executing Flow: ${flow.id}`);
   console.log("=================================");
 
+  const flowTypeEarly = String(flow?.type || "").toLowerCase();
+  const sourceUrlEarly = String(flow?.source || flow?.documentUrl || "").trim();
+  const hasNoStepsEarly = !Array.isArray(flow.steps) || flow.steps.length === 0;
+  const hasPreflight =
+    flow?.preflight &&
+    typeof flow.preflight === "object" &&
+    Object.keys(flow.preflight).filter((k) => {
+      const v = (flow.preflight as Record<string, unknown>)[k];
+      return v !== undefined && v !== null && String(v).trim() !== "";
+    }).length > 0;
+
+  // Doc-only informational: load public docs URL without app login (skip when preflight needs the app).
+  if (
+    !skipShared &&
+    hasNoStepsEarly &&
+    sourceUrlEarly &&
+    (flowTypeEarly === "informational" || flowTypeEarly === "doc_only") &&
+    !hasPreflight
+  ) {
+    console.log(`📄 Informational flow: loading ${sourceUrlEarly}`);
+    await page.goto(sourceUrlEarly, { waitUntil: "domcontentloaded", timeout: 90_000 });
+    const title = (await page.title().catch(() => "")) || "";
+    if (!title.trim()) {
+      throw new Error(`Informational flow "${flow.id}": empty document title after loading ${sourceUrlEarly}`);
+    }
+    console.log(`✅ Informational flow completed (doc load): ${flow.id}`);
+    return;
+  }
+
   // Shared steps (project-agnostic). Default: login + selectStack.
-  await runSharedSteps(page, flow?.use);
+  if (!skipShared) {
+    await runSharedSteps(page, flow?.use);
+  }
 
   // Optional prerequisite (not document steps): e.g. ensure Trash has a deleted global field before restore-doc steps.
   const preflightId = flow?.preflight?.runFlowWhenTrashGlobalFieldsEmpty;
@@ -79,16 +155,102 @@ export async function executeFlow(page: Page, flow: any) {
     await ensureTrashHasDeletedFileAssetIfNeeded(page, preflightDeletedAssetsId.trim());
   }
 
+  // Run another flow on the same page/session (e.g. file upload through Deploy, then validate Deployments doc on the next screen).
+  // Optional: run the first N steps of this flow first (e.g. open Launch + confirm Projects page), then run the subflow with
+  // `skipFirstStepsInExecuteFlowBefore` to avoid duplicating those steps in the child JSON.
+  const preflightObj =
+    flow?.preflight && typeof flow.preflight === "object" ? (flow.preflight as Record<string, unknown>) : null;
+  const executeBeforeId =
+    preflightObj && typeof preflightObj.executeFlowBefore === "string" ? preflightObj.executeFlowBefore.trim() : "";
+  let leadingBefore = preflightObj ? Number(preflightObj.leadingStepsBeforeExecuteFlowBefore) : NaN;
+  if (!Number.isFinite(leadingBefore) || leadingBefore < 0) leadingBefore = 0;
+  leadingBefore = Math.floor(leadingBefore);
+  let skipFirstInSub = preflightObj ? Number(preflightObj.skipFirstStepsInExecuteFlowBefore) : NaN;
+  if (!Number.isFinite(skipFirstInSub) || skipFirstInSub < 0) skipFirstInSub = 0;
+  skipFirstInSub = Math.floor(skipFirstInSub);
+
+  let mainStepStartIndex = 0;
+
+  if (!skipShared && executeBeforeId) {
+    const stepsEarly = Array.isArray(flow.steps) ? flow.steps : [];
+    if (leadingBefore > 0) {
+      if (leadingBefore > stepsEarly.length) {
+        throw new Error(
+          `Flow "${flow.id}": preflight.leadingStepsBeforeExecuteFlowBefore (${leadingBefore}) exceeds steps length (${stepsEarly.length}).`
+        );
+      }
+      for (let i = 0; i < leadingBefore; i++) {
+        const step = stepsEarly[i];
+        console.log(`STEP ${i + 1}/${stepsEarly.length} (before preflight):`, step);
+        try {
+          const maybeNextPage = await performAction(currentPage, step, unique, flow, {
+            documentUrl,
+            flowId: flow.id,
+            stepIndex: i,
+          });
+          if (maybeNextPage) currentPage = maybeNextPage;
+        } catch (err: any) {
+          if (step.optional) {
+            console.log(`⏭️  Optional step skipped (not visible): ${step?.action} "${step?.target}"`);
+            continue;
+          }
+          const message = err?.message ?? String(err);
+          const missingElementSummary = buildMissingElementSummary(step, message);
+          let screenshotRelativePath: string | undefined;
+          try {
+            const reportDir = process.env.REPORT_DIR || path.join(process.cwd(), "reports/latest");
+            const shotDir = path.join(reportDir, "flow-screenshots");
+            fs.mkdirSync(shotDir, { recursive: true });
+            const safeFlow = String(flow.id || "flow").replace(/[^a-zA-Z0-9_.-]/g, "_");
+            const fileName = `${safeFlow}-step-${i + 1}.png`;
+            const absShot = path.join(shotDir, fileName);
+            await currentPage.screenshot({ path: absShot, fullPage: false, timeout: 20_000 }).catch(() => {});
+            if (fs.existsSync(absShot)) {
+              screenshotRelativePath = path.join("flow-screenshots", fileName).split(path.sep).join("/");
+            }
+          } catch {
+            /* best-effort */
+          }
+          recordDocStepFailure(documentUrl, flow.id, i, step, message, {
+            missingElementSummary,
+            screenshotRelativePath,
+          });
+          console.error(`❌ Document step failed (URL: ${documentUrl}, Step ${i + 1}: ${step?.action} "${step?.target}"): ${message}`);
+          throw err;
+        }
+      }
+      mainStepStartIndex = leadingBefore;
+    }
+
+    const subPath = findFlowPathByFlowId(executeBeforeId);
+    if (!subPath) {
+      throw new Error(`preflight.executeFlowBefore: no flow found with id "${executeBeforeId}" under projects/`);
+    }
+    let subFlow: any = JSON.parse(fs.readFileSync(subPath, "utf-8"));
+    if (skipFirstInSub > 0) {
+      const subSteps = Array.isArray(subFlow.steps) ? subFlow.steps : [];
+      if (skipFirstInSub > subSteps.length) {
+        throw new Error(
+          `Flow "${flow.id}": preflight.skipFirstStepsInExecuteFlowBefore (${skipFirstInSub}) exceeds subflow "${executeBeforeId}" steps (${subSteps.length}).`
+        );
+      }
+      subFlow = { ...subFlow, steps: subSteps.slice(skipFirstInSub) };
+    }
+    await executeFlow(currentPage, subFlow, { skipSharedSteps: true });
+  }
+
   console.log("🔎 Flow.steps type:", typeof flow.steps);
   console.log("🔎 Flow.steps length:", Array.isArray(flow.steps) ? flow.steps.length : "NOT_ARRAY");
   console.log("🔎 Flow object:", JSON.stringify(flow, null, 2));
 
-  if (!Array.isArray(flow.steps) || flow.steps.length === 0) {
+  const hasNoSteps = !Array.isArray(flow.steps) || flow.steps.length === 0;
+
+  if (hasNoSteps) {
     console.log("⚠️ No steps found in flow.");
     return;
   }
 
-  for (let i = 0; i < flow.steps.length; i++) {
+  for (let i = mainStepStartIndex; i < flow.steps.length; i++) {
     const step = flow.steps[i];
     console.log(`STEP ${i + 1}/${flow.steps.length}:`, step);
     try {

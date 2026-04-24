@@ -17,11 +17,13 @@
     },
     {
       "action": "click",
-      "target": "vertical ellipsis"
+      "target": "vertical ellipsis",
+      "expected": { "rowContains": "AUTO-" }
     },
     {
       "action": "click",
-      "target": "Edit"
+      "target": "Edit",
+      "expected": { "rowContains": "AUTO-" }
     },
     {
       "action": "click",

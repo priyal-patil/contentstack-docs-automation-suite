@@ -1,0 +1,45 @@
+---
+description: Minimal flow JSON shape, verify + rowContains patterns, multi-part pointer, doc-minimal guardrails
+alwaysApply: true
+---
+
+# Flow JSON authoring guide
+
+Shape below matches **`projects/CMS/**/flows/*.flow.json`** in this repo (see e.g. **`add-an-environment.flow.json`**, **`delete-content-type.flow.json`**, **`get-started-with-workflows.flow.json`**). Fields are illustrative placeholders—replace **`id`**, **`source`**, **`module`**, and step **`target`** strings with your doc’s values.
+
+```json
+{
+  "id": "cms-authoring-example",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/delete-a-content-type",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Confirm Delete",
+      "expected": { "within": "Modal", "labelEquals": "Confirm Delete" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "expected": { "rowContains": "AUTO-" }
+    }
+  ]
+}
+```
+
+- **`use`:** Often `login` only or `["login", "selectStack"]` like real CMS flows (see **`add-an-environment.flow.json`** vs **`delete-content-type.flow.json`**).
+- **Verify step:** Doc-named **`target`** plus **`expected.within`** when the doc states placement; **`labelEquals`** matches the doc’s exact wording. Real flows sometimes add **`withinStrict`** or **`labelMatch`**—for doc-derived checks follow **`doc-step-parity.mdc`**.
+- **Row menu:** Reuse the **same** **`expected.rowContains`** on every later ⋯ / **Delete** (etc.) step for that row—see **`flow-row-action-menu-rowcontains.mdc`**.
+
+## Multi-part docs
+
+Split into **`projects/.../flows/<id>-part-1.flow.json`**, **`<id>-part-2.flow.json`**, each with its **`.selectors.ts`**—see **`doc-parts-one-file-per-part.mdc`**.
+
+## Do not
+
+- Add steps the document does **not** describe (no inferred “fix the UI” steps).
+- Use loose **contains** / **`labelMatch`** for **doc-named** UI verification where **`doc-step-parity.mdc`** requires **`labelEquals`**.

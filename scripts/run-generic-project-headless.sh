@@ -29,6 +29,8 @@ echo "{\"startedAt\":\"$START_ISO\",\"reportDir\":\"$REPORT_DIR\",\"mode\":\"pro
 export PLAYWRIGHT_HEADLESS=1
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 export PW_WORKERS="${PW_WORKERS:-6}"
+# Full-project runs need more than the 3m local default per flow (see playwright.config.ts)
+export PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES:-15}"
 
 : > "$REPORT_DIR/playwright.log"
 echo "=== Project=$PROJECT headless → $REPORT_DIR ===" | tee -a "$REPORT_DIR/playwright.log"
@@ -43,7 +45,7 @@ if [[ "$DOCS_AUDIT_BACKGROUND" == "1" ]]; then
 fi
 
 set +e
-npx playwright test tests/flows.spec.ts --project=default -g "Project=$PROJECT" 2>&1 | tee -a "$REPORT_DIR/playwright.log"
+npx playwright test tests/flows.spec.ts --project=flows -g "Project=$PROJECT" 2>&1 | tee -a "$REPORT_DIR/playwright.log"
 PW_EXIT=${PIPESTATUS[0]}
 set -e
 

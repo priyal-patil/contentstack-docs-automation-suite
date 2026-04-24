@@ -48,7 +48,8 @@
     },
     {
       "action": "click",
-      "target": "vertical ellipsis"
+      "target": "vertical ellipsis",
+      "expected": { "rowContains": "Address-" }
     },
     {
       "action": "verify",

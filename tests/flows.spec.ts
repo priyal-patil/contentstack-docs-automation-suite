@@ -13,8 +13,10 @@ const ranFlowIds = new Set<string>();
 // Do NOT use test.describe.configure({ mode: "serial" }) at file scope: Playwright skips
 // all remaining tests after the first failure in a serial group (204+ "skipped" in reports).
 //
-// Inner groups use describe.parallel (not serial): a failure in one URL must NOT skip the rest
-// in the same module/stage. Order is still deterministic via flow sort, but tests run independently.
+// Inner groups use describe.parallel by default (a failure in one URL must NOT skip the rest).
+// For CMS full batch, CMS_SEQUENTIAL_MODULE_ORDER=1 uses describe.serial per module so CRUD-sorted URLs run in order.
+// When CMS_CONTINUE_ON_FAIL=1 (set by run-cms-sequential-modules-dashboard.sh), CMS Stage=main uses one test + test.step per flow
+// so every URL still runs after a failure (reports merge step rows via playwrightFlowStepExpansion.ts).
 
 const legacyFlowsDir = path.resolve(__dirname, "../flows");
 const projectsDir = path.resolve(__dirname, "../projects");
@@ -122,7 +124,18 @@ function crudLifecycleRank(f: any): number {
   return 30;
 }
 
-const flows = loadFlows().sort((a, b) => {
+/** Set by collectRetryFlowTitlesFromJson.ts --exportShell for the CMS batch retry pass (before delete batch). */
+const cmsRetryFlowIdsRaw = process.env.CMS_RETRY_FLOW_IDS?.trim();
+const cmsRetryPublishChain = process.env.CMS_RETRY_PUBLISH_CHAIN === "1";
+const cmsRetryRolesChain = process.env.CMS_RETRY_ROLES_CHAIN === "1";
+const cmsRetryFlowIdSet =
+  cmsRetryFlowIdsRaw && cmsRetryFlowIdsRaw.length > 0
+    ? new Set(cmsRetryFlowIdsRaw.split(",").map((s) => s.trim()).filter(Boolean))
+    : null;
+const cmsRetryEnvPass =
+  (cmsRetryFlowIdSet !== null && cmsRetryFlowIdSet.size > 0) || cmsRetryPublishChain || cmsRetryRolesChain;
+
+let flows = loadFlows().sort((a, b) => {
   const aStage = (a.stage || "main").toLowerCase();
   const bStage = (b.stage || "main").toLowerCase();
 
@@ -272,6 +285,13 @@ const flows = loadFlows().sort((a, b) => {
     if (id === "import-a-taxonomy") return 136;
     if (id === "delete-a-taxonomy") return 137;
     if (id === "add-taxonomy-to-a-content-type") return 138;
+    if (id === "import-project-using-file-upload") return 900;
+    if (id === "deployments") return 901;
+    if (id === "deploy-hooks") return 902;
+    if (id === "trigger-deployments-on-launch-based-on-tags-releases") return 902.5;
+    if (id === "disable-automatic-redeployment") return 903;
+    if (id === "redeploy-automatically-when-content-is-published-on-cms") return 904;
+    if (id === "environments") return 905;
     return 0;
   };
   const fd = flowOrder(a) - flowOrder(b);
@@ -285,6 +305,15 @@ const flows = loadFlows().sort((a, b) => {
   const bKey = `${b.project || ""}::${b.module || ""}::${b.id || ""}`;
   return aKey.localeCompare(bKey);
 });
+
+/** Full sorted list (retry pass may shrink `flows` for module registration; serial chains still resolve flows by id). */
+const flowsUnfilteredForChains = flows;
+
+if (cmsRetryFlowIdSet && cmsRetryFlowIdSet.size > 0) {
+  flows = flows.filter((f) => cmsRetryFlowIdSet!.has(String(f.id || "")));
+} else if (cmsRetryEnvPass && (cmsRetryPublishChain || cmsRetryRolesChain)) {
+  flows = [];
+}
 
 /** Run in serial group — not in the main parallel loop (update/delete need a rule from add on the same stack). */
 const PUBLISH_RULE_CHAIN_SERIAL: string[] = [
@@ -402,65 +431,175 @@ const SERIAL_CHAIN_FLOW_IDS = new Set<string>([...PUBLISH_RULE_CHAIN_SERIAL, ...
 const flowsForParallel = flows.filter((f) => !SERIAL_CHAIN_FLOW_IDS.has(String(f.id || "")));
 const flowGroups = groupFlowsByProjectModuleStage(flowsForParallel);
 
+/** When CMS_SEQUENTIAL_MODULE_ORDER=1 (sequential module batch), CMS Stage=main runs one URL at a time per module in CRUD sort order. */
+const cmsSequentialModuleOrder = process.env.CMS_SEQUENTIAL_MODULE_ORDER === "1";
+
+/** CMS sequential batch: run every flow in the module even if one fails (test.step per flow). Off unless "1". */
+const cmsContinueOnFail = process.env.CMS_CONTINUE_ON_FAIL === "1";
+
+const MAX_FLOW_SUITE_TIMEOUT_MS = 3_600_000;
+
+/**
+ * Same rules as playwright.config.ts `timeout`: PW_TEST_TIMEOUT_MS, PW_FLOW_MAX_MINUTES, else 3m local / 15m CI.
+ * Flow suite used to force 30m here — that masked the global 7m cap and felt "stuck forever" when headed.
+ */
+function flowSuitePerTestTimeoutMs(): number {
+  const msRaw = process.env.PW_TEST_TIMEOUT_MS?.trim();
+  if (msRaw) {
+    const n = Number(msRaw);
+    if (Number.isFinite(n) && n >= 15_000) return Math.min(n, MAX_FLOW_SUITE_TIMEOUT_MS);
+  }
+  const minsRaw = process.env.PW_FLOW_MAX_MINUTES?.trim();
+  if (minsRaw) {
+    const n = Number(minsRaw);
+    if (Number.isFinite(n) && n > 0) return Math.min(Math.round(n * 60_000), MAX_FLOW_SUITE_TIMEOUT_MS);
+  }
+  if (process.env.CI) return 900_000;
+  return 180_000;
+}
+
+/**
+ * One Playwright test runs all flows in a CMS module (test.step each). Default 30m is too small for
+ * large modules (e.g. 40+ URLs); batch then times out mid-module while single-URL grep runs pass.
+ * Override: CMS_MODULE_BATCH_TIMEOUT_MS (milliseconds).
+ */
+const cmsModuleBatchTimeoutMs = (() => {
+  const raw = process.env.CMS_MODULE_BATCH_TIMEOUT_MS?.trim();
+  if (raw && /^\d+$/.test(raw)) return Math.max(60_000, parseInt(raw, 10));
+  return 14_400_000; // 4 hours
+})();
+
+function registerModuleFlowTests(groupFlows: any[], bucketTitle: string): void {
+  const useStepBundle =
+    cmsContinueOnFail &&
+    cmsSequentialModuleOrder &&
+    bucketTitle.startsWith("Project=CMS ") &&
+    bucketTitle.includes("Stage=main");
+
+  if (useStepBundle) {
+    const batchTitle = `${bucketTitle} · run-all-flows-continue-on-fail`;
+    test(batchTitle, async ({ browser }) => {
+      test.setTimeout(cmsModuleBatchTimeoutMs);
+      let failedInBatch = 0;
+      /** Preserve original failures so the module test does not only report a generic count (hard fails still fail the batch). */
+      const stepFailures: unknown[] = [];
+      for (const flow of groupFlows) {
+        const testName = flow.id || path.basename(flow.source || "unknown-flow");
+        // Playwright rethrows after a failed test.step; catch so remaining URLs still run (CMS batch).
+        try {
+          await test.step(testName, async () => {
+            ranFlowIds.add(flow.id || testName);
+            const context = await browser.newContext({ storageState: "auth.json" });
+            const page = await context.newPage();
+            try {
+              await executeFlow(page, flow);
+            } finally {
+              await context.close().catch(() => {});
+            }
+          });
+        } catch (e) {
+          failedInBatch += 1;
+          stepFailures.push(e);
+        }
+      }
+      if (failedInBatch > 0) {
+        const summary = `${failedInBatch} flow(s) failed in this module (see test steps above).`;
+        const asErrors = stepFailures.map((e) => (e instanceof Error ? e : new Error(String(e))));
+        if (asErrors.length === 1) {
+          throw asErrors[0];
+        }
+        const Aggregate = (globalThis as unknown as { AggregateError?: new (errs: Error[], message?: string) => Error })
+          .AggregateError;
+        if (typeof Aggregate === "function") {
+          throw new Aggregate(asErrors, summary);
+        }
+        const fallback = new Error(summary);
+        (fallback as Error & { errors?: Error[] }).errors = asErrors;
+        throw fallback;
+      }
+    });
+    return;
+  }
+
+  for (const flow of groupFlows) {
+    const testName = flow.id || path.basename(flow.source || "unknown-flow");
+
+    test(testName, async ({ browser }) => {
+      if (testName === "workflows-use-cases") {
+        test.setTimeout(900_000);
+      }
+      ranFlowIds.add(flow.id || testName);
+      const context = await browser.newContext({ storageState: "auth.json" });
+      const page = await context.newPage();
+
+      await executeFlow(page, flow);
+
+      await context.close();
+    });
+  }
+}
+
 test.describe.parallel("Flow suite (parallel across modules; all URLs in a module/stage run even if one fails)", () => {
-  // Default project timeout is 7m; headed + PW_SLOWMO long JSON RTE flows can exceed 20m wall time.
-  test.describe.configure({ timeout: 1_800_000 });
+  test.describe.configure({ timeout: flowSuitePerTestTimeoutMs() });
   for (const [, groupFlows] of flowGroups) {
     const first = groupFlows[0];
     const projectName = first.project || "UnknownProject";
     const moduleName = first.module || "unknown-module";
     const stage = first.stage || "main";
 
-    test.describe.parallel(`Project=${projectName} Module=${moduleName} Stage=${stage}`, () => {
-      for (const flow of groupFlows) {
-        const testName = flow.id || path.basename(flow.source || "unknown-flow");
+    const bucketTitle = `Project=${projectName} Module=${moduleName} Stage=${stage}`;
+    const serialInner = cmsSequentialModuleOrder && projectName === "CMS" && stage === "main";
 
-        test(testName, async ({ browser }) => {
-          if (testName === "workflows-use-cases") {
-            test.setTimeout(900_000);
-          }
-          ranFlowIds.add(flow.id || testName);
-          const context = await browser.newContext({ storageState: "auth.json" });
-          const page = await context.newPage();
-
-          await executeFlow(page, flow);
-
-          await context.close();
-        });
-      }
-    });
+    if (serialInner && cmsContinueOnFail) {
+      test.describe(bucketTitle, () => {
+        test.describe.configure({ timeout: cmsModuleBatchTimeoutMs });
+        registerModuleFlowTests(groupFlows, bucketTitle);
+      });
+    } else if (serialInner) {
+      test.describe.serial(bucketTitle, () => {
+        registerModuleFlowTests(groupFlows, bucketTitle);
+      });
+    } else {
+      test.describe.parallel(bucketTitle, () => {
+        registerModuleFlowTests(groupFlows, bucketTitle);
+      });
+    }
   }
 });
 
-test.describe.serial("CMS workflows: publish rules chain (serial)", () => {
-  test("add-a-publish-rule → update-a-publish-rule → delete-a-publish-rule", async ({ browser }) => {
-    test.setTimeout(900_000);
-    for (const id of PUBLISH_RULE_CHAIN_SERIAL) {
-      const flow = flows.find((f) => f.id === id);
-      if (!flow) continue;
-      const flowId = flow.id || path.basename(flow.source || "unknown-flow");
-      ranFlowIds.add(flow.id || flowId);
-      const context = await browser.newContext({ storageState: "auth.json" });
-      const page = await context.newPage();
-      await executeFlow(page, flow);
-      await context.close();
-    }
+if (!cmsRetryEnvPass || cmsRetryPublishChain) {
+  test.describe.serial("CMS workflows: publish rules chain (serial)", () => {
+    test("add-a-publish-rule → update-a-publish-rule → delete-a-publish-rule", async ({ browser }) => {
+      test.setTimeout(900_000);
+      for (const id of PUBLISH_RULE_CHAIN_SERIAL) {
+        const flow = flowsUnfilteredForChains.find((f) => f.id === id);
+        if (!flow) continue;
+        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+        ranFlowIds.add(flow.id || flowId);
+        const context = await browser.newContext({ storageState: "auth.json" });
+        const page = await context.newPage();
+        await executeFlow(page, flow);
+        await context.close();
+      }
+    });
   });
-});
+}
 
 // One test body so core/usersRolesChain.ts singleton survives create → update → delete (avoid per-test isolation dropping the shared UUID).
-test.describe.serial("CMS users-and-roles: role lifecycle chain (serial)", () => {
-  test("create-a-role → update-a-role → delete-a-role", async ({ browser }) => {
-    test.setTimeout(900_000);
-    for (const id of ROLES_CHAIN_SERIAL) {
-      const flow = flows.find((f) => f.id === id);
-      if (!flow) continue;
-      const flowId = flow.id || path.basename(flow.source || "unknown-flow");
-      ranFlowIds.add(flow.id || flowId);
-      const context = await browser.newContext({ storageState: "auth.json" });
-      const page = await context.newPage();
-      await executeFlow(page, flow);
-      await context.close();
-    }
+if (!cmsRetryEnvPass || cmsRetryRolesChain) {
+  test.describe.serial("CMS users-and-roles: role lifecycle chain (serial)", () => {
+    test("create-a-role → update-a-role → delete-a-role", async ({ browser }) => {
+      test.setTimeout(900_000);
+      for (const id of ROLES_CHAIN_SERIAL) {
+        const flow = flowsUnfilteredForChains.find((f) => f.id === id);
+        if (!flow) continue;
+        const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+        ranFlowIds.add(flow.id || flowId);
+        const context = await browser.newContext({ storageState: "auth.json" });
+        const page = await context.newPage();
+        await executeFlow(page, flow);
+        await context.close();
+      }
+    });
   });
-});
+}

@@ -7,9 +7,9 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models" },
-    { "action": "click", "target": "vertical ellipsis" },
-    { "action": "verify", "target": "Copy Content Type" },
-    { "action": "click", "target": "Copy Content Type" },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "verify", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-" } },
     { "action": "verify", "target": "Copy", "expected": { "within": "Modal" } },
     { "action": "enter", "target": "Name", "value": "AUTO-{unique}", "expected": { "within": "Modal" } },
     { "action": "enter", "target": "Description", "value": "AUTO-{unique}", "expected": { "within": "Modal" } },

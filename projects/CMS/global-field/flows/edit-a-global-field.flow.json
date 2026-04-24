@@ -46,7 +46,7 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "vertical ellipsis" },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "Address-" } },
   
     
     {

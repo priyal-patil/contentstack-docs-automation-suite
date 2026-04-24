@@ -2,8 +2,9 @@ import { Page } from "@playwright/test";
 import { loginStep } from "./login.step";
 import { selectStackStep } from "./selectStack.step";
 import { openLoginStep } from "./openLogin.step";
+import { orgDashboardStep } from "./orgDashboard.step";
 
-export type SharedStepName = "login" | "selectStack" | "openLogin";
+export type SharedStepName = "login" | "selectStack" | "openLogin" | "orgDashboard";
 
 export async function runSharedSteps(page: Page, use: string[] | undefined) {
   // Default shared setup only when `use` is omitted.
@@ -20,6 +21,9 @@ export async function runSharedSteps(page: Page, use: string[] | undefined) {
         break;
       case "openLogin":
         await openLoginStep(page);
+        break;
+      case "orgDashboard":
+        await orgDashboardStep(page);
         break;
       default:
         throw new Error(`Unknown shared step: ${name}`);

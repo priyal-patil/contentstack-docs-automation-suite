@@ -1,0 +1,187 @@
+{
+  "id": "manage-a-composition-part-2",
+  "project": "Studio",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/studio/manage-a-composition",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Part 2 — doc Create a Composition (Freeform) + Edit + Delete a Composition: after Save, row ⋮ Delete on updated name; confirm Delete Composition modal.",
+  "steps": [
+    { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Projects page heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Studio Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio first project card open compositions (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Studio New Composition button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "New Composition", "labelMatch": "equals" }
+    },
+    { "action": "click", "target": "Studio New Composition button (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create New Composition modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create New Composition",
+        "labelEquals": "Create New Composition",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Freeform Composition type heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Freeform Composition", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Studio Create a Freeform Composition link visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Freeform Composition", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio Create a Freeform Composition link (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Create Freeform Composition modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Freeform Composition",
+        "labelEquals": "Create Freeform Composition",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Studio Freeform Composition Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio Freeform Composition Name field (doc step)",
+      "value": "Doc Freeform Composition {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio Freeform Composition UID field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Composition UID", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio Freeform Composition UID field (doc step)",
+      "value": "docf_{unique25}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio Freeform Composition URL Path label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "URL Path", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio Freeform Composition URL Path field (doc step)",
+      "value": "/marketing/launch"
+    },
+    {
+      "action": "verify",
+      "target": "Studio composition form Create button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio composition form Create submit (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc Freeform Composition" }
+    },
+    {
+      "action": "click",
+      "target": "Edit",
+      "timeoutMs": 60000,
+      "expected": { "rowContains": "Doc Freeform Composition" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Composition modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Edit Composition",
+        "labelEquals": "Edit Composition",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Studio Edit Freeform Composition Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Studio Edit Freeform Composition Name field (doc step)",
+      "value": "Doc Freeform Composition Updated {unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Studio Edit Freeform Composition URL Path label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "URL Path", "labelMatch": "contains" }
+    },
+    { "action": "verify", "target": "Studio Edit Composition Composition UID field read-only (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Edit Composition Advanced Options section visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Advanced Options", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio Edit Composition Advanced Options expand (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Edit freeform composition convert to linked option described (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Studio Edit Composition Save button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio Edit Composition Save button (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "Doc Freeform Composition Updated" }
+    },
+    {
+      "action": "click",
+      "target": "Delete",
+      "timeoutMs": 60000,
+      "expected": { "rowContains": "Doc Freeform Composition Updated" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Composition modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Delete Composition",
+        "labelEquals": "Delete Composition",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Studio Delete Composition modal confirm button (doc step)", "timeoutMs": 120000 }
+  ]
+}

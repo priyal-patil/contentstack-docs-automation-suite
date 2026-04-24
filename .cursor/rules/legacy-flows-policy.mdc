@@ -1,0 +1,13 @@
+---
+description: Legacy flows/ tree — executable flows belong in projects/; docs.json lists stay in flows/
+alwaysApply: true
+---
+
+# Legacy `flows/` policy
+
+Git history shows **occasional bulk URL / module updates** to `flows/` (e.g. with CMS docs list work)—**no active migration project** or phased checklist in-repo. Comments in code: **`tests/flows.spec.ts`** still **walks `flows/`** for legacy JSON (“until you delete old flows folder”).
+
+- **New executable flows:** **Do not add** them under **`flows/`**. Use **`projects/<Project>/<module>/flows/<id>.flow.json`** and selectors there.
+- **`flows/<Project>/docs.json`:** **Actively maintained** as URL lists for **`sync:docs-urls`**, docs-audit, and related pipelines—update these when informational doc lists change.
+- **Legacy `*.json` flow files** under **`flows/**`** (other than `docs.json`) are **still loaded and executed** by **`loadFlows()`** today. Prefer **one** definition per `id`: a duplicate under **`flows/`** and **`projects/`** can **double-run** the same flow—delete or move the legacy copy when you edit that flow.
+- **Target state:** **`projects/`** holds all automation; **`flows/`** primarily holds **`docs.json`** per project. Treat leftover **`flows/**`** executables as **technical debt**, not the place for new work.

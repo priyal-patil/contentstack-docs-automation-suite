@@ -1,0 +1,64 @@
+{
+  "id": "repair-github-connection-for-projects",
+  "project": "Launch",
+  "module": "how-to-guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/repair-github-connection-for-projects",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: https://www.contentstack.com/docs/developers/launch/repair-github-connection-for-projects — Steps use doc labels: left-hand **Settings** icon, sidebar **General**, **Git Connection** (`data/dom/Launch/settings-general-page.html`). **Launch Projects:** only a card with the **GitHub** octocat avatar (`.Avatar.launch-avatar`, path contains `17.3 25.576`). Locator for Settings is `[data-test-id=\"launch-nav-settings\"]` if the app places it outside a literal left nav strip. **Repair Connection** optional when healthy.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch GitHub-backed Launch Projects card visible (doc step)",
+      "timeoutMs": 90000
+    },
+    { "action": "click", "target": "Launch GitHub-backed Launch Projects card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch left-hand primary navigation Settings icon visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch left-hand primary navigation Settings icon (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation General row visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "General", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Settings left navigation General row (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch project settings Git Connection section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Git Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch project settings Repair Connection button visible (doc step)",
+      "optional": true,
+      "timeoutMs": 15000,
+      "expected": { "labelEquals": "Repair Connection", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Launch project settings Repair Connection button (doc step)",
+      "optional": true,
+      "timeoutMs": 90000
+    }
+  ]
+}
