@@ -48,6 +48,7 @@ jobs:
     # Full CMS + docs audit + reports can exceed 1–2h; raise if your org batch times out.
     timeout-minutes: 480
     env:
+      CI: "true"
       # ----- CI-friendly behaviour (no macOS open(), complete docs-audit in-tree for artifacts) -----
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
@@ -76,7 +77,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: package-lock.json
 
