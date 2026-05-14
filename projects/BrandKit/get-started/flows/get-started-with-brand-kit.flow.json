@@ -1,0 +1,374 @@
+{
+  "id": "get-started-with-brand-kit",
+  "project": "BrandKit",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/get-started-with-brand-kit",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc order: Brand Kit from left navigation when present; if Brand Kit is missing from left nav, a verification warning is recorded and the flow opens Brand Kit via Organization dashboard product tile (see brandkit-dashboard-card DOM). Then New Brand Kit → modal (Brand Kit Name, Description optional, Select Stack(s), Create Brand Kit). Stack(s) must include DEFAULT_STACK from .env (same stack used later in CMS). Voice Profile: Communication Style Mixer sliders, Custom Details, Playground prompt + Generate (optional if AI busy). CMS + AI Assistant: entry editor → AI icon → verify Brand Kits / Voice Profiles / Knowledge Vault UI → select BK + VP → toggle Knowledge Vault → prompt + Enter → verify Accept / Try Again / Cancel → Accept → title → Save → Publish (Publish button only). Doc § Install AI Assistant from Marketplace defers to other docs — not automated here.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kits page New Brand Kit primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Brand Kit", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Brand Kits page New Brand Kit primary (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Brand Kit",
+        "labelEquals": "Create Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Brand Kit Name label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Brand Kit Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Description label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Select Stack(s) label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Select Stack(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Create Brand Kit button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Create Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Name (doc step)",
+      "value": "AUTO-BK-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Description (doc step)",
+      "value": "AUTO Brand Kit description {unique}"
+    },
+    { "action": "click", "target": "Brand Kit Create modal Select Stack(s) control (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Brand Kit Create modal pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Create Brand Kit modal primary Create Brand Kit button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-BK-" }
+    },
+    { "action": "click", "target": "Brand Kit Voice Profiles sidebar card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Voice Profiles list New Voice Profile (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ New Voice Profile", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Voice Profiles list New Voice Profile (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create Voice Profile page field labels vs get-started doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "documentedFields": [
+          "Voice Profile Name",
+          "Description",
+          "Communication Style Mixer",
+          "Formality Level",
+          "Tone Of Voice",
+          "Humor Level",
+          "Language Complexity Level",
+          "Custom Details",
+          "Insights",
+          "Sample Content",
+          "Playground",
+          "Provide Prompt"
+        ]
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profile Name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profile Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Communication Style Mixer section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Communication Style Mixer", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Formality Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Formality Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Tone Of Voice slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Tone Of Voice", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Humor Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Humor Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Language Complexity Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Language Complexity Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Custom Details section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insights label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Insights", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Sample Content label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Sample Content", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Playground section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Playground", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Provide Prompt label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Provide Prompt", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Generate Response in Playground button (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Generate Response in Playground", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Name (doc step)",
+      "value": "AUTO-BK-VP-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Description (doc step)",
+      "value": "AUTO Voice Profile description {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Insights (doc step)",
+      "value": "Doc automation insights sample."
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Sample Content (doc step)",
+      "value": "Doc automation sample content."
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Provide Prompt (doc step)",
+      "value": "Write one sentence about brand tone."
+    },
+    {
+      "action": "click",
+      "target": "Generate Response in Playground button (doc step)",
+      "timeoutMs": 120000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Create Voice Profile Save (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Create Voice Profile Save (doc step)", "timeoutMs": 120000 },
+
+    { "action": "click", "target": "Brand Kit doc: Organization dashboard (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Brand Kit doc: Headless CMS product tile (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Brand Kit doc: DEFAULT_STACK stack list card (doc step)", "timeoutMs": 120000 },
+
+    { "action": "click", "target": "Content Models (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "+ New Content Type (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Content Type", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ New Content Type (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "modalTitle": "Create New Content Type" }
+    },
+    {
+      "action": "enter",
+      "target": "Name (doc step)",
+      "value": "AUTO-BK-AICT-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Description (doc step)",
+      "value": "AUTO Brand Kit AI Assistant CT {unique}"
+    },
+    { "action": "select", "target": "Type (doc step)", "value": "Single" },
+    { "action": "click", "target": "Save and proceed (doc step)", "timeoutMs": 120000 },
+    { "action": "click", "target": "Insert a field (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Single Line Textbox (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Save (doc step)", "timeoutMs": 120000 },
+
+    { "action": "click", "target": "Entries (doc step)", "timeoutMs": 90000 },
+
+    { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: New Entry modal pick content type row (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-BK-AICT-" }
+    },
+    { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "verify",
+      "target": "AI Assistant field modifier icon (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "visible": true }
+    },
+    {
+      "action": "click",
+      "target": "AI Assistant field modifier icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant right nav Brand Kits dropdown label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant right nav: Brand Kits async select open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant right nav: pick Brand Kit created in flow (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant right nav Voice Profiles dropdown label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant right nav: Voice Profiles async select open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant right nav: pick Voice Profile created in flow (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant right nav Knowledge Vault label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant right nav: Knowledge Vault toggle (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant right nav: AI Assistant prompt field (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit AI Assistant right nav: AI Assistant prompt field (doc step)",
+      "value": "Write one on-brand sentence for this field.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "press",
+      "target": "Brand Kit AI Assistant right nav: AI Assistant prompt field keyboard Enter (doc step)",
+      "value": "Enter",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant Action Items Accept (doc step)",
+      "timeoutMs": 180000,
+      "expected": { "labelEquals": "Accept", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant Action Items Try Again (doc step)",
+      "timeoutMs": 180000,
+      "expected": { "labelEquals": "Try Again", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit AI Assistant Action Items Cancel (doc step)",
+      "timeoutMs": 180000,
+      "expected": { "labelEquals": "Cancel", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit AI Assistant Action Items Accept (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "Entry editor Save button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Entry editor Save button (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "verify",
+      "target": "Publish (bottom-right) (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Publish (bottom-right) (doc step)", "timeoutMs": 90000 }
+  ]
+}

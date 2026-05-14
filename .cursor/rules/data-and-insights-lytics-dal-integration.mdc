@@ -1,0 +1,75 @@
+---
+description: Data & Insights Lytics DAL flow execution (optional consent, headed command, DOM locators).
+globs: projects/Data-and-Insights/**/*,data/dom/Data-and-Insights/**/*
+alwaysApply: false
+---
+
+# Data & Insights — `create-data-and-insights-lytics-integration`
+
+## Flow file
+
+- `projects/Data-and-Insights/set-up-data-insights/flows/create-data-and-insights-lytics-integration.flow.json`
+- Selectors: `projects/Data-and-Insights/set-up-data-insights/selectors/create-data-and-insights-lytics-integration.selectors.ts`
+- Dedicated clicks / enters / consent branching: `rules/core/actionRules.ts` (search `create-data-and-insights-lytics-integration` / `DAL Lytics doc`).
+
+## DOM snapshots (locators)
+
+Use **`data/dom/Data-and-Insights/set-up-data-insights/*.html`** when adjusting selectors (listing, modals, consent, Select Users, OAuth, row menu).
+
+## Optional privacy gate (do not fail the suite)
+
+Some orgs **skip** the data-privacy screen and open the **main DAL setup form** directly (`new-data-activation-layer-modal-setup2.html` pattern).
+
+- Flow JSON: **`optional: true`** on **`DAL Lytics doc: Data privacy confirmation checkbox (doc step)`** and **`DAL Lytics doc: Proceed button label (doc step)`**.
+- **`DAL Lytics doc: Proceed button after privacy confirmation (doc step)`** stays required; `actionRules` **no-ops** when `.lytics-consent-modal` is absent and waits for **`[data-test-id="cs-org-lytics-tag-name"]`** instead.
+
+## Headed single-flow run
+
+```bash
+npm run test:data-and-insights:lytics-integration:headed
+```
+
+Equivalent:
+
+```bash
+PW_FLOW_MAX_MINUTES=25 PW_WORKERS=1 npx playwright test tests/flows.spec.ts --project=flows --headed -g "create-data-and-insights-lytics-integration"
+```
+
+## Lytics app — `create-job-and-authorization-for-data-and-insights-lytics`
+
+Runs in **`https://app.lytics.com`** (not Contentstack).
+
+- Flow: `projects/Data-and-Insights/set-up-data-insights/flows/create-job-and-authorization-for-data-and-insights-lytics.flow.json`
+- Selectors: `.../create-job-and-authorization-for-data-and-insights-lytics.selectors.ts`
+- Handlers: `actionRules.ts` — search **`create-job-and-authorization-for-data-and-insights-lytics`** / **`Lytics Job doc`**.
+- Jobs list DOM snapshot: **`data/dom/Data-and-Insights/set-up-data-insights/lytics-joblistpage.html`**.
+
+Headed smoke:
+
+```bash
+npm run test:data-and-insights:lytics-job-auth:headed
+```
+
+Env (see `.env.example`): optional **`LYTICS_APP_URL`** / **`LYTICS_APP_ORIGIN`** to override the app host; stack credentials and **`LYTICS_STACK_REGION`**. The flow opens **`https://app.lytics.com/`** then **Data Pipeline → Jobs** in the left nav (dedicated step in `actionRules.ts`). Use **`LYTICS_PIPELINE_JOBS_URL`** only if you switch the flow to deep-link. Requires a **saved Lytics session** (`use` is empty; no Contentstack login in this flow).
+
+### Chained run: DAL OAuth then Lytics Job wizard (same browser)
+
+Full **create-data-and-insights-lytics-integration** (with Contentstack `login`) runs first via `preflight.executeFlowBefore`, then **Import Entries job** steps continue in the **same context** — see `tests/data-and-insights-lytics-dal-then-job.spec.ts` and **`npm run test:data-and-insights:dal-then-lytics-job:headed`**. Optional: **`PW_KEEP_BROWSER_OPEN=1`** (Inspector pause at end). **`preflight.continueOnExecuteFlowBeforeFailure`** is set so the job steps still run if the DAL flow fails.
+
+## Env (pick values that match visible stack / project names)
+
+- `DAL_CONFIGURATION_DOMAIN` — domain field override  
+- `DAL_CMS_STACK_SEARCH` — substring to filter **CMS Stacks** react-select, then pick a row whose **aria-label** matches when possible (`cs-org-lytics-tag-cms-stacks`). The flow step **`value`** (default **`AUTO`**) wins if set; else this env; else **`DEFAULT_STACK`**; else **`AUTO`**. Results load asynchronously — the runner polls briefly; use env for a stack name if no row matches **AUTO** in your org.
+- `DAL_LAUNCH_PROJECT_SEARCH` — substring for **Launch Projects** (`cs-org-lytics-tag-launch-projects`). **Select this before Personalize**; if unset, **`DEFAULT_LAUNCH_PROJECT`** or the first visible row is used.  
+- `DAL_PERSONALIZE_PROJECT_SEARCH` — substring for **Personalize Projects** (`cs-org-lytics-tag-personalize-projects`). If unset, the runner picks the **first visible** menu row (set this when multiple projects exist).  
+- `DAL_LYTICS_ACCOUNT_SEARCH` — Lytics account dropdown filter (optional empty + Enter)
+
+Example headed:
+
+```bash
+DAL_CMS_STACK_SEARCH=PriyalDocsStack DAL_PERSONALIZE_PROJECT_SEARCH=Test npm run test:data-and-insights:lytics-integration:headed
+```
+
+## Edit subsection row scope
+
+- JSON keeps **`expected.rowContains`: `"AUTO-DAL-"`** on ⋯ / Edit; runtime uses **`__dalLyticsDalTitle`** from the Title enter step.

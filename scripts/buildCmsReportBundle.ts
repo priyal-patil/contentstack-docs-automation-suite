@@ -11,6 +11,7 @@ import path from "path";
 import { generateFlowReportHtml } from "../core/flowReportGenerator";
 import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle, type PwSuite } from "../core/report/parseFlowSpecTitle";
 import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
+
 const REPORT_DIR = path.resolve(
   process.cwd(),
   process.argv.includes("--reportDir") ? process.argv[process.argv.indexOf("--reportDir") + 1] : "reports/latest"

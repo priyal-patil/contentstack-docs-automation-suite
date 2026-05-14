@@ -1,0 +1,37 @@
+{
+  "id": "access-manage-data-and-insights-accounts-through-contentstack",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/data-and-insights/access-manage-data-and-insights-accounts-through-contentstack",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Accessing Data & Insights (Lytics) through Contentstack — **App Switcher** → **Data & Insights** (OAuth). Verifies only doc-named **Data & Insights** in the switcher; optional **Accept** for first-time OAuth (doc: click **Accept**). Does not automate: DAL provisioning, org-name match vs Lytics account, or post-login dashboard checks listed under “Verifying Account Connection” (no single doc-named control). Role table and troubleshooting are informational.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify App Switcher Data and Insights product label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Data & Insights",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher Data and Insights product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Access manage D&I doc: OAuth Accept button (doc step)",
+      "optional": true,
+      "timeoutMs": 60000
+    }
+  ]
+}

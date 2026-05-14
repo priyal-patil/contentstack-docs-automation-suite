@@ -63,6 +63,21 @@ function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** Lytics Import Entries job + Stack API Key authorization (standalone JSON or chained after DAL). */
+function isCreateJobLyticsAuthorizationFlow(flow?: { id?: string }): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    id === "create-job-and-authorization-for-data-and-insights-lytics" ||
+    id === "create-data-and-insights-lytics-dal-then-lytics-import-job"
+  );
+}
+
+/** Listing rows often lack stable accessible names (e.g. only "row 1"); scope by visible row cell text instead. */
+function rowLocatorMatchingHint(page: Page, rowHint: string): Locator {
+  const re = new RegExp(escapeRegex(rowHint.trim()), "i");
+  return page.locator('[role="row"]').filter({ hasText: re }).first();
+}
+
 async function assertPageOpen(page: Page, context: string): Promise<void> {
   if (page.isClosed()) {
     throw new Error(
@@ -96,6 +111,21 @@ async function resolveVisibleLaunchEnvironmentRowActionsMenu(page: Page): Promis
 
 type LaunchEnvRowMenuReopenRow = "first" | "default";
 
+/**
+ * Env **settings** route (tabs: General, Event Tracking, …) — listing row ⋮ reopen must not resolve the environments table here.
+ * Use the same looseness as `onEnvSettingsUrl` steps: Launch often keeps the route in the hash (`…#!/…/envs/{id}/settings/…`),
+ * which always includes `/envs/{id}/settings` in `page.url()` but may not include `/launch/projects/` depending on SPA shape.
+ */
+function launchUrlIndicatesEnvDetailSettings(page: Page): boolean {
+  try {
+    const u = page.url();
+    if (/\/envs\/[^/]+\/settings/i.test(u)) return true;
+    return /\/launch\/projects\/[^/]+\/envs\/[^/]+\/settings\b/i.test(u);
+  } catch {
+    return false;
+  }
+}
+
 /** Open env table row ⋮ if no visible Settings menu; return tooltip that contains the gear icon. */
 async function getOrReopenLaunchEnvironmentRowActionsMenu(
   page: Page,
@@ -110,6 +140,11 @@ async function getOrReopenLaunchEnvironmentRowActionsMenu(
   menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
   if (await menu.isVisible({ timeout: 3_000 }).catch(() => false)) {
     return menu;
+  }
+  if (launchUrlIndicatesEnvDetailSettings(page)) {
+    throw new Error(
+      `[Launch] Env row ⋮ menu is hidden on env settings route — cannot reopen from environments table (finish navigation or wait for SPA). URL: ${page.url().slice(0, 420)}`
+    );
   }
   const reopenRow = opts?.reopenRow ?? "first";
   const row =
@@ -126,9 +161,37 @@ async function getOrReopenLaunchEnvironmentRowActionsMenu(
   const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
   await expect(dots).toBeVisible({ timeout: Math.min(t0, 30_000) });
   await dots.click({ timeout: t0, force: true });
-  await page.waitForTimeout(550);
+  await page.waitForTimeout(2_000);
   menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
   return menu;
+}
+
+/** Settings row inside env ⋮ menu — prefer `[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-icon"]` (+ Settings copy); fallback gear markup / plain Settings row. */
+async function resolveLaunchEnvironmentSettingsMenuListItem(actionsRoot: Locator, probeMs: number): Promise<Locator> {
+  const t = Math.max(700, probeMs);
+  const ordered: Locator[] = [
+    actionsRoot.locator('li[data-test-id="cs-icon"]').filter({ hasText: /^\s*Settings\s*$/i }).first(),
+    actionsRoot.locator('li[data-test-id="cs-icon"]').filter({ hasText: /Settings/i }).first(),
+    actionsRoot.locator('li:has([data-test-id="cs-icon"])').filter({ hasText: /^\s*Settings\s*$/i }).first(),
+    actionsRoot.locator('li:has([data-testid="environment-settings-action-selector"])').first(),
+    actionsRoot.locator("li").filter({ hasText: /^\s*Settings\s*$/i }).first(),
+  ];
+  for (const loc of ordered) {
+    if (await loc.isVisible({ timeout: Math.min(t, 5_000) }).catch(() => false)) return loc;
+  }
+  return ordered[0];
+}
+
+/** Hover stabilizes VerticalAction tooltip; validate visible "Settings" text then click label cell when present. */
+async function hoverValidateClickLaunchEnvironmentSettingsLi(page: Page, settingsLi: Locator, clickTimeoutMs: number) {
+  await expect(settingsLi).toBeVisible({ timeout: Math.min(clickTimeoutMs, 35_000) });
+  await expect(settingsLi).toContainText(/\bSettings\b/i);
+  await settingsLi.scrollIntoViewIfNeeded().catch(() => {});
+  await settingsLi.hover({ timeout: Math.min(clickTimeoutMs, 18_000) });
+  await page.waitForTimeout(150);
+  const labelDiv = settingsLi.locator("div.ml-8").filter({ hasText: /^Settings$/i }).first();
+  const clickEl = (await labelDiv.isVisible({ timeout: 2_000 }).catch(() => false)) ? labelDiv : settingsLi;
+  await clickEl.click({ timeout: Math.min(clickTimeoutMs, 45_000) });
 }
 
 /** Table is often sorted by date — "Default" is not row 1. Close overlays and filter by name so the row mounts. */
@@ -183,6 +246,11 @@ async function resolveLaunchEnvironmentsDefaultEnvironmentRow(
   timeoutMs: number,
   opts?: { skipTablePrep?: boolean; minimalResolve?: boolean }
 ): Promise<Locator> {
+  if (launchUrlIndicatesEnvDetailSettings(page)) {
+    throw new Error(
+      `[Launch] Cannot resolve Default environment row on env settings SPA (no listings table). URL: ${page.url().slice(0, 340)}`
+    );
+  }
   const t = Math.min(timeoutMs, 90_000);
   if (!opts?.skipTablePrep) {
     await prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page);
@@ -286,6 +354,11 @@ function locatorLaunchEnvironmentsFirstTableRowAlt(page: Page): Locator {
 }
 
 async function resolveLaunchEnvironmentsFirstTableRow(page: Page, timeoutMs: number): Promise<Locator> {
+  if (launchUrlIndicatesEnvDetailSettings(page)) {
+    throw new Error(
+      `[Launch] Cannot resolve first environments row on env settings SPA (no listings table). URL: ${page.url().slice(0, 340)}`
+    );
+  }
   const openSettingsMenu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
   if (!(await openSettingsMenu.isVisible({ timeout: 2_000 }).catch(() => false))) {
     await prepareLaunchEnvironmentsTableForFirstEnvironmentRow(page);
@@ -1339,6 +1412,8 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
   ],
   /** Entry editor right rail tabs (entry-right-nav.html — Status, Workflow, etc.). */
   "Entry editor right sidebar": [".SidebarWindow", ".SidebarWindow__tabs-container", ".SidebarWindow__tabs-container--border"],
+  /** Audience Insights entry sidebar doc: app icon lives in entry "right navigation panel". */
+  "Right navigation panel": [".SidebarWindow", ".SidebarWindow__tabs-container", ".SidebarWindow__tabs-container--border"],
   /** Launch deployment detail / deployments doc: primary page landmark. */
   main: ["main", '[role="main"]'],
   /** Launch project shell: Environments / Deployments icons (deploy-hooks doc). */
@@ -1423,6 +1498,25 @@ function loadOverrides(flow?: any): { click: Record<string, string>; input: Reco
     if (fs.existsSync(flowPath)) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const m = require(flowPath);
+      click = { ...click, ...(m.CLICK_SELECTORS ?? {}) };
+      input = { ...input, ...(m.INPUT_SELECTORS ?? {}) };
+    }
+  }
+
+  // 4c) Chained virtual flow id (`tests/data-and-insights-lytics-dal-then-job.spec.ts`) has no
+  // `{flowId}.selectors.ts`; reuse the standalone Lytics job + authorization map so verify steps resolve CSS, not `getByText(step.target)`.
+  if (
+    project &&
+    moduleName &&
+    String(flowId || "").toLowerCase() === "create-data-and-insights-lytics-dal-then-lytics-import-job"
+  ) {
+    const jobSelectorsPath = path.resolve(
+      __dirname,
+      `../../projects/${project}/${moduleName}/selectors/create-job-and-authorization-for-data-and-insights-lytics.selectors.ts`
+    );
+    if (fs.existsSync(jobSelectorsPath)) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const m = require(jobSelectorsPath);
       click = { ...click, ...(m.CLICK_SELECTORS ?? {}) };
       input = { ...input, ...(m.INPUT_SELECTORS ?? {}) };
     }
@@ -1790,6 +1884,228 @@ const ROW_MENU_VISIBLE_AFTER_ELLIPSIS = '#tableRowActionNode, .VerticalActionToo
 /** Try each label when `[data-test-id="cs-table-action-options"]` has no visible matches (listing pages). */
 const ROW_ELLIPSIS_DOM_LOCATOR_LABELS = ["More options", "More", "Open menu"] as const;
 
+function isBrandKitVoiceProfilesListingFlow(flow?: any): boolean {
+  const fid = String(flow?.id || "").toLowerCase();
+  return fid === "delete-a-voice-profile" || fid === "edit-a-voice-profile" || fid === "export-a-voice-profile";
+}
+
+/** Scope data rows inside the Voice Profiles table — avoids matching unrelated `[role="row"]` elsewhere on the page. */
+function brandKitVoiceProfilesRowLocator(page: Page, rowHint: string): Locator {
+  const re = new RegExp(escapeRegex(rowHint.trim()), "i");
+  return page
+    .locator('[data-test-id="voice-profiles-list"]')
+    .locator('[role="row"]:not(.Table__head__row)')
+    .filter({ hasText: re })
+    .first();
+}
+
+async function resolveBrandKitVoiceProfilesDataRow(page: Page, rowHint: string): Promise<Locator> {
+  const scoped = brandKitVoiceProfilesRowLocator(page, rowHint);
+  if ((await scoped.count().catch(() => 0)) > 0 && (await scoped.isVisible({ timeout: 5_000 }).catch(() => false))) {
+    return scoped;
+  }
+  return rowLocatorMatchingHint(page, rowHint);
+}
+
+/**
+ * Voice Profiles listing (codegen-validated): ⋯ is `[data-test-id="cs-table-action-options"]` inside the row first;
+ * fall back to "row N action" button/menu or Phosphor ⋯.
+ */
+async function resolveBrandKitVoiceProfilesRowEllipsis(page: Page, rowHint: string): Promise<Locator | null> {
+  const row = await resolveBrandKitVoiceProfilesDataRow(page, rowHint);
+  if ((await row.count().catch(() => 0)) === 0) return null;
+  const rowActionName = /row\s+\d+\s+action/i;
+
+  const byTestId = row.locator('[data-test-id="cs-table-action-options"]').first();
+  if (await byTestId.isVisible({ timeout: 5_000 }).catch(() => false)) return byTestId;
+
+  const byBtn = row.getByRole("button", { name: rowActionName }).first();
+  if (await byBtn.isVisible({ timeout: 4_000 }).catch(() => false)) return byBtn;
+
+  const byMenuNamed = row.getByRole("menu", { name: rowActionName }).first();
+  if (await byMenuNamed.isVisible({ timeout: 4_000 }).catch(() => false)) return byMenuNamed;
+
+  const dotsRoot = row.locator('[name="DotsThreeLargeVertical"]').first();
+  if ((await dotsRoot.count().catch(() => 0)) > 0) {
+    const dotsBtn = dotsRoot.locator("xpath=ancestor-or-self::*[@role='button' or self::button][1]").first();
+    if (await dotsBtn.isVisible({ timeout: 3_000 }).catch(() => false)) return dotsBtn;
+  }
+
+  const anyRowMenu = row.locator('[role="menu"]').first();
+  if ((await anyRowMenu.count().catch(() => 0)) > 0 && (await anyRowMenu.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    return anyRowMenu;
+  }
+  return null;
+}
+
+/** True when the portaled Voice Profiles ⋯ menu shows a usable Delete row (matches Edit / Delete / Export UI). */
+async function voiceProfilesActionsTooltipShowsDelete(page: Page): Promise<boolean> {
+  const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first();
+  if (!(await tip.isVisible({ timeout: 1_800 }).catch(() => false))) return false;
+  const openModal = '[data-test-id="brand-kit-click-menu-voice-profiles-list-open-delete-voice-profile-modal"]';
+  const legacy = '[data-test-id="brand-kit-click-menu-voice-profiles-list-delete-voice-profile"]';
+  if (await tip.locator(openModal).first().isVisible({ timeout: 700 }).catch(() => false)) return true;
+  if (await tip.locator(legacy).first().isVisible({ timeout: 700 }).catch(() => false)) return true;
+  if (await tip.getByRole("menuitem", { name: /^Delete$/i }).first().isVisible({ timeout: 700 }).catch(() => false)) return true;
+  if (await tip.getByText("Delete", { exact: true }).first().isVisible({ timeout: 700 }).catch(() => false)) return true;
+  return false;
+}
+
+/**
+ * If the actions menu is not open or Delete is not shown yet, click the row ⋯ again (toggle-safe retries).
+ * Caller keeps a single ⋯ step in flow JSON; recovery matches manual “open menu → pick Delete”.
+ */
+async function ensureVoiceProfilesRowActionsMenuOpen(page: Page, flow: any, rowHint: string, maxAttempts = 10): Promise<void> {
+  const ellipsisStep = { action: "click", target: "vertical ellipsis", expected: { rowContains: rowHint } } as Step;
+  if (await voiceProfilesActionsTooltipShowsDelete(page)) return;
+  for (let a = 0; a < maxAttempts; a++) {
+    if (await voiceProfilesActionsTooltipShowsDelete(page)) return;
+    await openRowActionMenu(page, ellipsisStep, flow);
+    await page.waitForTimeout(420);
+  }
+}
+
+/** Resolve Delete row action inside an already-open Voice Profiles ⋯ surface (portaled tooltip vs row-scoped menu). */
+async function locateVisibleVoiceProfileDeleteControl(
+  page: Page,
+  rowHint: string | undefined,
+  deleteVpSel: string,
+  timeoutMs: number,
+): Promise<Locator> {
+  const t = Math.min(timeoutMs, 45_000);
+  const hint = rowHint?.trim();
+
+  /** Codegen path: visible node that opens the confirm modal (preferred over compound selector when portaled). */
+  const openModalId = '[data-test-id="brand-kit-click-menu-voice-profiles-list-open-delete-voice-profile-modal"]';
+  const legacyDelId = '[data-test-id="brand-kit-click-menu-voice-profiles-list-delete-voice-profile"]';
+  const shortProbe = Math.min(t, 6_000);
+  const directOpen = page.locator(openModalId).filter({ visible: true }).first();
+  if (await directOpen.isVisible({ timeout: shortProbe }).catch(() => false)) return directOpen;
+  const directLegacy = page.locator(legacyDelId).filter({ visible: true }).first();
+  if (await directLegacy.isVisible({ timeout: shortProbe }).catch(() => false)) return directLegacy;
+
+  const tipVis = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first();
+  if (await tipVis.isVisible({ timeout: Math.min(shortProbe, 5_000) }).catch(() => false)) {
+    const byIds = tipVis.locator(openModalId).or(tipVis.locator(legacyDelId)).first();
+    if (await byIds.isVisible({ timeout: 4_000 }).catch(() => false)) return byIds;
+    const mi = tipVis.getByRole("menuitem", { name: /^Delete$/i }).first();
+    if (await mi.isVisible({ timeout: 4_000 }).catch(() => false)) return mi;
+    const rowLike = tipVis.locator('[role="menuitem"], li, button, a').filter({ hasText: /^Delete$/i }).first();
+    if (await rowLike.isVisible({ timeout: 3_000 }).catch(() => false)) return rowLike;
+  }
+
+  if (hint) {
+    const menuRoot = await getRowActionMenuRoot(page, hint);
+    const fromRoot = menuRoot.locator(deleteVpSel).first();
+    if (await fromRoot.isVisible({ timeout: Math.min(t, 14_000) }).catch(() => false)) {
+      return fromRoot;
+    }
+  }
+
+  const tooltipWithDel = page
+    .locator('[data-test-id="cs-vertical-action-tooltip"]')
+    .filter({ has: page.locator(deleteVpSel) })
+    .filter({ visible: true })
+    .first();
+  let del = tooltipWithDel.locator(deleteVpSel).first();
+  if (await del.isVisible({ timeout: Math.min(t, 14_000) }).catch(() => false)) {
+    return del;
+  }
+
+  const nSurf = await page.locator(".VerticalActionTooltip, #tableRowActionNode").count().catch(() => 0);
+  for (let i = 0; i < nSurf; i++) {
+    const surf = page.locator(".VerticalActionTooltip, #tableRowActionNode").nth(i);
+    if (!(await surf.isVisible().catch(() => false))) continue;
+    const cand = surf.locator(deleteVpSel).first();
+    if (await cand.isVisible({ timeout: 2_500 }).catch(() => false)) return cand;
+    const miSurf = surf.getByRole("menuitem", { name: /^Delete$/i }).first();
+    if (await miSurf.isVisible({ timeout: 2_000 }).catch(() => false)) return miSurf;
+  }
+
+  return page.locator(deleteVpSel).filter({ visible: true }).first();
+}
+
+/**
+ * Voice Profiles ⋯ panel sometimes opens empty or closes before Delete paints — reopen ⋯ up to 2 extra times if Delete is not visible yet.
+ * Keeps doc-level steps unchanged (single ⋯ step in JSON); recovery lives in the runner only.
+ */
+async function ensureVoiceProfileDeleteMenuItemThenLocate(
+  page: Page,
+  flow: any,
+  rowHint: string | undefined,
+  deleteVpSel: string,
+  timeoutMs: number,
+): Promise<Locator> {
+  const hint = rowHint?.trim();
+  if (!hint) {
+    throw new Error("Voice Profiles Delete automation: expected.rowContains is required.");
+  }
+  const t = Math.min(timeoutMs, 45_000);
+  const ellipsisStep = { action: "click", target: "vertical ellipsis", expected: { rowContains: hint } } as Step;
+
+  await ensureVoiceProfilesRowActionsMenuOpen(page, flow, hint, 10);
+
+  async function tryLocate(shortMs: number): Promise<Locator | null> {
+    const loc = await locateVisibleVoiceProfileDeleteControl(page, hint, deleteVpSel, shortMs);
+    if (await loc.isVisible({ timeout: 3_000 }).catch(() => false)) return loc;
+    return null;
+  }
+
+  let found = await tryLocate(Math.min(t, 12_000));
+  if (found) return found;
+
+  await openRowActionMenu(page, ellipsisStep, flow);
+  await page.waitForTimeout(450);
+  found = await tryLocate(Math.min(t, 18_000));
+  if (found) return found;
+
+  await openRowActionMenu(page, ellipsisStep, flow);
+  await page.waitForTimeout(450);
+  found = await tryLocate(t);
+  if (found) return found;
+
+  return locateVisibleVoiceProfileDeleteControl(page, hint, deleteVpSel, t);
+}
+
+async function clickVoiceProfileDeleteRowAction(delClick: Locator, timeoutMs: number, opts?: { force?: boolean }): Promise<void> {
+  const t = Math.min(timeoutMs, 45_000);
+  const force = opts?.force === true;
+  await delClick.scrollIntoViewIfNeeded().catch(() => {});
+  const innerLink = delClick.locator("a[href]").first();
+  if ((await innerLink.count().catch(() => 0)) > 0 && (await innerLink.isVisible({ timeout: 900 }).catch(() => false))) {
+    await innerLink.click({ timeout: t, force });
+    return;
+  }
+  await delClick.click({ timeout: t, force });
+}
+
+/** Any strong signal that the Voice Profile delete confirmation surfaced (wrapper varies). */
+function locatorDeleteVoiceProfileConfirmSurface(page: Page): Locator {
+  const modal = locatorDeleteVoiceProfileConfirmModal(page);
+  const title = page.locator('[data-test-id="cs-modal-title-delete-voice-profile"]').first();
+  const destructiveBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-voice-profile-delete-modal-delete"]').first();
+  return modal.or(title).or(destructiveBtn).first();
+}
+
+async function expectDeleteVoiceProfileConfirmSurfaceVisible(page: Page, timeoutMs: number): Promise<void> {
+  await expect(locatorDeleteVoiceProfileConfirmSurface(page)).toBeVisible({ timeout: Math.min(timeoutMs, 45_000) });
+}
+
+/** Delete Voice Profile confirmation surface — union keeps runs stable across minor modal wrapper differences. */
+function locatorDeleteVoiceProfileConfirmModal(page: Page): Locator {
+  const byTitleInDeleteModal = page
+    .locator(".delete-profile-modal")
+    .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-voice-profile"]') })
+    .first();
+  return page
+    .locator('[data-test-id="delete-voice-profile-modal"]')
+    .or(byTitleInDeleteModal)
+    .or(page.locator('[data-testid="cs-modal"][role="dialog"]').filter({ hasText: /delete\s+voice\s+profile/i }))
+    .or(page.locator('[role="dialog"][data-testid="cs-modal"]').filter({ hasText: /delete\s+voice\s+profile/i }))
+    .or(page.getByRole("dialog").filter({ hasText: /delete\s+voice\s+profile/i }))
+    .first();
+}
+
 async function firstVisibleMatch(root: Locator): Promise<Locator | null> {
   const n = await root.count().catch(() => 0);
   if (n === 0) return null;
@@ -1845,18 +2161,18 @@ async function visibleCsTableActionOptionsCount(page: Page): Promise<number> {
 }
 
 async function tryResolveRowActionMenuRoot(root: Locator): Promise<Locator | null> {
-  const menuLast = root.locator('[role="menu"]').last();
+  const tooltipTestId = root.locator('[data-test-id="cs-vertical-action-tooltip"]').last();
   try {
-    await menuLast.waitFor({ state: "visible", timeout: 10_000 });
-    return menuLast;
+    await tooltipTestId.waitFor({ state: "visible", timeout: 10_000 });
+    return tooltipTestId;
   } catch {
     /* continue */
   }
 
-  const tooltip = root.locator(".VerticalActionTooltip").last();
+  const tooltipFirst = root.locator(".VerticalActionTooltip").last();
   try {
-    await tooltip.waitFor({ state: "visible", timeout: 10_000 });
-    return tooltip;
+    await tooltipFirst.waitFor({ state: "visible", timeout: 10_000 });
+    return tooltipFirst;
   } catch {
     /* continue */
   }
@@ -1869,13 +2185,24 @@ async function tryResolveRowActionMenuRoot(root: Locator): Promise<Locator | nul
     /* continue */
   }
 
-  const tableRowActionNode = root.locator("#tableRowActionNode").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
+  const pg = root.page();
+  const menuWithItems = root.locator('[role="menu"]').filter({ has: pg.getByRole("menuitem") }).last();
+  try {
+    await menuWithItems.waitFor({ state: "visible", timeout: 10_000 });
+    return menuWithItems;
+  } catch {
+    /* continue */
+  }
+
+  /** Word boundaries: avoid matching "edited" (Edit) or page chrome like "Voice Profiles" (Voice Profile substring). */
+  const rowMenuSurfaceHint = /Settings|\bEdit\b|\bVoice Profile\b|Copy UID|Delete/i;
+  const tableRowActionNode = root.locator("#tableRowActionNode").filter({ hasText: rowMenuSurfaceHint }).first();
   if (await tableRowActionNode.isVisible().catch(() => false)) return tableRowActionNode;
 
-  const tooltipMenu = root.locator(".VerticalActionTooltip").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).first();
+  const tooltipMenu = root.locator(".VerticalActionTooltip").filter({ hasText: rowMenuSurfaceHint }).first();
   if (await tooltipMenu.isVisible().catch(() => false)) return tooltipMenu;
 
-  const roleMenu = root.getByRole("menu").filter({ hasText: /Settings|Edit|Copy UID|Delete/i }).last();
+  const roleMenu = root.getByRole("menu").filter({ hasText: rowMenuSurfaceHint }).last();
   if (await roleMenu.isVisible().catch(() => false)) return roleMenu;
 
   return null;
@@ -1885,7 +2212,7 @@ async function tryResolveRowActionMenuRoot(root: Locator): Promise<Locator | nul
 async function getRowActionMenuRoot(page: Page, rowHint?: string): Promise<Locator> {
   const hint = rowHint?.trim();
   if (hint) {
-    const row = page.getByRole("row", { name: new RegExp(hint, "i") }).first();
+    const row = rowLocatorMatchingHint(page, hint);
     const scoped = await tryResolveRowActionMenuRoot(row);
     if (scoped) return scoped;
   }
@@ -1902,11 +2229,31 @@ async function clickRowActionMenuItem(page: Page, item: "Settings" | "Edit", flo
     const alreadyOpen =
       item === "Settings"
         ? await menuRoot.getByText("Settings", { exact: true }).first().isVisible().catch(() => false)
-        : await menuRoot.getByText("Edit", { exact: true }).first().isVisible().catch(() => false);
+        : (await menuRoot.getByText("Edit", { exact: true }).first().isVisible().catch(() => false)) ||
+          (await menuRoot.getByRole("menuitem", { name: /Edit Voice Profile/i }).first().isVisible().catch(() => false));
 
     if (!alreadyOpen) {
       await openRowActionMenu(page, menuStep, flow);
       menuRoot = await getRowActionMenuRoot(page, rowHint);
+    }
+
+    /** Canonical row actions menu: `ul[data-test-id="cs-vertical-action-tooltip-actions"]` → `li[data-test-id="cs-ct-action-edit"]` (hover stabilizes some UIs). */
+    if (item === "Edit") {
+      const primaryEditLi = menuRoot
+        .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]')
+        .first();
+      if (await primaryEditLi.isVisible({ timeout: 2_500 }).catch(() => false)) {
+        await primaryEditLi.hover({ timeout: 15_000 }).catch(() => {});
+        await page.waitForTimeout(250);
+        await primaryEditLi.scrollIntoViewIfNeeded().catch(() => {});
+        const innerLink = primaryEditLi.locator("a[href]").first();
+        if ((await innerLink.count().catch(() => 0)) > 0 && (await innerLink.isVisible({ timeout: 800 }).catch(() => false))) {
+          await innerLink.click({ timeout: 30_000 });
+        } else {
+          await primaryEditLi.click({ timeout: 30_000 });
+        }
+        return;
+      }
     }
 
     const candidates: Locator[] =
@@ -1919,8 +2266,11 @@ async function clickRowActionMenuItem(page: Page, item: "Settings" | "Edit", flo
           ]
         : [
             menuRoot.getByText("Edit", { exact: true }),
-            menuRoot.locator('[data-test-id="cs-ct-action-edit"]'),
             menuRoot.getByRole("menuitem", { name: /^Edit$/i }),
+            menuRoot.getByRole("menuitem", { name: /Edit Voice Profile/i }),
+            menuRoot.getByText(/Edit Voice Profile/i),
+            menuRoot.locator('[data-test-id="cs-org-edit-lytics-tag-modal-cta"]'),
+            menuRoot.locator('[data-test-id="cs-ct-action-edit"]'),
             menuRoot.locator('li:has-text("Edit")'),
           ];
 
@@ -2022,12 +2372,15 @@ async function waitForCreateContentTypeForm(page: Page) {
  * Row-scoped ⋯ click, then wait for dropdown (role=listbox/menu/tooltip) before menu item steps.
  */
 async function openRowActionMenu(page: Page, step?: Step, flow?: any) {
-  const rowHint = step?.expected?.rowContains;
+  const rowHint = step?.expected?.rowContains?.trim();
+
+  let ellipsisToClick: Locator | null = null;
+  if (rowHint && isBrandKitVoiceProfilesListingFlow(flow)) {
+    ellipsisToClick = await resolveBrandKitVoiceProfilesRowEllipsis(page, rowHint);
+  }
 
   const ellipsis = rowHint
-    ? page
-        .getByRole("row", { name: new RegExp(rowHint, "i") })
-        .first()
+    ? rowLocatorMatchingHint(page, rowHint)
         .locator('[data-test-id="cs-table-action-options"]')
         .first()
     : await resolveTarget(page, "vertical ellipsis", flow);
@@ -2038,7 +2391,9 @@ async function openRowActionMenu(page: Page, step?: Step, flow?: any) {
     .locator("xpath=ancestor-or-self::*[@role='menu' or @role='button' or self::button][1]")
     .first();
 
-  let ellipsisToClick: Locator | null = (await ellipsis.isVisible().catch(() => false)) ? ellipsis : null;
+  if (!ellipsisToClick) {
+    ellipsisToClick = (await ellipsis.isVisible().catch(() => false)) ? ellipsis : null;
+  }
   if (!ellipsisToClick) {
     const all = page.locator('[data-test-id="cs-table-action-options"]');
     const n = await all.count().catch(() => 0);
@@ -2648,6 +3003,26 @@ async function detectLaunchDeploymentsFileUploadPanelVsDoc(
 
 }
 
+/** Shared Analytics documentation flows (`projects/Analytics/guides`) — org tile + hub tab handlers in performAction. */
+const ANALYTICS_GUIDE_FLOW_IDS = new Set([
+  "analytics-for-cms",
+  "analytics-for-launch",
+  "analytics-for-automate",
+  "analytics-for-personalize",
+  "analytics-for-brand-kit",
+]);
+
+/** https://www.contentstack.com/docs/developers/marketplace-apps/audience-insights */
+const AUDIENCE_INSIGHTS_FLOW_IDS = new Set(["audience-insights-full-page", "audience-insights-entry-sidebar"]);
+
+/** Analytics product hub dashboard tabs (DOM: data/dom/Analytics/personalize.html — Automate uses `analytics-nav-agentos`). */
+const ANALYTICS_HUB_TAB_TEST_ID_BY_STEP: Record<string, string> = {
+  "Analytics hub Launch dashboard tab (doc step)": "analytics-nav-launch",
+  "Analytics hub Automate dashboard tab (doc step)": "analytics-nav-agentos",
+  "Analytics hub Personalize dashboard tab (doc step)": "analytics-nav-personalize",
+  "Analytics hub Brand Kit dashboard tab (doc step)": "analytics-nav-brandkit",
+};
+
 export async function performAction(
   page: Page,
   step: Step,
@@ -2689,6 +3064,19 @@ export async function performAction(
       console.log(`⏭️ onlyIfFlowFlagTrue("${k}"): flag not true, skipping ${step.action} "${step.target}"`);
       return;
     }
+  }
+
+  /** After opening an existing app (org at Dev Hub app limit), skip Create Standard App modal doc steps. */
+  const dhReuseSkip =
+    flow &&
+    typeof flow === "object" &&
+    (flow as any)._developerHubReuseExistingApp === true &&
+    String((flow as any)?.id || "") === "marketplace-ecommerce-app-boilerplate" &&
+    typeof step.target === "string" &&
+    step.target.includes("Create Standard App");
+  if (dhReuseSkip) {
+    await page.waitForTimeout(80);
+    return;
   }
 
   switch (step.action) {
@@ -2768,6 +3156,1483 @@ export async function performAction(
         await page.waitForLoadState("domcontentloaded").catch(() => {});
         await page.waitForTimeout(600);
         break;
+      }
+
+      /** Developer Hub — Marketplace boilerplates (`marketplace-app-boilerplate`, `marketplace-ecommerce-app-boilerplate`). */
+      if (
+        (flow as any)?.id === "marketplace-app-boilerplate" ||
+        (flow as any)?.id === "marketplace-ecommerce-app-boilerplate"
+      ) {
+        const tDh = getStepTimeoutMs(step, 120_000);
+        if (step.target === "Organization dashboard Developer Hub product tile (doc step)") {
+          const tile = page.locator('[data-test-id="cs-global-dashboard-product-tile-developer-hub"]').first();
+          await expect(tile).toBeVisible({ timeout: tDh });
+          await tile.click({ timeout: tDh });
+          await page.waitForURL(/#!\/developerhub/i, { timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForLoadState("networkidle", { timeout: Math.min(tDh, 90_000) }).catch(() => {});
+          /** CTA often stays disabled until permissions / app-list APIs finish; give the shell time to settle. */
+          await page.waitForTimeout(2500);
+          break;
+        }
+        if (
+          step.target === "Developer Hub New App button (doc step)" ||
+          step.target === "Developer Hub + New App button (doc step)"
+        ) {
+          /**
+           * Prefer stable test id (product renders `data-test-id="new-app-cta"`; aria-label is generic).
+           * Wait until enabled — disabled CTA is usually still-loading or org app-creation blocked.
+           */
+          const byTestId = page.locator('button[data-test-id="new-app-cta"]').first();
+          const byLabel = page
+            .locator("button")
+            .filter({ hasText: /^\s*\+?\s*New App\s*$/i })
+            .first();
+          const newApp = (await byTestId.count()) > 0 ? byTestId : byLabel;
+          await expect(newApp).toBeVisible({ timeout: tDh });
+          await newApp.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
+
+          const tryOpenFirstExistingStackAppMarketplaceEcommerce = async (): Promise<boolean> => {
+            if (String((flow as any)?.id || "") !== "marketplace-ecommerce-app-boilerplate") return false;
+            const limitBanner = page.getByText(/Maximum app creation limit reached/i);
+            if (!(await limitBanner.isVisible({ timeout: 3_500 }).catch(() => false))) return false;
+            /** App list: each card shows `Stack App` + `Private`; open the first. */
+            const firstCard = page
+              .locator("main")
+              .locator("div")
+              .filter({ has: page.getByText("Stack App", { exact: false }) })
+              .filter({ has: page.getByText("Private", { exact: false }) })
+              .first();
+            if (!(await firstCard.isVisible({ timeout: 12_000 }).catch(() => false))) {
+              throw new Error(
+                "Developer Hub: app creation limit reached but no existing app card was found to open — delete apps or contact support.",
+              );
+            }
+            // eslint-disable-next-line no-console
+            console.warn(
+              "⚠️ Developer Hub: maximum app creation limit — opening first existing Stack App (marketplace-ecommerce-app-boilerplate); Create Standard App modal steps are skipped.",
+            );
+            await firstCard.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await firstCard.click({ timeout: tDh });
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForLoadState("networkidle", { timeout: Math.min(tDh, 60_000) }).catch(() => {});
+            await page.waitForTimeout(1400);
+            (flow as any)._developerHubReuseExistingApp = true;
+            return true;
+          };
+
+          if (await newApp.isDisabled().catch(() => false)) {
+            if (await tryOpenFirstExistingStackAppMarketplaceEcommerce()) {
+              break;
+            }
+          }
+
+          const enableBudget = Math.min(tDh, 180_000);
+          try {
+            await expect(newApp).toBeEnabled({ timeout: enableBudget });
+          } catch (err) {
+            if (await tryOpenFirstExistingStackAppMarketplaceEcommerce()) {
+              break;
+            }
+            const inner = err instanceof Error ? err.message : String(err);
+            throw new Error(
+              'Developer Hub "+ New App" (button[data-test-id="new-app-cta"]) did not become enabled. ' +
+                "If this persists, check org Developer Hub app limits, plan entitlements, or any dashboard banner explaining disabled creation. " +
+                inner,
+            );
+          }
+          await newApp.click({ timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Create Standard App Organization App type (doc step)") {
+          const lab = page.locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-organization-app"])').first();
+          await expect(lab).toBeVisible({ timeout: tDh });
+          await lab.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Create Standard App Stack App type (doc step)") {
+          const lab = page.locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-stack-app"])').first();
+          await expect(lab).toBeVisible({ timeout: tDh });
+          await lab.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Create Standard App modal Create button (doc step)") {
+          const nameIn = page.locator('[data-test-id="new-app-name"]').first();
+          if (await nameIn.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await nameIn.dispatchEvent("input");
+            await nameIn.dispatchEvent("change");
+            await nameIn.blur();
+            await page.waitForTimeout(350);
+          }
+          const btn = page.locator('[data-test-id="new-app-create-standard-app-cta"]').first();
+          await expect(btn).toBeVisible({ timeout: tDh });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 120_000) });
+          await btn.click({ timeout: tDh });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (step.target === "Developer Hub Basic Information Save button (doc step)") {
+          const desc = page.locator('[data-test-id="basic-info-description"] textarea, textarea[name="description"]').first();
+          if (await desc.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await desc.dispatchEvent("input");
+            await desc.dispatchEvent("change");
+            await desc.blur();
+            await page.waitForTimeout(400);
+          }
+          const btn = page.locator('[data-test-id="standard-app-basic-info-save-cta"]').first();
+          await expect(btn).toBeVisible({ timeout: tDh });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
+          await btn.click({ timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Custom Field row ellipsis (doc step)") {
+          /**
+           * Saving the first Custom Field may deep-link to the CF editor (Go back + Custom Field 1) where
+           * the list-row ⋯ does not exist — no-op; next step uses **Add Location** there.
+           */
+          (flow as any)._dhAddUiLocationRow = "custom-field";
+          const cfEllipsis = page.locator(
+            '[data-test-id="uilocation-custom-field location-item"] div.action-button-dropdown'
+          );
+          if (await cfEllipsis.first().isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await cfEllipsis.first().scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await cfEllipsis.first().click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          } else {
+            await page.waitForTimeout(400);
+          }
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Entry Sidebar row ellipsis (doc step)") {
+          /** Next step **Add UI Location** must re-open this row’s ⋯ menu (not Custom Field). */
+          (flow as any)._dhAddUiLocationRow = "entry-sidebar";
+          const el = page
+            .locator('[data-test-id="uilocation-entry-sidebar location-item"] div.action-button-dropdown')
+            .first();
+          if (await el.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await el.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await el.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          } else {
+            await page.waitForTimeout(400);
+          }
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations App Configuration row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "app-configuration";
+          const el = page
+            .locator('[data-test-id="uilocation-app-configuration location-item"] div.action-button-dropdown')
+            .first();
+          if (await el.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await el.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await el.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          } else {
+            await page.waitForTimeout(400);
+          }
+          break;
+        }
+        /** After Save on the Custom Field / Entry Sidebar configurator, **Go back** returns to the UI Locations list so row ⋯ steps resolve. */
+        if (step.target === "Developer Hub Custom Field configurator Go back (doc step)") {
+          const gb = page.getByRole("button", { name: /^Go back$/i }).first();
+          if (await gb.isVisible({ timeout: Math.min(tDh, 14_000) }).catch(() => false)) {
+            await gb.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+            await gb.click({ timeout: tDh });
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(650);
+          }
+          break;
+        }
+        if (step.target === "Developer Hub app settings UI Locations nav (doc step)") {
+          const nav = page.locator("#ui-locations").first();
+          await expect(nav).toBeVisible({ timeout: tDh });
+          await nav.scrollIntoViewIfNeeded().catch(() => {});
+          await nav.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          const cfgDlg = page.getByRole("dialog").filter({ hasText: /Save Configuration/i });
+          if (await cfgDlg.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            /** Buttons use poor accessible names ("aria-button"); match visible Save copy. */
+            const dlgSave = cfgDlg
+              .locator("button")
+              .filter({ hasNotText: /Leave without saving/i })
+              .filter({ hasText: /\bSave\b/i })
+              .first();
+            await expect(dlgSave).toBeVisible({ timeout: Math.min(tDh, 15_000) });
+            await dlgSave.click({ timeout: tDh });
+            await cfgDlg.waitFor({ state: "hidden", timeout: Math.min(tDh, 45_000) }).catch(() => {});
+            await page.waitForTimeout(700);
+            await nav.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          }
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await expect(page.locator('[data-test-id="page-title"]').filter({ hasText: /^UI Locations$/i }).first()).toBeVisible({
+            timeout: Math.min(tDh, 45_000),
+          });
+          break;
+        }
+        if (step.target === "Developer Hub Add UI Location menu item (doc step)") {
+          await page.waitForTimeout(650);
+
+          type DhAddUiLocationRow = "custom-field" | "entry-sidebar" | "app-configuration";
+          const rowKind = (): DhAddUiLocationRow =>
+            ((flow as any)._dhAddUiLocationRow as DhAddUiLocationRow | undefined) || "custom-field";
+          const clearRowKind = (): void => {
+            delete (flow as any)._dhAddUiLocationRow;
+          };
+
+          /**
+           * Outcome-based step: expose the **second** Custom Field. Product copy is **Add Location** on the
+           * deep-linked configurator; only the UI Locations **list** uses ⋯ → “Add UI Location”.
+           */
+          const cf2Block = (): Locator => page.locator('[data-test-id="uilocation-custom-field-2-name"]').first();
+          /** First “Add UI Location” opens CF1 inline; second uses **Add Location** on CF2 (doc vs product wording). */
+          const cf1Block = (): Locator => page.locator('[data-test-id="uilocation-custom-field-1-name"]').first();
+
+          const uilocationRowEllipsis = (): Locator => {
+            const k = rowKind();
+            if (k === "entry-sidebar") {
+              return page
+                .locator('[data-test-id="uilocation-entry-sidebar location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "app-configuration") {
+              return page
+                .locator('[data-test-id="uilocation-app-configuration location-item"] div.action-button-dropdown')
+                .first();
+            }
+            return page.locator('[data-test-id="uilocation-custom-field location-item"] div.action-button-dropdown').first();
+          };
+
+          const secondCfAlreadyOpen = async (): Promise<boolean> => {
+            if ((await page.locator('[data-test-id^="uilocation-custom-field-2"]').count()) > 0) return true;
+            /** Some builds render the CF2 accordion title before `uilocation-custom-field-2-*` mounts. */
+            if ((await page.locator('[title="Custom Field 2"]').count()) > 0) return true;
+            return !!(await page.getByText(/^Custom Field 2$/).first().isVisible({ timeout: 350 }).catch(() => false));
+          };
+
+          const tryExpandCf1Accordion = async (): Promise<void> => {
+            const cf1Hdr = page.locator('[title="Custom Field 1"]').first();
+            await page.waitForTimeout(120);
+            if (!(await cf1Hdr.isVisible({ timeout: 4_000 }).catch(() => false))) return;
+            const cf1Inp = page.locator('[data-test-id="uilocation-custom-field-1-name"] input').first();
+            if (await cf1Inp.isVisible({ timeout: 900 }).catch(() => false)) return;
+            await cf1Hdr.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+            await cf1Hdr.click({ timeout: tDh }).catch(() => {});
+            await page.waitForTimeout(450);
+          };
+
+          const tryExpandCf2Accordion = async (): Promise<void> => {
+            const cf2Hdr = page.locator('[title="Custom Field 2"]').first();
+            await page.waitForTimeout(120);
+            if (await cf2Hdr.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              await cf2Hdr.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+              await cf2Hdr.click({ timeout: tDh }).catch(() => {});
+              await page.waitForTimeout(480);
+            }
+          };
+
+          /** Reused org apps may already list both JSON field paths; CF2 test ids may mount late — treat as done. */
+          const reuseBothCfPathsLikelyPresent = async (): Promise<boolean> => {
+            if ((flow as any)?._developerHubReuseExistingApp !== true) return false;
+            if (String((flow as any)?.id || "") !== "marketplace-ecommerce-app-boilerplate") return false;
+            if (await secondCfAlreadyOpen()) return false;
+            const t = (await page.locator("main").innerText().catch(() => "")) || "";
+            if (!/\/product-field/i.test(t) || !/\/category-field/i.test(t)) return false;
+            await page.waitForTimeout(400);
+            return (await secondCfAlreadyOpen()) || (await cf2Block().isVisible({ timeout: 4_000 }).catch(() => false));
+          };
+          if (await reuseBothCfPathsLikelyPresent()) {
+            await tryExpandCf2Accordion();
+            await page.waitForTimeout(200);
+            break;
+          }
+
+          const onCfConfigurator = async (): Promise<boolean> =>
+            !!(await page.getByRole("button", { name: /^Go back$/i }).isVisible({ timeout: 2_500 }).catch(() => false));
+
+          const cf1NameHasPersistedInput = async (): Promise<boolean> => {
+            const inp = page.locator('[data-test-id="uilocation-custom-field-1-name"] input').first();
+            if (!(await inp.isVisible({ timeout: 2_000 }).catch(() => false))) return false;
+            const raw = ((await inp.inputValue().catch(() => "")) ?? "").trim();
+            /** App slug autofills new CF slots as single token **`Mxxxxxxxx`** — not doc’s persisted **Product / Category** row (uses spaces, `E… - …`). */
+            if (!raw.length) return false;
+            if (/^M[A-Za-z0-9]{4,}$/i.test(raw) && !/\s/.test(raw)) return false;
+            return true;
+          };
+
+          const scopeConfiguratorAddLocationBtn = (): Locator =>
+            page
+              .locator('[class*="Configurator__container"]')
+              .locator("button")
+              .filter({ hasText: /\bAdd Location\b/i })
+              .filter({ visible: true })
+              .first();
+
+          /** Click-only; callers poll for **`uilocation-custom-field-2-name`**. */
+          const performClickConfiguratorAddLocation = async (): Promise<void> => {
+            const cand: Locator[] = [
+              /** Prefer the Add Location adjacent to the CF accordion (often the last visible match in `main`). */
+              page.locator("main").getByRole("button", { name: /\bAdd Location\b/i }).filter({ visible: true }).last(),
+              page.getByRole("button", { name: /\bAdd Location\b/i }).filter({ visible: true }).first(),
+              page.locator('[data-test-id="ui-locations-content"] button').filter({ hasText: /\bAdd Location\b/i }).filter({ visible: true }).first(),
+              scopeConfiguratorAddLocationBtn(),
+              page.locator("main").locator("button").filter({ hasText: /\bAdd Location\b/i }).filter({ visible: true }).first(),
+            ];
+            let clicked = false;
+            for (const btn of cand) {
+              try {
+                if (await btn.isVisible({ timeout: 3_200 }).catch(() => false)) {
+                  await btn.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+                  await btn.click({ timeout: tDh, force: true }).catch(() => btn.click({ timeout: tDh }));
+                  clicked = true;
+                  break;
+                }
+              } catch {
+                /* try next */
+              }
+            }
+            if (!clicked) {
+              const fb = cand[cand.length - 1];
+              await expect(fb).toBeVisible({ timeout: Math.min(tDh, 22_000) });
+              await fb.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await fb.click({ timeout: tDh, force: true }).catch(() => fb.click({ timeout: tDh }));
+            }
+            /** Some builds wire the CTA only to native DOM click (React listener quirks / overlay). */
+            if (!(await secondCfAlreadyOpen()) && (await cf1NameHasPersistedInput())) {
+              await page.evaluate(() => {
+                const main = document.querySelector("main");
+                if (!main) return;
+                const btns = [...main.querySelectorAll("button")].filter((b) =>
+                  /\bAdd Location\b/i.test((b.textContent || "").trim()),
+                );
+                const btn = btns[btns.length - 1] as HTMLButtonElement | undefined;
+                if (btn && !btn.disabled) btn.click();
+              });
+              await page.waitForTimeout(900);
+            }
+          };
+
+          const tryCfConfiguratorInlineAdd = async (): Promise<void> => {
+            const ctas: Locator[] = [
+              page.locator('[data-test-id="uilocation-custom-field-add-cta"]').last(),
+              page.getByRole("button", { name: /Add\s*UI\s*Location/i }).filter({ visible: true }).first(),
+            ];
+            for (const c of ctas) {
+              if (await c.isVisible({ timeout: 2_500 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+                await c.click({ timeout: tDh, force: true }).catch(() => c.click({ timeout: tDh }));
+                await page.waitForTimeout(550);
+                return;
+              }
+            }
+          };
+
+          const clickMainAddLocation = async (): Promise<boolean> => {
+            try {
+              await performClickConfiguratorAddLocation();
+              await tryExpandCf2Accordion();
+              await expect
+                .poll(async () => await secondCfAlreadyOpen(), {
+                  timeout: Math.min(tDh, 22_000),
+                })
+                .toBe(true);
+              return true;
+            } catch {
+              return false;
+            }
+          };
+
+          /** After CF1 is saved (name filled), opening “Add UI Location” again lands on CF1-only detail — press **Add Location** for CF2. */
+          const ensureSecondCfSlotAfterPersistedCf1 = async (): Promise<void> => {
+            if (!(await cf1NameHasPersistedInput())) return;
+            if (await secondCfAlreadyOpen()) return;
+            await tryExpandCf1Accordion();
+            await page.locator("main").evaluate((el) => {
+              el.scrollTop = el.scrollHeight;
+            });
+            /** Product often requires persisting CF1 on this screen before “Add Location” allocates Custom Field 2. */
+            const persistUiLocationConfigurator = async (): Promise<void> => {
+              const saveBtn = page.locator('[data-test-id="uilocation-save-cta"]').first();
+              if (!(await saveBtn.isVisible({ timeout: 2_800 }).catch(() => false))) return;
+              if (!(await saveBtn.isEnabled().catch(() => false))) return;
+              await saveBtn.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await saveBtn.click({ timeout: tDh });
+              await page.waitForLoadState("domcontentloaded").catch(() => {});
+              await page.waitForLoadState("networkidle", { timeout: Math.min(tDh, 35_000) }).catch(() => {});
+              await page.waitForTimeout(900);
+            };
+            await persistUiLocationConfigurator();
+            for (let i = 0; i < 6 && !(await secondCfAlreadyOpen()); i++) {
+              await persistUiLocationConfigurator();
+              await performClickConfiguratorAddLocation();
+              await tryExpandCf2Accordion();
+              await tryCfConfiguratorInlineAdd();
+              await page.locator("main").evaluate((el) => {
+                el.scrollTop = el.scrollHeight;
+              });
+              await page.waitForTimeout(650);
+            }
+            if (!(await secondCfAlreadyOpen())) {
+              await expect.poll(async () => await secondCfAlreadyOpen(), { timeout: Math.min(tDh, 45_000) }).toBe(true);
+            }
+            await tryExpandCf2Accordion();
+            const cf2Any = page.locator('[data-test-id="uilocation-custom-field-2-name"], [title="Custom Field 2"]').first();
+            await expect(cf2Any).toBeVisible({ timeout: Math.min(tDh, 34_000) });
+            await page.waitForTimeout(400);
+          };
+
+          const pollCfLocationStepSatisfied = async (): Promise<boolean> => {
+            const k = rowKind();
+            if (k === "entry-sidebar") {
+              const byPrefix = await page
+                .locator('[data-test-id^="uilocation-entry-sidebar-"]')
+                .first()
+                .isVisible({ timeout: 1_400 })
+                .catch(() => false);
+              if (byPrefix) return true;
+              const nameVis = await page
+                .locator('[data-test-id="uilocation-entry-sidebar-1-name"]')
+                .first()
+                .isVisible({ timeout: 900 })
+                .catch(() => false);
+              if (nameVis) return true;
+              return !!(await page
+                .locator('[data-test-id="uilocation-entry-sidebar-1-path"]')
+                .first()
+                .isVisible({ timeout: 900 })
+                .catch(() => false));
+            }
+            if (k === "app-configuration") {
+              return !!(await page
+                .locator('[data-test-id="uilocation-app-configuration-1-path"]')
+                .first()
+                .isVisible({ timeout: 1_200 })
+                .catch(() => false));
+            }
+            if (await secondCfAlreadyOpen()) return true;
+            if (await cf1NameHasPersistedInput()) {
+              /** Persisted CF1 on configurator: CF2 may still be mounting after Add Location — keep polling until slot or Go back disappears. */
+              return !!(await cf2Block().first().isVisible({ timeout: 900 }).catch(() => false));
+            }
+            /** Other UI Locations (Entry Sidebar, App Configuration, …) use different `uilocation-*-1-*` roots. */
+            if (
+              await page
+                .locator(
+                  '[data-test-id="uilocation-entry-sidebar-1-name"], [data-test-id="uilocation-app-configuration-1-path"]',
+                )
+                .first()
+                .isVisible({ timeout: 900 })
+                .catch(() => false)
+            ) {
+              return true;
+            }
+            /** List / routing: landed on CF1 name field row (fresh add flow). */
+            return !!(await cf1Block().isVisible({ timeout: 900 }).catch(() => false));
+          };
+
+          const listPollMs =
+            rowKind() === "custom-field" ? Math.min(tDh, 42_000) : Math.min(tDh, 90_000);
+
+          if (await onCfConfigurator()) {
+            if (rowKind() === "custom-field") {
+              await ensureSecondCfSlotAfterPersistedCf1();
+            }
+            await expect
+              .poll(async () => await pollCfLocationStepSatisfied(), { timeout: listPollMs })
+              .toBe(true);
+            await page.waitForTimeout(400);
+            clearRowKind();
+            break;
+          }
+
+          /** List view: row menu has Add or Edit then inline Add. */
+          const ellipsisForRow = uilocationRowEllipsis();
+          const openRowMenu = async () => {
+            await ellipsisForRow.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await ellipsisForRow.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          };
+
+          /**
+           * Row ⋯ menus can render as **primary** or **secondary** dropdown skins; targeting only
+           * `.Dropdown__menu--primary` misses visible menus and breaks **Add UI Location** on e.g. Entry Sidebar.
+           */
+          const menuPanel = (): Locator =>
+            page
+              .locator(
+                '.Dropdown__menu--primary, .Dropdown__menu--secondary, .Dropdown__menu:not(.Select__menu), [role="menu"]:not(.Select__menu)',
+              )
+              .filter({ visible: true })
+              .last();
+          await menuPanel().waitFor({ state: "visible", timeout: Math.min(tDh, 4_000) }).catch(() => {});
+
+          const tryAdd = async (): Promise<boolean> => {
+            await menuPanel()
+              .waitFor({ state: "visible", timeout: Math.min(tDh, 14_000) })
+              .catch(() => {});
+            const m = menuPanel();
+            const cands: Locator[] = [
+              m.locator("span.ui_locations__tooltip-label").filter({ hasText: /^Add UI Location$/i }).last(),
+              m.locator("span.ui_locations__tooltip-label").filter({ hasText: /Add\s*UI\s*Location/i }).last(),
+              m.getByRole("menuitem", { name: /Add\s*UI\s*Location/i }).last(),
+              m.locator('li[data-test-id^="cs-dropdown-elements"]').filter({ hasText: /Add UI Location/i }).last(),
+              m.locator('[data-test-id="cs-dropdown-elements"]').filter({ hasText: /Add UI Location/i }).last(),
+              m.locator('[data-test-id="uilocation-custom-field-add-cta"]').last(),
+              page.getByRole("menuitem", { name: /Add\s*UI\s*Location/i }).filter({ visible: true }).last(),
+              page
+                .locator('[role="menu"]')
+                .filter({ visible: true })
+                .locator("span.ui_locations__tooltip-label")
+                .filter({ hasText: /Add\s*UI\s*Location/i })
+                .last(),
+            ];
+            for (const loc of cands) {
+              if (await loc.isVisible({ timeout: 2_200 }).catch(() => false)) {
+                await loc.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+                await loc.click({ timeout: tDh, force: true }).catch(() => loc.click({ timeout: tDh }));
+                return true;
+              }
+            }
+            return false;
+          };
+
+          /**
+           * After the first Custom Field is saved, the row menu often shows **Edit UI Location**
+           * instead of Add; choose Edit then click **Add UI Location** in the expanded section.
+           */
+          const tryEditThenInlineAdd = async (): Promise<boolean> => {
+            const m = menuPanel();
+            await m.waitFor({ state: "visible", timeout: Math.min(tDh, 10_000) }).catch(() => {});
+            const editItem = m
+              .locator("span.ui_locations__tooltip-label")
+              .filter({ hasText: /Edit\s*UI\s*Location/i })
+              .last();
+            if (!(await editItem.isVisible({ timeout: 2_800 }).catch(() => false))) {
+              return false;
+            }
+            await editItem.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+            await editItem.click({ timeout: tDh, force: true }).catch(() => editItem.click({ timeout: tDh }));
+            await page.waitForTimeout(750);
+            const scope = page.locator('[data-test-id="ui-locations-content"], [data-test-id="location-list"]');
+            const inlineAdd: Locator[] = [
+              scope.locator('[data-test-id="uilocation-custom-field-add-cta"]').last(),
+              scope.locator("span.ui_locations__tooltip-label").filter({ hasText: /Add\s*UI\s*Location/i }).last(),
+              page.locator('[data-test-id="uilocation-custom-field-add-cta"]').last(),
+              page.getByRole("button", { name: /Add\s*UI\s*Location/i }).first(),
+            ];
+            for (const loc of inlineAdd) {
+              if (await loc.isVisible({ timeout: 5_500 }).catch(() => false)) {
+                await loc.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+                await loc.click({ timeout: tDh, force: true }).catch(() => loc.click({ timeout: tDh }));
+                return true;
+              }
+            }
+            return false;
+          };
+
+          /** Prior step may be only ⋯ ; menu closes before this step runs — always open fresh. */
+          if (rowKind() !== "custom-field") {
+            await page.keyboard.press("Escape").catch(() => {});
+            await page.waitForTimeout(220);
+          }
+          if (rowKind() === "entry-sidebar") {
+            await page
+              .locator('[data-test-id="uilocation-entry-sidebar location-item"]')
+              .first()
+              .scrollIntoViewIfNeeded({ timeout: 12_000 })
+              .catch(() => {});
+          } else if (rowKind() === "app-configuration") {
+            await page
+              .locator('[data-test-id="uilocation-app-configuration location-item"]')
+              .first()
+              .scrollIntoViewIfNeeded({ timeout: 12_000 })
+              .catch(() => {});
+          } else {
+            await page
+              .locator('[data-test-id="uilocation-custom-field location-item"]')
+              .first()
+              .scrollIntoViewIfNeeded({ timeout: 12_000 })
+              .catch(() => {});
+          }
+          await openRowMenu();
+          let ok = await tryAdd();
+          for (let attempt = 0; attempt < 2 && !ok; attempt++) {
+            await openRowMenu();
+            ok = await tryAdd();
+          }
+          if (!ok) {
+            ok = await tryEditThenInlineAdd();
+          }
+          if (!ok) {
+            await openRowMenu();
+            ok = await tryEditThenInlineAdd();
+          }
+          if (!ok && !(await secondCfAlreadyOpen())) {
+            const item = page
+              .locator('[data-test-id="cs-dropdown-elements"], li[data-test-id^="cs-dropdown-elements"]')
+              .filter({ hasText: /Add UI Location/i })
+              .last();
+            if (await item.isVisible({ timeout: Math.min(tDh, 14_000) }).catch(() => false)) {
+              await item.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+              await item.click({ timeout: tDh, force: true }).catch(() => item.click({ timeout: tDh }));
+              ok = true;
+            }
+          }
+          if (!ok && rowKind() !== "custom-field") {
+            await openRowMenu();
+            const loose = page
+              .getByText(/\bAdd UI Location\b/i)
+              .filter({ visible: true })
+              .last();
+            if (await loose.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              await loose.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+              await loose.click({ timeout: tDh, force: true }).catch(() => loose.click({ timeout: tDh }));
+              ok = true;
+            }
+          }
+
+          if (await onCfConfigurator()) {
+            if (rowKind() === "custom-field") {
+              await ensureSecondCfSlotAfterPersistedCf1();
+            }
+          }
+
+          await expect
+            .poll(async () => await pollCfLocationStepSatisfied(), { timeout: listPollMs })
+            .toBe(true);
+          await page.waitForTimeout(500);
+          clearRowKind();
+          break;
+        }
+        if (step.target === "Developer Hub Custom Field Data Type option Text (doc step)") {
+          await page.waitForSelector('[role="listbox"], [role="option"]', { state: "visible", timeout: 15_000 }).catch(() => {});
+          const opt = page.getByRole("option", { name: /^Text$/i }).first();
+          if (!(await opt.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            const fallback = page.locator('[role="option"]').first();
+            await expect(fallback).toBeVisible({ timeout: Math.min(tDh, 15_000) });
+            await fallback.click({ timeout: tDh });
+          } else {
+            await opt.click({ timeout: tDh });
+          }
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Developer Hub Custom Field Data Type option JSON (doc step)") {
+          await page.waitForTimeout(400);
+          /** React-select often portals the menu under `body` (not beside the trigger). */
+          const freshMenu = (): Locator => page.locator("body div.Select__menu, body [class*='Select__menu']").last();
+          let menu = freshMenu();
+          await menu.waitFor({ state: "visible", timeout: 12_000 }).catch(() => {});
+          const tryClick = async (loc: Locator): Promise<boolean> => {
+            if (await loc.isVisible({ timeout: 1_800 }).catch(() => false)) {
+              await loc.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+              await loc.click({ timeout: tDh });
+              return true;
+            }
+            return false;
+          };
+          const buildPickers = (m: Locator): Locator[] => [
+            m.getByRole("option", { name: /\bJSON\b/i }).first(),
+            m.locator('[role="option"]').filter({ hasText: /\bJSON\b/i }).first(),
+            m.locator("div[class*='option'], div[class*='Option']").filter({ hasText: /\bJSON\b/i }).first(),
+            page.getByRole("option", { name: /\bJSON\b/i }).first(),
+            page.locator('[role="option"]').filter({ hasText: /\bJSON\b/i }).last(),
+          ];
+          let pickers = buildPickers(menu);
+          let picked = false;
+          for (const p of pickers) {
+            picked = await tryClick(p);
+            if (picked) break;
+          }
+          if (!picked) {
+            const ctrl = page
+              .locator('[data-test-id="uilocation-custom-field-1-data-type"], [data-test-id="uilocation-custom-field-2-data-type"]')
+              .locator(".Select__control")
+              .last();
+            await ctrl.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+            await ctrl.click({ timeout: tDh }).catch(() => {});
+            await page.waitForTimeout(450);
+            menu = freshMenu();
+            await menu.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+            const inp = ctrl.locator('input[type="text"]').first();
+            if (await inp.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await inp.click({ timeout: 3_000 }).catch(() => {});
+              await inp.fill("");
+              await inp.type("JSON", { delay: 55 });
+              await page.waitForTimeout(500);
+            }
+            pickers = buildPickers(menu);
+            for (const p of pickers) {
+              picked = await tryClick(p);
+              if (picked) break;
+            }
+            if (!picked) await page.keyboard.press("Enter").catch(() => {});
+          }
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Developer Hub Stack Dashboard Default Width choose default (doc step)") {
+          const wrap = page.locator('[data-test-id="uilocation-stack-dashboard-1-width"]').first();
+          if (await wrap.isVisible({ timeout: 6_000 }).catch(() => false)) {
+            await wrap.locator(".Select__control, [role='combobox']").first().click({ timeout: tDh }).catch(() => {});
+            await page.waitForTimeout(400);
+            const def = page.getByRole("option", { name: /default/i }).first();
+            if (await def.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await def.click({ timeout: tDh });
+            } else {
+              const firstOpt = page.locator('[role="option"]').first();
+              if (await firstOpt.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                await firstOpt.click({ timeout: tDh });
+              }
+            }
+            await page.waitForTimeout(400);
+          }
+          break;
+        }
+        if (step.target === "Developer Hub Field Modifier Allowed Field Types first option (doc step)") {
+          await page.waitForSelector('[role="listbox"], [role="option"]', { state: "visible", timeout: 15_000 }).catch(() => {});
+          const firstOpt = page.locator('[role="option"]').first();
+          await expect(firstOpt).toBeVisible({ timeout: Math.min(tDh, 15_000) });
+          await firstOpt.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (
+          step.target === "Developer Hub UI Locations View Hosting link (doc step)" ||
+          step.target === "Developer Hub UI Locations View Hosting Settings link (doc step)"
+        ) {
+          const root = page.locator('[data-test-id="ui-locations-content"]');
+          const hostingCue = root
+            .locator("span.view_hosting, .view_hosting")
+            .filter({ hasText: /View Hosting(?: Settings)?/i })
+            .first()
+            .or(root.getByRole("link", { name: /View Hosting(?: Settings)?/i }))
+            .or(root.getByText(/^View Hosting(?: Settings)?$/i))
+            .or(page.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting(?: Settings)?/i }))
+            .first();
+          await expect(hostingCue).toBeVisible({ timeout: Math.min(tDh, 45_000) });
+          await hostingCue.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
+          await hostingCue.click({ timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations footer Save button (doc step)") {
+          const listSave = page.locator('[data-test-id="uilocation-save-cta"]').first();
+          if (await listSave.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await expect(listSave).toBeEnabled({ timeout: Math.min(tDh, 90_000) }).catch(() => {});
+            await listSave.click({ timeout: tDh });
+          } else {
+            const cancelBtn = page.locator("main").locator("button").filter({ hasText: /^Cancel$/ }).first();
+            await expect(cancelBtn).toBeVisible({ timeout: Math.min(tDh, 45_000) });
+            await cancelBtn.scrollIntoViewIfNeeded().catch(() => {});
+            const detailSave = cancelBtn.locator("xpath=..").locator("button").filter({ hasText: /^Save$/ }).first();
+            await expect(detailSave).toBeVisible({ timeout: Math.min(tDh, 30_000) });
+            /** React-select can leave focus in CF1; CF2 may appear empty with required Data Type — both block Save. */
+            await page.keyboard.press("Escape").catch(() => {});
+            await page.waitForTimeout(250);
+            const pruneEmptySecondCustomFieldSlot = async (): Promise<boolean> => {
+              const rm = page.locator('[data-test-id="uilocation-custom-field-2-remove-location-cta"]').first();
+              if (!(await rm.isVisible({ timeout: 1_500 }).catch(() => false))) return false;
+              const cf2Dt = page.locator('[data-test-id="uilocation-custom-field-2-data-type"]').first();
+              if (!(await cf2Dt.isVisible({ timeout: 1_000 }).catch(() => false))) return false;
+              const placeholder = cf2Dt.locator(".Select__placeholder, [class*='placeholder']").first();
+              if (!(await placeholder.isVisible({ timeout: 1_200 }).catch(() => false))) return false;
+              const ph = (await placeholder.textContent().catch(() => "")) ?? "";
+              if (!/\bchoose\s+data\s+type\b/i.test(ph) && !/^\s*$/i.test(ph)) return false;
+              await rm.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+              await rm.click({ timeout: tDh });
+              await page.waitForTimeout(500);
+              return true;
+            };
+            await pruneEmptySecondCustomFieldSlot();
+            await expect(detailSave).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
+            await detailSave.click({ timeout: tDh });
+          }
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (step.target === "Hosting tab Save button (doc step)") {
+          const unique8 = unique.replace(/-/g, "").slice(0, 8);
+          const hostingUrl = `http://localhost:3000/?cs=${unique8}`;
+          const externalLab = page.locator('label[data-test-id="cs-radio"]:has(input[value="external"])').first();
+          if (await externalLab.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await externalLab.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          }
+          const urlIn = page.locator(".app-url-input-container input, [data-test-id='cs-text-input'] input").first();
+          await expect(urlIn).toBeVisible({ timeout: Math.min(tDh, 30_000) });
+          await urlIn.click({ timeout: tDh });
+          await urlIn.fill("", { timeout: 15_000 });
+          await urlIn.fill(hostingUrl, { timeout: Math.min(tDh, 30_000) });
+          await urlIn.dispatchEvent("input");
+          await urlIn.dispatchEvent("change");
+          await urlIn.blur();
+          await page.waitForTimeout(500);
+          const btn = page.locator('[data-test-id="hosting-save-cta"]').first();
+          await expect(btn).toBeVisible({ timeout: tDh });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
+          await btn.click({ timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(600);
+          break;
+        }
+      }
+
+      // Lytics app (app.lytics.com) — Create Import Entries job + Stack API Key authorization (Contentstack Data & Insights doc).
+      {
+        if (isCreateJobLyticsAuthorizationFlow(flow)) {
+          const tL = getStepTimeoutMs(step, 120_000);
+          const mainSearch = (): Locator =>
+            page.locator('main input[placeholder="Search"], .main-content input[placeholder="Search"]').first();
+
+          /** Doc step: Navigate to Data Pipeline > Jobs — expand Data Pipeline in the left nav when needed, then open Jobs (href includes conductor/pipeline/jobs). */
+          if (step.target === "Lytics Job doc: Sidebar navigate Data Pipeline to Jobs (doc step)") {
+            const navRoot = page.locator('lytics-ui nav, [role="navigation"], nav').first();
+            await expect(navRoot).toBeVisible({ timeout: Math.min(tL, 60_000) });
+            const jobsLink = navRoot
+              .locator('a[href*="/conductor/pipeline/jobs"]')
+              .filter({ hasText: /\bJobs\b/i })
+              .first();
+            if (!(await jobsLink.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              const dataPipelineToggle = navRoot
+                .locator('.MuiListItemButton-root[role="button"], .MuiListItemButton-root')
+                .filter({ hasText: /^Data Pipeline$/i })
+                .first();
+              await expect(dataPipelineToggle).toBeVisible({ timeout: Math.min(tL, 45_000) });
+              await dataPipelineToggle.scrollIntoViewIfNeeded().catch(() => {});
+              await dataPipelineToggle.click({ timeout: tL });
+              await page.waitForTimeout(550);
+            }
+            await expect(jobsLink).toBeVisible({ timeout: Math.min(tL, 45_000) });
+            await jobsLink.scrollIntoViewIfNeeded().catch(() => {});
+            await jobsLink.click({ timeout: tL });
+            await page.waitForURL(/\/conductor\/pipeline\/jobs/i, { timeout: tL }).catch(() => {});
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(650);
+            break;
+          }
+
+          if (step.target === "Lytics Job doc: Pipeline Jobs Create New button (doc step)") {
+            const btn = page
+              .locator('a[href*="/conductor/pipeline/jobs/new"]')
+              .filter({ hasText: /\bCreate New\b/i })
+              .first();
+            await expect(btn).toBeVisible({ timeout: tL });
+            await btn.click({ timeout: tL });
+            await page.waitForURL(/\/conductor\/pipeline\/jobs\/new/i, { timeout: tL }).catch(() => {});
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(700);
+            break;
+          }
+          if (step.target === "Lytics Job doc: Import Entries job type card (doc step)") {
+            await expect(mainSearch()).toBeVisible({ timeout: Math.min(tL, 45_000) });
+            await page.locator('[class*="MuiCard-root"], [class*="MuiPaper-root"]').filter({ hasText: /\bImport Entries\b/i }).first()
+              .click({ timeout: tL });
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Lytics Job doc: Authorizations New Authorization button (doc step)") {
+            const btn = page.getByRole("button", { name: /\bNew Authorization\b/i }).first();
+            await expect(btn).toBeVisible({ timeout: tL });
+            await btn.click({ timeout: tL });
+            await page.waitForTimeout(650);
+            break;
+          }
+          if (step.target === "Lytics Job doc: Stack API Key authorization method (doc step)") {
+            const card = page.locator('[class*="MuiCard"]').filter({ hasText: /\bStack API Key\b/i }).first();
+            const tile = page.getByRole("button", { name: /\bStack API Key\b/i }).first();
+            if (await card.isVisible({ timeout: 6_000 }).catch(() => false)) {
+              await card.click({ timeout: tL });
+            } else {
+              await expect(tile).toBeVisible({ timeout: tL });
+              await tile.click({ timeout: tL });
+            }
+            await page.waitForTimeout(650);
+            break;
+          }
+          if (step.target === "Lytics Job doc: Configuration Region select option (doc step)") {
+            const regionName = String(process.env.LYTICS_STACK_REGION ?? (step.value as string) ?? "")
+              .trim()
+              .split("{unique}")
+              .join(unique);
+            if (!regionName) {
+              throw new Error(
+                "create-job-and-authorization-for-data-and-insights-lytics: set LYTICS_STACK_REGION or step.value to the stack region label (matches a Lytics Region menu option)."
+              );
+            }
+            const regionLbl = page.getByText(/^Region\b/i).first();
+            let opened = false;
+            if (await regionLbl.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              const comboFromLabel = regionLbl.locator(`xpath=following::*[@role="combobox"][1]`).first();
+              if (
+                await comboFromLabel.isVisible({ timeout: 2_000 }).catch(() => false)
+              ) {
+                await comboFromLabel.click({ timeout: tL }).catch(() => {});
+              } else {
+                await regionLbl.locator("xpath=following::div[contains(@class,'MuiSelect')][1]").first().click({ timeout: tL }).catch(() => {});
+              }
+              opened =
+                (await page.locator('[role="listbox"]').isVisible({ timeout: 4_000 }).catch(() => false)) ||
+                (await page.locator('[role="presentation"]').filter({ has: page.locator('[role="option"]') }).first()
+                  .isVisible({ timeout: 2_000 })
+                  .catch(() => false));
+            }
+            if (!opened) {
+              const combos = page.getByRole("combobox");
+              const n = await combos.count();
+              for (let i = 0; i < Math.min(n, 8); i++) {
+                const c = combos.nth(i);
+                if (!(await c.isVisible({ timeout: 600 }).catch(() => false))) continue;
+                await c.click({ timeout: tL }).catch(() => {});
+                if (
+                  await page.locator('[role="listbox"], [role="presentation"] ul[role="listbox"]').first()
+                    .isVisible({ timeout: 3_000 })
+                    .catch(() => false)
+                ) {
+                  opened = true;
+                  break;
+                }
+                await page.keyboard.press("Escape").catch(() => {});
+              }
+            }
+            if (!(await page.locator('[role="option"]').first().isVisible({ timeout: 2_000 }).catch(() => false))) {
+              await page.keyboard.press("Escape").catch(() => {});
+              throw new Error(
+                `create-job-and-authorization-for-data-and-insights-lytics: could not open Region dropdown (try narrowing UI or set LYTICS_STACK_REGION="${regionName}").`
+              );
+            }
+            const optRe = new RegExp(escapeRegex(regionName), "i");
+            const opt = page.getByRole("option", { name: optRe }).first();
+            await opt.click({ timeout: tL });
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "Lytics Job doc: Save and Continue authorization (doc step)") {
+            const btn = page.getByRole("button", { name: /\bSave and Continue\b/i }).first();
+            await expect(btn).toBeVisible({ timeout: tL });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tL, 60_000) });
+            await btn.click({ timeout: tL });
+            await page.waitForTimeout(1_200);
+            break;
+          }
+        }
+      }
+
+      // Data & Insights — Access/manage Lytics via App Switcher (`access-manage-data-and-insights-accounts-through-contentstack`).
+      {
+        const fidAccess = String(flow?.id || "").toLowerCase();
+        if (fidAccess === "access-manage-data-and-insights-accounts-through-contentstack" && step.action === "click") {
+          const tDal = getStepTimeoutMs(step, 120_000);
+          if (step.target === "DAL Lytics doc: App Switcher icon (doc step)") {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            await opener.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(opener).toBeVisible({ timeout: Math.min(tDal, 120_000) });
+            await opener.click({ timeout: tDal, force: true });
+            await page.waitForTimeout(450);
+            await page
+              .locator('[data-test-id="app-switcher-body"]')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) })
+              .catch(() => {});
+            break;
+          }
+          if (step.target === "DAL Lytics doc: App Switcher Data and Insights product (doc step)") {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const body = page.locator('[data-test-id="app-switcher-body"]').first();
+            const lytPre = page.locator('[data-test-id="app-switcher-lytics"]').first();
+            const alreadyOpen =
+              (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
+              (await lytPre.isVisible({ timeout: 600 }).catch(() => false));
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tDal, force: true }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+            await body.waitFor({ state: "visible", timeout: Math.min(tDal, 30_000) }).catch(() => {});
+            const candidates: Locator[] = [
+              page.locator('[data-test-id="app-switcher-lytics"]').first(),
+              page.getByRole("button", { name: /^Data & Insights$/i }).first(),
+              page.locator('.app__switcher__body__v2 [data-test-id="app-switcher-lytics"]').first(),
+              page
+                .locator('[data-test-id="app-switcher-body"]')
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^Data & Insights$/i })
+                .first(),
+            ];
+            let clicked = false;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 12_000 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded().catch(() => {});
+                await c.click({ timeout: tDal, force: true });
+                clicked = true;
+                break;
+              }
+            }
+            if (!clicked) {
+              throw new Error(
+                "Access manage D&I doc: Data & Insights product not found in App Switcher (tried app-switcher-lytics + role=button)."
+              );
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "Access manage D&I doc: OAuth Accept button (doc step)") {
+            const resolveAccept = async (p: Page): Promise<Locator | null> => {
+              const cands: Locator[] = [
+                p.getByRole("button", { name: /^Accept$/i }).first(),
+                p.getByRole("link", { name: /^Accept$/i }).first(),
+                p.locator('button:has-text("Accept")').first(),
+              ];
+              for (const c of cands) {
+                if (await c.isVisible({ timeout: 3_500 }).catch(() => false)) return c;
+              }
+              return null;
+            };
+            let hit: Locator | null = await resolveAccept(page);
+            if (!hit) {
+              for (const p of page.context().pages()) {
+                hit = await resolveAccept(p);
+                if (hit) {
+                  await p.bringToFront().catch(() => {});
+                  break;
+                }
+              }
+            }
+            if (!hit) {
+              throw new Error(
+                "Access manage D&I doc: Accept control not found — first-time OAuth may already be completed."
+              );
+            }
+            await hit.click({ timeout: tDal });
+            await page.waitForTimeout(600);
+            break;
+          }
+        }
+      }
+
+      // Data & Insights — Create DAL + Lytics OAuth (`create-data-and-insights-lytics-integration`).
+      {
+        const fidDal = String(flow?.id || "").toLowerCase();
+        if (fidDal === "create-data-and-insights-lytics-integration") {
+          const tDal = getStepTimeoutMs(step, 120_000);
+          const dalModal = (): Locator => page.locator('[data-testid="cs-org-add-lytics-tag-modal"]').first();
+          const dalRowTitleForEdit = (): string => {
+            const t = String((flow as any)?.__dalLyticsDalTitle || "").trim();
+            if (!t) {
+              throw new Error(
+                "DAL Lytics edit subsection: missing stored DAL title — Title enter step must run before row ⋯ / Edit."
+              );
+            }
+            return t;
+          };
+
+          if (step.target === "DAL Lytics doc: App Switcher icon (doc step)") {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            await opener.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(opener).toBeVisible({ timeout: Math.min(tDal, 120_000) });
+            await opener.click({ timeout: tDal, force: true });
+            await page.waitForTimeout(450);
+            await page
+              .locator('[data-test-id="app-switcher-body"]')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) })
+              .catch(() => {});
+            break;
+          }
+          if (step.target === "DAL Lytics doc: App Switcher Administration product (doc step)") {
+            const admin = page.locator('a[data-test-id="app-switcher-orgadmin"]').first();
+            await expect(admin).toBeVisible({ timeout: Math.min(tDal, 45_000) });
+            const popupPromise = page
+              .context()
+              .waitForEvent("page", { timeout: 8_000 })
+              .then((p) => p)
+              .catch(() => null);
+            await admin.click({ timeout: tDal, force: true });
+            const maybePopup = await popupPromise;
+            let work: Page = page;
+            if (maybePopup) {
+              await maybePopup.waitForLoadState("domcontentloaded", { timeout: Math.min(tDal, 120_000) }).catch(() => {});
+              await maybePopup.bringToFront().catch(() => {});
+              work = maybePopup;
+            } else {
+              await page.waitForTimeout(500);
+            }
+            const appSwitcherBody = work.locator('[data-test-id="app-switcher-body"]');
+            if (await appSwitcherBody.isVisible({ timeout: 2_000 }).catch(() => false)) {
+              await work.keyboard.press("Escape").catch(() => {});
+              await work.waitForTimeout(400);
+            }
+            await work.waitForURL(/orgadmin/i, { timeout: Math.min(tDal, 120_000) }).catch(() => {});
+            await work.waitForLoadState("domcontentloaded").catch(() => {});
+            await work.locator("#react-orgadmin, main#react-orgadmin").first().waitFor({ state: "attached", timeout: 15_000 }).catch(() => {});
+            await work.waitForTimeout(600);
+            const dalNavPrimary = () => work.locator('[data-test-id="orgadmin-nav-data-activation-layer"]').first();
+            const dalNavFallback = () =>
+              work
+                .locator(
+                  'a[href*="data-activation-layer"], button[aria-label="Data Activation Layer"], [data-test-id="orgadmin-nav-data-activation-layer"]'
+                )
+                .first();
+            const navigateDalFromOrgAdminUrl = async () => {
+              const u = work.url();
+              const hashMatch = u.match(/#\!?\/orgadmin\/([^/]+)/);
+              const pathMatch = !hashMatch ? u.match(/\/orgadmin\/([^/]+)/) : null;
+              const orgId = hashMatch?.[1] || pathMatch?.[1];
+              if (!orgId) return;
+              const origin = u.split("#")[0];
+              const nextHash = `#!/orgadmin/${orgId}/data-activation-layer`;
+              await work.goto(`${origin}${nextHash}`, { waitUntil: "domcontentloaded", timeout: Math.min(tDal, 120_000) });
+              await work.waitForTimeout(1_000);
+            };
+            if (!(await dalNavPrimary().isVisible({ timeout: 12_000 }).catch(() => false))) {
+              if (await dalNavFallback().isVisible({ timeout: 4_000 }).catch(() => false)) {
+                /* will assert below */
+              } else {
+                await navigateDalFromOrgAdminUrl();
+              }
+            }
+            const toAssert = (await dalNavPrimary().isVisible({ timeout: 2_000 }).catch(() => false))
+              ? dalNavPrimary()
+              : dalNavFallback();
+            await expect(toAssert).toBeVisible({ timeout: Math.min(tDal, 90_000) });
+            await work.waitForTimeout(300);
+            if (maybePopup) return maybePopup;
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Administration nav Data Activation Layer (doc step)") {
+            const tNav = Math.min(tDal, 120_000);
+            const primary = page.locator('[data-test-id="orgadmin-nav-data-activation-layer"]').first();
+            const fallback = page
+              .locator(
+                'a[href*="data-activation-layer"], button[aria-label="Data Activation Layer"], [data-test-id="orgadmin-nav-data-activation-layer"]'
+              )
+              .first();
+            const nav = (await primary.isVisible({ timeout: 5_000 }).catch(() => false)) ? primary : fallback;
+            await expect(nav).toBeVisible({ timeout: tNav });
+            await nav.click({ timeout: tDal });
+            await page.waitForTimeout(600);
+            await page.waitForURL(/data-activation-layer/i, { timeout: Math.min(tDal, 120_000) }).catch(() => {});
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Add DAL Configuration button (doc step)") {
+            const btn = page.locator('[data-test-id="cs-org-add-lytics-tag-modal-cta"]').first();
+            await expect(btn).toBeVisible({ timeout: tDal });
+            await btn.click({ timeout: tDal });
+            await page.waitForTimeout(500);
+            await dalModal().waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) });
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Data privacy confirmation checkbox (doc step)") {
+            const dlg = dalModal();
+            await expect(dlg).toBeVisible({ timeout: Math.min(tDal, 45_000) });
+            const consent = dlg.locator(".lytics-consent-modal").first();
+            const mainNameField = dlg.locator('[data-test-id="cs-org-lytics-tag-name"]').first();
+            if (await consent.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              const lab = consent.locator('label[data-test-id="cs-checkbox"]').first();
+              await lab.click({ timeout: tDal });
+              await page.waitForTimeout(250);
+            } else if (await mainNameField.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              // Some orgs/features skip the consent gate — modal opens straight to setup (see setup2 DOM snapshot).
+              await page.waitForTimeout(200);
+            } else {
+              await expect(consent).toBeVisible({ timeout: Math.min(tDal, 45_000) });
+            }
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Proceed button after privacy confirmation (doc step)") {
+            const dlg = dalModal();
+            const consent = dlg.locator(".lytics-consent-modal").first();
+            const mainNameField = dlg.locator('[data-test-id="cs-org-lytics-tag-name"]').first();
+            if (await consent.isVisible({ timeout: 3_500 }).catch(() => false)) {
+              const proceed = consent.locator("button.Button--primary").filter({ hasText: /^Proceed$/i }).first();
+              await expect(proceed).toBeEnabled({ timeout: Math.min(tDal, 30_000) });
+              await proceed.click({ timeout: tDal });
+              await page.waitForTimeout(600);
+              await dlg
+                .locator('[data-test-id="cs-org-lytics-tag-name"]')
+                .waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) })
+                .catch(() => {});
+            } else {
+              await expect(mainNameField).toBeVisible({ timeout: Math.min(tDal, 45_000) });
+              await page.waitForTimeout(200);
+            }
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Add Users open Select Users modal (doc step)") {
+            const btn = dalModal().locator('[data-test-id="cs-org-add-lytics-users-cta"]').first();
+            await expect(btn).toBeVisible({ timeout: tDal });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDal, 120_000) });
+            await btn.click({ timeout: tDal });
+            await page.locator('[data-test-id="add-user-modal"]').waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) });
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Select Users modal pick first visible user row checkbox (doc step)") {
+            const modal = page.locator('[data-test-id="add-user-modal"]').first();
+            await expect(modal).toBeVisible({ timeout: tDal });
+            const rows = modal.locator(".AddUserModal__user");
+            const count = await rows.count();
+            let clicked = false;
+            for (let i = 0; i < count; i++) {
+              const row = rows.nth(i);
+              if (!(await row.isVisible().catch(() => false))) continue;
+              const cb = row.locator('label[data-test-id^="cs-add-user-checkbox"]').first();
+              if (await cb.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                await cb.click({ timeout: tDal });
+                clicked = true;
+                break;
+              }
+            }
+            if (!clicked) {
+              throw new Error(
+                "DAL Lytics: could not click a user checkbox in Select Users — refine search or check org users list."
+              );
+            }
+            await page.waitForTimeout(350);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Select Users modal footer Add Users (doc step)") {
+            const btn = page.locator('[data-test-id="cs-add-user-add"]').first();
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDal, 120_000) });
+            await btn.click({ timeout: tDal });
+            await page.locator('[data-test-id="add-user-modal"]').waitFor({ state: "hidden", timeout: Math.min(tDal, 45_000) }).catch(() => {});
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Test Connection button (doc step)") {
+            const btn = dalModal().locator('[data-test-id="cs-org-test-lytics-connection-cta"]').first();
+            await expect(btn).toBeVisible({ timeout: tDal });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDal, 120_000) });
+            await btn.click({ timeout: tDal });
+            await page.waitForTimeout(800);
+            await dalModal()
+              .locator(".test-lytics-connection-banner-text, .Info--success")
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tDal, 120_000) })
+              .catch(() => {});
+            await page.waitForTimeout(350);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Save DAL configuration button (doc step)") {
+            const dlg = dalModal();
+            const btn = dlg.locator('[data-test-id="cs-org-create-lytics-tag"]').first();
+            await dlg.evaluate((el) => el.scrollTo(0, (el as HTMLElement).scrollHeight)).catch(() => {});
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await page.waitForTimeout(500);
+            const testConn = () => dlg.locator('[data-test-id="cs-org-test-lytics-connection-cta"]').first();
+            const waitAfterTest = async () => {
+              await page.waitForTimeout(1_200);
+              await dlg
+                .locator(".test-lytics-connection-banner-text, .Info--success, [class*='success' i]")
+                .first()
+                .waitFor({ state: "visible", timeout: Math.min(tDal, 90_000) })
+                .catch(() => {});
+              await page.waitForTimeout(500);
+            };
+            for (let attempt = 0; attempt < 3; attempt++) {
+              if (await btn.isEnabled({ timeout: 4_000 }).catch(() => false)) break;
+              const tBtn = testConn();
+              if (await tBtn.isVisible({ timeout: 5_000 }).catch(() => false) && (await tBtn.isEnabled({ timeout: 3_000 }).catch(() => false))) {
+                await tBtn.click({ timeout: tDal });
+                await waitAfterTest();
+              } else {
+                await page.waitForTimeout(2_000);
+              }
+            }
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDal, 180_000) });
+            await btn.click({ timeout: tDal });
+            await dlg.waitFor({ state: "hidden", timeout: Math.min(tDal, 120_000) }).catch(() => {});
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: edit subsection table row vertical ellipsis (doc step)") {
+            const hint = dalRowTitleForEdit();
+            await openRowActionMenu(page, { ...step, expected: { ...step.expected, rowContains: hint } }, flow);
+            const stabilizeMs = Number(process.env.VERTICAL_ELLIPSIS_POST_OPEN_MS ?? "2000");
+            await page.waitForTimeout(stabilizeMs);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: edit subsection row menu Edit (doc step)") {
+            const hint = dalRowTitleForEdit();
+            const tRow = Math.min(tDal, 120_000);
+            const menuStep: Step = { ...step, expected: { ...step.expected, rowContains: hint } };
+            const resolveDalEditLi = async (): Promise<Locator> => {
+              const ordered = [
+                '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-org-edit-lytics-tag-modal-cta"]',
+                '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]',
+                'li[data-test-id="cs-org-edit-lytics-tag-modal-cta"]',
+                '#tableRowActionNode li[data-test-id="cs-org-edit-lytics-tag-modal-cta"]',
+              ];
+              for (const sel of ordered) {
+                const loc = page.locator(sel).first();
+                if (await loc.isVisible({ timeout: 5_000 }).catch(() => false)) return loc;
+              }
+              const tipScoped = page
+                .locator('[data-test-id="cs-vertical-action-tooltip"]')
+                .filter({
+                  has: page.locator(
+                    '[data-test-id="cs-org-edit-lytics-tag-modal-cta"], [data-test-id="cs-ct-action-edit"]'
+                  ),
+                })
+                .last()
+                .locator('li[data-test-id="cs-org-edit-lytics-tag-modal-cta"], li[data-test-id="cs-ct-action-edit"]')
+                .first();
+              if (await tipScoped.isVisible({ timeout: 3_500 }).catch(() => false)) return tipScoped;
+              const menuRoot = await getRowActionMenuRoot(page, hint);
+              const underMenu = menuRoot
+                .locator(
+                  '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-org-edit-lytics-tag-modal-cta"], [data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]'
+                )
+                .first();
+              return underMenu;
+            };
+            let primaryEditLi = await resolveDalEditLi();
+            let menuOpen = await primaryEditLi.isVisible({ timeout: 2_000 }).catch(() => false);
+            if (!menuOpen) {
+              await openRowActionMenu(page, menuStep, flow);
+              const stabilizeMs = Number(process.env.VERTICAL_ELLIPSIS_POST_OPEN_MS ?? "2000");
+              await page.waitForTimeout(stabilizeMs);
+              primaryEditLi = await resolveDalEditLi();
+            }
+            await expect(primaryEditLi).toBeVisible({ timeout: tRow });
+            await primaryEditLi.hover({ timeout: 15_000 }).catch(() => {});
+            await page.waitForTimeout(250);
+            const editTextVisible = await primaryEditLi.getByText(/Edit Text/i).first().isVisible().catch(() => false);
+            const editShort = await primaryEditLi.getByText(/^Edit$/i).first().isVisible().catch(() => false);
+            if (!editTextVisible && !editShort) {
+              recordVerificationWarning(
+                step,
+                context,
+                `DAL row menu: expected visible label "Edit Text" or "Edit" on org DAL edit action — continuing to click.`
+              );
+            }
+            const innerLink = primaryEditLi.locator("a[href]").first();
+            if ((await innerLink.count().catch(() => 0)) > 0 && (await innerLink.isVisible({ timeout: 800 }).catch(() => false))) {
+              await innerLink.click({ timeout: tDal });
+            } else {
+              await primaryEditLi.click({ timeout: tDal });
+            }
+            const editTitle = page.locator('[data-test-id="cs-modal-title-edit-data-activation-layer-(dal)"]').first();
+            const editDlgFallback = page.getByRole("dialog").filter({ hasText: /Edit Data Activation Layer/i }).first();
+            const titleOk = await editTitle
+              .waitFor({ state: "visible", timeout: Math.min(tDal, 90_000) })
+              .then(() => true)
+              .catch(() => false);
+            if (!titleOk) {
+              await expect(editDlgFallback).toBeVisible({ timeout: Math.min(tDal, 45_000) });
+            }
+            await dalModal().waitFor({ state: "visible", timeout: Math.min(tDal, 45_000) }).catch(() => {});
+            await page.waitForTimeout(400);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Edit DAL modal scroll to Add additional DAL Managers section (doc step)") {
+            const dlg = dalModal();
+            await expect(dlg).toBeVisible({ timeout: tDal });
+            const sec = dlg.locator("label.FieldLabel.add-users-section-title").first();
+            await sec.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(350);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Update edited DAL configuration button (doc step)") {
+            const btn = dalModal().locator('[data-test-id="cs-org-update-lytics-tag"]').first();
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDal, 180_000) });
+            await btn.click({ timeout: tDal });
+            await dalModal().waitFor({ state: "hidden", timeout: Math.min(tDal, 120_000) }).catch(() => {});
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: App Switcher Data and Insights product (doc step)") {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const body = page.locator('[data-test-id="app-switcher-body"]').first();
+            const lytPre = page.locator('[data-test-id="app-switcher-lytics"]').first();
+            const alreadyOpen =
+              (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
+              (await lytPre.isVisible({ timeout: 600 }).catch(() => false));
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tDal, force: true }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+            await body
+              .waitFor({ state: "visible", timeout: Math.min(tDal, 30_000) })
+              .catch(() => {});
+            const candidates: Locator[] = [
+              page.locator('[data-test-id="app-switcher-lytics"]').first(),
+              page.getByRole("button", { name: /^Data & Insights$/i }).first(),
+              page.locator('.app__switcher__body__v2 [data-test-id="app-switcher-lytics"]').first(),
+              page.locator('[data-test-id="app-switcher-body"]').locator('[data-test-id="app-switcher-product-title"]').filter({ hasText: /^Data & Insights$/i }).first(),
+            ];
+            let clicked = false;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 12_000 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded().catch(() => {});
+                await c.click({ timeout: tDal, force: true });
+                clicked = true;
+                break;
+              }
+            }
+            if (!clicked) {
+              throw new Error(
+                "DAL Lytics: Data & Insights product not found in app switcher (tried app-switcher-lytics + role=button)."
+              );
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+          if (step.target === "DAL Lytics doc: Select account modal Select button opens OAuth tab (doc step)") {
+            const tSel = getStepTimeoutMs(step, 120_000);
+            await page.locator('[data-test-id="cs-modal-title-select-an-account"]').first().waitFor({ state: "visible", timeout: tSel });
+            const popupPromise = page
+              .context()
+              .waitForEvent("page", { timeout: tSel })
+              .then((p) => p)
+              .catch(() => null);
+            const selBtn = page.locator('.lytics-account-select-cta button[data-test-id="cs-button"]').first();
+            await expect(selBtn).toBeVisible({ timeout: tSel });
+            await selBtn.click({ timeout: tSel });
+            const popup = await popupPromise;
+            if (!popup) throw new Error("DAL Lytics: Select did not open a new browser tab for OAuth.");
+            await popup.waitForLoadState("domcontentloaded", { timeout: tSel }).catch(() => {});
+            await popup.bringToFront().catch(() => {});
+            return popup;
+          }
+          if (step.target === "DAL Lytics doc: OAuth Authorize button (doc step)") {
+            const oauthClickCandidates = [
+              page.locator('[data-testid="modal-form-install-authorize"]').first(),
+              page.getByRole("button", { name: /^Authorize$/i }).first(),
+              page.getByRole("link", { name: /^Authorize$/i }).first(),
+              page.locator('button:has-text("Authorize")').first(),
+            ];
+            let btn: Locator | null = null;
+            for (const c of oauthClickCandidates) {
+              if (await c.isVisible({ timeout: 8_000 }).catch(() => false)) {
+                btn = c;
+                break;
+              }
+            }
+            if (!btn) {
+              await page.waitForLoadState("domcontentloaded").catch(() => {});
+              await page.waitForTimeout(2_000);
+              for (const c of oauthClickCandidates) {
+                if (await c.isVisible({ timeout: 15_000 }).catch(() => false)) {
+                  btn = c;
+                  break;
+                }
+              }
+            }
+            if (!btn) throw new Error("DAL Lytics OAuth: Authorize control not found (tried testid + role=button Authorize).");
+            await btn.click({ timeout: tDal });
+            await page.waitForTimeout(600);
+            break;
+          }
+        }
       }
 
       // Launch Users — project card → top bar Settings → left nav Users → Invite User modal (users doc).
@@ -3284,10 +5149,9 @@ export async function performAction(
           const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
           await expect(dots).toBeVisible({ timeout: t0 });
           await dots.click({ timeout: t0, force: true });
-          await page.waitForTimeout(550);
+          await page.waitForTimeout(2_000);
           const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
           await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
-          await page.waitForTimeout(400);
           break;
         }
         if (step.target === "Launch first environment row Actions ellipsis (doc step)") {
@@ -3302,10 +5166,9 @@ export async function performAction(
           const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
           await expect(dots).toBeVisible({ timeout: t0 });
           await dots.click({ timeout: t0, force: true });
-          await page.waitForTimeout(550);
+          await page.waitForTimeout(2_000);
           const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
           await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
-          await page.waitForTimeout(400);
           break;
         }
         if (step.target === "Launch named environment row Actions ellipsis (doc step)") {
@@ -3322,10 +5185,9 @@ export async function performAction(
           const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
           await expect(dots).toBeVisible({ timeout: t0 });
           await dots.click({ timeout: t0, force: true });
-          await page.waitForTimeout(550);
+          await page.waitForTimeout(2_000);
           const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
           await expect(menu).toBeVisible({ timeout: Math.min(t0, 28_000) });
-          await page.waitForTimeout(400);
           break;
         }
         if (step.target === "Launch named environment table row open (doc step)") {
@@ -3368,7 +5230,7 @@ export async function performAction(
           const rowContainsRaw = String((step as any).expected?.rowContains ?? "").trim();
           const menuReopenRow: LaunchEnvRowMenuReopenRow = /^default$/i.test(rowContainsRaw) ? "default" : "first";
           const settingsChromeFast = page.locator(
-            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deployments-tab"], [data-testid="lytics-tab"]'
+            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="domains-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
           );
           const onEnvSettingsUrl = /\/envs\/[^/]+\/settings/i.test(page.url());
           const skipDefaultEnvHash = (step as any)?.expected?.launchSkipDefaultEnvHashNav === true;
@@ -3381,6 +5243,43 @@ export async function performAction(
             menuReopenRow === "default"
               ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
               : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null);
+          if (
+            launchUrlIndicatesEnvDetailSettings(page) &&
+            (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(14_000) }).catch(() => false))
+          ) {
+            await page.waitForTimeout(350);
+            break;
+          }
+          // ⋮ tooltip often auto-dismisses between the prior verify step and this click — reopen quickly (skip heavy table prep).
+          {
+            const tipProbe = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+            if (!(await tipProbe.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              if (!launchUrlIndicatesEnvDetailSettings(page)) {
+                const tRe = Math.min(t0, 45_000);
+                const rowR =
+                  menuReopenRow === "default"
+                    ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, tRe, {
+                        skipTablePrep: true,
+                        minimalResolve: true,
+                      })
+                    : await resolveLaunchEnvironmentsFirstTableRow(page, tRe);
+                await rowR.scrollIntoViewIfNeeded().catch(() => {});
+                const dotsP = rowR
+                  .locator(
+                    'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
+                  )
+                  .first();
+                const dotsFb = rowR.locator('button[data-test-id="cs-table-action-options"]').first();
+                const dots2 = (await dotsP.isVisible().catch(() => false)) ? dotsP : dotsFb;
+                await expect(dots2).toBeVisible({ timeout: Math.min(tRe, 30_000) });
+                await dots2.click({ timeout: tRe, force: true });
+                await page.waitForTimeout(2_000);
+                await expect(await resolveVisibleLaunchEnvironmentRowActionsMenu(page)).toBeVisible({
+                  timeout: Math.min(tRe, 28_000),
+                });
+              }
+            }
+          }
           if (!skipDefaultEnvHash && projFromUrl && envIdForHash && !onEnvSettingsUrl) {
             await page.evaluate(
               (h) => {
@@ -3413,162 +5312,113 @@ export async function performAction(
             await page.waitForTimeout(300);
             break;
           }
-          // Step 8 often leaves the row ⋮ menu open — click Settings <li> scoped to the visible tooltip only (not global .last()).
+          // Step 8 often leaves the row ⋮ menu open — hover + click Settings scoped to `[data-test-id="cs-vertical-action-tooltip-actions"]` (QA: ⋮ → 2s → li[data-test-id="cs-icon"] + Settings text).
           const menuRootFast = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
           if (await menuRootFast.isVisible({ timeout: fastFailCap(12_000) }).catch(() => false)) {
-            const settingsLiDirect = menuRootFast
-              .locator('li:has([data-testid="environment-settings-action-selector"])')
-              .first();
-            if (await settingsLiDirect.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
-              const settingsLabelFast = settingsLiDirect.locator("div.ml-8").filter({ hasText: /^Settings$/i }).first();
-              const settingsClickFast = (await settingsLabelFast.isVisible({ timeout: 2_000 }).catch(() => false))
-                ? settingsLabelFast
-                : settingsLiDirect;
-              await settingsClickFast.scrollIntoViewIfNeeded().catch(() => {});
-              await settingsClickFast.click({ timeout: Math.min(t0, fastFailCap(45_000)) });
-              await page.waitForTimeout(450);
-              try {
-                await Promise.race([
-                  page.waitForURL(/\/envs\/.+\/settings/, { timeout: 15_000 }),
-                  page.waitForSelector('[data-testid="environment-settings-action-selector"]', { state: "detached", timeout: 15_000 }),
-                ]);
-              } catch {
-                throw new Error("Settings navigation did not complete — URL never matched /envs/.+/settings");
-              }
-              if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(28_000) }).catch(() => false)) {
-                await page.waitForTimeout(300);
-                break;
+            const actionsRootFast = menuRootFast.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+            if (await actionsRootFast.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
+              const settingsLiFast = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRootFast, 5_000);
+              if (await settingsLiFast.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
+                await page.waitForTimeout(2_000);
+                await hoverValidateClickLaunchEnvironmentSettingsLi(page, settingsLiFast, Math.min(t0, fastFailCap(45_000)));
+                await page.waitForTimeout(450);
+                try {
+                  await Promise.race([
+                    page.waitForURL(/\/envs\/.+\/settings/, { timeout: 15_000 }),
+                    page.waitForSelector('[data-testid="environment-settings-action-selector"]', { state: "detached", timeout: 15_000 }),
+                  ]);
+                } catch {
+                  // Hash recovery + second menu pass below handle slow SPA / flaky race.
+                }
+                if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(22_000) }).catch(() => false)) {
+                  await page.waitForTimeout(300);
+                  break;
+                }
+                // On env settings route but tab strip slow — one short wait + hash nudge (avoid duplicating 55s+40s blocks).
+                if (/\/envs\/.+\/settings/i.test(page.url())) {
+                  await page.waitForLoadState("domcontentloaded").catch(() => {});
+                  if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(28_000) }).catch(() => false)) {
+                    await page.waitForTimeout(300);
+                    break;
+                  }
+                  if (projFromUrl && envIdForHash) {
+                    await page
+                      .evaluate(
+                        (h) => {
+                          window.location.hash = h.startsWith("#") ? h : `#${h}`;
+                        },
+                        `#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`
+                      )
+                      .catch(() => {});
+                    await page.waitForTimeout(900);
+                    if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(22_000) }).catch(() => false)) {
+                      await page.waitForTimeout(300);
+                      break;
+                    }
+                  }
+                }
               }
             }
           }
-          const menu = await getOrReopenLaunchEnvironmentRowActionsMenu(page, t0, { reopenRow: menuReopenRow });
-          await expect(menu).toBeVisible({ timeout: Math.min(t0, fastFailCap(25_000)) });
-          const menuSettingsHref =
-            (await menu
-              .locator('a[href*="/envs/"][href*="settings" i]')
-              .first()
-              .getAttribute("href")
-              .catch(() => null)) ??
-            (await menu.locator('a[href*="/envs/"]').first().getAttribute("href").catch(() => null));
-          const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
-          const settingsRowByIcon = actionsRoot.locator('li:has([data-testid="environment-settings-action-selector"])').first();
-          const settingsRowByLabel = actionsRoot.locator("li").filter({ hasText: /^\s*Settings\s*$/i }).first();
-          const resolveSettingsRow = async () => {
-            if (await settingsRowByIcon.isVisible({ timeout: fastFailCap(3_000) }).catch(() => false)) return settingsRowByIcon;
-            if (await settingsRowByLabel.isVisible({ timeout: fastFailCap(3_000) }).catch(() => false)) return settingsRowByLabel;
-            return settingsRowByIcon;
-          };
-          let settingsMenuItemLi = await resolveSettingsRow();
-          const settingsGearSvg = menu
-            .locator('svg[data-testid="environment-settings-action-selector"], [data-testid="environment-settings-action-selector"]')
-            .first();
-          const resolveSettingsClickTarget = async (li: Locator) => {
-            const labelDiv = li.locator("div.ml-8").filter({ hasText: /^Settings$/i }).first();
-            if (await labelDiv.isVisible({ timeout: fastFailCap(2_500) }).catch(() => false)) return labelDiv;
-            return li;
-          };
-          const navigateToEnvSettings = async () => {
-            if (page.isClosed()) {
-              console.warn(
-                "[navigateToEnvSettings] page already closed at entry — before any menu check",
-              );
-              throw new Error("[navigateToEnvSettings] page was closed before step 10 could start");
+          let menuSettingsHref: string | null = null;
+          if (!launchUrlIndicatesEnvDetailSettings(page)) {
+            const menuOpenBudget = Math.min(t0, 40_000);
+            let menu = await getOrReopenLaunchEnvironmentRowActionsMenu(page, menuOpenBudget, {
+              reopenRow: menuReopenRow,
+            });
+            await expect(menu).toBeVisible({ timeout: Math.min(t0, 18_000) });
+            menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+            await expect(menu).toBeVisible({ timeout: Math.min(t0, 14_000) });
+            menuSettingsHref =
+              (await menu
+                .locator('a[href*="/envs/"][href*="settings" i]')
+                .first()
+                .getAttribute("href")
+                .catch(() => null)) ??
+              (await menu.locator('a[href*="/envs/"]').first().getAttribute("href").catch(() => null));
+            const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+            await expect(actionsRoot).toBeVisible({ timeout: Math.min(t0, fastFailCap(12_000)) });
+            const settingsMenuItemLi = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRoot, 6_000);
+            const clickBudget = Math.min(t0, fastFailCap(18_000));
+            await page.waitForTimeout(2_000);
+            await hoverValidateClickLaunchEnvironmentSettingsLi(page, settingsMenuItemLi, clickBudget);
+            await page.waitForTimeout(900);
+            const hashPid = projFromUrl ?? page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
+            const hashEid =
+              envIdForHash ??
+              (menuReopenRow === "default"
+                ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
+                : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null));
+            if (!/\/envs\/.+\/settings/i.test(page.url()) && hashPid && hashEid) {
+              await page
+                .evaluate(
+                  (h) => {
+                    window.location.hash = h.startsWith("#") ? h : `#${h}`;
+                  },
+                  `#!/launch/projects/${hashPid}/envs/${hashEid}/settings/general`
+                )
+                .catch(() => {});
+              await page.waitForTimeout(900);
             }
-            console.warn("[navigateToEnvSettings] page is open at entry — proceeding");
-            if (!(await settingsMenuItemLi.isVisible({ timeout: fastFailCap(10_000) }).catch(() => false))) {
-              const existingMenu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-              const menuAlreadyOpen = await existingMenu.isVisible({ timeout: 2_000 }).catch(() => false);
-              console.warn(
-                menuAlreadyOpen
-                  ? "[navigateToEnvSettings] menu already open — skipping getOrReopen"
-                  : "[navigateToEnvSettings] menu not open — calling getOrReopen",
-              );
-              console.warn("[navigateToEnvSettings] existingMenu visible:", menuAlreadyOpen);
-
-              // Broader fallback — check if ANY row action menu is visible
-              let menuToUse = menuAlreadyOpen ? existingMenu : null;
-              if (!menuToUse) {
-                const broadMenu = page
-                  .locator('#tableRowActionNode, .VerticalActionTooltip, [role="menu"]')
-                  .last();
-                const broadVisible = await broadMenu.isVisible({ timeout: 2_000 }).catch(() => false);
-                console.warn("[navigateToEnvSettings] broadMenu visible:", broadVisible);
-                if (broadVisible) menuToUse = broadMenu;
-              }
-
-              const menu2 =
-                menuToUse ?? (await getOrReopenLaunchEnvironmentRowActionsMenu(page, t0, { reopenRow: menuReopenRow }));
-              await expect(menu2).toBeVisible({ timeout: Math.min(t0, fastFailCap(20_000)) });
-              const ar = menu2.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
-              const byIcon = ar.locator('li:has([data-testid="environment-settings-action-selector"])').first();
-              const byLabel = ar.locator("li").filter({ hasText: /^\s*Settings\s*$/i }).first();
-              settingsMenuItemLi = (await byIcon.isVisible({ timeout: fastFailCap(4_000) }).catch(() => false)) ? byIcon : byLabel;
-            }
-            await expect(settingsMenuItemLi).toBeVisible({ timeout: Math.min(t0, fastFailCap(25_000)) });
-            const settingsClickTarget = await resolveSettingsClickTarget(settingsMenuItemLi);
-            await settingsClickTarget.scrollIntoViewIfNeeded();
-            await settingsClickTarget.click({ timeout: t0 });
-            await page.waitForTimeout(400);
-            let onSettingsUrl = await page
+            await page
               .waitForFunction(
                 () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
                 null,
-                { timeout: fastFailCap(10_000) }
+                { timeout: fastFailCap(22_000) }
               )
-              .then(() => true)
-              .catch(() => false);
-            if (!onSettingsUrl) {
-              await settingsClickTarget.click({ timeout: t0, force: true });
-              await page.waitForTimeout(350);
-              onSettingsUrl = await page
-                .waitForFunction(
-                  () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
-                  null,
-                  { timeout: fastFailCap(6_000) }
-                )
-                .then(() => true)
-                .catch(() => false);
-            }
-            if (!onSettingsUrl) {
-              await expect(settingsGearSvg).toBeVisible({ timeout: fastFailCap(12_000) });
-              await settingsGearSvg.scrollIntoViewIfNeeded();
-              await settingsGearSvg.click({ timeout: t0, force: true });
-              await page.waitForTimeout(350);
-              onSettingsUrl = await page
-                .waitForFunction(
-                  () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
-                  null,
-                  { timeout: fastFailCap(5_000) }
-                )
-                .then(() => true)
-                .catch(() => false);
-            }
-            if (!onSettingsUrl) {
-              await settingsGearSvg.evaluate((el) => (el as HTMLElement).click());
-              await page.waitForTimeout(300);
-            }
-            if (!(await page
+              .catch(() => {});
+          } else {
+            await page
               .waitForFunction(
                 () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
                 null,
-                { timeout: fastFailCap(4_000) }
+                { timeout: fastFailCap(22_000) }
               )
-              .then(() => true)
-              .catch(() => false))) {
-              await settingsMenuItemLi.evaluate((el) => (el as HTMLElement).click());
-            }
-          };
-          await navigateToEnvSettings();
-          await page
-            .waitForFunction(
-              () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
-              null,
-              { timeout: fastFailCap(22_000) }
-            )
-            .catch(() => {});
+              .catch(() => {});
+          }
           // Environment settings (tabs + name-field) — not project Settings (`.../settings/general` alone).
           const settingsChrome = page.locator(
-            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
+            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="domains-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
           );
           const tryNavToEnvSettingsHref = async (href: string | null) => {
             if (!href || !/\/envs\//i.test(href)) return;
@@ -3597,18 +5447,23 @@ export async function performAction(
           };
           if (!(await settingsChrome.first().isVisible({ timeout: fastFailCap(20_000) }).catch(() => false))) {
             await tryNavToEnvSettingsHref(menuSettingsHref);
-            if (!skipDefaultEnvHash) {
-              const projNav = page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
-              const envFromDom =
-                menuReopenRow === "default"
-                  ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
-                  : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null);
-              if (projNav && envFromDom) {
-                await tryNavToEnvSettingsHref(`#!/launch/projects/${projNav}/envs/${envFromDom}/settings/general`);
-              }
+            const hashProj =
+              projFromUrl ?? page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
+            const envFromRoute =
+              envIdForHash ??
+              page.url().match(/\/envs\/([a-f0-9]{24})\b/i)?.[1] ??
+              page.url().match(/\/envs\/([a-f0-9-]{36})\b/i)?.[1] ??
+              (menuReopenRow === "default"
+                ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
+                : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null));
+            if (hashProj && envFromRoute) {
+              await tryNavToEnvSettingsHref(`#!/launch/projects/${hashProj}/envs/${envFromRoute}/settings/general`);
             }
           }
-          if (!skipDefaultEnvHash && !(await settingsChrome.first().isVisible({ timeout: fastFailCap(8_000) }).catch(() => false))) {
+          if (
+            !(await settingsChrome.first().isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) &&
+            !launchUrlIndicatesEnvDetailSettings(page)
+          ) {
             const row2 =
               menuReopenRow === "default"
                 ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, Math.min(t0, fastFailCap(45_000)))
@@ -3915,9 +5770,20 @@ export async function performAction(
         }
         if (flowIdLower === "event-tracking-in-contentstack-launch") {
           if (step.target === "Launch environment settings Event Tracking tab (doc step)") {
-            const tab = page.locator('[data-test-id="cs-tabs-item"]:has([data-testid="lytics-tab"])').first();
-            await expect(tab).toBeVisible({ timeout: t0 });
-            await tab.click({ timeout: t0 });
+            const tabItem = page.locator('[data-test-id="cs-tabs-item"]:has([data-testid="lytics-tab"])').first();
+            const tabFace = tabItem.locator('[data-testid="lytics-tab"]').first();
+            // Tab strip scrolls horizontally (caret buttons); bring Event Tracking into view then click inner label.
+            for (let i = 0; i < 14; i++) {
+              await tabItem.scrollIntoViewIfNeeded().catch(() => {});
+              if (await tabFace.isVisible({ timeout: 700 }).catch(() => false)) break;
+              const rightCaret = page.locator(".caret-container button.caret.right").first();
+              if (!(await rightCaret.isVisible({ timeout: 500 }).catch(() => false))) break;
+              await rightCaret.click({ timeout: t0 }).catch(() => {});
+              await page.waitForTimeout(280);
+            }
+            await expect(tabFace).toBeVisible({ timeout: t0 });
+            await tabFace.click({ timeout: t0 });
+            await expect(page.locator(".Tab__Info").first()).toBeVisible({ timeout: Math.min(t0, 30_000) }).catch(() => {});
             await page.waitForTimeout(500);
             break;
           }
@@ -3926,11 +5792,15 @@ export async function performAction(
             step.target === "Launch Event Tracking enable toggle (doc step)" ||
             step.target === "Launch Event Tracking disable toggle (doc step)"
           ) {
-            const byId = eventTrackingPanel.locator("#lytics").first();
             const inSwitch = eventTrackingPanel
               .locator('[data-test-id="cs-toggle-switch"] input[type="checkbox"]')
+              .or(eventTrackingPanel.locator('input[aria-label="aria-toggle-switch"]'))
               .first();
-            const el = (await byId.isVisible({ timeout: 5_000 }).catch(() => false)) ? byId : inSwitch;
+            const toggleUi = eventTrackingPanel.locator("label.toggle-switch").first();
+            let el: Locator = inSwitch;
+            if (!(await inSwitch.isVisible({ timeout: 5_000 }).catch(() => false)) && (await toggleUi.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              el = toggleUi;
+            }
             await expect(el).toBeVisible({ timeout: t0 });
             await el.click({ timeout: t0 });
             await page.waitForTimeout(450);
@@ -4742,12 +6612,129 @@ export async function performAction(
       // If user clicks vertical ellipsis, open it and confirm menu is visible
       if (step.target === "vertical ellipsis") {
         await openRowActionMenu(page, step, flow); // ✅ pass step
+        const stabilizeMs = Number(process.env.VERTICAL_ELLIPSIS_POST_OPEN_MS ?? "2000");
+        if (Number.isFinite(stabilizeMs) && stabilizeMs > 0) {
+          await page.waitForTimeout(stabilizeMs);
+        }
         break;
       }
       
 
+      if (String(flow?.id || "").toLowerCase() === "export-a-voice-profile" && step.target === "Export") {
+        const tVpEx = getStepTimeoutMs(step);
+        const { click: clickVpOvEx } = loadOverrides(flow);
+        const tooltipVpSelEx =
+          clickVpOvEx["Voice Profiles Actions dropdown tooltip (export-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions dropdown tooltip (export-a-voice-profile)"] ||
+          '[data-test-id="cs-vertical-action-tooltip"]';
+        const exportVpSel =
+          clickVpOvEx["Voice Profiles Actions Export menu item (export-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions Export menu item (export-a-voice-profile)"] ||
+          '[data-test-id="brand-kit-click-menu-voice-profiles-list-export-voice-profile"]';
+        let exportClick = page.locator(exportVpSel).filter({ visible: true }).first();
+        if (!(await exportClick.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          await openRowActionMenu(page, step, flow);
+          exportClick = page.locator(exportVpSel).filter({ visible: true }).first();
+        }
+        const surfEx = page.locator(tooltipVpSelEx).filter({ visible: true }).first();
+        await expect(surfEx).toBeVisible({ timeout: Math.min(tVpEx, 45_000) });
+        await expect(exportClick).toBeVisible({ timeout: Math.min(tVpEx, 45_000) });
+        await exportClick.scrollIntoViewIfNeeded().catch(() => {});
+        await exportClick.click({ timeout: Math.min(tVpEx, 45_000) });
+        await page.waitForTimeout(700);
+        break;
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "export-item-from-knowledge-vault" && step.target === "Export") {
+        const tKvEx = getStepTimeoutMs(step);
+        const { click: clickKvOvEx } = loadOverrides(flow);
+        const tooltipKvSelEx =
+          clickKvOvEx["Knowledge Vault Actions dropdown tooltip (export-item-from-knowledge-vault)"] ||
+          CLICK_SELECTORS["Knowledge Vault Actions dropdown tooltip (export-item-from-knowledge-vault)"] ||
+          '[data-test-id="cs-vertical-action-tooltip"]';
+        const exportKvSel =
+          clickKvOvEx["Knowledge Vault Actions Export menu item (export-item-from-knowledge-vault)"] ||
+          CLICK_SELECTORS["Knowledge Vault Actions Export menu item (export-item-from-knowledge-vault)"] ||
+          '[data-test-id="brand-kit-click-input-select-knowledge-vault-export-knowledge-vault-item"]';
+        let exportKvClick = page.locator(exportKvSel).filter({ visible: true }).first();
+        if (!(await exportKvClick.isVisible({ timeout: 2_500 }).catch(() => false))) {
+          await openRowActionMenu(page, step, flow);
+          exportKvClick = page.locator(exportKvSel).filter({ visible: true }).first();
+        }
+        const surfKvEx = page.locator(tooltipKvSelEx).filter({ visible: true }).first();
+        await expect(surfKvEx).toBeVisible({ timeout: Math.min(tKvEx, 45_000) });
+        await expect(exportKvClick).toBeVisible({ timeout: Math.min(tKvEx, 45_000) });
+        await exportKvClick.scrollIntoViewIfNeeded().catch(() => {});
+        await exportKvClick.click({ timeout: Math.min(tKvEx, 45_000) });
+        await page.waitForTimeout(800);
+        break;
+      }
+
       // If user clicks Settings/Edit from that menu, do a safe menu-item click
       if (step.target === "Settings" || step.target === "Edit") {
+        if (String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" && step.target === "Edit") {
+          const tVpClick = getStepTimeoutMs(step);
+          const { click: clickVpOvEd } = loadOverrides(flow);
+          const editVpSel =
+            clickVpOvEd["Voice Profiles Actions Edit menu item (edit-a-voice-profile)"] ||
+            CLICK_SELECTORS["Voice Profiles Actions Edit menu item (edit-a-voice-profile)"] ||
+            '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"], [data-test-id="brand-kit-click-menu-voice-profiles-list-edit-voice-profile"]';
+          const editPrimarySel =
+            '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]';
+          const editLegacySel = '[data-test-id="brand-kit-click-menu-voice-profiles-list-edit-voice-profile"]';
+          const tooltipHostSel = '[data-test-id="cs-vertical-action-tooltip"]';
+          const resolveTooltipWithEdit = async () => {
+            let tip = page
+              .locator(tooltipHostSel)
+              .filter({ has: page.locator(editPrimarySel) })
+              .filter({ visible: true })
+              .last();
+            if (await tip.isVisible({ timeout: 2_000 }).catch(() => false)) return tip;
+            tip = page
+              .locator(tooltipHostSel)
+              .filter({ has: page.locator(editLegacySel) })
+              .filter({ visible: true })
+              .last();
+            return tip;
+          };
+          let tooltipWithEdit = await resolveTooltipWithEdit();
+          if (!(await tooltipWithEdit.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            await openRowActionMenu(page, step, flow);
+            await page.waitForTimeout(2_000);
+            tooltipWithEdit = await resolveTooltipWithEdit();
+          }
+          await expect(tooltipWithEdit).toBeVisible({ timeout: Math.min(tVpClick, 45_000) });
+          let editClick = tooltipWithEdit.locator(editPrimarySel).first();
+          if (!(await editClick.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            editClick = tooltipWithEdit.locator(editLegacySel).first();
+          }
+          if (!(await editClick.isVisible({ timeout: 1_500 }).catch(() => false))) {
+            editClick = tooltipWithEdit.locator(editVpSel).first();
+          }
+          await expect(editClick).toBeVisible({ timeout: Math.min(tVpClick, 45_000) });
+          await editClick.hover({ timeout: Math.min(tVpClick, 15_000) }).catch(() => {});
+          await page.waitForTimeout(250);
+          const formVp = page.locator("form#voice-profile-form.voice-profile-form, form#voice-profile-form").first();
+          await editClick.scrollIntoViewIfNeeded().catch(() => {});
+          const editNavClick = async () => {
+            const innerLink = editClick.locator("a[href]").first();
+            if ((await innerLink.count().catch(() => 0)) > 0 && (await innerLink.isVisible({ timeout: 800 }).catch(() => false))) {
+              await innerLink.click({ timeout: Math.min(tVpClick, 45_000) });
+              return;
+            }
+            await editClick.click({ timeout: Math.min(tVpClick, 45_000) });
+          };
+          await editNavClick();
+          if (!(await formVp.isVisible({ timeout: 5_000 }).catch(() => false))) {
+            if (await editClick.isVisible({ timeout: 1_500 }).catch(() => false)) {
+              await editClick.focus().catch(() => {});
+              await page.keyboard.press("Enter");
+            }
+          }
+          await expect(formVp).toBeVisible({ timeout: Math.min(tVpClick, 90_000) });
+          await page.waitForTimeout(400);
+          break;
+        }
         await clickRowActionMenuItem(page, step.target, flow, step);
         break;
       }
@@ -7587,6 +9574,70 @@ export async function performAction(
       // Special case: row action menu -> "Delete" should open a confirmation modal
       if (step.target === "Delete") {
         const delFlowId = String(flow?.id || "").toLowerCase();
+        if (delFlowId === "delete-item-in-knowledge-vault") {
+          const tKvDel = getStepTimeoutMs(step);
+          const deleteKvSel = '[data-test-id="brand-kit-click-menu-items-list-open-delete-item-modal"]';
+          let tipKvDel = page
+            .locator('[data-test-id="cs-vertical-action-tooltip"]')
+            .filter({ visible: true })
+            .filter({ has: page.locator(deleteKvSel) })
+            .last();
+          if (!(await tipKvDel.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            await openRowActionMenu(page, { action: "click", target: "vertical ellipsis", expected: step.expected } as Step, flow);
+            await page.waitForTimeout(500);
+            tipKvDel = page
+              .locator('[data-test-id="cs-vertical-action-tooltip"]')
+              .filter({ visible: true })
+              .filter({ has: page.locator(deleteKvSel) })
+              .last();
+          }
+          await expect(tipKvDel).toBeVisible({ timeout: Math.min(tKvDel, 45_000) });
+          const delKvLi = tipKvDel.locator(deleteKvSel).first();
+          await expect(delKvLi).toBeVisible({ timeout: Math.min(tKvDel, 28_000) });
+          await delKvLi.scrollIntoViewIfNeeded().catch(() => {});
+          await delKvLi.click({ timeout: tKvDel, force: true });
+          await page.waitForTimeout(600);
+          await page
+            .locator('[data-test-id="cs-modal-title-delete-item"], [data-test-id="delete-item-modal"]')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(tKvDel, 45_000) })
+            .catch(() => {});
+          break;
+        }
+        if (delFlowId === "delete-a-voice-profile") {
+          const tVpDel = getStepTimeoutMs(step);
+          const { click: clickVpOvDel } = loadOverrides(flow);
+          const deleteVpSel =
+            clickVpOvDel["Voice Profiles Actions Delete menu item (delete-a-voice-profile)"] ||
+            CLICK_SELECTORS["Voice Profiles Actions Delete menu item (delete-a-voice-profile)"] ||
+            '[data-test-id="brand-kit-click-menu-voice-profiles-list-open-delete-voice-profile-modal"], [data-test-id="brand-kit-click-menu-voice-profiles-list-delete-voice-profile"]';
+          /** Modal wrapper flakes — wait for modal, heading, or destructive confirm (surface union); try normal + force Delete clicks; reopen ⋯ between cycles. */
+          let delClick = await ensureVoiceProfileDeleteMenuItemThenLocate(page, flow, step.expected?.rowContains, deleteVpSel, tVpDel);
+          await expect(delClick).toBeVisible({ timeout: Math.min(tVpDel, 45_000) });
+
+          let surfaced = false;
+          const probeMs = Math.min(tVpDel, 14_000);
+          for (let cycle = 1; cycle <= 3; cycle++) {
+            await clickVoiceProfileDeleteRowAction(delClick, tVpDel);
+            await page.waitForTimeout(550);
+            if (await locatorDeleteVoiceProfileConfirmSurface(page).isVisible({ timeout: probeMs }).catch(() => false)) {
+              surfaced = true;
+              break;
+            }
+            await clickVoiceProfileDeleteRowAction(delClick, tVpDel, { force: true });
+            await page.waitForTimeout(550);
+            if (await locatorDeleteVoiceProfileConfirmSurface(page).isVisible({ timeout: probeMs }).catch(() => false)) {
+              surfaced = true;
+              break;
+            }
+            await openRowActionMenu(page, { action: "click", target: "vertical ellipsis", expected: step.expected } as Step, flow);
+            await page.waitForTimeout(450);
+            delClick = await ensureVoiceProfileDeleteMenuItemThenLocate(page, flow, step.expected?.rowContains, deleteVpSel, tVpDel);
+            await expect(delClick).toBeVisible({ timeout: Math.min(tVpDel, 25_000) });
+          }
+          if (!surfaced) await expectDeleteVoiceProfileConfirmSurfaceVisible(page, tVpDel);
+          break;
+        }
         const studioCompositionDelete =
           delFlowId === "manage-a-composition-part-1" || delFlowId === "manage-a-composition-part-2";
         const deleteDialog = studioCompositionDelete
@@ -10036,8 +12087,8 @@ export async function performAction(
               )
               .first();
             await expect(input).toBeVisible({ timeout: 25_000 });
-            // Doc repo: https://github.com/contentstack-launch-examples/turborepo-npm-demo — async list must be filtered (typing).
-            // Placeholder div can intercept pointer events on the input; fill with force focuses and types.
+            // Doc repo: https://github.com/contentstack-launch-examples/turborepo-npm-demo — async Repository select:
+            // type to filter the list, then click the matching row in the dropdown (react-select menu / listbox / portal).
             const repoOptionMatch =
               process.env.LAUNCH_MONOREPO_REPO_OPTION_MATCH?.trim() || "turborepo-npm-demo";
             const optionRe = new RegExp(escapeRegex(repoOptionMatch), "i");
@@ -10045,19 +12096,60 @@ export async function performAction(
               ? process.env.LAUNCH_MONOREPO_REPO_SEARCH_QUERIES.split(",")
                   .map((s) => s.trim())
                   .filter(Boolean)
-              : ["turborepo-npm-demo", "contentstack-launch-examples", "turborepo"];
-            for (const q of queries) {
-              await input.fill("", { force: true });
-              await input.fill(q, { force: true });
-              await page.waitForTimeout(900);
-              const opt = page.locator('[role="option"]').filter({ hasText: optionRe }).first();
-              try {
-                await expect(opt).toBeVisible({ timeout: 45_000 });
-                await opt.click({ timeout: tImport, force: true });
-                return;
-              } catch {
-                /* try next query */
+              : ["turbo", "turborepo", "turborepo-npm-demo", "contentstack-launch-examples"];
+            const menuVisible = async (): Promise<boolean> => {
+              const menu = page
+                .locator("div.Select__menu")
+                .filter({ has: page.locator(".Select__option, [role='option']") })
+                .last();
+              const lb = page.getByRole("listbox").last();
+              if (await menu.isVisible({ timeout: 2_000 }).catch(() => false)) return true;
+              if (await lb.isVisible({ timeout: 2_000 }).catch(() => false)) return true;
+              return false;
+            };
+            const clickMatchingOption = async (): Promise<boolean> => {
+              const skipLoading = /^(loading|no options|no results)/i;
+              const tryLocators = [
+                page.locator('[role="option"]').filter({ hasText: optionRe }),
+                page.getByRole("listbox").last().getByRole("option").filter({ hasText: optionRe }),
+                page
+                  .locator("div.Select__menu")
+                  .filter({ has: page.locator(".Select__option") })
+                  .last()
+                  .locator(".Select__option")
+                  .filter({ hasText: optionRe }),
+                page.locator('[id^="react-select"][id*="-option-"]').filter({ hasText: optionRe }),
+              ];
+              for (const group of tryLocators) {
+                const n = await group.count().catch(() => 0);
+                for (let i = 0; i < n; i++) {
+                  const opt = group.nth(i);
+                  const txt = ((await opt.textContent().catch(() => "")) || "").trim();
+                  if (!txt || skipLoading.test(txt)) continue;
+                  if (!optionRe.test(txt)) continue;
+                  await opt.scrollIntoViewIfNeeded().catch(() => {});
+                  await expect(opt).toBeVisible({ timeout: 8_000 });
+                  await opt.click({ timeout: tImport, force: true });
+                  return true;
+                }
               }
+              return false;
+            };
+            for (const q of queries) {
+              await input.click({ force: true }).catch(() => {});
+              await input.fill("", { force: true });
+              await input.pressSequentially(q, { delay: 35 });
+              await page.waitForTimeout(400);
+              const deadline = Date.now() + 50_000;
+              while (Date.now() < deadline) {
+                if (await menuVisible()) break;
+                await page.waitForTimeout(200);
+              }
+              await page.waitForTimeout(600);
+              if (await clickMatchingOption()) return;
+              await input.press("Enter").catch(() => {});
+              await page.waitForTimeout(500);
+              if (await clickMatchingOption()) return;
             }
             throw new Error(
               `Launch monorepo flow: repository matching "${repoOptionMatch}" not found after search. Grant the GitHub integration access to github.com/contentstack-launch-examples/turborepo-npm-demo, fork the repo into your org, or set LAUNCH_MONOREPO_REPO_SEARCH_QUERIES and LAUNCH_MONOREPO_REPO_OPTION_MATCH (see deploy-a-project-from-a-monorepo doc).`
@@ -11165,12 +13257,53 @@ export async function performAction(
           break;
         }
 
-        if ((fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") && step.target === "Studio first project card open compositions (doc step)") {
+        if (
+          (fid === "manage-a-composition-part-1" ||
+            fid === "manage-a-composition-part-2" ||
+            fid === "deploy-a-composition") &&
+          step.target === "Studio first project card open compositions (doc step)"
+        ) {
           const link = page.locator('a.projectList__link-T53is2, a[href*="/studio/projects/"][href*="/compositions"]').first();
           await expect(link).toBeVisible({ timeout: t0 });
           await link.click({ timeout: t0 });
           await page.waitForURL(/\/compositions/i, { timeout: t0 }).catch(() => {});
           await page.waitForTimeout(600);
+          break;
+        }
+        if (fid === "deploy-a-composition" && step.target === "Studio compositions list first row open editor (doc step)") {
+          const row = page.locator('[data-test-id^="cs-table-body-row"]').first();
+          await expect(row).toBeVisible({ timeout: t0 });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          const openTarget = row.locator(".title-WHtpt5, .titleCellWrapper-yKpBqL").first();
+          await expect(openTarget).toBeVisible({ timeout: t0 });
+          await openTarget.click({ timeout: t0 });
+          await page.waitForTimeout(1_200);
+          await page.waitForURL(/\/studio\/projects\/.+\/(compositions\/)?[^/]+/i, { timeout: Math.min(t0, 60_000) }).catch(() => {});
+          break;
+        }
+        if (fid === "deploy-a-composition" && step.target === "Studio canvas editor Deploy button (doc step)") {
+          const btn = page.locator('[data-test-id="cs-click-btn-primary-action-canvas-editor-deploy-composition"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (fid === "deploy-a-composition" && step.target === "Studio Publish Composition first environment checkbox (doc step)") {
+          const modal = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-publish-composition"]') }).first();
+          await expect(modal).toBeVisible({ timeout: t0 });
+          const box = modal.locator(".environment-selection-modal__body-checkbox label[data-test-id='cs-checkbox']").first();
+          await expect(box).toBeVisible({ timeout: t0 });
+          await box.click({ timeout: t0 });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (fid === "deploy-a-composition" && step.target === "Studio Publish Composition modal Publish button (doc step)") {
+          const btn = page.locator('[data-testid="publish-modal__action_proceed"]').first();
+          await expect(btn).toBeVisible({ timeout: t0 });
+          await expect(btn).toBeEnabled({ timeout: Math.min(t0, 45_000) });
+          await btn.click({ timeout: t0 });
+          await page.waitForTimeout(900);
           break;
         }
         if ((fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") && step.target === "Studio New Composition button (doc step)") {
@@ -11297,6 +13430,216 @@ export async function performAction(
           await btn.click({ timeout: t0 });
           await page.waitForTimeout(900);
           break;
+        }
+      }
+
+      // Analytics guides — optional org switch + dashboard Analytics tile + hub dashboard tabs.
+      if (step.action === "click" && ANALYTICS_GUIDE_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
+        const tAn = getStepTimeoutMs(step);
+        const fidLower = String(flow?.id || "").toLowerCase();
+
+        // analytics-for-brand-kit — doc: App Switcher → Analytics (#!/product-analytics); see data/dom/header/app-switcher*.html
+        if (fidLower === "analytics-for-brand-kit" && step.target === "Brand Kit analytics doc: App Switcher icon (doc step)") {
+          const { click: clickBkOv } = loadOverrides(flow);
+          const openerSel =
+            clickBkOv["Brand Kit analytics doc: App Switcher icon (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit analytics doc: App Switcher icon (doc step)"] ||
+            '[data-test-id="app-switcher"]';
+          const opener = page.locator(openerSel).first();
+          await opener.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(opener).toBeVisible({ timeout: Math.min(tAn, 120_000) });
+          await opener.click({ timeout: tAn, force: true });
+          await page.waitForTimeout(450);
+          await page
+            .locator('[data-test-id="app-switcher-body"]')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(tAn, 45_000) })
+            .catch(() => {});
+          break;
+        }
+        if (fidLower === "analytics-for-brand-kit" && step.target === "Brand Kit analytics doc: App Switcher Analytics product (doc step)") {
+          const { click: clickBkOv } = loadOverrides(flow);
+          const prodSel =
+            clickBkOv["Brand Kit analytics doc: App Switcher Analytics product (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit analytics doc: App Switcher Analytics product (doc step)"] ||
+            'a[data-test-id="app-switcher-product"][href*="product-analytics"]';
+          const prod = page.locator(prodSel).first();
+          await expect(prod).toBeVisible({ timeout: Math.min(tAn, 45_000) });
+          await prod.scrollIntoViewIfNeeded().catch(() => {});
+          await prod.click({ timeout: tAn, force: true });
+          await page.waitForTimeout(900);
+          await page.waitForURL(/product-analytics/i, { timeout: Math.min(tAn, 120_000) }).catch(() => {});
+          await page.waitForLoadState("networkidle", { timeout: 90_000 }).catch(() => {});
+          break;
+        }
+
+        if (step.target === "Analytics doc: header organization dropdown pick DEFAULT_ORG (doc step)") {
+          const orgName = String(process.env.DEFAULT_ORG || "").trim();
+          if (!orgName) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Analytics doc step 1: DEFAULT_ORG is unset — assuming the signed-in session is already on the organization whose analytics you want to view. Set DEFAULT_ORG to automate the header organization dropdown."
+            );
+            break;
+          }
+
+          let origin = "";
+          try {
+            origin = new URL(page.url()).origin;
+          } catch {
+            origin = "";
+          }
+          if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+          await page.goto(`${origin}/#!/dashboard`, { waitUntil: "domcontentloaded", timeout: Math.min(tAn, 120_000) });
+          await page.waitForLoadState("networkidle", { timeout: 90_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+
+          const header = page.locator("#topnav, header").first();
+          const openers: Locator[] = [
+            page.locator('[data-test-id="cs-org-dropdown"]').first(),
+            page.locator('[data-test-id="cs-organization-switcher"]').first(),
+            page.locator('[data-test-id*="org-switcher" i]').first(),
+            header.locator('button[aria-haspopup="listbox"]').first(),
+            header.locator('button[aria-haspopup="menu"]').first(),
+            header.getByRole("button", { name: new RegExp(escapeRegex(orgName.slice(0, 48)), "i") }).first(),
+          ];
+
+          let opened = false;
+          for (const opener of openers) {
+            if (await opener.isVisible({ timeout: 2_500 }).catch(() => false)) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tAn, force: true }).catch(() => {});
+              opened = true;
+              break;
+            }
+          }
+
+          if (!opened) {
+            throw new Error(
+              `Analytics doc step 1: could not find a header organization control to open the dropdown. Capture DOM from #!/dashboard or extend selectors. DEFAULT_ORG=${orgName}`
+            );
+          }
+
+          await page.waitForTimeout(450);
+          const menu = page.locator('[role="menu"], [role="listbox"], .Portal__menu, div.Select__menu').last();
+          await expect(menu).toBeVisible({ timeout: Math.min(tAn, 45_000) });
+          const needleShort = orgName.slice(0, Math.min(64, orgName.length));
+          const needleRe = escapeRegex(needleShort);
+          let choice = menu
+            .locator('[role="menuitem"], [role="option"], .Select__option')
+            .filter({ hasText: new RegExp(needleRe, "i") })
+            .first();
+          if (!(await choice.isVisible({ timeout: 12_000 }).catch(() => false))) {
+            choice = menu.getByText(orgName, { exact: true }).first();
+          }
+          await expect(choice).toBeVisible({ timeout: Math.min(tAn, 60_000) });
+          await choice.click({ timeout: tAn, force: true });
+          await page.waitForTimeout(900);
+          await page.waitForLoadState("networkidle", { timeout: 90_000 }).catch(() => {});
+          break;
+        }
+        if (
+          fidLower !== "analytics-for-brand-kit" &&
+          step.target === "Analytics doc: Organization dashboard Analytics product tile (doc step)"
+        ) {
+          const { click: clickOv } = loadOverrides(flow);
+          const tileSel =
+            clickOv["Analytics doc: Organization dashboard Analytics product tile (doc step)"] ||
+            CLICK_SELECTORS["Analytics doc: Organization dashboard Analytics product tile (doc step)"] ||
+            '[data-test-id="cs-global-dashboard-product-tile-analytics"]';
+          const tile = page.locator(tileSel).first();
+          await tile.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(tile).toBeVisible({ timeout: Math.min(tAn, 120_000) });
+          await tile.click({ timeout: tAn, force: true });
+          await page.waitForTimeout(1000);
+          await page.waitForLoadState("networkidle", { timeout: 90_000 }).catch(() => {});
+          break;
+        }
+        const hubTabId = ANALYTICS_HUB_TAB_TEST_ID_BY_STEP[step.target];
+        if (hubTabId) {
+          const { click: clickOv } = loadOverrides(flow);
+          const mappedSel = clickOv[step.target] || CLICK_SELECTORS[step.target];
+          const hubSel = mappedSel || `[data-test-id="${hubTabId}"]`;
+          const tabBtn = page.locator(hubSel).first();
+          await tabBtn.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(tabBtn).toBeVisible({ timeout: Math.min(tAn, 120_000) });
+          await tabBtn.click({ timeout: tAn, force: true });
+          await page.waitForTimeout(900);
+          await page.waitForLoadState("networkidle", { timeout: 90_000 }).catch(() => {});
+          break;
+        }
+      }
+
+      // Audience Insights marketplace app (CMS stack).
+      if (step.action === "click" && AUDIENCE_INSIGHTS_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
+        const tAi = getStepTimeoutMs(step);
+        const fidAi = String(flow?.id || "").toLowerCase();
+
+        if (fidAi === "audience-insights-full-page" && step.target === "Audience Insights doc: click stack primary nav Audience Insights app (doc step)") {
+          const { click: cOv } = loadOverrides(flow);
+          const sel =
+            cOv["Audience Insights doc: click stack primary nav Audience Insights app (doc step)"] ||
+            CLICK_SELECTORS["Audience Insights doc: click stack primary nav Audience Insights app (doc step)"];
+          let loc: Locator = sel
+            ? page.locator(sel).first()
+            : page.getByRole("link", { name: /^Audience Insights$/i }).first();
+          if (sel && !(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+            loc = page.getByRole("link", { name: /^Audience Insights$/i }).first();
+          }
+          if (!(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+            loc = page.getByRole("button", { name: /^Audience Insights$/i }).first();
+          }
+          await expect(loc).toBeVisible({ timeout: Math.min(tAi, 90_000) });
+          await loc.scrollIntoViewIfNeeded().catch(() => {});
+          await loc.click({ timeout: tAi });
+          await page.waitForTimeout(900);
+          break;
+        }
+
+        if (fidAi === "audience-insights-entry-sidebar") {
+          if (step.target === "Audience Insights doc: open first entry from Entries list (doc step)") {
+            const row = page.locator('[data-test-id^="cs-table-body-row"]').first();
+            await expect(row).toBeVisible({ timeout: Math.min(tAi, 90_000) });
+            const link = row.locator('a[href*="/entries/"]').first();
+            if (await link.isVisible({ timeout: 6_000 }).catch(() => false)) {
+              await link.click({ timeout: tAi });
+            } else {
+              await row.click({ timeout: tAi });
+            }
+            await page.waitForTimeout(1200);
+            break;
+          }
+          if (step.target === "Audience Insights doc: click entry right nav Audience Insights app icon (doc step)") {
+            const { click: cOv } = loadOverrides(flow);
+            const sel =
+              cOv["Audience Insights doc: click entry right nav Audience Insights app icon (doc step)"] ||
+              CLICK_SELECTORS["Audience Insights doc: click entry right nav Audience Insights app icon (doc step)"];
+            let loc: Locator = sel
+              ? page.locator(sel).first()
+              : page.locator(".SidebarWindow").getByRole("tab", { name: /^Audience Insights$/i }).first();
+            if (sel && !(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              loc = page.locator(".SidebarWindow").getByRole("button", { name: /^Audience Insights$/i }).first();
+            }
+            await expect(loc).toBeVisible({ timeout: Math.min(tAi, 90_000) });
+            await loc.click({ timeout: tAi });
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (step.target === "Audience Insights doc: click Analyze button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Analyze$/i }).first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tAi, 90_000) });
+            await btn.click({ timeout: tAi });
+            await page.waitForTimeout(1500);
+            break;
+          }
+          if (step.target === "Audience Insights doc: click Re-analyze button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Re-analyze$/i }).first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tAi, 90_000) });
+            await btn.click({ timeout: tAi });
+            await page.waitForTimeout(800);
+            break;
+          }
         }
       }
 
@@ -11764,6 +14107,851 @@ export async function performAction(
         }
         await page.waitForTimeout(600);
         break;
+      }
+
+      // BrandKit — get-started-with-brand-kit | create-a-brand-kit | voice-profiles flows | edit-a-brand-kit | delete-a-brand-kit | invite-collaborators: dashboard / stacks / modal stack picker / Brand Kit card / Settings / New Entry CT row (subset per flow).
+      if (
+        step.action === "click" &&
+        (String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" ||
+          String(flow?.id || "").toLowerCase() === "create-a-brand-kit" ||
+          String(flow?.id || "").toLowerCase() === "create-a-voice-profile" ||
+          String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" ||
+          String(flow?.id || "").toLowerCase() === "delete-a-voice-profile" ||
+          String(flow?.id || "").toLowerCase() === "import-a-voice-profile" ||
+          String(flow?.id || "").toLowerCase() === "export-a-voice-profile" ||
+          String(flow?.id || "").toLowerCase() === "edit-a-brand-kit" ||
+          String(flow?.id || "").toLowerCase() === "delete-a-brand-kit" ||
+          String(flow?.id || "").toLowerCase() === "invite-collaborators" ||
+          String(flow?.id || "").toLowerCase() === "add-item-in-knowledge-vault" ||
+          String(flow?.id || "").toLowerCase() === "edit-item-in-knowledge-vault" ||
+          String(flow?.id || "").toLowerCase() === "delete-item-in-knowledge-vault" ||
+          String(flow?.id || "").toLowerCase() === "import-item-in-knowledge-vault" ||
+          String(flow?.id || "").toLowerCase() === "export-item-from-knowledge-vault")
+      ) {
+        const tBk = getStepTimeoutMs(step);
+        if (step.target === "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)") {
+          const { click: clickOv } = loadOverrides(flow);
+          const navSel =
+            clickOv["Brand Kit left navigation item (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit left navigation item (doc step)"];
+          const leftNav = page.locator(navSel).first();
+          const navVisible = await leftNav.isVisible({ timeout: 12_000 }).catch(() => false);
+          if (navVisible) {
+            await leftNav.scrollIntoViewIfNeeded().catch(() => {});
+            await leftNav.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(700);
+            break;
+          }
+          recordVerificationWarning(
+            step,
+            context,
+            "Brand Kit is not displayed in Left Navigation (doc describes Brand Kit in the left navigation panel) — continuing via Organization dashboard Brand Kit product tile."
+          );
+          let origin = "";
+          try {
+            origin = new URL(page.url()).origin;
+          } catch {
+            origin = "";
+          }
+          if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+          await page.goto(`${origin}/#!/dashboard`, { waitUntil: "domcontentloaded", timeout: tBk });
+          await page.waitForTimeout(600);
+          const tileSel =
+            clickOv["Brand Kit dashboard product tile (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit dashboard product tile (doc step)"] ||
+            '[data-test-id="cs-global-dashboard-product-tile-brand-kit"]';
+          const tile = page.locator(tileSel).first();
+          await tile.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(tile).toBeVisible({ timeout: Math.min(tBk, 90_000) });
+          await tile.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (step.target === "Brand Kit doc: Organization dashboard (doc step)") {
+          let origin = "";
+          try {
+            origin = new URL(page.url()).origin;
+          } catch {
+            origin = "";
+          }
+          if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+          await page.goto(`${origin}/#!/dashboard`, { waitUntil: "domcontentloaded", timeout: tBk });
+          await page.waitForTimeout(600);
+          break;
+        }
+        if (step.target === "Brand Kit doc: Headless CMS product tile (doc step)") {
+          const tile = page.locator('[data-test-id="cs-global-dashboard-product-tile-headless-cms"]').first();
+          await tile.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(tile).toBeVisible({ timeout: tBk });
+          await tile.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Brand Kit doc: DEFAULT_STACK stack list card (doc step)") {
+          const stackName = String(process.env.DEFAULT_STACK || "").trim();
+          if (!stackName) {
+            throw new Error(
+              "DEFAULT_STACK is required for Brand Kit flows (use the same stack linked to the Brand Kit)."
+            );
+          }
+          let origin = "";
+          try {
+            origin = new URL(page.url()).origin;
+          } catch {
+            origin = "";
+          }
+          if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+          await page.goto(`${origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: tBk });
+          await page.waitForTimeout(500);
+          const card = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
+          await card.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(card).toBeVisible({ timeout: 90_000 });
+          await card.click({ timeout: tBk, force: true });
+          await page.waitForURL(/#!\/stack\/[^/]+\//i, { timeout: 90_000 }).catch(() => {});
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (step.target === "Brand Kit Create modal Select Stack(s) control (doc step)") {
+          const wrap = page.locator('[data-test-id="brand-kit-change-input-select-create-modal-stacks"]').first();
+          const ctrl = wrap.locator(".Portal__control, div[class*='control']").first();
+          await expect(ctrl).toBeVisible({ timeout: tBk });
+          await ctrl.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Brand Kit Create modal pick DEFAULT_STACK option (doc step)") {
+          const stackName = String(process.env.DEFAULT_STACK || "").trim();
+          if (!stackName) throw new Error("DEFAULT_STACK is required.");
+          const needleShort = stackName.slice(0, Math.min(28, stackName.length));
+          const needleRe = escapeRegex(needleShort);
+          const menu = page
+            .locator(".Select__menu, .Portal__menu, [role='listbox'], [id^='react-select'][id$='-listbox']")
+            .last();
+          await expect(menu).toBeVisible({ timeout: 45_000 });
+          const opt = menu
+            .locator('[role="option"], .Select__option, .Portal__option')
+            .filter({ hasText: new RegExp(needleRe, "i") })
+            .first();
+          if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await opt.click({ timeout: tBk, force: true });
+          } else {
+            const wrap = page.locator('[data-test-id="brand-kit-change-input-select-create-modal-stacks"]').first();
+            const inp = wrap.locator('input[aria-label="cs-select-aria"]').first();
+            await expect(inp).toBeVisible({ timeout: 15_000 });
+            await inp.fill("");
+            await inp.pressSequentially(stackName.slice(0, 48), { delay: 12 });
+            await page.waitForTimeout(400);
+            await page.keyboard.press("Enter");
+          }
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (step.target === "Brand Kit doc: open Brand Kit card for created kit (doc step)") {
+          let hint = String(step.expected?.rowContains || "").trim();
+          const fidLower = String(flow?.id || "").toLowerCase();
+          if (fidLower === "edit-a-brand-kit") {
+            const envHint = String(process.env.BRAND_KIT_EDIT_CARD_HINT || "").trim();
+            if (envHint) hint = envHint;
+          }
+          if (fidLower === "delete-a-brand-kit") {
+            const envHint = String(process.env.BRAND_KIT_DELETE_CARD_HINT || "").trim();
+            if (envHint) hint = envHint;
+          }
+          if (fidLower === "invite-collaborators") {
+            const envHint = String(process.env.BRAND_KIT_INVITE_COLLABORATORS_CARD_HINT || "").trim();
+            if (envHint) hint = envHint;
+          }
+          if (
+            fidLower === "create-a-voice-profile" ||
+            fidLower === "edit-a-voice-profile" ||
+            fidLower === "delete-a-voice-profile" ||
+            fidLower === "import-a-voice-profile" ||
+            fidLower === "export-a-voice-profile"
+          ) {
+            const envHint = String(process.env.BRAND_KIT_VOICE_PROFILE_CARD_HINT || "").trim();
+            if (envHint) hint = envHint;
+          }
+          if (
+            fidLower === "add-item-in-knowledge-vault" ||
+            fidLower === "edit-item-in-knowledge-vault" ||
+            fidLower === "delete-item-in-knowledge-vault" ||
+            fidLower === "import-item-in-knowledge-vault" ||
+            fidLower === "export-item-from-knowledge-vault"
+          ) {
+            const envHint = String(process.env.BRAND_KIT_KNOWLEDGE_VAULT_CARD_HINT || "").trim();
+            if (envHint) hint = envHint;
+          }
+          if (!hint) throw new Error("expected.rowContains required for Brand Kit card open step.");
+          const link = page.locator("a.brand-kit-card-link").filter({ hasText: new RegExp(escapeRegex(hint), "i") }).first();
+          await expect(link).toBeVisible({ timeout: tBk });
+          await link.scrollIntoViewIfNeeded().catch(() => {});
+          await link.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(800);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "import-a-voice-profile" &&
+          step.target === "Voice Profiles Import menu option (doc step)"
+        ) {
+          const imp = page.locator('[data-test-id="brand-kit-click-input-select-voice-profile-import"]').first();
+          await expect(imp).toBeVisible({ timeout: tBk });
+          await imp.scrollIntoViewIfNeeded().catch(() => {});
+          await imp.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "import-a-voice-profile" &&
+          step.target === "Import Voice Profile Proceed button (doc step)"
+        ) {
+          const proceed = page.locator('[data-test-id="brand-kit-click-btn-primary-action-upload-file-modal-proceed"]').first();
+          await expect(proceed).toBeVisible({ timeout: tBk });
+          await expect(proceed).toBeEnabled({ timeout: Math.min(tBk, 60_000) });
+          await proceed.scrollIntoViewIfNeeded().catch(() => {});
+          await proceed.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "import-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Import menu option (doc step)"
+        ) {
+          const impKv = page.locator('[data-test-id="brand-kit-click-input-select-knowledge-vault-import"]').first();
+          await expect(impKv).toBeVisible({ timeout: tBk });
+          await impKv.scrollIntoViewIfNeeded().catch(() => {});
+          await impKv.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(700);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "import-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Import modal Proceed button (doc step)"
+        ) {
+          const proceedKv = page.locator('[data-test-id="brand-kit-click-btn-primary-action-upload-file-modal-proceed"]').first();
+          await expect(proceedKv).toBeVisible({ timeout: tBk });
+          await expect(proceedKv).toBeEnabled({ timeout: Math.min(tBk, 60_000) });
+          await proceedKv.scrollIntoViewIfNeeded().catch(() => {});
+          await proceedKv.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "delete-a-voice-profile" &&
+          step.target === "Delete Voice Profile modal confirm Delete (doc step)"
+        ) {
+          await expect(locatorDeleteVoiceProfileConfirmSurface(page)).toBeVisible({ timeout: tBk });
+          const delBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-voice-profile-delete-modal-delete"]').first();
+          await expect(delBtn).toBeVisible({ timeout: tBk });
+          await delBtn.scrollIntoViewIfNeeded().catch(() => {});
+          await delBtn.click({ timeout: tBk });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "delete-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Delete Item modal confirm Delete (doc step)"
+        ) {
+          const dlgDelKv = page
+            .locator('[data-test-id="delete-item-modal"]')
+            .or(page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-delete-item"]') }))
+            .first();
+          await expect(dlgDelKv).toBeVisible({ timeout: tBk });
+          const delBtnKv = page.locator('[data-test-id="brand-kit-click-btn-primary-action-item-delete-modal-delete"]').first();
+          await expect(delBtnKv).toBeVisible({ timeout: tBk });
+          await delBtnKv.scrollIntoViewIfNeeded().catch(() => {});
+          await delBtnKv.click({ timeout: tBk });
+          await page.waitForTimeout(900);
+          break;
+        }
+        if (
+          String(flow?.id || "").toLowerCase() === "create-a-voice-profile" &&
+          step.target === "Voice Profiles Add Manually menu option (doc step)"
+        ) {
+          const manual = page.getByRole("menuitem", { name: /^Add Manually$/i }).first();
+          if (await manual.isVisible({ timeout: 8000 }).catch(() => false)) {
+            await manual.scrollIntoViewIfNeeded().catch(() => {});
+            await manual.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(700);
+            break;
+          }
+          const createManualBtn = page.getByRole("button", { name: /^Create Manually$/i }).first();
+          if (await createManualBtn.isVisible({ timeout: 12_000 }).catch(() => false)) {
+            await createManualBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await createManualBtn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(700);
+            break;
+          }
+          const form = page.locator("form#voice-profile-form").first();
+          if (await form.isVisible({ timeout: 15_000 }).catch(() => false)) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Create a Voice Profile (doc): Add Manually menu item not shown — create form already visible (UI may navigate directly)."
+            );
+            break;
+          }
+          throw new Error(
+            'Create a Voice Profile (doc): could not find "Add Manually" menu item or "Create Manually" button; Voice Profile create form is not visible.'
+          );
+        }
+        const fidKvFlow = String(flow?.id || "").toLowerCase();
+        const kvExecutableFlows =
+          fidKvFlow === "add-item-in-knowledge-vault" ||
+          fidKvFlow === "edit-item-in-knowledge-vault" ||
+          fidKvFlow === "delete-item-in-knowledge-vault" ||
+          fidKvFlow === "import-item-in-knowledge-vault" ||
+          fidKvFlow === "export-item-from-knowledge-vault";
+        if (kvExecutableFlows) {
+          if (step.target === "Brand Kit Knowledge Vault top navigation (doc step)") {
+            const btn = page.locator('[data-test-id="brandkit-nav-knowledge-vault"]').first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForURL(/knowledge-vault/i, { timeout: Math.min(tBk, 90_000) }).catch(() => {});
+            await page.waitForTimeout(700);
+            break;
+          } else if (step.target === "Knowledge Vault item Save primary (doc step)") {
+            const saveBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-create-item-save"]').first();
+            await expect(saveBtn).toBeVisible({ timeout: tBk });
+            await expect(saveBtn).toBeEnabled({ timeout: Math.min(tBk, 120_000) });
+            await saveBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await saveBtn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(1400);
+            break;
+          } else if (
+            fidKvFlow === "edit-item-in-knowledge-vault" &&
+            step.target === "Knowledge Vault listing item row open for edit (doc step)"
+          ) {
+            const hintRaw = String(step.expected?.rowContains ?? "").trim();
+            if (!hintRaw) throw new Error("Knowledge Vault open item for edit: expected.rowContains required.");
+            const needle = escapeRegex(hintRaw);
+            const row = page
+              .locator('[data-test-id="items-list"]')
+              .getByRole("row")
+              .filter({ hasText: new RegExp(needle, "i") })
+              .first();
+            await expect(row).toBeVisible({ timeout: tBk });
+            const nameHit = row.locator('[data-test-id="item-name-test"]').first();
+            await expect(nameHit).toBeVisible({ timeout: Math.min(tBk, 35_000) });
+            await nameHit.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(1000);
+            const saveAfterOpen = page.locator('[data-test-id="brand-kit-click-btn-primary-action-create-item-save"]').first();
+            await expect(saveAfterOpen).toBeVisible({ timeout: Math.min(tBk, 75_000) });
+            break;
+          } else if (
+            fidKvFlow === "edit-item-in-knowledge-vault" &&
+            step.target === "Knowledge Vault Items row Edit menu item (doc step)"
+          ) {
+            const editSel = '[data-test-id="brand-kit-click-menu-items-list-edit-item"]';
+            let tip = page
+              .locator('[data-test-id="cs-vertical-action-tooltip"]')
+              .filter({ visible: true })
+              .filter({ has: page.locator(editSel) })
+              .last();
+            if (!(await tip.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              await openRowActionMenu(page, { action: "click", target: "vertical ellipsis", expected: step.expected } as Step, flow);
+              await page.waitForTimeout(500);
+              tip = page
+                .locator('[data-test-id="cs-vertical-action-tooltip"]')
+                .filter({ visible: true })
+                .filter({ has: page.locator(editSel) })
+                .last();
+            }
+            await expect(tip).toBeVisible({ timeout: tBk });
+            const editLi = tip.locator(editSel).first();
+            await expect(editLi).toBeVisible({ timeout: Math.min(tBk, 28_000) });
+            await editLi.scrollIntoViewIfNeeded().catch(() => {});
+            await editLi.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(900);
+            const saveAfterEdit = page.locator('[data-test-id="brand-kit-click-btn-primary-action-create-item-save"]').first();
+            const contentField = page.locator('[data-test-id="brand-kit-change-input-text-create-item-content"]').first();
+            await expect(saveAfterEdit.or(contentField).first()).toBeVisible({
+              timeout: Math.min(tBk, 60_000),
+            });
+            break;
+          } else if (
+            (fidKvFlow === "add-item-in-knowledge-vault" || fidKvFlow === "import-item-in-knowledge-vault") &&
+            step.target === "Knowledge Vault list New Item primary (doc step)"
+          ) {
+            const btn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-items-list-add-item"]').first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(650);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Add Manually menu option (doc step)") {
+            /** KV split button: “Import” + “Add Manually” are `role="button"`, not `menuitem` (see error-context snapshot). */
+            const manualBtn = page.getByRole("button", { name: /^Add Manually$/i }).first();
+            if (await manualBtn.isVisible({ timeout: 8_000 }).catch(() => false)) {
+              await manualBtn.scrollIntoViewIfNeeded().catch(() => {});
+              await manualBtn.click({ timeout: tBk, force: true });
+              await page.waitForTimeout(700);
+              break;
+            }
+            const manual = page.getByRole("menuitem", { name: /^Add Manually$/i }).first();
+            if (await manual.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await manual.scrollIntoViewIfNeeded().catch(() => {});
+              await manual.click({ timeout: tBk, force: true });
+              await page.waitForTimeout(700);
+              break;
+            }
+            const createManualBtn = page.getByRole("button", { name: /^Create Manually$/i }).first();
+            if (await createManualBtn.isVisible({ timeout: 8_000 }).catch(() => false)) {
+              await createManualBtn.scrollIntoViewIfNeeded().catch(() => {});
+              await createManualBtn.click({ timeout: tBk, force: true });
+              await page.waitForTimeout(700);
+              break;
+            }
+            const addItemTitle = page.locator('[data-test-id="cs-modal-title-add-item"]').first();
+            if (await addItemTitle.isVisible({ timeout: 15_000 }).catch(() => false)) {
+              recordVerificationWarning(
+                step,
+                context,
+                "Knowledge Vault (doc): Add Manually / Create Manually control not shown — Add Item modal already visible after New Item (UI may skip the dropdown)."
+              );
+              break;
+            }
+            throw new Error(
+              'Add Item in Knowledge Vault (doc): could not find "Add Manually" control (button or menu item) or "Create Manually"; Add Item modal is not visible.'
+            );
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Add Item modal Manual Text Entry card (doc step)") {
+            const card = page.locator('[data-test-id="manual-text-entry"]').first();
+            await expect(card).toBeVisible({ timeout: tBk });
+            await card.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(450);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Add Item modal File Upload card (doc step)") {
+            const card = page.locator('[data-test-id="file-upload"]').first();
+            await expect(card).toBeVisible({ timeout: tBk });
+            await card.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(450);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Add Item modal Add primary (doc step)") {
+            const addBtn = page.locator('[data-test-id="create-item-button"]').first();
+            await expect(addBtn).toBeVisible({ timeout: tBk });
+            await expect(addBtn).toBeEnabled({ timeout: Math.min(tBk, 55_000) });
+            await addBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await addBtn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(850);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault page header New Folder icon (automation extension)") {
+            const folderBtn = page.locator('[data-testid="brand-kit-click-btn-primary-action-knowledge-vault-open-add-folder-modal"]').first();
+            const fallback = page.locator('.PageHeader .add-folder-icon svg[name="FolderSimplePlus"]').first();
+            const pick = (await folderBtn.isVisible({ timeout: 6_000 }).catch(() => false)) ? folderBtn : fallback;
+            await expect(pick).toBeVisible({ timeout: tBk });
+            await pick.scrollIntoViewIfNeeded().catch(() => {});
+            await pick.click({ timeout: tBk, force: true });
+            await page
+              .locator('[data-test-id="cs-modal-title-new-folder"]')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) })
+              .catch(() => {});
+            await page.waitForTimeout(500);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault New Folder modal Save primary (automation extension)") {
+            const dlg = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-new-folder"]') }).first();
+            const btn = dlg.locator('[data-test-id="folder-form-create-btn"]').filter({ hasText: /^Save$/i }).first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tBk, 45_000) });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(900);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Items row Move To menu item (automation extension)") {
+            const moveSel = '[data-test-id="brand-kit-click-input-select-knowledge-vault-open-move-item-modal"]';
+            const tMv = tBk;
+            /** Move To uses ReactModal body `.move-items-modal`; it may not expose `role="dialog"`. */
+            const moveModalTitle = page.locator('[data-test-id="cs-modal-title-move-to"]').first();
+            const moveModalVisible = async (): Promise<boolean> =>
+              moveModalTitle.isVisible({ timeout: 1_500 }).catch(() => false);
+
+            for (let attempt = 1; attempt <= 2; attempt++) {
+              let tip = page
+                .locator('[data-test-id="cs-vertical-action-tooltip"]')
+                .filter({ visible: true })
+                .filter({ has: page.locator(moveSel) })
+                .last();
+              if (!(await tip.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                await openRowActionMenu(page, { action: "click", target: "vertical ellipsis", expected: step.expected } as Step, flow);
+                await page.waitForTimeout(500);
+                tip = page
+                  .locator('[data-test-id="cs-vertical-action-tooltip"]')
+                  .filter({ visible: true })
+                  .filter({ has: page.locator(moveSel) })
+                  .last();
+              }
+              await expect(tip).toBeVisible({ timeout: Math.min(tMv, 22_000) });
+              const moveLi = tip.locator(moveSel).first();
+              await expect(moveLi).toBeVisible({ timeout: Math.min(tMv, 18_000) });
+              await moveLi.scrollIntoViewIfNeeded().catch(() => {});
+              await moveLi.click({ timeout: Math.min(tMv, 35_000), force: true });
+              await page.waitForTimeout(450);
+              if (await moveModalVisible()) break;
+
+              const rowLabel = moveLi.locator(".ml-8").filter({ hasText: /^Move To$/i }).first();
+              if (await rowLabel.isVisible({ timeout: 900 }).catch(() => false)) {
+                await rowLabel.click({ timeout: 15_000, force: true });
+                await page.waitForTimeout(450);
+                if (await moveModalVisible()) break;
+              }
+              await moveLi.focus().catch(() => {});
+              await page.keyboard.press("Enter").catch(() => {});
+              await page.waitForTimeout(450);
+              if (await moveModalVisible()) break;
+            }
+
+            await expect(moveModalTitle).toBeVisible({ timeout: Math.min(tMv, 45_000) });
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Move To modal select folder row (automation extension)") {
+            const hintRaw = String(step.expected?.rowContains ?? "").trim();
+            if (!hintRaw) throw new Error("Knowledge Vault Move To: expected.rowContains required for folder row selection.");
+            const scope = page.locator(".move-items-modal").first();
+            await expect(scope).toBeVisible({ timeout: tBk });
+            const needle = escapeRegex(hintRaw);
+            let row = scope.locator(".folders-list").getByText(new RegExp(needle, "i")).first();
+            if (!(await row.isVisible({ timeout: 7_000 }).catch(() => false))) {
+              row = scope.getByText(new RegExp(needle, "i")).first();
+            }
+            await expect(row).toBeVisible({ timeout: Math.min(tBk, 45_000) });
+            await row.scrollIntoViewIfNeeded().catch(() => {});
+            await row.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(450);
+            break;
+          } else if (fidKvFlow === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Move To modal Move here primary (automation extension)") {
+            const modal = page.locator(".move-items-modal").first();
+            await expect(modal).toBeVisible({ timeout: Math.min(tBk, 45_000) });
+            const btn = modal.locator('[data-test-id="folder-form-create-btn"]').filter({ hasText: /Move here/i }).first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tBk, 45_000) });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(1200);
+            break;
+          }
+        }
+        if (
+          step.target === "Brand Kit doc: click Settings navigation item per edit doc (doc step)" ||
+          step.target === "Brand Kit doc: click Settings navigation item per delete doc (doc step)" ||
+          step.target === "Brand Kit doc: click Settings navigation item per invite collaborators doc (doc step)"
+        ) {
+          const { click: clickOv } = loadOverrides(flow);
+          const sel =
+            clickOv["Brand Kit Settings navigation item edit doc (doc step)"] ||
+            clickOv["Brand Kit Settings navigation item delete doc (doc step)"] ||
+            clickOv["Brand Kit Settings navigation item invite collaborators doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item edit doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item delete doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item invite collaborators doc (doc step)"] ||
+            '[data-test-id="brandkit-nav-settings"]';
+          const btn = page.locator(sel).first();
+          await expect(btn).toBeVisible({ timeout: tBk });
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await btn.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(900);
+          await page.waitForURL(/settings/i, { timeout: Math.min(tBk, 90_000) }).catch(() => {});
+          await page.locator(".general-settings, [data-test-id=\"general-settings-left-sidenav\"]").first().waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) }).catch(() => {});
+          break;
+        }
+        if (step.target === "Delete Brand Kit settings open delete modal button (doc step)") {
+          const btn = page.locator('[data-test-id="brand-kit-click-btn-secondary-action-settings-general-open-delete-brand-kit-modal"]').first();
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(btn).toBeVisible({ timeout: tBk });
+          await btn.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(500);
+          await page
+            .locator('[data-test-id="brand-kit-settings-general-delete-brand-kit-modal"]')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) })
+            .catch(() => {});
+          break;
+        }
+        if (step.target === "Delete Brand Kit modal primary Delete button (doc step)") {
+          const btn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-settings-general-delete-brand-kit-confirm"]').first();
+          await expect(btn).toBeVisible({ timeout: tBk });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tBk, 45_000) });
+          await btn.scrollIntoViewIfNeeded().catch(() => {});
+          await btn.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(1200);
+          break;
+        }
+        if (step.target === "Brand Kit Settings API Key Details click Custom Credentials (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const lab = page.locator('[data-test-id="managed-by-user-radio-btn"]').first();
+            await lab.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(lab).toBeVisible({ timeout: tBk });
+            await lab.click({ timeout: tBk, force: true });
+            const apiKeySection = page
+              .locator(".general-settings .brand-kit-details")
+              .filter({ has: page.locator('.brand-kit-details-title:has-text("API Key Details")') })
+              .first();
+            await apiKeySection
+              .locator('[data-test-id="cs-select"] .Select__control')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tBk, 60_000) })
+              .catch(() => {});
+            await apiKeySection
+              .locator(".Select__control")
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tBk, 15_000) })
+              .catch(() => {});
+            await page.waitForTimeout(400);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit Settings Custom Credentials open API Key Provider control (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const apiKeySection = page
+              .locator(".general-settings .brand-kit-details")
+              .filter({ has: page.locator('.brand-kit-details-title:has-text("API Key Details")') })
+              .first();
+            await expect(apiKeySection).toBeVisible({ timeout: tBk });
+            let ctl = apiKeySection.locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control').first();
+            if (!(await ctl.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              ctl = apiKeySection.locator(".Select__control").first();
+            }
+            await expect(ctl).toBeVisible({ timeout: Math.min(tBk, 45_000) });
+            await ctl.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(500);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit Settings Custom Credentials select OpenAI from API Key Provider menu (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const menu = page.locator(".Select__menu, .Portal__menu, [role='listbox']").last();
+            await expect(menu).toBeVisible({ timeout: Math.min(tBk, 30_000) });
+            let opt = menu.getByRole("option", { name: /^OpenAI$/i }).first();
+            if (!(await opt.isVisible({ timeout: 2_000 }).catch(() => false))) {
+              opt = menu.locator(".Select__option").filter({ hasText: /^OpenAI$/i }).first();
+            }
+            await expect(
+              opt,
+              'Edit a Brand Kit (doc): API Key Provider menu must expose an "OpenAI" option to select.'
+            ).toBeVisible({ timeout: Math.min(tBk, 20_000) });
+            await opt.scrollIntoViewIfNeeded().catch(() => {});
+            await opt.click({ timeout: tBk });
+            await page.waitForTimeout(450);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit Settings Save Custom Credentials button click (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const btn = page.getByRole("button", { name: /^Save Custom Credentials$/i }).first();
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(900);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit Settings API Key Details click Managed by Contentstack for Proceed modal (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const lab = page.locator('[data-test-id="managed-by-cs-radio-btn"]').first();
+            await lab.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(lab).toBeVisible({ timeout: tBk });
+            await lab.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit Settings API Key configuration change Proceed confirm click (doc step)") {
+          if (String(flow?.id || "").toLowerCase() === "edit-a-brand-kit") {
+            const dlg = page.getByRole("dialog").filter({ has: page.getByRole("button", { name: /^Proceed$/i }) }).first();
+            await dlg.waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) }).catch(() => {});
+            const btn = dlg.getByRole("button", { name: /^Proceed$/i }).first();
+            await expect(
+              btn,
+              'Edit a Brand Kit (doc): "Proceed" must be visible before click — API Key configuration confirmation modal.'
+            ).toBeVisible({ timeout: tBk });
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(700);
+            break;
+          }
+        }
+        if (step.target === "Brand Kit doc: New Entry modal pick content type row (doc step)") {
+          const hint = String(step.expected?.rowContains || "").trim();
+          if (!hint) throw new Error("expected.rowContains required for New Entry content type row.");
+          const modal = page.locator('.ReactModal__new-entry, [role="dialog"]:has-text("Select Content Type")').first();
+          await modal.waitFor({ state: "visible", timeout: Math.min(tBk, 90_000) });
+          const row = modal.locator('[role="row"]').filter({ hasText: new RegExp(escapeRegex(hint), "i") }).first();
+          await expect(row).toBeVisible({ timeout: tBk });
+          await row.scrollIntoViewIfNeeded().catch(() => {});
+          await row.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (step.target === "Brand Kit AI Assistant right nav: Brand Kits async select open (doc step)") {
+          const panel = page.locator("#ai-assistant-dropdown").first();
+          await expect(panel).toBeVisible({ timeout: tBk });
+          const firstAsync = panel.locator('[data-test-id="cs-select-async"]').first();
+          await expect(firstAsync).toBeVisible({ timeout: Math.min(tBk, 45_000) });
+          await firstAsync.locator(".Select__control").first().click({ timeout: tBk, force: true });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Brand Kit AI Assistant right nav: pick Brand Kit created in flow (doc step)") {
+          const kitName = `AUTO-BK-${unique}`;
+          const needle = escapeRegex(kitName.slice(0, 160));
+          const opt = page
+            .locator('[role="option"], div.Select__option')
+            .filter({ hasText: new RegExp(needle, "i") })
+            .first();
+          await expect(opt).toBeVisible({ timeout: Math.min(tBk, 60_000) });
+          await opt.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Brand Kit AI Assistant right nav: Voice Profiles async select open (doc step)") {
+          const panel = page.locator("#ai-assistant-dropdown").first();
+          await expect(panel).toBeVisible({ timeout: tBk });
+          const secondAsync = panel.locator('[data-test-id="cs-select-async"]').nth(1);
+          await expect(secondAsync).toBeVisible({ timeout: Math.min(tBk, 45_000) });
+          await secondAsync.locator(".Select__control").first().click({ timeout: tBk, force: true });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Brand Kit AI Assistant right nav: pick Voice Profile created in flow (doc step)") {
+          const vpName = `AUTO-BK-VP-${unique}`;
+          const needle = escapeRegex(vpName.slice(0, 160));
+          const opt = page
+            .locator('[role="option"], div.Select__option')
+            .filter({ hasText: new RegExp(needle, "i") })
+            .first();
+          await expect(opt).toBeVisible({ timeout: Math.min(tBk, 60_000) });
+          await opt.click({ timeout: tBk, force: true });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "Brand Kit AI Assistant right nav: Knowledge Vault toggle (doc step)") {
+          const panel = page.locator("#ai-assistant-dropdown").first();
+          await expect(panel).toBeVisible({ timeout: tBk });
+          const sw = panel.getByRole("switch", { name: /knowledge vault/i }).first();
+          if (await sw.isVisible({ timeout: 10_000 }).catch(() => false)) {
+            await sw.click({ timeout: Math.min(tBk, 20_000), force: true });
+            await page.waitForTimeout(350);
+            break;
+          }
+          const cb = panel
+            .locator("label")
+            .filter({ hasText: /Knowledge Vault/i })
+            .locator("..")
+            .locator('input[type="checkbox"]')
+            .first();
+          if (await cb.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await cb.click({ timeout: Math.min(tBk, 20_000), force: true });
+            await page.waitForTimeout(350);
+            break;
+          }
+          const byTestId = panel
+            .locator('[data-test-id*="knowledge-vault" i]')
+            .locator('[role="switch"], input[type="checkbox"]')
+            .first();
+          if (await byTestId.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await byTestId.click({ timeout: Math.min(tBk, 20_000), force: true });
+            await page.waitForTimeout(350);
+            break;
+          }
+          throw new Error(
+            "Brand Kit AI Assistant (doc): Knowledge Vault control not found in panel — check AI Assistant / Brand Kit configuration or DOM."
+          );
+        }
+        if (String(flow?.id || "").toLowerCase() === "invite-collaborators") {
+          if (step.target === "Brand Kit doc: click Collaborators settings sidenav (doc step)") {
+            const row = page.locator('[data-test-id="brand-kit-click-menu-settings-collaborators"]').first();
+            await expect(row).toBeVisible({ timeout: tBk });
+            await row.scrollIntoViewIfNeeded().catch(() => {});
+            await row.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(600);
+            await page
+              .locator('[data-test-id="cs-page-title"]')
+              .filter({ hasText: /Collaborators/i })
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) })
+              .catch(() => {});
+            break;
+          }
+          if (step.target === "Brand Kit doc: click Invite Collaborator primary button (doc step)") {
+            const btn = page.locator('[data-test-id="invite-users-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(500);
+            await page
+              .locator('[data-test-id="cs-modal-title-invite-collaborator"]')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) })
+              .catch(() => {});
+            break;
+          }
+          if (step.target === "Brand Kit Invite Collaborator modal primary Invite button (doc step)") {
+            const btn = page.locator('[data-test-id="invite-collaborator-invite-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tBk, 30_000) });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(1200);
+            const invitedEmail = String((flow as any).__brandKitInviteCollaboratorEmail || "").trim();
+            if (invitedEmail) {
+              const needle = escapeRegex(invitedEmail.slice(0, Math.min(invitedEmail.length, 120)));
+              await page
+                .getByRole("row", { name: new RegExp(needle, "i") })
+                .first()
+                .waitFor({ state: "visible", timeout: Math.min(tBk, 90_000) })
+                .catch(() => {});
+            }
+            break;
+          }
+          if (step.target === "Brand Kit collaborators table vertical ellipsis for invited collaborator row (doc step)") {
+            const email = String(
+              (flow as any).__brandKitInviteCollaboratorEmail || process.env.BRAND_KIT_COLLABORATOR_INVITE_EMAIL || ""
+            ).trim();
+            if (!email) {
+              throw new Error(
+                "invite-collaborators: no invite email on flow — run the modal email enter step first or set BRAND_KIT_COLLABORATOR_INVITE_EMAIL."
+              );
+            }
+            await openRowActionMenu(page, { ...step, expected: { ...step.expected, rowContains: email } }, flow);
+            break;
+          }
+          if (step.target === "Brand Kit collaborators actions menu Remove for invited row (doc step)") {
+            const email = String(
+              (flow as any).__brandKitInviteCollaboratorEmail || process.env.BRAND_KIT_COLLABORATOR_INVITE_EMAIL || ""
+            ).trim();
+            if (!email) {
+              throw new Error(
+                "invite-collaborators: no invite email on flow — run the modal email enter step first or set BRAND_KIT_COLLABORATOR_INVITE_EMAIL."
+              );
+            }
+            await openRowActionMenu(page, { ...step, expected: { ...step.expected, rowContains: email } }, flow);
+            const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+            let item = tip
+              .locator('[data-test-id="brand-kit-click-menu-collaborators-list-open-remove-collaborator-modal"]')
+              .first();
+            const testIdVisible = await item.isVisible({ timeout: 5_000 }).catch(() => false);
+            if (!testIdVisible) {
+              const byRole = page.getByRole("menuitem", { name: /^Remove$/i }).first();
+              if (await byRole.isVisible({ timeout: 4_000 }).catch(() => false)) {
+                item = byRole;
+              } else {
+                item = tip.locator("li").filter({ hasText: /^Remove$/ }).first();
+              }
+            }
+            await expect(item).toBeVisible({ timeout: tBk });
+            await item.scrollIntoViewIfNeeded().catch(() => {});
+            await item.click({ timeout: tBk });
+            await page.waitForTimeout(450);
+            break;
+          }
+          if (step.target === "Brand Kit remove collaborator confirm dialog Remove button (doc step)") {
+            const dlg = page.getByRole("dialog").filter({ has: page.getByRole("button", { name: /^Remove$/i }) }).first();
+            await dlg.waitFor({ state: "visible", timeout: Math.min(tBk, 45_000) }).catch(() => {});
+            const btn = dlg.getByRole("button", { name: /^Remove$/i }).first();
+            await expect(btn).toBeVisible({ timeout: tBk });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tBk, force: true });
+            await page.waitForTimeout(900);
+            break;
+          }
+        }
       }
 
       // Workflow editor: stage 1 may be a summary card, or use left "Outline" → Stages → Doc Stage One; legacy #stage_0 still supported.
@@ -12904,6 +16092,1720 @@ export async function performAction(
         }
       }
 
+      /** Developer Hub — Marketplace boilerplate flows (page headings + sidebar labels match doc wording). */
+      {
+        const fidM = String(flow?.id || "").toLowerCase();
+        if (fidM === "marketplace-app-boilerplate" || fidM === "marketplace-ecommerce-app-boilerplate") {
+          const tm = getStepTimeoutMs(step, 120_000);
+          const pageTitle = () => page.locator('[data-test-id="page-title"], h2.AppSectionTitle--title');
+          const locators: Record<string, () => Locator> = {
+            "Developer Hub dashboard Developer Hub tile label (doc step)": () =>
+              page.locator('[data-test-id="cs-global-dashboard-product-tile-developer-hub"] p[data-test-id="cs-paragraph-tag"]').first(),
+            "Create Standard App modal title (doc step)": () =>
+              page.locator('[data-test-id="cs-modal-title-create-standard-app"]').first(),
+            "Developer Hub + New App button (doc step)": () =>
+              page
+                .locator("button")
+                .filter({ hasText: /^\s*\+?\s*New App\s*$/i })
+                .first(),
+            "Create Standard App modal App Type heading (doc step)": () =>
+              page.locator('[data-test-id="cs-modal-description"] .Modal_Form_heading strong').first(),
+            "Create Standard App Organization app type label (doc step)": () =>
+              page
+                .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-organization-app"]) .Radio__label')
+                .first(),
+            "Create Standard App Organization app type description (doc step)": () =>
+              page
+                .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-organization-app"])')
+                .locator("xpath=ancestor::div[contains(@class,'Modal_Form__radio')][1]")
+                .locator(".Modal_Form__radio-description")
+                .first(),
+            "Create Standard App Stack app type label (doc step)": () =>
+              page
+                .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-stack-app"]) .Radio__label')
+                .first(),
+            "Create Standard App Stack app type description (doc step)": () =>
+              page
+                .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-stack-app"])')
+                .locator("xpath=ancestor::div[contains(@class,'Modal_Form__radio')][1]")
+                .locator(".Modal_Form__radio-description")
+                .first(),
+            "Create Standard App modal Name field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="app-name"][data-test-id="cs-field-label"]').first(),
+            "Create Standard App modal Description field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="app-description"][data-test-id="cs-field-label"]').first(),
+            "Create Standard App modal Create button (doc step)": () =>
+              page.locator('[data-test-id="new-app-create-standard-app-cta"]').first(),
+            "Developer Hub Manage section heading (doc step)": () =>
+              page.locator("#manage .YzbqLKQBmAe3QEINHK9H").filter({ hasText: /^Manage$/ }).first(),
+            "Developer Hub UI Locations page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^UI Locations$/i }).first(),
+            "Developer Hub Manage Basic Information sidebar item (doc step)": () =>
+              page.locator("#manage #info span, #info span.ncPxxNXm2AX3WsPmOsWA").filter({ hasText: /^Basic Information$/ }).first(),
+            "Developer Hub Basic Information page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^Basic Information$/i }).first(),
+            "Developer Hub hosting banner View Hosting cue (doc step)": () => {
+              const root = page.locator('[data-test-id="ui-locations-content"]');
+              const byClass = root.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting/i });
+              return byClass
+                .first()
+                .or(root.getByRole("link", { name: /View Hosting/i }))
+                .or(root.getByText(/^View Hosting$/i))
+                .or(page.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting/i }))
+                .first();
+            },
+            "Developer Hub hosting banner View Hosting Settings cue (doc step)": () => {
+              const root = page.locator('[data-test-id="ui-locations-content"]');
+              const byClass = root.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting/i });
+              return byClass
+                .first()
+                .or(root.getByRole("link", { name: /View Hosting/i }))
+                .or(root.getByText(/^View Hosting(?: Settings)?$/i))
+                .or(page.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting/i }))
+                .first();
+            },
+            "Developer Hub Hosting page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^Hosting$/i }).first(),
+            "Hosting Type Hosting with Launch radio label (doc step)": () =>
+              page.locator('label[data-test-id="cs-radio"]:has(input[value="launch"]) .Radio__label').first(),
+            "Hosting Type Custom Hosting radio label (doc step)": () =>
+              page.locator('label[data-test-id="cs-radio"]:has(input[value="external"]) .Radio__label').first(),
+            "Hosting App URL label (doc step)": () =>
+              page.locator('[data-test-id="cs-field-label"]').filter({ hasText: /^App URL/ }).first(),
+            "Developer Hub UI Locations available Stack Dashboard label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-stack-dashboard location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Stack Dashboard$/ }),
+            "Developer Hub UI Locations available Asset Sidebar label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-asset-sidebar location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Asset Sidebar$/ }),
+            "Developer Hub UI Locations available Custom Field label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-custom-field location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Custom Field$/ }),
+            "Developer Hub UI Locations available Entry Sidebar label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-entry-sidebar location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Entry Sidebar$/ }),
+            "Developer Hub UI Locations available App Configuration label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-app-configuration location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^App Configuration$/ }),
+            "Developer Hub UI Locations available Full Page label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-full-page location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Full Page$/ }),
+            "Developer Hub UI Locations available Field Modifier label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-field-modifier location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Field Modifier$/ }),
+            "Developer Hub UI Locations available Content Type Sidebar label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-content-type-sidebar location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Content Type Sidebar$/ }),
+            "Developer Hub UI Locations available Global Full Page label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-global-full-page location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^Global Full Page$/ }),
+
+            "UI location Stack Dashboard Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-stack-dashboard-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Stack Dashboard Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-stack-dashboard-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Stack Dashboard Default Width field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-stack-dashboard-1-width"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Asset Sidebar Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Asset Sidebar Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Custom Field Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Custom Field Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Custom Field Data Type label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-data-type"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Custom Field 2 Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-2-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Custom Field 2 Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-2-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Custom Field 2 Data Type label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-2-data-type"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            /** Use the **control** (`input`) — `extractElementLabel` climbs to `cs-field`/`.Field` labels (product DOM differs from Custom Field’s preceding-sibling label). */
+            "UI location Entry Sidebar Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-entry-sidebar-1-name"] input').first(),
+            "UI location Entry Sidebar Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-entry-sidebar-1-path"] input').first(),
+
+            "UI location App Configuration Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-app-configuration-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Full Page Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-full-page-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Full Page Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-full-page-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Field Modifier Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-field-modifier-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Field Modifier Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-field-modifier-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Field Modifier Allowed Field Types label (doc step)": () =>
+              page
+                .locator(
+                  '[data-test-id="uilocation-field-modifier-1-field-types"], [data-test-id="uilocation-field-modifier-1-allowed-field-types"]'
+                )
+                .first()
+                .locator("xpath=preceding-sibling::label[1]")
+                .first(),
+
+            "UI location Content Type Sidebar Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-content-type-sidebar-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Content Type Sidebar Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-content-type-sidebar-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location Global Full Page Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-global-full-page-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Global Full Page Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-global-full-page-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "Developer Hub UI Locations footer Save button label (doc step)": () => {
+              const cancelRow = page.locator("main").locator("button").filter({ hasText: /^Cancel$/ }).first();
+              return page
+                .locator('[data-test-id="uilocation-save-cta"]')
+                .first()
+                .or(cancelRow.locator("xpath=..").locator("button").filter({ hasText: /^Save$/ }).first())
+                .first();
+            },
+            "Developer Hub Install App button visible before install flow (doc step)": () =>
+              page.locator('[data-test-id="install-app-cta"]').first(),
+            "Developer Hub OAuth Install button label (doc step)": () =>
+              page.locator('[data-test-id="modal-form-install-authorize"]').first(),
+
+            /** Hosted input value vs doc paths / names ({unique8} / {unique} expanded below). */
+            "Developer Hub Hosting App URL input value (doc step)": () =>
+              page.locator(".app-url-input-container input, [data-test-id='cs-text-input'] input").first(),
+            "Developer Hub UI location Custom Field 1 Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-name"] input').first(),
+            "Developer Hub UI location Custom Field 1 Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-path"] input').first(),
+            "Developer Hub UI location Custom Field 2 Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-2-name"] input').first(),
+            "Developer Hub UI location Custom Field 2 Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-2-path"] input').first(),
+            "Developer Hub UI location Entry Sidebar Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-entry-sidebar-1-name"] input').first(),
+            "Developer Hub UI location Entry Sidebar Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-entry-sidebar-1-path"] input').first(),
+            "Developer Hub UI location App Configuration Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-app-configuration-1-path"] input').first(),
+            "Developer Hub UI location Global Full Page Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-global-full-page-1-name"] input').first(),
+            "Developer Hub UI location Global Full Page Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-global-full-page-1-path"] input').first(),
+            "Developer Hub UI location Stack Dashboard Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-stack-dashboard-1-name"] input').first(),
+            "Developer Hub UI location Stack Dashboard Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-stack-dashboard-1-path"] input').first(),
+            "Developer Hub UI location Asset Sidebar Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-name"] input').first(),
+            "Developer Hub UI location Asset Sidebar Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-path"] input').first(),
+            "Developer Hub UI location Full Page Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-full-page-1-name"] input').first(),
+            "Developer Hub UI location Full Page Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-full-page-1-path"] input').first(),
+            "Developer Hub UI location Field Modifier Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-field-modifier-1-name"] input').first(),
+            "Developer Hub UI location Field Modifier Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-field-modifier-1-path"] input').first(),
+            "Developer Hub UI location Content Type Sidebar Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-content-type-sidebar-1-name"] input').first(),
+            "Developer Hub UI location Content Type Sidebar Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-content-type-sidebar-1-path"] input').first(),
+          };
+          const pick = locators[String(step.target || "")];
+          if (pick) {
+            const el = pick();
+            if (
+              step.target === "Developer Hub hosting banner View Hosting cue (doc step)" ||
+              step.target === "Developer Hub hosting banner View Hosting Settings cue (doc step)" ||
+              step.target === "Developer Hub UI Locations footer Save button label (doc step)"
+            ) {
+              await el.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
+            }
+            await expect(el).toBeVisible({ timeout: Math.min(tm, 55_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                const st = String(step.target || "");
+                const devHubHostingOrFieldValueVerify =
+                  st === "Developer Hub Hosting App URL input value (doc step)" ||
+                  /^Developer Hub UI location .+ (Path|Name) value \(doc step\)$/.test(st);
+                if (devHubHostingOrFieldValueVerify) {
+                  await el.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+                  const unique8 = unique.replace(/-/g, "").slice(0, 8);
+                  const unique25 = unique.replace(/-/g, "").slice(0, 25);
+                  const expectedRaw = String(step.expected.labelEquals)
+                    .split("{unique8}")
+                    .join(unique8)
+                    .split("{unique25}")
+                    .join(unique25)
+                    .split("{unique}")
+                    .join(unique);
+                  const actualVal = (await readLocatorValue(el)).trim();
+                  if (actualVal !== expectedRaw) {
+                    recordVerificationWarning(
+                      step,
+                      context,
+                      `Doc field value mismatch for "${step.target}": expected "${expectedRaw}", got "${actualVal || "(empty)"}".`
+                    );
+                  }
+                } else {
+                  const uiLocationLabelLoose =
+                    /^UI location .+ label \(doc step\)$/.test(st) &&
+                    st !== "UI location Stack Dashboard Default Width field label (doc step)";
+                const loose =
+                  step.target === "Developer Hub OAuth Install button label (doc step)" ||
+                  step.target === "Hosting App URL label (doc step)" ||
+                  step.target === "Developer Hub + New App button (doc step)" ||
+                  step.target === "Create Standard App modal Name field label (doc step)" ||
+                  step.target === "Create Standard App modal Description field label (doc step)" ||
+                  step.target === "Create Standard App modal Create button (doc step)" ||
+                  step.target === "Create Standard App Organization app type description (doc step)" ||
+                  step.target === "Create Standard App Stack app type description (doc step)" ||
+                  step.target === "Developer Hub hosting banner View Hosting Settings cue (doc step)" ||
+                  step.target === "Hosting Type Hosting with Launch radio label (doc step)" ||
+                  step.target === "Hosting Type Custom Hosting radio label (doc step)" ||
+                  step.target === "Developer Hub UI Locations footer Save button label (doc step)" ||
+                  uiLocationLabelLoose;
+                  await assertLabelMatch(el, step.expected.labelEquals, loose ? "contains" : "exact");
+                }
+              } catch (err: any) {
+                recordVerificationWarning(step, context, err?.message ?? String(err));
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // BrandKit create-a-brand-kit | edit-a-brand-kit: doc — left navigation Brand Kit label & icon (warnings if absent; composite opens dashboard tile).
+      {
+        const fidC = String(flow?.id || "").toLowerCase();
+        const fidBrandKitNavDocs =
+          fidC === "create-a-brand-kit" ||
+          fidC === "create-a-voice-profile" ||
+          fidC === "edit-a-voice-profile" ||
+          fidC === "delete-a-voice-profile" ||
+          fidC === "import-a-voice-profile" ||
+          fidC === "export-a-voice-profile" ||
+          fidC === "edit-a-brand-kit" ||
+          fidC === "delete-a-brand-kit" ||
+          fidC === "invite-collaborators" ||
+          fidC === "add-item-in-knowledge-vault" ||
+          fidC === "edit-item-in-knowledge-vault" ||
+          fidC === "delete-item-in-knowledge-vault" ||
+          fidC === "import-item-in-knowledge-vault" ||
+          fidC === "export-item-from-knowledge-vault";
+        if (fidBrandKitNavDocs && step.target === "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const { click } = loadOverrides(flow);
+          const navSel =
+            click["Brand Kit left navigation item (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit left navigation item (doc step)"];
+          const el = page.locator(navSel).first();
+          await page
+            .locator('[role="navigation"], [data-test-id*="sidebar" i], aside')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 15_000) })
+            .catch(() => {});
+          const ok = await el.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false);
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Brand Kit (doc): "Brand Kit" is not visible in the left navigation panel — flow will try the Organization dashboard Brand Kit tile.'
+            );
+            break;
+          }
+          await expect(el).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Left Navigation placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Left Navigation Brand Kit label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (fidBrandKitNavDocs && step.target === "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          await page
+            .locator('[role="navigation"], [data-test-id*="sidebar" i], aside')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 15_000) })
+            .catch(() => {});
+          const icon = page
+            .locator(
+              '[role="navigation"] svg[name="BrandKit"], [data-test-id*="sidebar" i] svg[name="BrandKit"], aside svg[name="BrandKit"], nav svg[name="BrandKit"]'
+            )
+            .first();
+          const ok = await icon.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false);
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Brand Kit (doc): Brand Kit icon is not visible in the left navigation panel — flow will try the Organization dashboard Brand Kit tile."
+            );
+            break;
+          }
+          await expect(icon).toBeVisible({ timeout: Math.min(t, 25_000) });
+          break;
+        }
+
+        if (
+          (fidC === "edit-a-voice-profile" ||
+            fidC === "delete-a-voice-profile" ||
+            fidC === "export-a-voice-profile") &&
+          step.target === "Voice Profiles listing Actions column header (doc step)"
+        ) {
+          const tAc = getStepTimeoutMs(step, 90_000);
+          const hdr = page.getByRole("columnheader", { name: /^Actions$/i }).first();
+          await expect(hdr).toBeVisible({ timeout: Math.min(tAc, 45_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(hdr, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Voice Profiles Actions column header vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "delete-a-voice-profile" && step.target === "Delete Voice Profile modal title (doc step)") {
+          const tDm = getStepTimeoutMs(step, 90_000);
+          await expect(locatorDeleteVoiceProfileConfirmSurface(page)).toBeVisible({ timeout: Math.min(tDm, 45_000) });
+          const title = page
+            .locator('[data-test-id="cs-modal-title-delete-voice-profile"]')
+            .or(page.getByRole("heading", { name: /delete\s+voice\s+profile/i }))
+            .first();
+          await expect(title).toBeVisible({ timeout: Math.min(tDm, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, title, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Delete Voice Profile modal title placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Delete Voice Profile modal title vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "delete-a-voice-profile" && step.target === "Delete Voice Profile modal Delete button visible (doc step)") {
+          const tDb = getStepTimeoutMs(step, 90_000);
+          await expect(locatorDeleteVoiceProfileConfirmSurface(page)).toBeVisible({ timeout: Math.min(tDb, 45_000) });
+          const btn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-voice-profile-delete-modal-delete"]').first();
+          await expect(btn).toBeVisible({ timeout: Math.min(tDb, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Delete Voice Profile modal Delete button placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Delete Voice Profile modal Delete button label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "delete-item-in-knowledge-vault" && step.target === "Knowledge Vault Delete Item modal title (doc step)") {
+          const tDmKv = getStepTimeoutMs(step, 90_000);
+          const dlgKvDel = page
+            .locator('[data-test-id="delete-item-modal"]')
+            .or(page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-delete-item"]') }))
+            .first();
+          await expect(dlgKvDel).toBeVisible({ timeout: Math.min(tDmKv, 45_000) });
+          const titleKvDel = dlgKvDel.locator('[data-test-id="cs-modal-title-delete-item"]').first();
+          await expect(titleKvDel).toBeVisible({ timeout: Math.min(tDmKv, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, titleKvDel, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Delete Item modal title placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(titleKvDel, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Delete Item modal title vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "delete-item-in-knowledge-vault" && step.target === "Knowledge Vault Delete Item modal Delete button visible (doc step)") {
+          const tDbKv = getStepTimeoutMs(step, 90_000);
+          const dlgKvDelB = page
+            .locator('[data-test-id="delete-item-modal"]')
+            .or(page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-delete-item"]') }))
+            .first();
+          await expect(dlgKvDelB).toBeVisible({ timeout: Math.min(tDbKv, 45_000) });
+          const btnKvDel = page.locator('[data-test-id="brand-kit-click-btn-primary-action-item-delete-modal-delete"]').first();
+          await expect(btnKvDel).toBeVisible({ timeout: Math.min(tDbKv, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, btnKvDel, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Delete Item modal Delete button placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btnKvDel, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Delete Item modal Delete button label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-a-voice-profile" && step.target === "Import Voice Profile modal title (doc step)") {
+          const tIm = getStepTimeoutMs(step, 90_000);
+          const dialog = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialog).toBeVisible({ timeout: Math.min(tIm, 45_000) });
+          const title = dialog.locator('[data-test-id="cs-modal-title-import"]').first();
+          await expect(title).toBeVisible({ timeout: Math.min(tIm, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, title, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile modal title placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile modal title vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-a-voice-profile" && step.target === "Import Voice Profile Upload File label (doc step)") {
+          const tUl = getStepTimeoutMs(step, 90_000);
+          const dialog = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialog).toBeVisible({ timeout: Math.min(tUl, 45_000) });
+          const lab = dialog.locator('[data-test-id="cs-field-label"]').filter({ hasText: /Upload File/i }).first();
+          await expect(lab).toBeVisible({ timeout: Math.min(tUl, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, lab, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile Upload File label placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(lab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile Upload File label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-a-voice-profile" && step.target === "Import Voice Profile Proceed button visible (doc step)") {
+          const tPr = getStepTimeoutMs(step, 90_000);
+          const dialog = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialog).toBeVisible({ timeout: Math.min(tPr, 45_000) });
+          const proceed = dialog.locator('[data-test-id="brand-kit-click-btn-primary-action-upload-file-modal-proceed"]').first();
+          await expect(proceed).toBeVisible({ timeout: Math.min(tPr, 45_000) });
+          await expect(proceed).toBeEnabled({ timeout: Math.min(tPr, 60_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, proceed, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile Proceed button placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(proceed, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Import Voice Profile Proceed button label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-item-in-knowledge-vault" && step.target === "Knowledge Vault Import menu option visible (doc step)") {
+          const tImKvOpt = getStepTimeoutMs(step, 90_000);
+          const impKvOpt = page.locator('[data-test-id="brand-kit-click-input-select-knowledge-vault-import"]').first();
+          await expect(impKvOpt).toBeVisible({ timeout: Math.min(tImKvOpt, 45_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(impKvOpt, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import menu option label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-item-in-knowledge-vault" && step.target === "Knowledge Vault Import modal title (doc step)") {
+          const tImKv = getStepTimeoutMs(step, 90_000);
+          const dialogKvImp = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialogKvImp).toBeVisible({ timeout: Math.min(tImKv, 45_000) });
+          const titleKvImp = dialogKvImp.locator('[data-test-id="cs-modal-title-import"]').first();
+          await expect(titleKvImp).toBeVisible({ timeout: Math.min(tImKv, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, titleKvImp, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import modal title placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(titleKvImp, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import modal title vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-item-in-knowledge-vault" && step.target === "Knowledge Vault Import Upload File label (doc step)") {
+          const tUlKv = getStepTimeoutMs(step, 90_000);
+          const dialogKvUl = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialogKvUl).toBeVisible({ timeout: Math.min(tUlKv, 45_000) });
+          const labKv = dialogKvUl.locator('[data-test-id="cs-field-label"]').filter({ hasText: /Upload File/i }).first();
+          await expect(labKv).toBeVisible({ timeout: Math.min(tUlKv, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, labKv, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import Upload File label placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(labKv, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import Upload File label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "import-item-in-knowledge-vault" && step.target === "Knowledge Vault Import Proceed button visible (doc step)") {
+          const tPrKv = getStepTimeoutMs(step, 90_000);
+          const dialogKvPr = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-import"]') }).first();
+          await expect(dialogKvPr).toBeVisible({ timeout: Math.min(tPrKv, 45_000) });
+          const proceedKvV = dialogKvPr.locator('[data-test-id="brand-kit-click-btn-primary-action-upload-file-modal-proceed"]').first();
+          await expect(proceedKvV).toBeVisible({ timeout: Math.min(tPrKv, 45_000) });
+          await expect(proceedKvV).toBeEnabled({ timeout: Math.min(tPrKv, 60_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, proceedKvV, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import Proceed button placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(proceedKvV, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Import Proceed button label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "create-a-voice-profile" && step.target === "Voice Profiles Add Manually menu option visible (doc step)") {
+          const tAm = getStepTimeoutMs(step, 90_000);
+          const manual = page.getByRole("menuitem", { name: /^Add Manually$/i }).first();
+          if (await manual.isVisible({ timeout: 12_000 }).catch(() => false)) {
+            await expect(manual).toBeVisible({ timeout: tAm });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(manual, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Add Manually menu label vs doc: ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          const createManualBtn = page.getByRole("button", { name: /^Create Manually$/i }).first();
+          if (await createManualBtn.isVisible({ timeout: 12_000 }).catch(() => false)) {
+            await expect(createManualBtn).toBeVisible({ timeout: tAm });
+            recordVerificationWarning(
+              step,
+              context,
+              'Create a Voice Profile (doc): doc names "Add Manually"; app shows primary control "Create Manually" — manual-create path present.'
+            );
+            break;
+          }
+          const formEarly = page.locator("form#voice-profile-form").first();
+          if (await formEarly.isVisible({ timeout: 10_000 }).catch(() => false)) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Create a Voice Profile (doc): Add Manually menu item not shown — Voice Profile create form already visible (skipping Add Manually menu verification)."
+            );
+            break;
+          }
+          throw new Error(
+            'Create a Voice Profile (doc): expected visible "Add Manually" menu item or "Create Manually" button after New Voice Profile (or create form already open).'
+          );
+        }
+
+        if (
+          (fidC === "add-item-in-knowledge-vault" ||
+            fidC === "edit-item-in-knowledge-vault" ||
+            fidC === "delete-item-in-knowledge-vault" ||
+            fidC === "import-item-in-knowledge-vault" ||
+            fidC === "export-item-from-knowledge-vault") &&
+          step.target === "Knowledge Vault Knowledge Vault nav label visible (doc step)"
+        ) {
+          const tNv = getStepTimeoutMs(step, 90_000);
+          const btn = page.locator('[data-test-id="brandkit-nav-knowledge-vault"]').first();
+          await expect(btn).toBeVisible({ timeout: tNv });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault navigation placement vs doc (left navigation): ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault navigation label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "edit-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault manual entry Text Content field label (doc step)"
+        ) {
+          const tTc = getStepTimeoutMs(step, 90_000);
+          const saveBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-create-item-save"]').first();
+          await expect(saveBtn).toBeVisible({ timeout: Math.min(tTc, 45_000) });
+          const field = page.locator('[data-test-id="brand-kit-change-input-text-create-item-content"]').first();
+          await expect(field).toBeVisible({ timeout: Math.min(tTc, 55_000) });
+          const label = page
+            .locator('label[data-test-id="cs-field-label"]')
+            .filter({ hasText: /^Text Content$/i })
+            .first();
+          if (await label.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(label, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Knowledge Vault edit Text Content label vs doc: ${err?.message ?? String(err)}`
+                );
+              }
+            }
+          } else {
+            recordVerificationWarning(
+              step,
+              context,
+              'Knowledge Vault edit screen: doc names “Text Content”; separate label not found — text content control is visible for editing.'
+            );
+          }
+          break;
+        }
+
+        if (
+          (fidC === "add-item-in-knowledge-vault" || fidC === "import-item-in-knowledge-vault") &&
+          step.target === "Knowledge Vault list New Item primary (doc step)"
+        ) {
+          const tNvBtn = getStepTimeoutMs(step, 90_000);
+          const newItemBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-items-list-add-item"]').first();
+          await expect(newItemBtn).toBeVisible({ timeout: Math.min(tNvBtn, 45_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(newItemBtn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              const actualNorm = normalizeLabelText(await extractElementLabel(newItemBtn));
+              const docNorm = normalizeLabelText(step.expected.labelEquals || "");
+              if (actualNorm.includes("new item") && docNorm.includes("new item")) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Knowledge Vault list New Item primary (doc step): doc wording "${step.expected.labelEquals}" vs UI/accessible label "${actualNorm}" (e.g. "+" shown only as icon) — continuing.`
+                );
+              } else {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Knowledge Vault list New Item primary vs doc: ${err?.message ?? String(err)}`
+                );
+              }
+            }
+          }
+          break;
+        }
+
+        if (fidC === "add-item-in-knowledge-vault" && step.target === "Knowledge Vault Add Manually menu option visible (doc step)") {
+          const tAm = getStepTimeoutMs(step, 90_000);
+          const manualBtn = page.getByRole("button", { name: /^Add Manually$/i }).first();
+          if (await manualBtn.isVisible({ timeout: 12_000 }).catch(() => false)) {
+            await expect(manualBtn).toBeVisible({ timeout: tAm });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(manualBtn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Knowledge Vault Add Manually label vs doc: ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          const manual = page.getByRole("menuitem", { name: /^Add Manually$/i }).first();
+          if (await manual.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await expect(manual).toBeVisible({ timeout: tAm });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(manual, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Knowledge Vault Add Manually menu label vs doc: ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+          const createManualBtn = page.getByRole("button", { name: /^Create Manually$/i }).first();
+          if (await createManualBtn.isVisible({ timeout: 12_000 }).catch(() => false)) {
+            await expect(createManualBtn).toBeVisible({ timeout: tAm });
+            recordVerificationWarning(
+              step,
+              context,
+              'Knowledge Vault (doc): doc names “Add Manually”; app shows “Create Manually” — same manual-create intent as Voice Profiles split menu.'
+            );
+            break;
+          }
+          const addItemEarly = page.locator('[data-test-id="cs-modal-title-add-item"]').first();
+          if (await addItemEarly.isVisible({ timeout: 10_000 }).catch(() => false)) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Knowledge Vault (doc): Add Manually menu item not shown — Add Item modal already visible after New Item."
+            );
+            break;
+          }
+          throw new Error(
+            'Add Item in Knowledge Vault (doc): expected visible "Add Manually" (button or menu item), or "Create Manually" button, or Add Item modal after New Item.'
+          );
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Add Item modal Manual Text Entry card visible (doc step)"
+        ) {
+          const tCard = getStepTimeoutMs(step, 90_000);
+          const card = page.locator('[data-test-id="manual-text-entry"]').first();
+          await expect(card).toBeVisible({ timeout: tCard });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(card, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Manual Text Entry option label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Add Item modal File Upload card visible (doc step)"
+        ) {
+          const tCard = getStepTimeoutMs(step, 90_000);
+          const card = page.locator('[data-test-id="file-upload"]').first();
+          await expect(card).toBeVisible({ timeout: tCard });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(card, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(step, context, `File Upload option label vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Add Item modal Add primary enabled (doc step)"
+        ) {
+          const tAd = getStepTimeoutMs(step, 90_000);
+          const btn = page.locator('[data-test-id="create-item-button"]').first();
+          await expect(btn).toBeVisible({ timeout: tAd });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tAd, 50_000) });
+          if (step.expected?.within === "Modal") {
+            try {
+              await ensureWithin(page, btn, "Modal", step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(step, context, `Add button modal placement vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(step, context, `Add button label vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault file upload Save enabled after text extraction (doc step)"
+        ) {
+          const tExt = getStepTimeoutMs(step, 180_000);
+          const saveBtn = page.locator('[data-test-id="brand-kit-click-btn-primary-action-create-item-save"]').first();
+          await expect(saveBtn).toBeEnabled({ timeout: tExt });
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Preview File Text contains extracted fixture phrase (doc step)"
+        ) {
+          const tPv = getStepTimeoutMs(step, 90_000);
+          const chunk = page.locator(".chunk-data-container .chunk-content").first();
+          await expect(chunk).toBeVisible({ timeout: tPv });
+          await expect(chunk).not.toContainText(/Text Extraction Will Commence Upon File Upload/i);
+          await expect(chunk).toContainText(/Knowledge Vault automation fixture/i);
+          break;
+        }
+
+        if (
+          (fidC === "add-item-in-knowledge-vault" ||
+            fidC === "edit-item-in-knowledge-vault" ||
+            fidC === "delete-item-in-knowledge-vault" ||
+            fidC === "import-item-in-knowledge-vault" ||
+            fidC === "export-item-from-knowledge-vault") &&
+          (step.target === "Knowledge Vault listing Actions column header (automation extension)" ||
+            step.target === "Knowledge Vault listing Actions column header (doc step)")
+        ) {
+          const tAc = getStepTimeoutMs(step, 90_000);
+          const scope = page.locator('[data-test-id="items-list"]').first();
+          await expect(scope).toBeVisible({ timeout: Math.min(tAc, 45_000) });
+          const hdr = scope.getByRole("columnheader", { name: /^Actions$/i }).first();
+          await expect(hdr).toBeVisible({ timeout: Math.min(tAc, 45_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(hdr, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Actions column header vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "edit-item-in-knowledge-vault" && step.target === "Knowledge Vault Items row Edit menu visible (doc step)") {
+          const tEd = getStepTimeoutMs(step, 90_000);
+          const editSel = '[data-test-id="brand-kit-click-menu-items-list-edit-item"]';
+          const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first();
+          await expect(tip).toBeVisible({ timeout: Math.min(tEd, 35_000) });
+          const editEl = tip.locator(editSel).first();
+          await expect(editEl).toBeVisible({ timeout: Math.min(tEd, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(editEl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Edit menu label vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Items row Move To menu visible (automation extension)"
+        ) {
+          const tMt = getStepTimeoutMs(step, 90_000);
+          const moveSel = '[data-test-id="brand-kit-click-input-select-knowledge-vault-open-move-item-modal"]';
+          const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first();
+          await expect(tip).toBeVisible({ timeout: Math.min(tMt, 35_000) });
+          const moveEl = tip.locator(moveSel).first();
+          await expect(moveEl).toBeVisible({ timeout: Math.min(tMt, 25_000) });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(moveEl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Move To menu label vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault New Folder modal Save primary enabled (automation extension)"
+        ) {
+          const tSv = getStepTimeoutMs(step, 90_000);
+          const dlg = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-new-folder"]') }).first();
+          const btn = dlg.locator('[data-test-id="folder-form-create-btn"]').first();
+          await expect(btn).toBeVisible({ timeout: tSv });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tSv, 45_000) });
+          if (step.expected?.within === "Modal") {
+            try {
+              await ensureWithin(page, btn, "Modal", step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault New Folder Save placement vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault New Folder Save label vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Move To modal title (automation extension)"
+        ) {
+          const tMt = getStepTimeoutMs(step, 90_000);
+          const modal = page.locator(".move-items-modal").first();
+          await expect(modal).toBeVisible({ timeout: Math.min(tMt, 45_000) });
+          const title = modal
+            .locator('[data-test-id="cs-modal-title-move-to"]')
+            .or(modal.locator('h3[title="Move To"]'))
+            .or(modal.getByRole("heading", { name: /Move\s+To/i }))
+            .first();
+          await expect(title).toBeVisible({ timeout: Math.min(tMt, 30_000) });
+          if (step.expected?.within === "Modal") {
+            try {
+              await ensureWithin(page, title, "Modal", step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Move To modal placement vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(title, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Move To title vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (
+          fidC === "add-item-in-knowledge-vault" &&
+          step.target === "Knowledge Vault Move To modal Move here primary (automation extension)"
+        ) {
+          const tMh = getStepTimeoutMs(step, 120_000);
+          const modal = page.locator(".move-items-modal").first();
+          await expect(modal).toBeVisible({ timeout: Math.min(tMh, 45_000) });
+          const btn = modal.locator('[data-test-id="folder-form-create-btn"]').filter({ hasText: /Move here/i }).first();
+          await expect(btn).toBeVisible({ timeout: tMh });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tMh, 45_000) });
+          if (step.expected?.within === "Modal") {
+            try {
+              await ensureWithin(page, btn, "Modal", step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Move here placement vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Knowledge Vault Move here label vs expectation: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        const voiceProfMixerTierDocStep =
+          step.target === "Create Voice Profile mixer slider tier labels vs doc (doc step)" ||
+          step.target === "Edit Voice Profile mixer slider tier labels vs edit-a-voice-profile doc (doc step)";
+        if ((fidC === "create-a-voice-profile" || fidC === "edit-a-voice-profile") && voiceProfMixerTierDocStep) {
+          const tMix = getStepTimeoutMs(step, 90_000);
+          const formMix = page.locator("form#voice-profile-form").first();
+          await expect(formMix).toBeVisible({ timeout: tMix });
+          const docPhrase = fidC === "edit-a-voice-profile" ? "Edit a Voice Profile" : "Create a Voice Profile";
+          const tiers: Record<string, string[]> = {
+            "formality-level-slider-wrapper": ["None", "Casual", "Business", "Professional"],
+            "tone-of-voice-level-slider-wrapper": ["None", "Informative", "Assertive", "Persuasive"],
+            "humor-level-slider-wrapper": ["None", "Serious", "Subtle", "Lighthearted"],
+            "complexity-level-slider-wrapper": ["None", "Plain", "Straightforward", "Technical"],
+          };
+          for (const [wrapCls, labels] of Object.entries(tiers)) {
+            const wrap = formMix.locator(`.${wrapCls}`).first();
+            await expect(wrap).toBeVisible({ timeout: Math.min(tMix, 45_000) });
+            for (const lab of labels) {
+              const cell = wrap.getByText(lab, { exact: true }).first();
+              if (!(await cell.isVisible({ timeout: 10_000 }).catch(() => false))) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `${docPhrase} (doc): Communication Style Mixer tier "${lab}" not visible under ${wrapCls.replace(/-/g, " ")}.`
+                );
+              }
+            }
+          }
+          break;
+        }
+
+        if (fidC === "edit-a-voice-profile" && step.target === "Edit Voice Profile save success message (doc step)") {
+          const tS = getStepTimeoutMs(step, 45_000);
+          await page.waitForTimeout(800);
+          const successLike = page.getByText(/saved|success|updated/i).first();
+          const toast = page
+            .locator(".Toastify__toast, [class*='Toastify'], [role='alert']")
+            .filter({ hasText: /success|saved|updated/i })
+            .first();
+          let ok = false;
+          const deadline = Date.now() + Math.min(tS, 20_000);
+          while (Date.now() < deadline) {
+            if (await successLike.isVisible().catch(() => false)) {
+              ok = true;
+              break;
+            }
+            if (await toast.isVisible().catch(() => false)) {
+              ok = true;
+              break;
+            }
+            await page.waitForTimeout(400);
+          }
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Edit a Voice Profile (doc): expected a success message after Save — none detected within timeout (doc states you receive one but does not quote exact copy)."
+            );
+          }
+          break;
+        }
+
+        if (
+          fidC === "create-a-voice-profile" &&
+          step.target === "Playground Clear Prompt beside Generate Response row (doc step)"
+        ) {
+          const tPg = getStepTimeoutMs(step, 60_000);
+          const row = page.locator("form#voice-profile-form .playground-actions-legacy").first();
+          await expect(row).toBeVisible({ timeout: tPg });
+          const gen = row.locator('[data-test-id="brand-kit-click-btn-primary-action-voice-profile-generate-playground"]').first();
+          const clr = row.locator('[data-test-id="brand-kit-click-btn-secondary-action-voice-profile-clear-prompt"]').first();
+          await expect(gen).toBeVisible({ timeout: Math.min(tPg, 30_000) });
+          await expect(clr).toBeVisible({ timeout: Math.min(tPg, 30_000) });
+          try {
+            await assertLabelMatch(gen, "Generate Response in Playground", (step.expected?.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Generate Response in Playground button label vs doc: ${err?.message ?? String(err)}`
+            );
+          }
+          try {
+            await assertLabelMatch(clr, "Clear Prompt", (step.expected?.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(step, context, `Clear Prompt button label vs doc: ${err?.message ?? String(err)}`);
+          }
+          break;
+        }
+
+        if (fidC === "create-a-voice-profile" && step.target === "Playground Stop Generating Response visible (doc step)") {
+          const tStop = getStepTimeoutMs(step, 45_000);
+          const stopEl = page.getByText(/Stop Generating Response/i).first();
+          await expect(stopEl).toBeVisible({ timeout: Math.min(tStop, 25_000) });
+          break;
+        }
+
+        if (fidC === "create-a-voice-profile" && step.target === "Playground right nav Playground tab visible (doc step)") {
+          const tTab = getStepTimeoutMs(step, 60_000);
+          const tab = page.locator('[data-test-id="brand-kit-click-menu-voice-profile-form-toggle-playground"]').first();
+          await expect(tab).toBeVisible({ timeout: tTab });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, tab, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Playground tab placement vs doc (right-side navigation): ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+
+        if (fidC === "create-a-voice-profile" && step.target === "Playground panel View Hide response caret visible (doc step)") {
+          const tCaret = getStepTimeoutMs(step, 60_000);
+          const hide = page
+            .locator(".profile-side-bar-window .RightSideHide, .SidebarWindow__content .RightSideHide")
+            .first();
+          await expect(hide).toBeVisible({ timeout: Math.min(tCaret, 45_000) });
+          break;
+        }
+
+        if (
+          fidC === "create-a-voice-profile" &&
+          step.target === "Playground Regenerate and Copy visible after hover Playground title (doc step)"
+        ) {
+          const tRc = getStepTimeoutMs(step, 90_000);
+          const title = page
+            .locator(".SidebarWindow__content .playground-title, .profile-side-bar-window .playground-title")
+            .first();
+          await title.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(title).toBeVisible({ timeout: Math.min(tRc, 45_000) });
+          await title.hover({ timeout: Math.min(tRc, 25_000) }).catch(() => {});
+          await page.waitForTimeout(450);
+          const regen = page
+            .locator('[data-test-id="brand-kit-click-btn-secondary-action-playground-chat-window-regenerate-response-0"]')
+            .first();
+          const copyBtn = page
+            .locator('[data-test-id="brand-kit-click-btn-secondary-action-playground-chat-window-copy-response-0"]')
+            .first();
+          await expect(regen).toBeVisible({ timeout: Math.min(tRc, 35_000) });
+          await expect(copyBtn).toBeVisible({ timeout: Math.min(tRc, 35_000) });
+          break;
+        }
+
+        if (
+          fidC === "create-a-voice-profile" &&
+          step.target === "Voice Profile Information icon right-side navigation (doc step)"
+        ) {
+          const t = getStepTimeoutMs(step, 90_000);
+          const { click } = loadOverrides(flow);
+          const sel =
+            click["Voice Profile Information icon right-side navigation (doc step)"] ||
+            CLICK_SELECTORS["Voice Profile Information icon right-side navigation (doc step)"] ||
+            '[data-test-id="brand-kit-click-menu-edit-voice-profile-toggle-information-tab"]';
+          const wrap = page.locator(sel).first();
+          await expect(wrap).toBeVisible({ timeout: t });
+          const tabItem = wrap.locator(".SidebarWindow__tab-item").first();
+          await expect(tabItem).toBeVisible({ timeout: Math.min(t, 45_000) });
+          const disabled = await tabItem
+            .evaluate((n) => (n as HTMLElement).classList.contains("SidebarWindow__tab-item--disabled"))
+            .catch(() => true);
+          if (disabled) {
+            recordVerificationWarning(
+              step,
+              context,
+              "Create a Voice Profile (doc): Information tab is still disabled after Save — confirm the profile saved successfully."
+            );
+          }
+          const infoSvg = wrap.locator('svg[name="Information"]').first();
+          await expect(infoSvg).toBeVisible({ timeout: Math.min(t, 30_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, wrap, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Information icon placement vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          break;
+        }
+        if (
+          (fidC === "edit-a-brand-kit" || fidC === "delete-a-brand-kit" || fidC === "invite-collaborators") &&
+          (step.target === "Brand Kit doc: verify Settings navigation placement per edit doc (doc step)" ||
+            step.target === "Brand Kit doc: verify Settings navigation placement per delete doc (doc step)" ||
+            step.target === "Brand Kit doc: verify Settings navigation placement per invite collaborators doc (doc step)")
+        ) {
+          const t = getStepTimeoutMs(step, 90_000);
+          const { click } = loadOverrides(flow);
+          const sel =
+            click["Brand Kit Settings navigation item edit doc (doc step)"] ||
+            click["Brand Kit Settings navigation item delete doc (doc step)"] ||
+            click["Brand Kit Settings navigation item invite collaborators doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item edit doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item delete doc (doc step)"] ||
+            CLICK_SELECTORS["Brand Kit Settings navigation item invite collaborators doc (doc step)"] ||
+            '[data-test-id="brandkit-nav-settings"]';
+          const el = page.locator(sel).first();
+          await page
+            .locator('nav.TopNavbar, #navbar-items-wrapper-id, #topnav')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 15_000) })
+            .catch(() => {});
+          const ok = await el.isVisible({ timeout: Math.min(t, 25_000) }).catch(() => false);
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Brand Kit (doc): Brand Kit Settings control is not visible — cannot verify placement vs the document\'s "left navigation panel".'
+            );
+            break;
+          }
+          await expect(el).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Brand Kit (doc): The document instructs users to open Brand Kit Settings from the "left navigation panel"; controls are not placed within Left Navigation in this build (${err?.message ?? String(err)}).`
+              );
+            }
+          }
+          break;
+        }
+        /** Doc: "+ Add Stacks"; UI: Plus icon + "Add Stacks" (no literal + in text) — see edit-a-brand-kit.selectors.ts */
+        if (fidC === "edit-a-brand-kit" && step.target === "Edit Brand Kit Settings Add Stacks button (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const { click } = loadOverrides(flow);
+          const sel =
+            click["Edit Brand Kit Settings Add Stacks button (doc step)"] ||
+            CLICK_SELECTORS["Edit Brand Kit Settings Add Stacks button (doc step)"] ||
+            '[data-test-id="brand-kit-click-btn-secondary-action-settings-general-add-stacks"]';
+          const btn = page.locator(sel).first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 45_000) });
+          const txt = ((await btn.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          const lower = txt.toLowerCase();
+          if (!lower.includes("add stacks")) {
+            throw new Error(
+              `Edit Brand Kit (doc): expected Add Stacks control; visible text: "${txt.slice(0, 160) || "(empty)"}"`
+            );
+          }
+          const docWant = String(step.expected?.labelEquals || "+ Add Stacks").trim();
+          if (docWant.startsWith("+") && !txt.includes("+")) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Edit Brand Kit (doc): document shows "${docWant}"; UI exposes "${txt}" (plus is often an icon, not the string "+").`
+            );
+          }
+          break;
+        }
+        if (fidC === "invite-collaborators" && step.target === "Invite Collaborators flow: Invite Collaborator primary button label (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const { click } = loadOverrides(flow);
+          const sel =
+            click["Invite Collaborators flow: Invite Collaborator primary button label (doc step)"] ||
+            CLICK_SELECTORS["Invite Collaborators flow: Invite Collaborator primary button label (doc step)"] ||
+            '[data-test-id="invite-users-button"]';
+          const btn = page.locator(sel).first();
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 45_000) });
+          const txt = ((await btn.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          const lower = txt.toLowerCase();
+          if (!lower.includes("invite collaborator")) {
+            throw new Error(
+              `Invite Collaborators (doc): expected Invite Collaborator control; visible text: "${txt.slice(0, 160) || "(empty)"}"`
+            );
+          }
+          const docWant = String(step.expected?.labelEquals || "+ Invite Collaborator").trim();
+          if (docWant.startsWith("+") && !txt.includes("+")) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Invite Collaborators (doc): document shows "${docWant}"; UI exposes "${txt}" (plus is often an icon, not the string "+").`
+            );
+          }
+          break;
+        }
+        if (fidC === "edit-a-brand-kit" && step.target === "Brand Kit Settings Custom Credentials API Key Provider dropdown control (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const apiKeySection = page
+            .locator(".general-settings .brand-kit-details")
+            .filter({ has: page.locator('.brand-kit-details-title:has-text("API Key Details")') })
+            .first();
+          await expect(apiKeySection).toBeVisible({ timeout: Math.min(t, 45_000) });
+          let ctl = apiKeySection.locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control').first();
+          if (!(await ctl.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            ctl = apiKeySection.locator(".Select__control").first();
+          }
+          await expect(ctl).toBeVisible({ timeout: Math.min(t, 60_000) });
+          break;
+        }
+        if (fidC === "edit-a-brand-kit" && step.target === "Brand Kit Settings Custom Credentials intro paragraph per edit doc (doc step)") {
+          const t = getStepTimeoutMs(step);
+          await page
+            .locator(".general-settings, .api-key-details-container")
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 30_000) })
+            .catch(() => {});
+          let txt = "";
+          const candidates = [
+            page.locator(".api-key-details-selection .api-key-details-info").first(),
+            page.locator(".api-key-details-selection p").first(),
+          ];
+          for (const c of candidates) {
+            if (await c.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              txt = ((await c.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+              if (txt.length > 15) break;
+            }
+          }
+          if (!txt) {
+            txt = ((await page.locator(".api-key-details-selection").first().innerText().catch(() => "")) || "")
+              .replace(/\s+/g, " ")
+              .trim();
+          }
+          const needle = String(
+            step.expected?.labelEquals || "You can configure the app using third-party API credentials."
+          ).trim();
+          if (!needle || !txt.toLowerCase().includes(needle.toLowerCase())) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Edit Brand Kit (doc): expected Custom Credentials intro containing "${needle}". Visible fragment: ${txt.slice(0, 560) || "(empty)"}`
+            );
+          }
+          break;
+        }
+        if (fidC === "edit-a-brand-kit" && step.target === "Brand Kit Settings Custom Credentials API Key Provider instructions fragment per edit doc (doc step)") {
+          const t = getStepTimeoutMs(step);
+          await page
+            .locator(".api-key-details-selection")
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 30_000) })
+            .catch(() => {});
+          const box = page.locator(".api-key-details-selection, .api-key-details-container").first();
+          const txt = ((await box.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+          const lowered = txt.toLowerCase();
+          const checks = [
+            ["Select the API Key Provider", "select the api key provider"],
+            ["OpenAI", "openai"],
+            ["Azure OpenAI Service", "azure openai service"],
+            ["AWS Bedrock", "aws bedrock"],
+            ["Google Vertex AI", "google vertex ai"],
+          ] as const;
+          for (const [label, needle] of checks) {
+            if (!lowered.includes(needle)) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Edit Brand Kit (doc): expected instructional copy referencing "${label}" near Custom Credentials / API Key Provider. Snippet: ${txt.slice(0, 560)}`
+              );
+            }
+          }
+          break;
+        }
+        if (fidC === "edit-a-brand-kit") {
+          const bkProviderDropdownOptionTargets: Record<string, string> = {
+            "Brand Kit Settings Custom Credentials verify OpenAI in API Key Provider dropdown (doc step)": "OpenAI",
+            "Brand Kit Settings Custom Credentials verify Azure OpenAI Service in API Key Provider dropdown (doc step)":
+              "Azure OpenAI Service",
+            "Brand Kit Settings Custom Credentials verify AWS Bedrock in API Key Provider dropdown (doc step)": "AWS Bedrock",
+            "Brand Kit Settings Custom Credentials verify Google Vertex AI in API Key Provider dropdown (doc step)":
+              "Google Vertex AI",
+          };
+          const expectedLabel = bkProviderDropdownOptionTargets[step.target];
+          if (expectedLabel) {
+            const docEq = step.expected?.labelEquals != null ? String(step.expected.labelEquals).trim() : "";
+            if (docEq && docEq !== expectedLabel) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Edit Brand Kit API Key Provider option verify: step target expects "${expectedLabel}" but labelEquals was "${docEq}".`
+              );
+            }
+            const t = getStepTimeoutMs(step, 90_000);
+            const menu = page.locator(".Select__menu, .Portal__menu, [role='listbox']").last();
+            await expect(menu).toBeVisible({ timeout: Math.min(t, 30_000) });
+            let opt = menu.getByRole("option", { name: expectedLabel, exact: true }).first();
+            if (!(await opt.isVisible({ timeout: 2_500 }).catch(() => false))) {
+              const esc = expectedLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              opt = menu.locator(".Select__option").filter({ hasText: new RegExp(`^\\s*${esc}\\s*$`, "i") }).first();
+            }
+            await expect(
+              opt,
+              `Edit a Brand Kit (doc): API Key Provider dropdown must show option "${expectedLabel}" while the menu is open.`
+            ).toBeVisible({ timeout: Math.min(t, 25_000) });
+            break;
+          }
+        }
+        if (fidC === "edit-a-brand-kit" && step.target === "Brand Kit Settings API Key configuration change Proceed button (doc step)") {
+          const t = getStepTimeoutMs(step, 90_000);
+          const dlg = page.getByRole("dialog").filter({ has: page.getByRole("button", { name: /^Proceed$/i }) }).first();
+          await dlg.waitFor({ state: "visible", timeout: Math.min(t, 45_000) }).catch(() => {});
+          const btn = dlg.getByRole("button", { name: /^Proceed$/i }).first();
+          if (!(await btn.isVisible({ timeout: Math.min(t, 30_000) }).catch(() => false))) {
+            throw new Error(
+              'Edit a Brand Kit (doc): "Proceed" is not visible after selecting Managed by Contentstack — confirm the API Key configuration confirmation modal.'
+            );
+          }
+          await expect(btn).toBeVisible({ timeout: Math.min(t, 20_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(step, context, `Proceed modal placement vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          if (step.expected?.labelEquals) {
+            await assertLabelMatch(btn, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          }
+          break;
+        }
+      }
+
+      // BrandKit get-started-with-brand-kit | create-a-voice-profile | edit-a-voice-profile: voice profile FieldLabel texts vs documented list (drift → warnings).
+      {
+        const flowIdBk = String(flow?.id || "").toLowerCase();
+        const okGs =
+          flowIdBk === "get-started-with-brand-kit" &&
+          step.target === "Create Voice Profile page field labels vs get-started doc (doc step)";
+        const okVp =
+          flowIdBk === "create-a-voice-profile" &&
+          step.target === "Create Voice Profile page field labels vs create-voice-profile doc (doc step)";
+        const okEditVp =
+          flowIdBk === "edit-a-voice-profile" &&
+          step.target === "Edit Voice Profile page field labels vs edit-a-voice-profile doc (doc step)";
+        if (okGs || okVp || okEditVp) {
+          const docLabel = okVp ? "create-a-voice-profile doc" : okEditVp ? "edit-a-voice-profile doc" : "get-started doc";
+          const t = getStepTimeoutMs(step);
+          const form = page.locator("form#voice-profile-form.voice-profile-form, form#voice-profile-form").first();
+          await expect(form).toBeVisible({ timeout: t });
+          const normLabel = (s: string) =>
+            s
+              .replace(/\s*\(required\)\s*/gi, "")
+              .replace(/\s+/g, " ")
+              .trim();
+          const docFieldsRaw = Array.isArray((step.expected as any)?.documentedFields)
+            ? ((step.expected as any).documentedFields as unknown[]).map((x) => normLabel(String(x)))
+            : [];
+          const docFields = docFieldsRaw.filter(Boolean);
+          const labelEls = form.locator("label.FieldLabel");
+          const n = await labelEls.count();
+          const appLabels: string[] = [];
+          for (let i = 0; i < n; i++) {
+            const raw = ((await labelEls.nth(i).innerText().catch(() => "")) || "").trim();
+            const normalized = normLabel(raw);
+            if (normalized) appLabels.push(normalized);
+          }
+          const appSet = [...new Set(appLabels)];
+          const normEq = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+          const missingInApp = docFields.filter((d) => !appSet.some((a) => normEq(a, d)));
+          const extraInApp = appSet.filter((a) => !docFields.some((d) => normEq(a, d)));
+          if (missingInApp.length) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Voice Profile form (${docLabel}): documented labels not found in form: ${missingInApp.join(", ")}`
+            );
+          }
+          if (extraInApp.length) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Voice Profile form (${docLabel}): form labels not listed in doc — ${extraInApp.join(", ")}`
+            );
+          }
+          break;
+        }
+      }
+
       // Studio manage-a-composition: Edit Composition modal — UID read-only note, Advanced / convert copy from doc.
       {
         const mc = String(flow?.id || "").toLowerCase();
@@ -14025,13 +18927,54 @@ export async function performAction(
         }
         break;
       }
-      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment settings Event Tracking tab label (doc step)") {
+      if (
+        String(flow?.id || "").toLowerCase() === "event-tracking-in-contentstack-launch" &&
+        step.target === "Launch environment vertical action menu Settings list item (doc step)"
+      ) {
         const t = getStepTimeoutMs(step, 60_000);
-        const tab = page.locator('[data-testid="lytics-tab"]').first();
-        await expect(tab).toBeVisible({ timeout: t });
+        await page.waitForTimeout(2_000);
+        const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+        await expect(menu).toBeVisible({ timeout: t });
+        const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+        await expect(actionsRoot).toBeVisible({ timeout: t });
+        const settingsLi = actionsRoot.locator('li[data-test-id="cs-icon"]').filter({ hasText: /^\s*Settings\s*$/i }).first();
+        const settingsLiFb = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRoot, 8_000);
+        const li = (await settingsLi.isVisible({ timeout: 4_000 }).catch(() => false)) ? settingsLi : settingsLiFb;
+        await expect(li).toBeVisible({ timeout: t });
+        await li.hover({ timeout: Math.min(t, 18_000) }).catch(() => {});
+        await page.waitForTimeout(150);
+        await expect(li).toContainText(/\bSettings\b/i);
         if (step.expected?.labelEquals) {
           try {
-            await assertLabelMatch(tab, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+            await assertLabelMatch(li, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+      if (isLaunchProjectsEnvironmentsFlow(flow) && step.target === "Launch environment settings Event Tracking tab label (doc step)") {
+        const t = getStepTimeoutMs(step, 60_000);
+        const tabItem = page.locator('[data-test-id="cs-tabs-item"]:has([data-testid="lytics-tab"])').first();
+        const tabFace = tabItem.locator('[data-testid="lytics-tab"]').first();
+        if (String(flow?.id || "").toLowerCase() === "event-tracking-in-contentstack-launch") {
+          for (let i = 0; i < 14; i++) {
+            await tabItem.scrollIntoViewIfNeeded().catch(() => {});
+            if (await tabFace.isVisible({ timeout: 700 }).catch(() => false)) break;
+            const rightCaret = page.locator(".caret-container button.caret.right").first();
+            if (!(await rightCaret.isVisible({ timeout: 500 }).catch(() => false))) break;
+            await rightCaret.click({ timeout: Math.min(t, 15_000) }).catch(() => {});
+            await page.waitForTimeout(280);
+          }
+        }
+        await expect(tabFace).toBeVisible({ timeout: t });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(tabFace, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
           } catch (err: any) {
             recordVerificationWarning(
               step,
@@ -14068,15 +19011,25 @@ export async function performAction(
       ) {
         const t = getStepTimeoutMs(step, 60_000);
         const panel = page.locator(".Tab__Info").first();
+        const byLabelDiv = panel
+          .locator("div.Label--color--secondary")
+          .filter({ hasText: /Enable Real-Time User Event Tracking/i })
+          .first();
+        const inSwitch = panel
+          .locator('[data-test-id="cs-toggle-switch"] input[type="checkbox"]')
+          .or(panel.locator('input[aria-label="aria-toggle-switch"]'))
+          .first();
         const bySwitch = panel.getByRole("switch", { name: /Enable Real-Time User Event Tracking/i }).first();
         const byRole = panel.getByRole("checkbox", { name: /Enable Real-Time User Event Tracking/i }).first();
-        let target: Locator = byRole;
-        if (await bySwitch.isVisible({ timeout: 6_000 }).catch(() => false)) {
+        let target: Locator = byLabelDiv;
+        if (await byLabelDiv.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          target = byLabelDiv;
+        } else if (await bySwitch.isVisible({ timeout: 4_000 }).catch(() => false)) {
           target = bySwitch;
         } else if (await byRole.isVisible({ timeout: 4_000 }).catch(() => false)) {
           target = byRole;
         } else {
-          target = panel.locator('[data-test-id="cs-toggle-switch"] input[type="checkbox"]').first();
+          target = inSwitch;
         }
         await expect(target).toBeVisible({ timeout: t });
         if (step.expected?.labelEquals) {
@@ -15985,6 +20938,486 @@ export async function performAction(
         break;
       }
 
+      // Audience Insights — marketplace app doc (stack nav + entry sidebar); verify only doc-named labels.
+      if (step.action === "verify" && AUDIENCE_INSIGHTS_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
+        const fidAi = String(flow?.id || "").toLowerCase();
+        const t = getStepTimeoutMs(step);
+        const needle = String(step.expected?.labelEquals || "").trim();
+        const matchMode = ((step.expected?.labelMatch as string) || "contains").toLowerCase();
+        const warnDoc = (detail: string) =>
+          recordVerificationWarning(step, context, `Audience Insights "${step.target}": ${detail}`);
+
+        if (step.target === "Audience Insights doc: verify stack primary nav Audience Insights app (doc step)") {
+          const { click: cOv } = loadOverrides(flow);
+          const sel =
+            cOv["Audience Insights doc: click stack primary nav Audience Insights app (doc step)"] ||
+            CLICK_SELECTORS["Audience Insights doc: click stack primary nav Audience Insights app (doc step)"];
+          let loc = sel ? page.locator(sel).first() : page.getByRole("link", { name: /^Audience Insights$/i }).first();
+          if (sel && !(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+            loc = page.getByRole("link", { name: /^Audience Insights$/i }).first();
+          }
+          if (!(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+            loc = page.getByRole("button", { name: /^Audience Insights$/i }).first();
+          }
+          await expect(loc).toBeVisible({ timeout: t });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, loc, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              warnDoc(`placement vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          if (needle) {
+            try {
+              await assertLabelMatch(loc, needle, matchMode as any);
+            } catch (err: any) {
+              warnDoc(`label vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          break;
+        }
+
+        if (fidAi === "audience-insights-full-page") {
+          const sections: Record<string, string> = {
+            "Audience Insights doc: verify Opportunity Explorer section label (doc step)": "Opportunity Explorer",
+            "Audience Insights doc: verify Content Map section label (doc step)": "Content Map",
+            "Audience Insights doc: verify Audience Explorer section label (doc step)": "Audience Explorer",
+          };
+          const title = sections[step.target];
+          if (title) {
+            const rx = new RegExp(`^${escapeRegex(title)}$`, "i");
+            const byHeading = page.getByRole("heading", { name: rx }).first();
+            const byText = page.getByText(title, { exact: true }).first();
+            const ok =
+              (await byHeading.isVisible({ timeout: Math.min(t, 18_000) }).catch(() => false)) ||
+              (await byText.isVisible({ timeout: 4_000 }).catch(() => false));
+            if (!ok) {
+              warnDoc(`section "${title}" not visible — app layout, iframe, or install state may differ.`);
+            }
+            break;
+          }
+        }
+
+        if (fidAi === "audience-insights-entry-sidebar") {
+          if (step.target === "Audience Insights doc: verify entry right nav Audience Insights app icon (doc step)") {
+            const { click: cOv } = loadOverrides(flow);
+            const sel =
+              cOv["Audience Insights doc: click entry right nav Audience Insights app icon (doc step)"] ||
+              CLICK_SELECTORS["Audience Insights doc: click entry right nav Audience Insights app icon (doc step)"];
+            let loc = sel ? page.locator(sel).first() : page.locator(".SidebarWindow").getByRole("tab", { name: /^Audience Insights$/i }).first();
+            if (sel && !(await loc.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              loc = page.locator(".SidebarWindow").getByRole("button", { name: /^Audience Insights$/i }).first();
+            }
+            await expect(loc).toBeVisible({ timeout: t });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, loc, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                warnDoc(`placement vs doc: ${err?.message ?? String(err)}`);
+              }
+            }
+            if (needle) {
+              try {
+                await assertLabelMatch(loc, needle, matchMode as any);
+              } catch (err: any) {
+                warnDoc(`label vs doc: ${err?.message ?? String(err)}`);
+              }
+            }
+            break;
+          }
+          if (step.target === "Audience Insights doc: verify Topics section label (doc step)") {
+            const loc = page.getByText(/^Topics$/).first();
+            if (!(await loc.isVisible({ timeout: Math.min(t, 25_000) }).catch(() => false))) {
+              warnDoc(`"Topics" section not visible — run Analyze first or UI differs.`);
+            }
+            break;
+          }
+          if (step.target === "Audience Insights doc: verify Audience Alignment section label (doc step)") {
+            const loc = page.getByText("Audience Alignment", { exact: true }).first();
+            if (!(await loc.isVisible({ timeout: Math.min(t, 25_000) }).catch(() => false))) {
+              warnDoc(`"Audience Alignment" section not visible — analysis may still be loading.`);
+            }
+            break;
+          }
+          if (step.target === "Audience Insights doc: verify Analyze button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Analyze$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t });
+            if (needle) {
+              try {
+                await assertLabelMatch(btn, needle, matchMode as any);
+              } catch (err: any) {
+                warnDoc(`label vs doc: ${err?.message ?? String(err)}`);
+              }
+            }
+            break;
+          }
+          if (step.target === "Audience Insights doc: verify Re-analyze button (doc step)") {
+            const btn = page.getByRole("button", { name: /^Re-analyze$/i }).first();
+            await expect(btn).toBeVisible({ timeout: t });
+            if (needle) {
+              try {
+                await assertLabelMatch(btn, needle, matchMode as any);
+              } catch (err: any) {
+                warnDoc(`label vs doc: ${err?.message ?? String(err)}`);
+              }
+            }
+            break;
+          }
+        }
+
+        if (fidAi === "audience-insights-entry-sidebar" && step.target === "Entries (doc step)") {
+          const el = page.locator('[data-test-id="cms-nav-entries"]').first();
+          await expect(el).toBeVisible({ timeout: t });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              warnDoc(`Entries nav placement: ${err?.message ?? String(err)}`);
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, matchMode as any);
+            } catch (err: any) {
+              warnDoc(`Entries nav label: ${err?.message ?? String(err)}`);
+            }
+          }
+          break;
+        }
+        if (fidAi === "audience-insights-entry-sidebar" && step.target === "Entries page (doc step)") {
+          const { click: cOv } = loadOverrides(flow);
+          const sel =
+            cOv["Entries page (doc step)"] ||
+            CLICK_SELECTORS["Entries page (doc step)"] ||
+            '[data-test-id="cs-page-title"]:has-text("Entries")';
+          const el = page.locator(sel).first();
+          await expect(el).toBeVisible({ timeout: t });
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, matchMode as any);
+            } catch (err: any) {
+              warnDoc(`Entries page title vs doc: ${err?.message ?? String(err)}`);
+            }
+          }
+          break;
+        }
+      }
+
+      // Analytics guides — hub + Key Sections (doc-named labels → warnings only).
+      if (step.action === "verify" && ANALYTICS_GUIDE_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
+        const fid = String(flow?.id || "").toLowerCase();
+        const t = getStepTimeoutMs(step);
+        const needle = String(step.expected?.labelEquals || "").trim();
+        const warnMissing = (detail: string) =>
+          recordVerificationWarning(step, context, `${step.target}: ${detail}`);
+
+        // Doc: click the "Analytics" icon in the left panel. Automation uses the dashboard product tile instead — warn-only, always passes.
+        if (step.target === "Analytics icon in left panel navigate to Analytics dashboard (doc step)") {
+          recordVerificationWarning(
+            step,
+            context,
+            'Documentation: click the "Analytics" icon in the left panel to open the Analytics dashboard — this flow does not automate that path. Continuing via Organization dashboard (`#!/dashboard`) Analytics product tile `[data-test-id=\"cs-global-dashboard-product-tile-analytics\"]` (see data/dom/Analytics/dashboard-analytics-card.html).'
+          );
+          break;
+        }
+
+        if (step.target === "CMS analytics dashboard default CMS label visible (doc step)") {
+          if (!needle) {
+            warnMissing("expected.labelEquals (CMS) is missing.");
+            break;
+          }
+          await page.waitForTimeout(600);
+          const rx = new RegExp(`^${escapeRegex(needle)}$`, "i");
+          const candidates = [
+            page.getByRole("tab", { name: rx }).first(),
+            page.getByRole("heading", { name: rx }).first(),
+            page.getByRole("link", { name: rx }).first(),
+            page.getByText(needle, { exact: true }).first(),
+          ];
+          let ok = false;
+          for (const loc of candidates) {
+            if (await loc.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
+              ok = true;
+              break;
+            }
+          }
+          if (!ok) {
+            warnMissing(
+              `visible "${needle}" not found as tab, heading, link, or exact text — Analytics hub layout may differ from automation assumptions.`
+            );
+          }
+          break;
+        }
+
+        const ANALYTICS_HUB_PRODUCT_TAB_VERIFY_BY_STEP = new Map<string, string>([
+          ["Launch analytics hub Launch dashboard label visible after tab switch (doc step)", "analytics-for-launch"],
+          ["Automate analytics hub Automate dashboard label visible after tab switch (doc step)", "analytics-for-automate"],
+          ["Personalize analytics hub Personalize dashboard label visible after tab switch (doc step)", "analytics-for-personalize"],
+          ["Brand Kit analytics hub Brand Kit dashboard label visible after tab switch (doc step)", "analytics-for-brand-kit"],
+        ]);
+        if (ANALYTICS_HUB_PRODUCT_TAB_VERIFY_BY_STEP.get(step.target) === fid) {
+          if (!needle) {
+            warnMissing("expected.labelEquals is missing for Analytics hub product after dashboard tab switch.");
+            break;
+          }
+          await page.waitForTimeout(600);
+          const rxTab = new RegExp(`^${escapeRegex(needle)}$`, "i");
+          const candidatesTab = [
+            page.getByRole("tab", { name: rxTab }).first(),
+            page.getByRole("heading", { name: rxTab }).first(),
+            page.getByRole("link", { name: rxTab }).first(),
+            page.getByText(needle, { exact: true }).first(),
+          ];
+          let okTab = false;
+          for (const loc of candidatesTab) {
+            if (await loc.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
+              okTab = true;
+              break;
+            }
+          }
+          if (!okTab) {
+            warnMissing(
+              `visible "${needle}" not found as tab, heading, link, or exact text after switching dashboards — Analytics hub layout may differ from automation assumptions.`
+            );
+          }
+          break;
+        }
+
+        const analyticsWarnDocHeadingOrExactLabel = async (dashHint: string) => {
+          if (!needle) {
+            warnMissing(`expected.labelEquals is missing (${dashHint}).`);
+            return;
+          }
+          await page.waitForTimeout(250);
+          const rx = new RegExp(`^${escapeRegex(needle)}$`, "i");
+          let el = page.getByRole("heading", { name: rx }).first();
+          if (!(await el.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+            el = page.getByText(needle, { exact: true }).first();
+          }
+          await el.scrollIntoViewIfNeeded().catch(() => {});
+          if (!(await el.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false))) {
+            warnMissing(
+              `heading or exact label "${needle}" not visible (${dashHint}); lazy-loaded, relabeled, or different typography than assumptions.`
+            );
+          }
+        };
+
+        if (fid === "analytics-for-cms") {
+          const ANALYTICS_CMS_KEY_SECTION_TARGETS = new Set([
+            "CMS analytics Subscription Usage section heading (doc step)",
+            "CMS analytics Usage by Stacks section heading (doc step)",
+            "CMS analytics API Usage section heading (doc step)",
+            "CMS analytics Bandwidth Usage section heading (doc step)",
+            "CMS analytics Assets section heading (doc step)",
+            "CMS analytics Entries section heading (doc step)",
+            "CMS analytics Top URLs section heading (doc step)",
+            "CMS analytics Status Codes section heading (doc step)",
+            "CMS analytics Cache Usage section heading (doc step)",
+            "CMS analytics SDK Usage section heading (doc step)",
+            "CMS analytics Device Usage section heading (doc step)",
+          ]);
+
+          const USAGE_BY_STACKS_COLUMN_TARGETS = new Set([
+            "Usage by Stacks table column Stack Name (doc step)",
+            "Usage by Stacks table column API Key (doc step)",
+            "Usage by Stacks table column Owner (doc step)",
+            "Usage by Stacks table column Content Types (doc step)",
+            "Usage by Stacks table column Global Fields (doc step)",
+            "Usage by Stacks table column Entries (doc step)",
+            "Usage by Stacks table column Assets (doc step)",
+            "Usage by Stacks table column Environments (doc step)",
+            "Usage by Stacks table column Locales (doc step)",
+            "Usage by Stacks table column Extensions (doc step)",
+            "Usage by Stacks table column Webhooks (doc step)",
+            "Usage by Stacks table column Custom Roles (doc step)",
+            "Usage by Stacks table column Branches (doc step)",
+            "Usage by Stacks table column Branch Aliases (doc step)",
+          ]);
+
+          if (ANALYTICS_CMS_KEY_SECTION_TARGETS.has(step.target)) {
+            await analyticsWarnDocHeadingOrExactLabel("CMS Analytics dashboard");
+            break;
+          }
+
+          if (USAGE_BY_STACKS_COLUMN_TARGETS.has(step.target)) {
+            if (!needle) {
+              warnMissing("expected.labelEquals is missing for documented Usage by Stacks column.");
+              break;
+            }
+            const stacksHeading = page.getByRole("heading", { name: /^Usage by Stacks$/i }).first();
+            await stacksHeading.scrollIntoViewIfNeeded().catch(() => {});
+            let tbl: Locator | null = null;
+            if (await stacksHeading.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
+              const byStackNameHeader = page
+                .locator("table")
+                .filter({ has: page.getByRole("columnheader", { name: /^Stack Name$/i }) })
+                .first();
+              if (await byStackNameHeader.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
+                tbl = byStackNameHeader;
+              } else {
+                const following = stacksHeading.locator("xpath=following::table[1]").first();
+                if (await following.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
+                  tbl = following;
+                }
+              }
+            }
+            if (!tbl) {
+              warnMissing(
+                `could not locate Usage by Stacks table — column "${needle}" (doc-listed metric) not verified.`
+              );
+              break;
+            }
+            await tbl.scrollIntoViewIfNeeded().catch(() => {});
+            const colRx = new RegExp(`^${escapeRegex(needle)}$`, "i");
+            let headerCell = tbl.getByRole("columnheader", { name: colRx }).first();
+            if (!(await headerCell.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+              headerCell = tbl.locator("th, [role='columnheader']").filter({ hasText: colRx }).first();
+            }
+            if (!(await headerCell.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+              headerCell = tbl.getByText(needle, { exact: true }).first();
+            }
+            await headerCell.scrollIntoViewIfNeeded().catch(() => {});
+            if (!(await headerCell.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false))) {
+              warnMissing(
+                `column/header "${needle}" not visible in Usage by Stacks table — UI may use different header markup, truncated labels, or a non-table grid.`
+              );
+            }
+            break;
+          }
+        }
+
+        const ANALYTICS_LAUNCH_SECTION_TARGETS = new Set([
+          "Launch analytics Subscription Usage section heading (doc step)",
+          "Launch analytics URL Requests section heading (doc step)",
+          "Launch analytics Bandwidth Usage section heading (doc step)",
+          "Launch analytics Top URLs section heading (doc step)",
+          "Launch analytics Status Codes section heading (doc step)",
+          "Launch analytics Cache Usage section heading (doc step)",
+          "Launch analytics Device Usage section heading (doc step)",
+        ]);
+        if (fid === "analytics-for-launch" && ANALYTICS_LAUNCH_SECTION_TARGETS.has(step.target)) {
+          await analyticsWarnDocHeadingOrExactLabel("Launch Analytics dashboard");
+          break;
+        }
+
+        const ANALYTICS_AUTOMATE_SECTION_TARGETS = new Set([
+          "Automate analytics Subscription Usage section heading (doc step)",
+          "Automate analytics API Usage section heading (doc step)",
+          "Automate analytics Bandwidth Usage section heading (doc step)",
+          "Automate analytics Top URLs section heading (doc step)",
+          "Automate analytics Status Codes section heading (doc step)",
+        ]);
+        if (fid === "analytics-for-automate" && ANALYTICS_AUTOMATE_SECTION_TARGETS.has(step.target)) {
+          await analyticsWarnDocHeadingOrExactLabel("Automate Analytics dashboard");
+          break;
+        }
+
+        const ANALYTICS_PERSONALIZE_SECTION_TARGETS = new Set([
+          "Personalize analytics Subscription Usage section heading (doc step)",
+          "Personalize analytics API Requests section heading (doc step)",
+          "Personalize analytics Top URLs section heading (doc step)",
+          "Personalize analytics Status Codes section heading (doc step)",
+          "Personalize analytics Management API Device Usage section heading (doc step)",
+          "Personalize analytics Edge SDK Usage section heading (doc step)",
+        ]);
+        const ANALYTICS_PERSONALIZE_SUBSCRIPTION_PARAM_TARGETS = new Set([
+          "Personalize analytics Subscription Usage parameter Projects (doc step)",
+          "Personalize analytics Subscription Usage parameter Experiences (doc step)",
+          "Personalize analytics Subscription Usage parameter Audiences (doc step)",
+          "Personalize analytics Subscription Usage parameter Attributes (doc step)",
+          "Personalize analytics Subscription Usage parameter Manifest Requests (doc step)",
+          "Personalize analytics Subscription Usage parameter Events (doc step)",
+          "Personalize analytics Subscription Usage parameter Impressions (doc step)",
+          "Personalize analytics Subscription Usage parameter Custom Events (doc step)",
+        ]);
+        if (
+          fid === "analytics-for-personalize" &&
+          (ANALYTICS_PERSONALIZE_SECTION_TARGETS.has(step.target) ||
+            ANALYTICS_PERSONALIZE_SUBSCRIPTION_PARAM_TARGETS.has(step.target))
+        ) {
+          await analyticsWarnDocHeadingOrExactLabel("Personalize Analytics dashboard");
+          break;
+        }
+
+        const ANALYTICS_BRAND_KIT_SECTION_TARGETS = new Set([
+          "Brand Kit analytics Subscription Usage section heading (doc step)",
+          "Brand Kit analytics Usage by Brand Kit section heading (doc step)",
+          "Brand Kit analytics Content Generations section heading (doc step)",
+          "Brand Kit analytics Content Generations Status Code section heading (doc step)",
+          "Brand Kit analytics Brand Kit Requests section heading (doc step)",
+          "Brand Kit analytics Brand Kit Status Usage section heading (doc step)",
+          "Brand Kit analytics AI Assistant Request section heading (doc step)",
+          "Brand Kit analytics AI Status Code Usage section heading (doc step)",
+          "Brand Kit analytics Knowledge Vault Utilization section heading (doc step)",
+        ]);
+        const ANALYTICS_BRAND_KIT_SUBSCRIPTION_PARAM_TARGETS = new Set([
+          "Brand Kit analytics Subscription Usage parameter Brand Kit (doc step)",
+          "Brand Kit analytics Subscription Usage parameter Voice Profile (doc step)",
+          "Brand Kit analytics Subscription Usage parameter Knowledge Vault (doc step)",
+          "Brand Kit analytics Subscription Usage parameter Tokens (doc step)",
+        ]);
+        const USAGE_BY_BRAND_KIT_COLUMN_TARGETS = new Set([
+          "Usage by Brand Kit table column Brand Kit Name (doc step)",
+          "Usage by Brand Kit table column Voice Profiles (doc step)",
+          "Usage by Brand Kit table column Knowledge Vaults (doc step)",
+          "Usage by Brand Kit table column Tokens Used (doc step)",
+        ]);
+        if (
+          fid === "analytics-for-brand-kit" &&
+          (ANALYTICS_BRAND_KIT_SECTION_TARGETS.has(step.target) ||
+            ANALYTICS_BRAND_KIT_SUBSCRIPTION_PARAM_TARGETS.has(step.target))
+        ) {
+          await analyticsWarnDocHeadingOrExactLabel("Brand Kit Analytics dashboard");
+          break;
+        }
+
+        if (fid === "analytics-for-brand-kit" && USAGE_BY_BRAND_KIT_COLUMN_TARGETS.has(step.target)) {
+          if (!needle) {
+            warnMissing("expected.labelEquals is missing for documented Usage by Brand Kit column.");
+            break;
+          }
+          const bkHeading = page.getByRole("heading", { name: /^Usage by Brand Kit$/i }).first();
+          await bkHeading.scrollIntoViewIfNeeded().catch(() => {});
+          let tbl: Locator | null = null;
+          if (await bkHeading.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
+            const byNameCol = page
+              .locator("table")
+              .filter({ has: page.getByRole("columnheader", { name: /^Brand Kit Name$/i }) })
+              .first();
+            if (await byNameCol.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
+              tbl = byNameCol;
+            } else {
+              const following = bkHeading.locator("xpath=following::table[1]").first();
+              if (await following.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
+                tbl = following;
+              }
+            }
+          }
+          if (!tbl) {
+            warnMissing(
+              `could not locate Usage by Brand Kit table — column "${needle}" (doc-listed field) not verified.`
+            );
+            break;
+          }
+          await tbl.scrollIntoViewIfNeeded().catch(() => {});
+          const colRxBk = new RegExp(`^${escapeRegex(needle)}$`, "i");
+          let headerCellBk = tbl.getByRole("columnheader", { name: colRxBk }).first();
+          if (!(await headerCellBk.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+            headerCellBk = tbl.locator("th, [role='columnheader']").filter({ hasText: colRxBk }).first();
+          }
+          if (!(await headerCellBk.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+            headerCellBk = tbl.getByText(needle, { exact: true }).first();
+          }
+          await headerCellBk.scrollIntoViewIfNeeded().catch(() => {});
+          if (!(await headerCellBk.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false))) {
+            warnMissing(
+              `column/header "${needle}" not visible in Usage by Brand Kit table — UI may differ from assumed table structure.`
+            );
+          }
+          break;
+        }
+      }
+
       // Use Saved Views: menu option verification - warn if missing, do not fail
       const useSavedViewsMenuTargets = [
         "Update the view menu item (doc step)",
@@ -16303,10 +21736,347 @@ export async function performAction(
           `Strict doc verification rule: verify step "${step.target}" must include expected.labelEquals and/or expected.modalTitle.`
         );
       }
+
+      // Brand Kit edit-a-voice-profile: Voice Profiles Actions menu is portaled; scoped row `[role="menu"]` can be the ⋯ trigger, not the dropdown panel.
+      if (
+        String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" &&
+        step.action === "verify" &&
+        step.target === "Edit"
+      ) {
+        const tVp = getStepTimeoutMs(step);
+        const hintVp = step.expected?.rowContains?.trim();
+        if (!hintVp) {
+          throw new Error('edit-a-voice-profile (doc): verify "Edit" requires expected.rowContains.');
+        }
+        const { click: clickVpVerifyOv } = loadOverrides(flow);
+        const tooltipVpSelV =
+          clickVpVerifyOv["Voice Profiles Actions dropdown tooltip (edit-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions dropdown tooltip (edit-a-voice-profile)"] ||
+          '[data-test-id="cs-vertical-action-tooltip"]';
+        const editVpSelV =
+          clickVpVerifyOv["Voice Profiles Actions Edit menu item (edit-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions Edit menu item (edit-a-voice-profile)"] ||
+          '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"], [data-test-id="brand-kit-click-menu-voice-profiles-list-edit-voice-profile"]';
+        let editItem = page
+          .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]')
+          .filter({ visible: true })
+          .first();
+        if (!(await editItem.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          editItem = page
+            .locator('[data-test-id="brand-kit-click-menu-voice-profiles-list-edit-voice-profile"]')
+            .filter({ visible: true })
+            .first();
+        }
+        if (!(await editItem.isVisible({ timeout: 1_500 }).catch(() => false))) {
+          editItem = page.locator(editVpSelV).filter({ visible: true }).first();
+        }
+        let panelOpen = await editItem.isVisible({ timeout: 1_000 }).catch(() => false);
+        if (!panelOpen) {
+          panelOpen =
+            (await page.locator(tooltipVpSelV).filter({ visible: true }).first().isVisible().catch(() => false)) ||
+            (await page.locator(".VerticalActionTooltip").filter({ visible: true }).filter({ hasText: /Edit/i }).first().isVisible().catch(() => false)) ||
+            (await page.locator("#tableRowActionNode").filter({ visible: true }).filter({ hasText: /Edit/i }).first().isVisible().catch(() => false));
+        }
+        if (!panelOpen) {
+          await openRowActionMenu(page, step, flow);
+          await page.waitForTimeout(2_000);
+          editItem = page
+            .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]')
+            .filter({ visible: true })
+            .first();
+          if (!(await editItem.isVisible({ timeout: 2_500 }).catch(() => false))) {
+            editItem = page.locator(editVpSelV).filter({ visible: true }).first();
+          }
+        }
+        const surface = page.locator(tooltipVpSelV).filter({ visible: true }).first();
+        const surfaceFallback = page
+          .locator(".VerticalActionTooltip, #tableRowActionNode")
+          .filter({ visible: true })
+          .filter({ hasText: /Edit/i })
+          .first();
+        if (await surface.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await expect(surface).toBeVisible({ timeout: tVp });
+        } else {
+          await expect(surfaceFallback).toBeVisible({ timeout: tVp });
+        }
+        if (!(await editItem.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          editItem = surfaceFallback.locator('[role="menuitem"], li, button, a').filter({ hasText: /^Edit\b/i }).first();
+        }
+        await expect(editItem).toBeVisible({ timeout: Math.min(tVp, 45_000) });
+        await editItem.hover({ timeout: Math.min(tVp, 15_000) }).catch(() => {});
+        await page.waitForTimeout(250);
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(editItem, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Voice Profile Actions Edit label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+
+      // Brand Kit delete-a-voice-profile: Voice Profiles row ⋯ → Delete (tooltip).
+      if (
+        String(flow?.id || "").toLowerCase() === "delete-a-voice-profile" &&
+        step.action === "verify" &&
+        step.target === "Delete"
+      ) {
+        const tVp = getStepTimeoutMs(step);
+        const hintVp = step.expected?.rowContains?.trim();
+        if (!hintVp) {
+          throw new Error('delete-a-voice-profile (doc): verify "Delete" requires expected.rowContains.');
+        }
+        const { click: clickVpVerifyOvDel } = loadOverrides(flow);
+        const deleteVpSelV =
+          clickVpVerifyOvDel["Voice Profiles Actions Delete menu item (delete-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions Delete menu item (delete-a-voice-profile)"] ||
+          '[data-test-id="brand-kit-click-menu-voice-profiles-list-open-delete-voice-profile-modal"], [data-test-id="brand-kit-click-menu-voice-profiles-list-delete-voice-profile"]';
+        const delItem = await ensureVoiceProfileDeleteMenuItemThenLocate(page, flow, hintVp, deleteVpSelV, tVp);
+        await expect(delItem).toBeVisible({ timeout: Math.min(tVp, 45_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(delItem, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Voice Profile Actions Delete label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+
+      // Brand Kit delete-item-in-knowledge-vault: Knowledge Vault row ⋯ → Delete (tooltip).
+      if (
+        String(flow?.id || "").toLowerCase() === "delete-item-in-knowledge-vault" &&
+        step.action === "verify" &&
+        step.target === "Delete"
+      ) {
+        const tKvDelV = getStepTimeoutMs(step);
+        const hintKvDel = step.expected?.rowContains?.trim();
+        if (!hintKvDel) {
+          throw new Error('delete-item-in-knowledge-vault (doc): verify "Delete" requires expected.rowContains.');
+        }
+        const deleteKvSelVerify = '[data-test-id="brand-kit-click-menu-items-list-open-delete-item-modal"]';
+        let delKvItem = page.locator(deleteKvSelVerify).filter({ visible: true }).first();
+        let panelOpenKvDel = await delKvItem.isVisible({ timeout: 2_000 }).catch(() => false);
+        if (!panelOpenKvDel) {
+          panelOpenKvDel =
+            (await page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first().isVisible().catch(() => false)) ||
+            (await page.locator(".VerticalActionTooltip").filter({ visible: true }).filter({ hasText: /^Delete$/i }).first().isVisible().catch(() => false)) ||
+            (await page.locator("#tableRowActionNode").filter({ visible: true }).filter({ hasText: /^Delete$/i }).first().isVisible().catch(() => false));
+        }
+        if (!panelOpenKvDel) {
+          await openRowActionMenu(page, step, flow);
+          delKvItem = page.locator(deleteKvSelVerify).filter({ visible: true }).first();
+        }
+        const surfaceKvDel = page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).first();
+        const surfaceKvDelFb = page
+          .locator(".VerticalActionTooltip, #tableRowActionNode")
+          .filter({ visible: true })
+          .filter({ hasText: /^Delete$/i })
+          .first();
+        if (await surfaceKvDel.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await expect(surfaceKvDel).toBeVisible({ timeout: tKvDelV });
+        } else {
+          await expect(surfaceKvDelFb).toBeVisible({ timeout: tKvDelV });
+        }
+        if (!(await delKvItem.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          delKvItem = surfaceKvDelFb.locator('[role="menuitem"], li, button, a').filter({ hasText: /^Delete\b/i }).first();
+        }
+        await expect(delKvItem).toBeVisible({ timeout: Math.min(tKvDelV, 45_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(delKvItem, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Knowledge Vault Actions Delete label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+
+      // Brand Kit export-item-from-knowledge-vault: Knowledge Vault row ⋯ → Export (tooltip).
+      if (
+        String(flow?.id || "").toLowerCase() === "export-item-from-knowledge-vault" &&
+        step.action === "verify" &&
+        step.target === "Export"
+      ) {
+        const tKvExV = getStepTimeoutMs(step);
+        const hintKvEx = step.expected?.rowContains?.trim();
+        if (!hintKvEx) {
+          throw new Error('export-item-from-knowledge-vault (doc): verify "Export" requires expected.rowContains.');
+        }
+        const { click: clickKvVerifyOvEx } = loadOverrides(flow);
+        const tooltipKvSelVEx =
+          clickKvVerifyOvEx["Knowledge Vault Actions dropdown tooltip (export-item-from-knowledge-vault)"] ||
+          CLICK_SELECTORS["Knowledge Vault Actions dropdown tooltip (export-item-from-knowledge-vault)"] ||
+          '[data-test-id="cs-vertical-action-tooltip"]';
+        const exportKvSelV =
+          clickKvVerifyOvEx["Knowledge Vault Actions Export menu item (export-item-from-knowledge-vault)"] ||
+          CLICK_SELECTORS["Knowledge Vault Actions Export menu item (export-item-from-knowledge-vault)"] ||
+          '[data-test-id="brand-kit-click-input-select-knowledge-vault-export-knowledge-vault-item"]';
+        let exportKvItem = page.locator(exportKvSelV).filter({ visible: true }).first();
+        let panelOpenKvEx = await exportKvItem.isVisible({ timeout: 2_000 }).catch(() => false);
+        if (!panelOpenKvEx) {
+          panelOpenKvEx =
+            (await page.locator(tooltipKvSelVEx).filter({ visible: true }).first().isVisible().catch(() => false)) ||
+            (await page.locator(".VerticalActionTooltip").filter({ visible: true }).filter({ hasText: /Export/i }).first().isVisible().catch(() => false)) ||
+            (await page.locator("#tableRowActionNode").filter({ visible: true }).filter({ hasText: /Export/i }).first().isVisible().catch(() => false));
+        }
+        if (!panelOpenKvEx) {
+          await openRowActionMenu(page, step, flow);
+          exportKvItem = page.locator(exportKvSelV).filter({ visible: true }).first();
+        }
+        const surfaceKvEx = page.locator(tooltipKvSelVEx).filter({ visible: true }).first();
+        const surfaceKvExFb = page
+          .locator(".VerticalActionTooltip, #tableRowActionNode")
+          .filter({ visible: true })
+          .filter({ hasText: /Export/i })
+          .first();
+        if (await surfaceKvEx.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await expect(surfaceKvEx).toBeVisible({ timeout: tKvExV });
+        } else {
+          await expect(surfaceKvExFb).toBeVisible({ timeout: tKvExV });
+        }
+        if (!(await exportKvItem.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          exportKvItem = surfaceKvExFb.locator('[role="menuitem"], li, button, a').filter({ hasText: /^Export\b/i }).first();
+        }
+        await expect(exportKvItem).toBeVisible({ timeout: Math.min(tKvExV, 45_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(exportKvItem, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Knowledge Vault Actions Export label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+
+      // Brand Kit export-a-voice-profile: Voice Profiles row ⋯ → Export (tooltip).
+      if (
+        String(flow?.id || "").toLowerCase() === "export-a-voice-profile" &&
+        step.action === "verify" &&
+        step.target === "Export"
+      ) {
+        const tVpEx = getStepTimeoutMs(step);
+        const hintVpEx = step.expected?.rowContains?.trim();
+        if (!hintVpEx) {
+          throw new Error('export-a-voice-profile (doc): verify "Export" requires expected.rowContains.');
+        }
+        const { click: clickVpVerifyOvEx } = loadOverrides(flow);
+        const tooltipVpSelVEx =
+          clickVpVerifyOvEx["Voice Profiles Actions dropdown tooltip (export-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions dropdown tooltip (export-a-voice-profile)"] ||
+          '[data-test-id="cs-vertical-action-tooltip"]';
+        const exportVpSelV =
+          clickVpVerifyOvEx["Voice Profiles Actions Export menu item (export-a-voice-profile)"] ||
+          CLICK_SELECTORS["Voice Profiles Actions Export menu item (export-a-voice-profile)"] ||
+          '[data-test-id="brand-kit-click-menu-voice-profiles-list-export-voice-profile"]';
+        let exportItem = page.locator(exportVpSelV).filter({ visible: true }).first();
+        let panelOpenEx = await exportItem.isVisible({ timeout: 2_000 }).catch(() => false);
+        if (!panelOpenEx) {
+          panelOpenEx =
+            (await page.locator(tooltipVpSelVEx).filter({ visible: true }).first().isVisible().catch(() => false)) ||
+            (await page.locator(".VerticalActionTooltip").filter({ visible: true }).filter({ hasText: /Export/i }).first().isVisible().catch(() => false)) ||
+            (await page.locator("#tableRowActionNode").filter({ visible: true }).filter({ hasText: /Export/i }).first().isVisible().catch(() => false));
+        }
+        if (!panelOpenEx) {
+          await openRowActionMenu(page, step, flow);
+          exportItem = page.locator(exportVpSelV).filter({ visible: true }).first();
+        }
+        const surfaceEx = page.locator(tooltipVpSelVEx).filter({ visible: true }).first();
+        const surfaceFallbackEx = page
+          .locator(".VerticalActionTooltip, #tableRowActionNode")
+          .filter({ visible: true })
+          .filter({ hasText: /Export/i })
+          .first();
+        if (await surfaceEx.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await expect(surfaceEx).toBeVisible({ timeout: tVpEx });
+        } else {
+          await expect(surfaceFallbackEx).toBeVisible({ timeout: tVpEx });
+        }
+        if (!(await exportItem.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          exportItem = surfaceFallbackEx.locator('[role="menuitem"], li, button, a').filter({ hasText: /^Export\b/i }).first();
+        }
+        await expect(exportItem).toBeVisible({ timeout: Math.min(tVpEx, 45_000) });
+        if (step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(exportItem, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Voice Profile Actions Export label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
+        break;
+      }
+
       // If verifying Settings/Edit, ensure the row action menu is open and the item is visible.
       if (step.target === "Settings" || step.target === "Edit") {
-        await openRowActionMenu(page, step, flow);
-        const menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
+        let menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
+        const hintBkMenu = step.expected?.rowContains?.trim();
+        let editMenuSurfNearRow = false;
+        if (step.target === "Edit" && hintBkMenu) {
+          const rowBk = rowLocatorMatchingHint(page, hintBkMenu);
+          editMenuSurfNearRow = await rowBk
+            .locator(".VerticalActionTooltip, #tableRowActionNode, [role=\"menu\"]")
+            .filter({ hasText: /Edit/i })
+            .first()
+            .isVisible()
+            .catch(() => false);
+        }
+        const settingsMaybeOpen =
+          step.target === "Settings" &&
+          (await menuRoot.getByText("Settings", { exact: true }).first().isVisible().catch(() => false));
+        const editMaybeOpen =
+          step.target === "Edit" &&
+          (editMenuSurfNearRow ||
+            (await menuRoot.getByText("Edit", { exact: true }).first().isVisible().catch(() => false)) ||
+            (await menuRoot.getByRole("menuitem", { name: /Edit Voice Profile/i }).first().isVisible().catch(() => false)) ||
+            (await menuRoot.locator('[data-test-id="cs-ct-action-edit"]').first().isVisible().catch(() => false)));
+
+        if (!settingsMaybeOpen && !editMaybeOpen) {
+          await openRowActionMenu(page, step, flow);
+          if (step.target === "Edit") {
+            const stabilizeMs = Number(process.env.VERTICAL_ELLIPSIS_POST_OPEN_MS ?? "2000");
+            if (Number.isFinite(stabilizeMs) && stabilizeMs > 0) {
+              await page.waitForTimeout(stabilizeMs);
+            }
+          }
+        }
+        menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
+        if (hintBkMenu) {
+          const rowBkAfter = rowLocatorMatchingHint(page, hintBkMenu);
+          const scopedMenu = await tryResolveRowActionMenuRoot(rowBkAfter);
+          if (scopedMenu) menuRoot = scopedMenu;
+        }
+
+        let itemLoc: Locator | null = null;
+        if (step.target === "Edit") {
+          const primaryEditVerify = menuRoot
+            .locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]')
+            .first();
+          if (await primaryEditVerify.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            await primaryEditVerify.hover({ timeout: 12_000 }).catch(() => {});
+            await page.waitForTimeout(250);
+            itemLoc = primaryEditVerify;
+          }
+        }
 
         const candidates: Locator[] =
           step.target === "Settings"
@@ -16326,8 +22096,10 @@ export async function performAction(
               ]
             : [
                 menuRoot.getByText("Edit", { exact: true }).first(),
-                menuRoot.locator('[data-test-id="cs-ct-action-edit"]').first(),
                 menuRoot.getByRole("menuitem", { name: /^Edit$/i }).first(),
+                menuRoot.getByRole("menuitem", { name: /Edit Voice Profile/i }).first(),
+                menuRoot.getByText(/Edit Voice Profile/i).first(),
+                menuRoot.locator('[data-test-id="cs-ct-action-edit"]').first(),
                 menuRoot
                   .getByText("Edit", { exact: true })
                   .locator("xpath=ancestor-or-self::*[@role='menuitem' or self::button or self::a or self::li][1]")
@@ -16337,19 +22109,29 @@ export async function performAction(
                   .first(),
               ];
 
-        let itemLoc: Locator | null = null;
-
-        // First pass: maybe already visible (menu already open)
-        for (const c of candidates) {
-          if ((await c.count().catch(() => 0)) > 0 && (await c.isVisible().catch(() => false))) {
-            itemLoc = c;
-            break;
+        if (!itemLoc) {
+          for (const c of candidates) {
+            if ((await c.count().catch(() => 0)) > 0 && (await c.isVisible().catch(() => false))) {
+              itemLoc = c;
+              break;
+            }
           }
         }
 
         if (!itemLoc) itemLoc = candidates[0];
 
         await expect(itemLoc).toBeVisible({ timeout: getStepTimeoutMs(step) });
+        if (step.target === "Edit" && step.expected?.labelEquals) {
+          try {
+            await assertLabelMatch(itemLoc, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          } catch (err: any) {
+            recordVerificationWarning(
+              step,
+              context,
+              `Row action Edit menu label vs doc (${step.expected.labelEquals}): ${err?.message ?? String(err)}`
+            );
+          }
+        }
         break;
       }
 
@@ -19063,6 +24845,47 @@ export async function performAction(
           el = picked ?? page.locator('[data-test-id="cms-nav-settings"]').first();
         }
       }
+      // Lytics OAuth popup: Authorize control test ids vary by Lytics / IdP page — try role + text fallbacks.
+      if (step.target === "DAL Lytics doc: OAuth Authorize button label (doc step)") {
+        const resolveDalAuthorize = async (p: Page): Promise<Locator | null> => {
+          const cands: Locator[] = [
+            p.locator('button[data-testid="modal-form-install-authorize"]').first(),
+            p.locator('[data-testid="modal-form-install-authorize"]').first(),
+            p.locator('[data-test-id="cs-button"][data-testid="modal-form-install-authorize"]').first(),
+            p.locator('[data-test-id="cs-button"]').filter({ hasText: /^Authorize$/i }).first(),
+            p
+              .locator("button")
+              .filter({ has: p.locator("span:has-text(\"Authorize\")") })
+              .first(),
+            p.getByRole("button", { name: /^Authorize$/i }).first(),
+            p.getByRole("link", { name: /^Authorize$/i }).first(),
+            p.locator('button:has-text("Authorize")').first(),
+          ];
+          for (const c of cands) {
+            if (await c.isVisible({ timeout: 3_500 }).catch(() => false)) return c;
+          }
+          return null;
+        };
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        await page.waitForTimeout(1_200);
+        let oauthPick = await resolveDalAuthorize(page);
+        if (!oauthPick) {
+          await page.waitForLoadState("load").catch(() => {});
+          await page.waitForTimeout(2_000);
+          oauthPick = await resolveDalAuthorize(page);
+        }
+        if (!oauthPick) {
+          for (const p of page.context().pages()) {
+            const hit = await resolveDalAuthorize(p);
+            if (hit) {
+              await p.bringToFront().catch(() => {});
+              oauthPick = hit;
+              break;
+            }
+          }
+        }
+        if (oauthPick) el = oauthPick;
+      }
       await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
 
       if (step.expected?.within) {
@@ -19165,6 +24988,396 @@ export async function performAction(
     }
 
     case "enter": {
+      if (
+        String(flow?.id || "").toLowerCase() === "edit-item-in-knowledge-vault" &&
+        step.target === "Knowledge Vault manual item Text Content input (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 90_000);
+        const raw = String(step.value ?? "").trim().split("{unique}").join(unique);
+        if (!raw) throw new Error("edit-item-in-knowledge-vault: Text Content enter step missing value.");
+        const inp = page.locator('[data-test-id="brand-kit-change-input-text-create-item-content"]').first();
+        await expect(inp).toBeVisible({ timeout: Math.min(t, 55_000) });
+        await inp.click({ force: true }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(raw);
+        await page.waitForTimeout(450);
+        break;
+      }
+
+      if (isCreateJobLyticsAuthorizationFlow(flow)) {
+        const tL = getStepTimeoutMs(step, 120_000);
+        const searchIn = page
+          .locator('main input[placeholder="Search"], .main-content input[placeholder="Search"]')
+          .first();
+        const expandUniqueIn = (v: string) => v.split("{unique}").join(unique);
+
+        if (step.target === "Lytics Job doc: Job catalog search Contentstack filter (doc step)") {
+          const raw =
+            expandUniqueIn(String(step.value ?? "contentstack").trim()) || "contentstack";
+          await expect(searchIn).toBeVisible({ timeout: Math.min(tL, 45_000) });
+          await searchIn.click({ timeout: tL });
+          await searchIn.fill("");
+          await searchIn.fill(raw);
+          await page.keyboard.press("Enter").catch(() => {});
+          await page.waitForTimeout(1_000);
+          break;
+        }
+        if (step.target === "Lytics Job doc: Set job details Label field (doc step)") {
+          const raw =
+            expandUniqueIn(String(step.value ?? "AUTO-Lytics-Job-{unique}").trim()) || `AUTO-Lytics-Job-${unique}`;
+          const inp = page.getByRole("textbox", { name: /^Label\b/i }).first();
+          await expect(inp).toBeVisible({ timeout: tL });
+          await inp.click({ timeout: tL }).catch(() => {});
+          await inp.fill("");
+          await inp.fill(raw);
+          await page.waitForTimeout(350);
+          break;
+        }
+        if (step.target === "Lytics Job doc: Configure authorization Label field (doc step)") {
+          const raw =
+            expandUniqueIn(String(step.value ?? "AUTO-Lytics-Auth-{unique}").trim()) ||
+            `AUTO-Lytics-Auth-${unique}`;
+          const details = page.locator("*").filter({ hasText: /\bDetails\b/i }).first();
+          let inp = details.getByRole("textbox", { name: /^Label\b/i }).first();
+          if (!(await inp.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            inp = page.getByRole("textbox", { name: /^Label\b/i }).nth(1);
+          }
+          if (!(await inp.isVisible({ timeout: 2_000 }).catch(() => false))) {
+            inp = page.getByRole("textbox").nth(1);
+          }
+          await expect(inp).toBeVisible({ timeout: tL });
+          await inp.click({ timeout: tL }).catch(() => {});
+          await inp.fill("");
+          await inp.fill(raw);
+          await page.waitForTimeout(350);
+          break;
+        }
+        const readSecret = (envKeys: string[], stepVal: unknown): string => {
+          for (const k of envKeys) {
+            const v = String(process.env[k] ?? "").trim();
+            if (v) return expandUniqueIn(v);
+          }
+          return expandUniqueIn(String(stepVal ?? "").trim());
+        };
+
+        const fillSensitiveByLabel = async (labelRx: RegExp, value: string) => {
+          if (!value) {
+            throw new Error(
+              `create-job-and-authorization-for-data-and-insights-lytics: missing value for field matching ${labelRx} — set the matching LYTICS_* env var or step.value in the flow JSON.`
+            );
+          }
+          const byAccessible = page.getByRole("textbox", { name: labelRx }).first();
+          if (await byAccessible.isVisible({ timeout: 4_500 }).catch(() => false)) {
+            await byAccessible.fill(value);
+            return;
+          }
+          const labelNode = page.getByText(labelRx).first();
+          if (await labelNode.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            const field = labelNode
+              .locator("xpath=following::input[1]|following::textarea[1]")
+              .first();
+            if (await field.isVisible({ timeout: 3_000 }).catch(() => false)) {
+              await field.fill(value);
+              await page.waitForTimeout(250);
+              return;
+            }
+          }
+          await expect(byAccessible).toBeVisible({ timeout: Math.min(tL, 35_000) });
+          await byAccessible.fill(value);
+        };
+
+        if (step.target === "Lytics Job doc: Configuration Stack API Key input (doc step)") {
+          const val = readSecret(["LYTICS_JOB_STACK_API_KEY", "LYTICS_STACK_API_KEY"], step.value);
+          await fillSensitiveByLabel(/^Stack API Key\b/i, val);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Lytics Job doc: Configuration Delivery Token input (doc step)") {
+          const val = readSecret(["LYTICS_JOB_DELIVERY_TOKEN", "LYTICS_DELIVERY_TOKEN"], step.value);
+          await fillSensitiveByLabel(/^Delivery Token\b/i, val);
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Lytics Job doc: Configuration Management Token input (doc step)") {
+          const val = readSecret(["LYTICS_JOB_MANAGEMENT_TOKEN", "LYTICS_MANAGEMENT_TOKEN"], step.value);
+          await fillSensitiveByLabel(/^Management Token\b/i, val);
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "create-data-and-insights-lytics-integration") {
+        const tDal = getStepTimeoutMs(step, 120_000);
+        const dm = page.locator('[data-testid="cs-org-add-lytics-tag-modal"]').first();
+
+        /** CMS Stacks / Launch / Personalize use react-select; menu may portal with `[id$="-listbox"]` or use checkbox rows without `role="option"`. */
+        const resolveDalAsyncMenu = async (box: Locator): Promise<Locator | null> => {
+          const menuCandidates: Locator[] = [
+            page.locator(`[id$="-listbox"]`).filter({ visible: true }).last(),
+            page.locator(".Select__menu").filter({ visible: true }).last(),
+            page.locator('[role="listbox"]').filter({ visible: true }).last(),
+            box.locator(".Select__menu").filter({ visible: true }).last(),
+          ];
+          for (const m of menuCandidates) {
+            if (await m.isVisible({ timeout: 2_000 }).catch(() => false)) return m;
+          }
+          const caret = box.locator('[data-test-id="cs-async-select-caret-down"]').first();
+          if (await caret.isVisible({ timeout: 1_500 }).catch(() => false)) {
+            await caret.click({ timeout: tDal }).catch(() => {});
+            await page.waitForTimeout(400);
+            for (const m of menuCandidates) {
+              if (await m.isVisible({ timeout: 2_500 }).catch(() => false)) return m;
+            }
+          }
+          return null;
+        };
+
+        const openDalModalAsyncSelect = async (containerTestId: string): Promise<Locator> => {
+          const box = dm.locator(`[data-test-id="${containerTestId}"]`).first();
+          await expect(box).toBeVisible({ timeout: tDal });
+          await box.scrollIntoViewIfNeeded().catch(() => {});
+          const control = box.locator(".Select__control").first();
+          await expect(control).toBeVisible({ timeout: Math.min(tDal, 30_000) });
+          await control.click({ timeout: tDal });
+          await page.waitForTimeout(450);
+          return box;
+        };
+
+        /** CMS Stacks only: type filter (step.value → DAL_CMS_STACK_SEARCH → DEFAULT_STACK → "AUTO"), then pick first **enabled** row matching filter when possible. */
+        const pickDalModalCmsStacksFirstEnabledCheckbox = async () => {
+          const box = await openDalModalAsyncSelect("cs-org-lytics-tag-cms-stacks");
+          const fromStep = String(step.value ?? "").trim();
+          const needle =
+            fromStep ||
+            String(process.env.DAL_CMS_STACK_SEARCH ?? "").trim() ||
+            String(process.env.DEFAULT_STACK ?? "").trim() ||
+            "AUTO";
+          const needleRe = needle.length > 0 ? new RegExp(escapeRegex(needle), "i") : null;
+          const inp = box.locator('.Select__input input, input[type="text"]').first();
+          if (await inp.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            await inp.click({ timeout: tDal }).catch(() => {});
+            await inp.fill("");
+            if (needle) await inp.pressSequentially(needle, { delay: 35 });
+          } else {
+            const anyInp = box.locator('input:not([type="hidden"])').first();
+            if (await anyInp.isVisible({ timeout: 1_500 }).catch(() => false)) {
+              await anyInp.fill("");
+              if (needle) await anyInp.pressSequentially(needle, { delay: 35 });
+            }
+          }
+          await page.waitForTimeout(1_200);
+          // eslint-disable-next-line no-console
+          console.log(
+            `create-data-and-insights-lytics-integration: cms-stacks — filter "${needle}" then first matching enabled checkbox/row.`
+          );
+          /**
+           * Org-admin UI: options often render as div[aria-label] siblings (outside listbox/Select__menu).
+           * Intermittent failures happen when: (1) API results arrive after our first read, (2) wrong global listbox wins `.last()`,
+           * (3) no stack name substring-matches the filter in that org. We poll briefly, then fall back to listbox/checkbox path.
+           */
+          const ariaNoise = /^option\b|^search|^focused|results available/i;
+          const tryClickAriaStackRow = async (needleFirst: boolean): Promise<boolean> => {
+            const gather = [
+              box.locator(":scope > div").last().locator("[aria-label]"),
+              box.locator("xpath=following-sibling::div[1]//div[@aria-label]"),
+              dm.locator('[data-test-id="cs-org-lytics-tag-cms-stacks"]').locator("xpath=..//div[@aria-label]"),
+            ];
+            const candidatesOrdered: Locator[] = [];
+            for (const g of gather) {
+              const n = await g.count().catch(() => 0);
+              for (let i = 0; i < n; i++) candidatesOrdered.push(g.nth(i));
+            }
+            const tryRow = async (loc: Locator, strictNeedle: boolean): Promise<boolean> => {
+              if (!(await loc.isVisible({ timeout: 600 }).catch(() => false))) return false;
+              const label = ((await loc.getAttribute("aria-label").catch(() => "")) || "").trim();
+              if (label.length < 4 || ariaNoise.test(label)) return false;
+              if (strictNeedle && needleRe && !needleRe.test(label)) return false;
+              await loc.click({ timeout: tDal });
+              await page.waitForTimeout(350);
+              return true;
+            };
+            if (needleFirst) {
+              for (const loc of candidatesOrdered) {
+                if (await tryRow(loc, true)) return true;
+              }
+            }
+            for (const loc of candidatesOrdered) {
+              if (await tryRow(loc, false)) return true;
+            }
+            return false;
+          };
+          /** Wait for async filter results (stacks API + paint). */
+          for (let wave = 0; wave < 12; wave++) {
+            if (await tryClickAriaStackRow(true)) return;
+            if (await tryClickAriaStackRow(false)) return;
+            await page.waitForTimeout(450);
+          }
+
+          const menu = await resolveDalAsyncMenu(box);
+          if (!menu) {
+            if (await tryClickAriaStackRow(true)) return;
+            if (await tryClickAriaStackRow(false)) return;
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(450);
+            return;
+          }
+          const nativeChecks = menu.locator('input[type="checkbox"]');
+          const nNat = await nativeChecks.count();
+          for (let i = 0; i < nNat; i++) {
+            const cb = nativeChecks.nth(i);
+            if (!(await cb.isVisible({ timeout: 1_500 }).catch(() => false))) continue;
+            if (await cb.isDisabled().catch(() => true)) continue;
+            await cb.click({ timeout: tDal });
+            await page.waitForTimeout(350);
+            await page.waitForTimeout(150);
+            return;
+          }
+          const roleChecks = menu.locator('[role="checkbox"]');
+          const nRole = await roleChecks.count();
+          for (let i = 0; i < nRole; i++) {
+            const rc = roleChecks.nth(i);
+            if (!(await rc.isVisible({ timeout: 1_500 }).catch(() => false))) continue;
+            const ariaDis = await rc.getAttribute("aria-disabled").catch(() => null);
+            if (ariaDis === "true") continue;
+            if (await rc.isDisabled().catch(() => false)) continue;
+            await rc.click({ timeout: tDal });
+            await page.waitForTimeout(350);
+            await page.waitForTimeout(150);
+            return;
+          }
+          const options = menu.getByRole("option").filter({ visible: true });
+          const nOpt = await options.count();
+          for (let i = 0; i < nOpt; i++) {
+            const row = options.nth(i);
+            if (!(await row.isVisible({ timeout: 800 }).catch(() => false))) continue;
+            const rowDisabled = await row
+              .evaluate((el) => {
+                const n = el as HTMLElement;
+                return (
+                  n.getAttribute("aria-disabled") === "true" ||
+                  !!n.closest(".Select__option--is-disabled, .Select__option--is-disabled *, [class*='is-disabled']")
+                );
+              })
+              .catch(() => false);
+            if (rowDisabled) continue;
+            const rowCb = row.locator('input[type="checkbox"]').first();
+            if ((await rowCb.count().catch(() => 0)) > 0 && !(await rowCb.isDisabled().catch(() => true))) {
+              await rowCb.click({ timeout: tDal });
+              await page.waitForTimeout(350);
+              return;
+            }
+            await row.click({ timeout: tDal });
+            await page.waitForTimeout(350);
+            await page.waitForTimeout(150);
+            return;
+          }
+          const anyOpt = menu.locator(".Select__option").filter({ visible: true }).first();
+          if (await anyOpt.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            await anyOpt.click({ timeout: tDal });
+            await page.waitForTimeout(350);
+            await page.waitForTimeout(150);
+            return;
+          }
+          if (await tryClickAriaStackRow(true)) return;
+          if (await tryClickAriaStackRow(false)) return;
+          throw new Error(
+            "DAL Lytics: CMS Stacks menu has no enabled/selectable row — check org stacks or UI state."
+          );
+        };
+
+        /** Pick first *visible* menu row (checkbox if present). Launch/Personalize: first visible option. */
+        const pickDalModalAsyncSelectFirstOption = async (containerTestId: string) => {
+          const box = await openDalModalAsyncSelect(containerTestId);
+          // eslint-disable-next-line no-console
+          console.log(
+            `create-data-and-insights-lytics-integration: "${containerTestId}" — selecting first visible option (no type-to-filter).`
+          );
+          const menu = await resolveDalAsyncMenu(box);
+          if (!menu) {
+            await page.keyboard.press("Enter");
+            await page.waitForTimeout(450);
+            await page.waitForTimeout(150);
+            return;
+          }
+          const firstOpt = menu.getByRole("option").filter({ visible: true }).first();
+          if (await firstOpt.isVisible({ timeout: 2_500 }).catch(() => false)) {
+            const cb = firstOpt.locator('input[type="checkbox"]').first();
+            if ((await cb.count()) > 0 && (await cb.isVisible().catch(() => false))) await cb.click({ timeout: tDal });
+            else await firstOpt.click({ timeout: tDal });
+          } else {
+            const firstCb = menu.locator('input[type="checkbox"]').filter({ visible: true }).first();
+            if (await firstCb.isVisible({ timeout: 2_000 }).catch(() => false)) {
+              await firstCb.click({ timeout: tDal });
+            } else {
+              const firstRow = menu.locator('[role="option"], .Select__option, div').filter({ visible: true }).first();
+              if (await firstRow.isVisible({ timeout: 2_000 }).catch(() => false)) await firstRow.click({ timeout: tDal });
+            }
+          }
+          await page.waitForTimeout(350);
+          await page.waitForTimeout(150);
+        };
+
+        if (step.target === "DAL Lytics doc: Title field (doc step)") {
+          const raw = String(step.value ?? "").trim().split("{unique}").join(unique);
+          if (!raw) throw new Error("create-data-and-insights-lytics-integration: Title value missing.");
+          const inp = dm.locator('[data-test-id="cs-org-lytics-tag-name"] input').first();
+          await expect(inp).toBeVisible({ timeout: tDal });
+          await inp.fill(raw);
+          if (flow && typeof flow === "object") (flow as any).__dalLyticsDalTitle = raw;
+          await page.waitForTimeout(200);
+          break;
+        }
+        if (step.target === "DAL Lytics doc: Domain field (doc step)") {
+          const fromEnv = String(process.env.DAL_CONFIGURATION_DOMAIN || "").trim();
+          const raw = (fromEnv || String(step.value ?? "").trim()).split("{unique}").join(unique);
+          if (!raw) {
+            throw new Error(
+              "create-data-and-insights-lytics-integration: Domain missing — set step.value or DAL_CONFIGURATION_DOMAIN."
+            );
+          }
+          const inp = dm.locator('[data-test-id="cs-org-lytics-tag-domain"] input').first();
+          await expect(inp).toBeVisible({ timeout: tDal });
+          await inp.fill(raw);
+          await page.waitForTimeout(200);
+          break;
+        }
+        if (step.target === "DAL Lytics doc: CMS Stacks async select filter (doc step)") {
+          await pickDalModalCmsStacksFirstEnabledCheckbox();
+          break;
+        }
+        if (step.target === "DAL Lytics doc: Launch Projects async select pick (doc step)") {
+          await pickDalModalAsyncSelectFirstOption("cs-org-lytics-tag-launch-projects");
+          break;
+        }
+        if (step.target === "DAL Lytics doc: Personalize Projects async select pick (doc step)") {
+          await pickDalModalAsyncSelectFirstOption("cs-org-lytics-tag-personalize-projects");
+          break;
+        }
+        if (step.target === "DAL Lytics doc: Lytics Account dropdown filter (doc step)") {
+          const needle = String(process.env.DAL_LYTICS_ACCOUNT_SEARCH ?? step.value ?? "").trim();
+          const box = dm.locator('[data-test-id="cs-org-lytics-tag-lytics-account"]').first();
+          await box.click({ timeout: tDal });
+          await page.waitForTimeout(250);
+          const inp = box.locator('input[type="text"]').first();
+          await inp.fill("");
+          if (needle) await inp.pressSequentially(needle, { delay: 35 });
+          await page.waitForTimeout(500);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (step.target === "DAL Lytics doc: Select Users modal search field (doc step)") {
+          const modal = page.locator('[data-test-id="add-user-modal"]').first();
+          await expect(modal).toBeVisible({ timeout: tDal });
+          const raw = String(step.value ?? "test").trim();
+          const inp = modal.locator('[data-test-id="cs-search-input-field"]').first();
+          await inp.fill("");
+          await inp.fill(raw);
+          await page.waitForTimeout(600);
+          break;
+        }
+      }
+
       if (
         (String(flow?.id || "").toLowerCase() === "quick-start-vue" ||
           String(flow?.id || "").toLowerCase() === "quick-start-remix" ||
@@ -19844,8 +26057,82 @@ export async function performAction(
         break;
       }
 
+      if (
+        String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" &&
+        step.target === "Brand Kit AI Assistant right nav: AI Assistant prompt field (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 180_000);
+        const panel = page.locator("#ai-assistant-dropdown").first();
+        await expect(panel).toBeVisible({ timeout: t });
+        const ta = panel
+          .locator(
+            'textarea.Textarea__textarea, textarea[placeholder*="custom command" i], [data-test-id="cs-text-area"] textarea'
+          )
+          .first();
+        await expect(ta).toBeVisible({ timeout: t });
+        const raw = String(step.value ?? "").split("{unique}").join(unique);
+        await ta.click({ force: true }).catch(() => {});
+        await ta.fill("");
+        await ta.fill(raw);
+        await page.waitForTimeout(250);
+        break;
+      }
+
+      if (String(flow?.id || "").toLowerCase() === "invite-collaborators") {
+        const t = getStepTimeoutMs(step, 90_000);
+        if (step.target === "Brand Kit Invite Collaborator modal email field (doc step)") {
+          const title = page.locator('[data-test-id="cs-modal-title-invite-collaborator"]').first();
+          await expect(title).toBeVisible({ timeout: t });
+          const raw = String(
+            step.value ??
+              process.env.BRAND_KIT_COLLABORATOR_INVITE_EMAIL ??
+              process.env.CS_INVITE_TEST_EMAIL ??
+              `doc-bk-collab-{unique}@example.com`
+          )
+            .split("{unique}")
+            .join(unique)
+            .trim();
+          if (!raw || !raw.includes("@")) {
+            throw new Error(
+              "invite-collaborators: set step.value or BRAND_KIT_COLLABORATOR_INVITE_EMAIL (or CS_INVITE_TEST_EMAIL) to a valid collaborator email."
+            );
+          }
+          if (flow && typeof flow === "object") (flow as any).__brandKitInviteCollaboratorEmail = raw;
+          const pill = page.locator('[data-test-id="brand-kit-invite-collaborator-email-input-field"]').first();
+          await expect(pill).toBeVisible({ timeout: t });
+          await pill.click({ timeout: t, force: true });
+          await page.waitForTimeout(200);
+          const innerInput = pill.locator("input").first();
+          if ((await innerInput.count().catch(() => 0)) > 0 && (await innerInput.isVisible().catch(() => false))) {
+            await innerInput.fill("");
+            await innerInput.fill(raw);
+          } else {
+            await page.keyboard.type(raw, { delay: 12 });
+            await page.keyboard.press("Enter");
+          }
+          await page.waitForTimeout(300);
+          break;
+        }
+        if (step.target === "Brand Kit Invite Collaborator modal optional message field (doc step)") {
+          await expect(page.locator('[data-test-id="cs-modal-title-invite-collaborator"]').first()).toBeVisible({
+            timeout: t,
+          });
+          const inp = page.locator('[data-test-id="brand-kit-invite-collaborator-message-input-field"]').first();
+          await expect(inp).toBeVisible({ timeout: t });
+          const msg = String(step.value ?? `Doc automation BK invite message {unique}`).split("{unique}").join(unique);
+          await inp.click({ timeout: t, force: true });
+          await inp.fill("");
+          await inp.fill(msg);
+          await page.waitForTimeout(200);
+          break;
+        }
+      }
+
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
+      const unique8 = unique.replace(/-/g, "").slice(0, 8);
       const rawVal = String(step.value ?? "")
+        .split("{unique8}")
+        .join(unique8)
         .split("{unique25}")
         .join(unique25)
         .split("{unique}")
@@ -20785,6 +27072,23 @@ export async function performAction(
           );
         }
       }
+      if (url === "{{LYTICS_PIPELINE_JOBS_URL}}") {
+        url = (process.env.LYTICS_PIPELINE_JOBS_URL || "").trim();
+        if (!url) {
+          throw new Error(
+            "create-job-and-authorization-for-data-and-insights-lytics: Set LYTICS_PIPELINE_JOBS_URL in .env to the full Jobs list URL from Lytics (e.g. https://app.lytics.com/conductor/pipeline/jobs?aid=<account>&table=user) after signing in."
+          );
+        }
+      }
+      /** Lytics Import Entries job flow — doc entry URL app.lytics.com (`{{LYTICS_APP_URL}}` or literal). Scoped so other tests can still deep-link elsewhere on app.lytics.com unchanged. */
+      if (
+        isCreateJobLyticsAuthorizationFlow(flow) &&
+        (url === "{{LYTICS_APP_URL}}" || /^https:\/\/app\.lytics\.com\/?$/i.test(url))
+      ) {
+        const raw = (process.env.LYTICS_APP_URL || process.env.LYTICS_APP_ORIGIN || "https://app.lytics.com").trim();
+        url = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+        url = url.replace(/\/+$/, "") + "/";
+      }
       const navT = getStepTimeoutMs(step, 120_000);
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: navT });
       await page.waitForLoadState("networkidle").catch(() => {});
@@ -20818,6 +27122,18 @@ export async function performAction(
       const { input } = loadOverrides(flow);
       const uploadSel = (step.target && input[step.target]) || 'input[type="file"]';
       let filePath = String(step.value).trim();
+      const envKvImportFixture = String(process.env.BRAND_KIT_KNOWLEDGE_VAULT_IMPORT_FIXTURE_PATH || "").trim();
+      if (String(flow?.id || "").toLowerCase() === "import-item-in-knowledge-vault" && envKvImportFixture) {
+        filePath = envKvImportFixture;
+      }
+      const envVpImportFixture = String(process.env.BRAND_KIT_VOICE_PROFILE_IMPORT_FIXTURE_PATH || "").trim();
+      if (String(flow?.id || "").toLowerCase() === "import-a-voice-profile" && envVpImportFixture) {
+        filePath = envVpImportFixture;
+      }
+      const envKvUploadFixture = String(process.env.BRAND_KIT_KNOWLEDGE_VAULT_UPLOAD_FIXTURE_PATH || "").trim();
+      if (String(flow?.id || "").toLowerCase() === "add-item-in-knowledge-vault" && envKvUploadFixture) {
+        filePath = envKvUploadFixture;
+      }
       if (!path.isAbsolute(filePath)) {
         filePath = path.join(process.cwd(), filePath.replace(/^\.\//, ""));
       }
@@ -20844,6 +27160,28 @@ export async function performAction(
       if (isJsonRteCodeBlocksFlow(flow) && String(step.target || "").includes("JSON RTE key")) {
         await page.keyboard.press(raw as "Enter" | "Shift+Enter");
         await page.waitForTimeout(220);
+        break;
+      }
+      if (
+        String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" &&
+        step.target === "Brand Kit AI Assistant right nav: AI Assistant prompt field keyboard Enter (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 120_000);
+        const panel = page.locator("#ai-assistant-dropdown").first();
+        await expect(panel).toBeVisible({ timeout: t });
+        const ta = panel
+          .locator(
+            'textarea.Textarea__textarea, textarea[placeholder*="custom command" i], [data-test-id="cs-text-area"] textarea'
+          )
+          .first();
+        await expect(ta).toBeVisible({ timeout: t });
+        await ta.click({ force: true }).catch(() => {});
+        const keyNorm = raw.replace(/\s+/g, "");
+        if (!/^Enter$/i.test(keyNorm)) {
+          throw new Error(`Brand Kit get-started: keyboard press expects value "Enter", got "${raw}".`);
+        }
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(600);
         break;
       }
       throw new Error(`Unknown press step for flow ${String(flow?.id || "")}: ${step.target}`);

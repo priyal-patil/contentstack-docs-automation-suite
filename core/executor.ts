@@ -50,6 +50,57 @@ import { ensureTrashHasDeletedGlobalFieldIfNeeded } from "./preflightTrashGlobal
 import { ensureTrashHasDeletedEntryIfNeeded } from "./preflightTrashEntries";
 import { ensureTrashHasDeletedAssetFolderIfNeeded, ensureTrashHasDeletedFileAssetIfNeeded } from "./preflightTrashAssets";
 
+/** Prefer the current page; if it is already closed, try any other open page in the same context. */
+async function captureFailureScreenshotBestEffort(page: Page, absShot: string): Promise<boolean> {
+  let ctx: import("@playwright/test").BrowserContext | null = null;
+  try {
+    ctx = page.context();
+  } catch {
+    ctx = null;
+  }
+  const openPages = ctx ? ctx.pages().filter((p) => !p.isClosed()) : [];
+  const tryOne = async (p: Page) => {
+    try {
+      await p.screenshot({ path: absShot, fullPage: false, timeout: 20_000 });
+      return fs.existsSync(absShot);
+    } catch {
+      return false;
+    }
+  };
+  if (!page.isClosed() && (await tryOne(page))) return true;
+  for (const p of openPages) {
+    if (await tryOne(p)) return true;
+  }
+  return false;
+}
+
+/** After a sub-flow (e.g. DAL OAuth), focus a tab on app.lytics.com if one exists. */
+async function preferAppLyticsTabPage(currentPage: Page): Promise<Page> {
+  try {
+    const ctx = currentPage.context();
+    const pages = ctx.pages();
+    let lastLytics: Page | null = null;
+    for (const p of pages) {
+      if (p.isClosed()) continue;
+      let u = "";
+      try {
+        u = p.url();
+      } catch {
+        continue;
+      }
+      if (/app\.lytics\.com/i.test(u)) lastLytics = p;
+    }
+    if (lastLytics) {
+      await lastLytics.bringToFront().catch(() => {});
+      await new Promise((r) => setTimeout(r, 200));
+      return lastLytics;
+    }
+  } catch {
+    /* ignore */
+  }
+  return currentPage;
+}
+
 const projectsRootDir = path.resolve(__dirname, "../projects");
 
 /** Resolve projects tree for flows matching JSON id (first .flow.json match). */
@@ -204,8 +255,7 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
             const safeFlow = String(flow.id || "flow").replace(/[^a-zA-Z0-9_.-]/g, "_");
             const fileName = `${safeFlow}-step-${i + 1}.png`;
             const absShot = path.join(shotDir, fileName);
-            await currentPage.screenshot({ path: absShot, fullPage: false, timeout: 20_000 }).catch(() => {});
-            if (fs.existsSync(absShot)) {
+            if (await captureFailureScreenshotBestEffort(currentPage, absShot)) {
               screenshotRelativePath = path.join("flow-screenshots", fileName).split(path.sep).join("/");
             }
           } catch {
@@ -236,7 +286,20 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
       }
       subFlow = { ...subFlow, steps: subSteps.slice(skipFirstInSub) };
     }
-    await executeFlow(currentPage, subFlow, { skipSharedSteps: true });
+    const continueAfterSubFlowFailure =
+      preflightObj?.continueOnExecuteFlowBeforeFailure === true ||
+      String(preflightObj?.continueOnExecuteFlowBeforeFailure ?? "").toLowerCase() === "true";
+    try {
+      await executeFlow(currentPage, subFlow, { skipSharedSteps: true });
+    } catch (subErr: unknown) {
+      if (!continueAfterSubFlowFailure) throw subErr;
+      // eslint-disable-next-line no-console
+      console.warn(
+        `⚠️ preflight.executeFlowBefore("${executeBeforeId}") failed — continuing main flow (preflight.continueOnExecuteFlowBeforeFailure=true):`,
+        subErr
+      );
+    }
+    currentPage = await preferAppLyticsTabPage(currentPage);
   }
 
   console.log("🔎 Flow.steps type:", typeof flow.steps);
@@ -282,8 +345,7 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         const safeFlow = String(flow.id || "flow").replace(/[^a-zA-Z0-9_.-]/g, "_");
         const fileName = `${safeFlow}-step-${i + 1}.png`;
         const absShot = path.join(shotDir, fileName);
-        await currentPage.screenshot({ path: absShot, fullPage: false, timeout: 20_000 }).catch(() => {});
-        if (fs.existsSync(absShot)) {
+        if (await captureFailureScreenshotBestEffort(currentPage, absShot)) {
           screenshotRelativePath = path.join("flow-screenshots", fileName).split(path.sep).join("/");
         }
       } catch {

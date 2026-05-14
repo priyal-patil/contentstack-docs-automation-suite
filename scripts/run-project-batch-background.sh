@@ -9,8 +9,9 @@
 #   ./scripts/run-project-batch-background.sh CMS
 #   ./scripts/run-project-batch-background.sh Launch
 #   ./scripts/run-project-batch-background.sh Personalize
+#   ./scripts/run-project-batch-background.sh Data-and-Insights
 #
-# Aliases (case-insensitive): cms, launch, personalize
+# Aliases (case-insensitive): cms, launch, personalize, data-and-insights
 #
 # Logs: reports/bg-<name>-<timestamp>.log
 
@@ -18,7 +19,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-RAW="${1:?Usage: $0 CMS|Launch|Personalize}"
+RAW="${1:?Usage: $0 CMS|Launch|Personalize|Data-and-Insights}"
 KEY="$(echo "$RAW" | tr '[:upper:]' '[:lower:]')"
 
 TS="$(date +%Y%m%d-%H%M%S)"
@@ -73,8 +74,20 @@ case "$KEY" in
       bash -c "$(wrap_inner "$INNER")" >>"$LOG" 2>&1 &
     PID=$!
     ;;
+  data-and-insights)
+    LOG="$ROOT/reports/bg-data-and-insights-${TS}.log"
+    INNER="cd \"$ROOT\" && bash \"$ROOT/scripts/run-generic-project-headless.sh\" Data-and-Insights"
+    nohup env \
+      SKIP_OPEN_DASHBOARD="$SKIP_OPEN_DASHBOARD" \
+      SKIP_SLACK="$SKIP_SLACK" \
+      PW_WORKERS="${PW_WORKERS:-6}" \
+      PW_SLOWMO="${PW_SLOWMO:-0}" \
+      PLAYWRIGHT_HEADLESS="${PLAYWRIGHT_HEADLESS:-1}" \
+      bash -c "$(wrap_inner "$INNER")" >>"$LOG" 2>&1 &
+    PID=$!
+    ;;
   *)
-    echo "Unknown project: $RAW — use CMS, Launch, or Personalize" >&2
+    echo "Unknown project: $RAW — use CMS, Launch, Personalize, or Data-and-Insights" >&2
     exit 1
     ;;
 esac

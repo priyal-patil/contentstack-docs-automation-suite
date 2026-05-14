@@ -1,0 +1,141 @@
+{
+  "id": "analytics-for-brand-kit",
+  "project": "Analytics",
+  "module": "guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/analytics/analytics-for-brand-kit",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "https://www.contentstack.com/docs/analytics/analytics-for-brand-kit — Doc step 1: App Switcher (`data-test-id=\"app-switcher\"` per data/dom/header/app-switcher-icon.html) → Analytics product link `app-switcher-product` → `#!/product-analytics` (data/dom/header/app-switcher.html). Optional prior step: header org dropdown when DEFAULT_ORG is set. Doc step 2: default CMS analytics → Brand Kit hub tab (`analytics-nav-brandkit`). No organization dashboard Analytics tile for this flow.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Brand Kit analytics doc: App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit analytics doc: App Switcher Analytics product (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics dashboard default CMS label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "CMS" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics hub Brand Kit dashboard tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics hub Brand Kit dashboard label visible after tab switch (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Brand Kit" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Subscription Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Subscription Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Subscription Usage parameter Brand Kit (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Brand Kit" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Subscription Usage parameter Voice Profile (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profile" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Subscription Usage parameter Knowledge Vault (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Knowledge Vault" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Subscription Usage parameter Tokens (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Tokens" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Usage by Brand Kit section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Usage by Brand Kit" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Brand Kit table column Brand Kit Name (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Brand Kit Name" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Brand Kit table column Voice Profiles (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profiles" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Brand Kit table column Knowledge Vaults (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Knowledge Vaults" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Brand Kit table column Tokens Used (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Tokens Used" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Content Generations section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Content Generations" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Content Generations Status Code section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Content Generations Status Code" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Brand Kit Requests section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Brand Kit Requests" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Brand Kit Status Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Brand Kit Status Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics AI Assistant Request section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "AI Assistant Request" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics AI Status Code Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "AI Status Code Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit analytics Knowledge Vault Utilization section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault Utilization" }
+    }
+  ]
+}

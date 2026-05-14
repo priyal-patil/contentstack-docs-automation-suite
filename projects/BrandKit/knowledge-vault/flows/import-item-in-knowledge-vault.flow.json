@@ -1,0 +1,110 @@
+{
+  "id": "import-item-in-knowledge-vault",
+  "project": "BrandKit",
+  "module": "knowledge-vault",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/import-item-in-knowledge-vault",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Import Item in Knowledge Vault — New Item → Import → Upload File → Proceed. Modal DOM: data/dom/BrandKit/kv-import.html (cs-modal-title-import, file-input, upload modal Proceed/Cancel). Fixture: data/fixtures/brand-kit-knowledge-vault-item-import-dummy.json (minimal placeholder). If the app rejects the JSON shape, export a real item once and set BRAND_KIT_KNOWLEDGE_VAULT_IMPORT_FIXTURE_PATH to that file.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Knowledge Vault nav label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Knowledge Vault top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ New Item", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Import menu option visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Import", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Import menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Import modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Import", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Import Upload File label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Upload File", "labelMatch": "contains" }
+    },
+    {
+      "action": "upload",
+      "target": "Knowledge Vault Import file input (import-item-in-knowledge-vault doc step)",
+      "timeoutMs": 90000,
+      "value": "data/fixtures/brand-kit-knowledge-vault-item-import-dummy.json"
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Import Proceed button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Import modal Proceed button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

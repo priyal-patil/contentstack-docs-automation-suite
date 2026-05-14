@@ -1,0 +1,90 @@
+{
+  "id": "delete-a-voice-profile",
+  "project": "BrandKit",
+  "module": "voice-profiles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/delete-a-voice-profile",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Delete a Voice Profile — Brand Kit nav → kit card (AUTO-CBK- or BRAND_KIT_VOICE_PROFILE_CARD_HINT) → Voice Profiles → Actions ⋯ → Delete on a row whose title contains AUTO-VP-. Runner may reopen ⋯ (same doc intent as one ⋯) if Delete is not visible yet or the confirm modal does not open — not extra doc steps. For a specific row, set BRAND_KIT_VOICE_PROFILE_CARD_HINT or ensure only one matching profile exists. Success toast wording not quoted in doc — warning-only if checked later.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Voice Profiles sidebar card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles landing page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Voice Profiles", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles listing Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-", "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Voice Profile modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Delete Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Voice Profile modal Delete button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete Voice Profile modal confirm Delete (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "id": "create-job-and-authorization-for-data-and-insights-lytics",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/data-and-insights/create-job-and-authorization-for-data-and-insights-lytics",
+  "type": "executable",
+  "use": [],
+  "automationNotes": "Runs in the Lytics web app. Doc order: open https://app.lytics.com/, then left nav Data Pipeline → Jobs (`Lytics Job doc: Sidebar navigate Data Pipeline to Jobs`). Optional overrides: LYTICS_APP_URL or LYTICS_APP_ORIGIN for a non-prod app host; LYTICS_PIPELINE_JOBS_URL only if you replace the flow’s first steps with a deep link. Requires a Lytics-authenticated storage state. Job catalog: search \"contentstack\", Import Entries. Credentials: LYTICS_JOB_STACK_API_KEY / LYTICS_STACK_API_KEY, LYTICS_JOB_DELIVERY_TOKEN / LYTICS_DELIVERY_TOKEN, LYTICS_JOB_MANAGEMENT_TOKEN / LYTICS_MANAGEMENT_TOKEN; LYTICS_STACK_REGION. Headed: npm run test:data-and-insights:lytics-job-auth:headed",
+  "steps": [
+    {
+      "action": "navigate",
+      "target": "https://app.lytics.com/",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Data Pipeline nav label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Data Pipeline",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Sidebar navigate Data Pipeline to Jobs (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Jobs sidebar nav label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Jobs",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Jobs page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Jobs",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Pipeline Jobs Create New control label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Create New",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Pipeline Jobs Create New button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Job catalog search Contentstack filter (doc step)",
+      "value": "contentstack",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Import Entries job type card visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Import Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Import Entries job type card (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Set job details section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Set job details",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Set job details Description label (doc step)",
+      "optional": true,
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Label field name in Set job details (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Label",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Set job details Label field (doc step)",
+      "value": "AUTO-Lytics-Job-{unique}",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Authorizations section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Authorizations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Authorizations New Authorization button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Authorization",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Authorizations New Authorization button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Stack API Key authorization method visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Stack API Key",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Stack API Key authorization method (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configure Authorization Details section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Details",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configure Authorization Details Label field visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Label",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configure Authorization Details Description label (doc step)",
+      "optional": true,
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Configure authorization Label field (doc step)",
+      "value": "AUTO-Lytics-Auth-{unique}",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configuration section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configuration section Region label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Region",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Configuration Region select option (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configuration Stack API Key field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Stack API Key",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Configuration Stack API Key input (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configuration Delivery Token field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Delivery Token",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Configuration Delivery Token input (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Configuration Management Token field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Management Token",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Lytics Job doc: Configuration Management Token input (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Save and Continue authorization button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save and Continue",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Lytics Job doc: Save and Continue authorization (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Lytics Job doc: verify Authorization saved successfully toast (doc step)",
+      "optional": true,
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Authorization saved successfully",
+        "labelMatch": "exact"
+      }
+    }
+  ]
+}

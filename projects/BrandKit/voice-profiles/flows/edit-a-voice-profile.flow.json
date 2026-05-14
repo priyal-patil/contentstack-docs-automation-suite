@@ -1,0 +1,185 @@
+{
+  "id": "edit-a-voice-profile",
+  "project": "BrandKit",
+  "module": "voice-profiles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/edit-a-voice-profile",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Edit a Voice Profile — ⋯ `button[data-test-id=cs-table-action-options]` opens tooltip; runner waits VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms), then `ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit]`: hover, verify Edit label (doc), click. Fallback Brand Kit test id if UI differs. Prerequisites: AUTO-VP- row, AUTO-CBK- Brand Kit.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Voice Profiles sidebar card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles landing page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Voice Profiles", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles listing Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-", "labelEquals": "Edit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Edit",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Voice Profile page field labels vs edit-a-voice-profile doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "documentedFields": [
+          "Voice Profile Name",
+          "Description",
+          "Communication Style Mixer",
+          "Formality Level",
+          "Tone Of Voice",
+          "Humor Level",
+          "Language Complexity Level",
+          "Custom Details",
+          "Insights",
+          "Sample Content",
+          "Playground"
+        ]
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profile Name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profile Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Communication Style Mixer section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Communication Style Mixer", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Formality Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Formality Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Tone Of Voice slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Tone Of Voice", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Humor Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Humor Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Language Complexity Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Language Complexity Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Custom Details section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insights label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Insights", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Sample Content label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Sample Content", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Playground section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Playground", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Name (doc step)",
+      "value": "AUTO-VP-{unique} edited"
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Description (doc step)",
+      "value": "AUTO Voice Profile description edited {unique}"
+    },
+    {
+      "action": "click",
+      "target": "Generate Response in Playground button (doc step)",
+      "timeoutMs": 180000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Edit Voice Profile Save button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Edit Voice Profile Save button (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Voice Profile save success message (doc step)",
+      "timeoutMs": 45000
+    }
+  ]
+}

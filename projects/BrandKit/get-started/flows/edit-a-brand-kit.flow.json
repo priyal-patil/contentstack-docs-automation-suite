@@ -1,0 +1,194 @@
+{
+  "id": "edit-a-brand-kit",
+  "project": "BrandKit",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/edit-a-brand-kit",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Edit a Brand Kit — Custom Credentials: verify API Key Provider label + dropdown, open menu, verify each listed provider option in the dropdown (OpenAI, Azure OpenAI Service, AWS Bedrock, Google Vertex AI; hard fail if any missing), select OpenAI, verify + click Save Custom Credentials, then verify + click Proceed (hard fail if Proceed not shown). Card: rowContains or BRAND_KIT_EDIT_CARD_HINT.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Settings navigation placement per edit doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: click Settings navigation item per edit doc (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings page Settings heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings General sidenav row (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "General",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Brand Kit Name label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Brand Kit Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Description label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Brand Kit Details Save button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Stack Details section title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Stack Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Add Stacks button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ Add Stacks", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Stack Details Save button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings API Key Details section title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "API Key Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Managed by Contentstack option (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Managed by Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Brand Kit Settings Custom Credentials option (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Custom Credentials", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Settings API Key Details click Custom Credentials (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials API Key Provider label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "API Key Provider", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials API Key Provider dropdown control (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Settings Custom Credentials open API Key Provider control (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials verify OpenAI in API Key Provider dropdown (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "OpenAI" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials verify Azure OpenAI Service in API Key Provider dropdown (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Azure OpenAI Service" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials verify AWS Bedrock in API Key Provider dropdown (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "AWS Bedrock" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Custom Credentials verify Google Vertex AI in API Key Provider dropdown (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Google Vertex AI" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Settings Custom Credentials select OpenAI from API Key Provider menu (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings Save Custom Credentials button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save Custom Credentials", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Settings Save Custom Credentials button click (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Settings API Key configuration change Proceed button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Settings API Key configuration change Proceed confirm click (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

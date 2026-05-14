@@ -1,0 +1,91 @@
+{
+  "id": "create-a-brand-kit",
+  "project": "BrandKit",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/create-a-brand-kit",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Create a Brand Kit — verifies left navigation Brand Kit label + Brand Kit icon (warnings only if absent; then dashboard tile fallback). Brand Kits landing → New Brand Kit control (doc shows '+'; UI uses Plus icon + text per brandkits-listingpage.html) → modal fields → stack picker → verify primary Create Brand Kit button → click. DEFAULT_STACK from .env.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kits page New Brand Kit primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Brand Kit", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Brand Kits page New Brand Kit primary (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Create Brand Kit",
+        "labelEquals": "Create Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Brand Kit Name label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Brand Kit Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Description label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit modal Select Stack(s) label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Select Stack(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Name (doc step)",
+      "value": "AUTO-CBK-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Description (doc step)",
+      "value": "AUTO Create Brand Kit doc description {unique}"
+    },
+    { "action": "click", "target": "Brand Kit Create modal Select Stack(s) control (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Brand Kit Create modal pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Create Brand Kit button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Create Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create Brand Kit modal primary Create Brand Kit button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

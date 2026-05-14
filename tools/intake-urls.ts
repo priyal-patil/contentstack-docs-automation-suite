@@ -40,10 +40,11 @@ function dedupe<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
 
-function inferProject(url: string): "CMS" | "Launch" | "Personalize" | "Unknown" {
+function inferProject(url: string): "CMS" | "Launch" | "Personalize" | "Data-and-Insights" | "Unknown" {
   const u = url.toLowerCase();
   if (u.includes("launch")) return "Launch";
   if (u.includes("personalize") || u.includes("audience") || u.includes("experience")) return "Personalize";
+  if (u.includes("/data-and-insights")) return "Data-and-Insights";
 
   if (
     u.includes("content-types") ||

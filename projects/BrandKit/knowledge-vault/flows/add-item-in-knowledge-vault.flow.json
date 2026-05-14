@@ -1,0 +1,358 @@
+{
+  "id": "add-item-in-knowledge-vault",
+  "project": "BrandKit",
+  "module": "knowledge-vault",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/add-item-in-knowledge-vault",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Add Item in Knowledge Vault — §4.1 Manual Text Entry then §4.2 File Upload; appended automation-only sequence: confirm KV listing → header Folder (+) → New Folder modal Name/Save → row ⋯ on AUTO-KV-FILE- item → Move To → Move To modal (filters + new-folder icons) → select AUTO-KV-FOLDER- → Move here. Doc scope originally omitted folders/Move To — runner-only continuation.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Knowledge Vault nav label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Knowledge Vault top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ New Item", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Manually menu option visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Add Manually", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Manually menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Item",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal Manual Text Entry card visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Manual Text Entry", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Item modal Manual Text Entry card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal Add primary enabled (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Add", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Item modal Add primary (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault manual entry Name field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault manual entry Text Content field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Text Content", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Knowledge Vault manual item Name input (doc step)",
+      "value": "AUTO-KV-MANUAL-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Knowledge Vault manual item Text Content input (doc step)",
+      "value": "AUTO Knowledge Vault manual text entry body for documentation parity."
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ New Item", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault list New Item primary (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Manually menu option visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Add Manually", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Manually menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Item",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal File Upload card visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "File Upload", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Item modal File Upload card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Add Item modal Add primary enabled (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Add", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Add Item modal Add primary (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault file upload Name field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault file upload Upload File field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Upload File", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Knowledge Vault file upload Name input (doc step)",
+      "value": "AUTO-KV-FILE-{unique}"
+    },
+    {
+      "action": "upload",
+      "target": "Knowledge Vault file upload file input (add-item-in-knowledge-vault doc step)",
+      "value": "data/fixtures/brand-kit-knowledge-vault-upload-dummy.txt"
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault file upload Save enabled after text extraction (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Preview File Text section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Preview File Text", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault listing Actions column header (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault page header New Folder icon (automation extension)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault New Folder modal title (automation extension)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "New Folder",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault New Folder modal Name field label (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Knowledge Vault New Folder modal name input (automation extension)",
+      "value": "AUTO-KV-FOLDER-{unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault New Folder modal Save primary enabled (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault New Folder modal Save primary (automation extension)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FILE-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Items row Move To menu visible (automation extension)",
+      "timeoutMs": 90000,
+      "expected": {
+        "rowContains": "AUTO-KV-FILE-",
+        "labelEquals": "Move To",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Items row Move To menu item (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FILE-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Move To modal title (automation extension)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Move To",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Move To modal filters control visible (automation extension)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Move To modal new folder icon visible (automation extension)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Move To modal select folder row (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FOLDER-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Move To modal Move here primary (automation extension)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Move here", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Move To modal Move here primary (automation extension)",
+      "timeoutMs": 120000
+    }
+  ]
+}

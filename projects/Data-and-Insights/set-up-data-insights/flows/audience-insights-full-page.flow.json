@@ -1,0 +1,45 @@
+{
+  "id": "audience-insights-full-page",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/audience-insights",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Doc: Using Audience Insights as a Full Page Location App — stack dashboard, left primary navigation **Audience Insights** app icon → open app. Verifies three doc-named sections (**Opportunity Explorer**, **Content Map**, **Audience Explorer**). Does not automate App Switcher alternate path, quadrant copy, **Generate**, **Create Audience**, or entry sidebar. Install prerequisite (Lytics configured) per doc is out of scope.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify stack primary nav Audience Insights app (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Audience Insights",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights doc: click stack primary nav Audience Insights app (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Opportunity Explorer section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Opportunity Explorer", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Content Map section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Content Map", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Audience Explorer section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Audience Explorer", "labelMatch": "contains" }
+    }
+  ]
+}

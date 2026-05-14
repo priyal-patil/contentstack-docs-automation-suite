@@ -38,6 +38,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
   "Studio composition form Create button visible (doc step)":
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-linked-composition"]) [data-test-id="cs-click-btn-primary-action-composition-form-create-composition"], [role="dialog"]:has([data-test-id="cs-modal-title-create-freeform-composition"]) [data-test-id="cs-click-btn-primary-action-composition-form-create-composition"]',
+  /** composition-main-header.html — canvas toolbar primary Deploy. */
+  "Studio canvas editor Deploy button visible (doc step)":
+    '[data-test-id="cs-click-btn-primary-action-canvas-editor-deploy-composition"]',
+  /** publish-composition.html — primary action after selecting environment(s). */
+  "Studio Publish Composition modal Publish button visible (doc step)":
+    '[data-testid="publish-modal__action_proceed"]',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {

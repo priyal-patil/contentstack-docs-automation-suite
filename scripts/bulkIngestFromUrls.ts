@@ -214,6 +214,7 @@ function inferProject(url: string): string {
   const u = (url || "").toLowerCase();
   if (u.includes("launch")) return "Launch";
   if (u.includes("personalize") || u.includes("audience") || u.includes("experience")) return "Personalize";
+  if (u.includes("/data-and-insights")) return "Data-and-Insights";
   if (
     u.includes("content-types") ||
     u.includes("entries") ||
@@ -234,6 +235,7 @@ function normalizeProject(p: string): string {
   if (up.toLowerCase() === "cms") return "CMS";
   if (up.toLowerCase() === "launch") return "Launch";
   if (up.toLowerCase() === "personalize") return "Personalize";
+  if (up.toLowerCase() === "data-and-insights") return "Data-and-Insights";
   return up;
 }
 

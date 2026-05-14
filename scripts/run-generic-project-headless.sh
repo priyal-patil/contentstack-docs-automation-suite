@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Headless Playwright for a single project (Launch, Personalize, …), then dashboards + Slack + open unified HTML.
+# Headless Playwright for a single project (Launch, Personalize, Data-and-Insights, …), then dashboards + Slack + open unified HTML.
 # Docs-audit runs in the background by default (DOCS_AUDIT_BACKGROUND=1) in a separate REPORT_DIR.
 #
 # Usage:
 #   ./scripts/run-generic-project-headless.sh Launch
 #   ./scripts/run-generic-project-headless.sh Personalize
+#   ./scripts/run-generic-project-headless.sh Data-and-Insights
 #
 # Env: REPORT_DIR, SKIP_SLACK=1, SKIP_OPEN_DASHBOARD=1, PW_WORKERS
 
@@ -12,9 +13,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-PROJECT="${1:?Usage: $0 Launch|Personalize}"
-if [[ ! "$PROJECT" =~ ^(Launch|Personalize)$ ]]; then
-  echo "Only Launch and Personalize are supported here. Use run-cms-sequential-modules-dashboard.sh for CMS." >&2
+PROJECT="${1:?Usage: $0 <Project> (directory must exist under projects/)}"
+PROJECT_DIR="$ROOT/projects/$PROJECT"
+if [[ ! -d "$PROJECT_DIR" ]]; then
+  echo "Unknown project: $PROJECT — expected directory $PROJECT_DIR (CMS uses run-cms-sequential-modules-dashboard.sh)." >&2
   exit 1
 fi
 

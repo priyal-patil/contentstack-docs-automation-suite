@@ -1,0 +1,103 @@
+{
+  "id": "delete-a-brand-kit",
+  "project": "BrandKit",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/delete-a-brand-kit",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Delete a Brand Kit — Brand Kit app → pick kit card → Settings → Delete Brand Kit section → open modal → type DELETE → confirm Delete. Card: expected.rowContains AUTO-CBK- or BRAND_KIT_DELETE_CARD_HINT. Destructive: deletes kit + voice profiles.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Settings navigation placement per delete doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: click Settings navigation item per delete doc (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Brand Kit flow: Settings page heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Brand Kit settings section title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Delete Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Brand Kit settings Delete Brand Kit button before modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Delete Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete Brand Kit settings open delete modal button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Brand Kit modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Delete Brand Kit",
+        "labelEquals": "Delete Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Delete Brand Kit modal type DELETE confirm field (doc step)",
+      "value": "DELETE"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Brand Kit modal Delete button verify (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete Brand Kit modal primary Delete button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

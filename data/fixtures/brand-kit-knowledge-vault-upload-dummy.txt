@@ -1,0 +1,3 @@
+Knowledge Vault automation fixture text for file upload extraction.
+
+This line ensures the uploaded document is non-empty for Text Generation per the Add Item in Knowledge Vault documentation.

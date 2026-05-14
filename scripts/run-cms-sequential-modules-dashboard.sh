@@ -32,6 +32,9 @@ export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 export PLAYWRIGHT_HEADLESS=1
 export PW_SLOWMO="${PW_SLOWMO:-0}"
 export PW_WORKERS="${PW_WORKERS:-6}"
+# Local default per-test timeout is 3m (playwright.config.ts); retry pass uses parallel per-flow tests and inherits that unless set.
+# CI uses 15m. Align full batch (main, retry, delete, trash) so flows don't spuriously "time out" vs individual runs with a higher budget.
+export PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES:-15}"
 # Background launcher sets SKIP_OPEN_DASHBOARD=1 to suppress macOS open(); honor it here.
 if [[ "${SKIP_OPEN_DASHBOARD:-0}" == "1" ]]; then
   export OPEN_CMS_DASHBOARD=0
@@ -169,9 +172,14 @@ fi
 
 echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
 echo ">>> Delete-related flows (all CMS modules, batched)" | tee -a "$REPORT_DIR/cms-sequential.log"
+# Many delete buckets (per module/stage) match this grep; force one worker so buckets are not starved / skipped under load.
+_OLD_PW_WORKERS="${PW_WORKERS:-6}"
+export PW_WORKERS=1
 run_playwright_part "90-delete-batch" \
   -g "Project=CMS" \
   --grep "$CMS_DELETE_FLOW_GREP"
+export PW_WORKERS="$_OLD_PW_WORKERS"
+unset _OLD_PW_WORKERS
 
 echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
 echo ">>> Trash module" | tee -a "$REPORT_DIR/cms-sequential.log"

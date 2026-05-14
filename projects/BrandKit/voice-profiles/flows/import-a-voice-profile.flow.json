@@ -1,0 +1,100 @@
+{
+  "id": "import-a-voice-profile",
+  "project": "BrandKit",
+  "module": "voice-profiles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/import-a-voice-profile",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Import a Voice Profile — Brand Kit nav → kit card (AUTO-CBK- or BRAND_KIT_VOICE_PROFILE_CARD_HINT) → Voice Profiles → doc shows '+ New Voice Profile'; app control label is 'New Voice Profile' (Plus icon separate; same as create-a-voice-profile). Import → Upload File → Proceed. Fixture: data/fixtures/brand-kit-voice-profile-import-dummy.json (Brand Kit Management API voice_profile shape). Override path with BRAND_KIT_VOICE_PROFILE_IMPORT_FIXTURE_PATH if needed. Success toast not quoted in doc — warning-only.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Voice Profiles sidebar card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles landing page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Voice Profiles", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles list New Voice Profile (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profiles list New Voice Profile (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles Import menu option (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Import", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profiles Import menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Import Voice Profile modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Import", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Import Voice Profile Upload File label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Upload File", "labelMatch": "contains" }
+    },
+    {
+      "action": "upload",
+      "target": "Import Voice Profile file input (import-a-voice-profile doc step)",
+      "timeoutMs": 90000,
+      "value": "data/fixtures/brand-kit-voice-profile-import-dummy.json"
+    },
+    {
+      "action": "verify",
+      "target": "Import Voice Profile Proceed button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Import Voice Profile Proceed button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

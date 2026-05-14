@@ -1,0 +1,23 @@
+{
+  "project": "BrandKit",
+  "urls": [
+    "https://www.contentstack.com/docs/content-managers/brand-kit/about-brand-kit",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/about-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/about-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/add-item-in-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/edit-item-in-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/export-item-from-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/import-item-in-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/delete-item-in-knowledge-vault",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/create-a-brand-kit",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/create-a-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/edit-a-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/delete-a-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/edit-a-brand-kit",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/export-a-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/import-a-voice-profile",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/delete-a-brand-kit",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/invite-collaborators",
+    "https://www.contentstack.com/docs/content-managers/brand-kit/limitations"
+  ]
+}

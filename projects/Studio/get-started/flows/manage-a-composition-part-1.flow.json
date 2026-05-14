@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/studio/manage-a-composition",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Part 1 — doc Create a Composition (Linked) + Edit + Delete a Composition: after Save, row ⋮ Delete on updated name; confirm Delete Composition modal.",
+  "automationNotes": "Part 1 — doc Create a Composition (Linked) + Edit + Delete a Composition: after Save, row ⋮ Delete on updated name; confirm Delete Composition modal. Row ⋯ uses cs-table-action-options; VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms) after open; Edit/Delete use ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit] or the matching Delete item (hover in runner).",
   "steps": [
     { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },

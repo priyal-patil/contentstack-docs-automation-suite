@@ -1,0 +1,18 @@
+{
+  "project": "Data-and-Insights",
+  "urls": [
+    "https://www.contentstack.com/docs/data-and-insights",
+    "https://www.contentstack.com/docs/data-and-insights/behavioral-scores",
+    "https://www.contentstack.com/docs/data-and-insights/consent-and-privacy",
+    "https://www.contentstack.com/docs/data-and-insights/gdpr-compliance-with-cdp",
+    "https://www.contentstack.com/docs/data-and-insights/integrating-data-and-insights-lytics",
+    "https://www.contentstack.com/docs/data-and-insights/lookalike-models-and-audiences",
+    "https://www.contentstack.com/docs/data-and-insights/privacy-and-data-protection",
+    "https://www.contentstack.com/docs/data-and-insights/access-manage-data-and-insights-accounts-through-contentstack",
+    "https://www.contentstack.com/docs/data-and-insights/create-data-and-insights-lytics-integration",
+    "https://www.contentstack.com/docs/data-and-insights/create-job-and-authorization-for-data-and-insights-lytics",
+    "https://www.contentstack.com/docs/developers/launch/event-tracking-in-contentstack-launch",
+    "https://www.contentstack.com/docs/data-and-insights-lytics/limitations",
+    "https://www.contentstack.com/docs/developers/marketplace-apps/audience-insights"
+  ]
+}

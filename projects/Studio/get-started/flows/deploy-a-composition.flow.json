@@ -1,0 +1,37 @@
+{
+  "id": "deploy-a-composition",
+  "project": "Studio",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/studio/deploy-a-composition",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc 'Deploy a Composition': App Switcher → Studio → project → compositions list → select composition → Deploy → select environment → publish. DOM: data/dom/Studio/composition-list-page.html, composition-main-header.html, publish-composition.html. Requires a deployable composition (doc: local project).",
+  "steps": [
+    { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Projects page heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Studio Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio first project card open compositions (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Studio compositions list first row open editor (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Studio canvas editor Deploy button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Deploy", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio canvas editor Deploy button (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Studio Publish Composition first environment checkbox (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Studio Publish Composition modal Publish button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Studio Publish Composition modal Publish button (doc step)", "timeoutMs": 120000 }
+  ]
+}

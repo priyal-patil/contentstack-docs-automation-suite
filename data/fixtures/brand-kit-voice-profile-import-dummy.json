@@ -1,0 +1,14 @@
+{
+  "voice_profile": {
+    "name": "AUTO-VP-IMPORT-DUMMY",
+    "description": "Automation fixture for import-a-voice-profile (Brand Kit docs).",
+    "insights": "",
+    "sample_content": "",
+    "communication_style": {
+      "formality_level": 1,
+      "tone": 1,
+      "humor_level": 1,
+      "complexity_level": 1
+    }
+  }
+}

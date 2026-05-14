@@ -171,12 +171,52 @@ function buildSummaryHtml(payload: {
 </html>`;
 }
 
+/** Per-project flow counts for Slack (CMS / Launch / Studio combined batches). */
+function buildPerProjectBreakdownMrkdwn(rows: FlowRow[]): string | null {
+  if (rows.length === 0) return null;
+  type Acc = { total: number; passed: number; failed: number; skipped: number; timedOut: number; interrupted: number; other: number };
+  const by = new Map<string, Acc>();
+  for (const r of rows) {
+    const p = (r.project || "").trim() || "Unknown";
+    if (!by.has(p)) {
+      by.set(p, { total: 0, passed: 0, failed: 0, skipped: 0, timedOut: 0, interrupted: 0, other: 0 });
+    }
+    const a = by.get(p)!;
+    a.total++;
+    const s = r.status;
+    if (s === "passed") a.passed++;
+    else if (s === "failed") a.failed++;
+    else if (s === "skipped") a.skipped++;
+    else if (s === "timedOut") a.timedOut++;
+    else if (s === "interrupted") a.interrupted++;
+    else a.other++;
+  }
+  if (by.size < 2) return null;
+
+  const order = ["CMS", "Launch", "Studio", "Personalize", "Analytics", "Data-and-Insights"];
+  const keys = [...by.keys()].sort((a, b) => {
+    const ia = order.indexOf(a);
+    const ib = order.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  const lines = keys.map((p) => {
+    const a = by.get(p)!;
+    return `• *${p}:* ${a.passed} passed · ${a.failed} failed · ${a.total} total (skipped ${a.skipped}, timedOut ${a.timedOut})`;
+  });
+  return lines.join("\n");
+}
+
 function buildSlackPayload(summary: {
   reportDir: string;
   flowsFile: string;
   counts: { total: number; passed: number; failed: number; skipped: number; timedOut: number; interrupted: number; other: number };
   failedSamples: Array<{ flowId: string; documentUrl: string; error?: string }>;
   cumulativeNote?: string;
+  perProjectBreakdown?: string | null;
 }): { text: string; blocks: unknown[] } {
   const { counts: c } = summary;
   const failedLines = summary.failedSamples
@@ -204,6 +244,17 @@ function buildSlackPayload(summary: {
         },
       ],
     },
+    ...(summary.perProjectBreakdown
+      ? [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*By project*\n${summary.perProjectBreakdown}`,
+            },
+          },
+        ]
+      : []),
     ...(summary.cumulativeNote
       ? [
           {
@@ -483,12 +534,15 @@ async function main(): Promise<void> {
     .filter((r) => r.status === "failed" || r.status === "timedOut")
     .map((r) => ({ flowId: r.flowId, documentUrl: r.documentUrl, error: r.error }));
 
+  const perProjectBreakdown = buildPerProjectBreakdownMrkdwn(rows);
+
   await postSlackChatPostMessage(botToken, channelId, {
     reportDir,
     flowsFile: flowsFileLabel,
     counts,
     failedSamples,
     cumulativeNote,
+    perProjectBreakdown,
   });
   // eslint-disable-next-line no-console
   console.log("✅ Posted summary to Slack");

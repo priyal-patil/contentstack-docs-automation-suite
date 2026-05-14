@@ -1,0 +1,83 @@
+{
+  "id": "export-item-from-knowledge-vault",
+  "project": "BrandKit",
+  "module": "knowledge-vault",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/export-item-from-knowledge-vault",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Export Item from Knowledge Vault — single-row path (⋯ → Export). Prerequisite: a listing row matching AUTO-KV-FILE-* exists from add-item-in-knowledge-vault file-upload branch. Doc also describes multi-select + floating Export; not automated here.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Knowledge Vault nav label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Knowledge Vault top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault listing Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FILE-" }
+    },
+    {
+      "action": "verify",
+      "target": "Export",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FILE-", "labelEquals": "Export", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Export",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-FILE-" }
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "id": "edit-item-in-knowledge-vault",
+  "project": "BrandKit",
+  "module": "knowledge-vault",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/edit-item-in-knowledge-vault",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Edit Item in Knowledge Vault — steps 1–5. Uses doc step 4 path **click the item** to open it (alternate to Actions ⋯ → Edit). Prerequisite: a manual KV item `AUTO-KV-MANUAL-*` exists (e.g. Add Item manual flow). Doc step 6 (rename folder via ⋯ Edit) is not automated here. For any ⋯ → Edit listing step, use: cs-table-action-options, VERTICAL_ELLIPSIS_POST_OPEN_MS, cs-vertical-action-tooltip-actions li[cs-ct-action-edit] (see vertical-ellipsis-edit-row-menu.mdc).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Knowledge Vault nav label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Knowledge Vault top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault listing item row open for edit (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-MANUAL-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault manual entry Name field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault item Save primary (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    }
+  ]
+}

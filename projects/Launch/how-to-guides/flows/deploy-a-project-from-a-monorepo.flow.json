@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/deploy-a-project-from-a-monorepo",
   "type": "executable",
   "use": ["login", "orgDashboard"],
-  "automationNotes": "Doc tutorial repo: github.com/contentstack-launch-examples/turborepo-npm-demo. Framework Preset = Next.js, Build Command = npm run build -- --filter web, Output Directory = ./apps/web/.next. Verifies Deploy before click. GitHub must list the repo (detect + Connect Account when not connected). Optional env: LAUNCH_MONOREPO_REPO_SEARCH_QUERIES (comma-separated), LAUNCH_MONOREPO_REPO_OPTION_MATCH (substring in option text, default turborepo-npm-demo).",
+  "automationNotes": "Doc tutorial repo: github.com/contentstack-launch-examples/turborepo-npm-demo. Repository async select: type to filter (e.g. turbo) then pick the matching repo row from the dropdown. Framework Preset = Next.js, Build Command = npm run build -- --filter web, Output Directory = ./apps/web/.next. Verifies Deploy before click. GitHub must list the repo (detect + Connect Account when not connected). Optional env: LAUNCH_MONOREPO_REPO_SEARCH_QUERIES (comma-separated), LAUNCH_MONOREPO_REPO_OPTION_MATCH (substring in option text, default turborepo-npm-demo).",
   "steps": [
     {
       "action": "verify",

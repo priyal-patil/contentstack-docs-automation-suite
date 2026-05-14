@@ -1,0 +1,187 @@
+{
+  "id": "analytics-for-cms",
+  "project": "Analytics",
+  "module": "guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/analytics/analytics-for-cms",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Mirrors https://www.contentstack.com/docs/analytics/analytics-for-cms — Key Sections of the CMS Analytics Dashboard and Usage by Stacks column list. Steps (1)–(3) navigation as before (org dropdown; warn-only left-nav doc step; dashboard Analytics tile). Section/column verifies use exact doc labels with labelEquals; mismatches are warning-only per repo doc-step rules.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Analytics doc: header organization dropdown pick DEFAULT_ORG (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Analytics icon in left panel navigate to Analytics dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Analytics"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Analytics doc: Organization dashboard Analytics product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics dashboard default CMS label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "CMS" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Subscription Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Subscription Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Usage by Stacks section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Usage by Stacks" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Stack Name (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Stack Name" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column API Key (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "API Key" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Owner (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Owner" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Content Types (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Content Types" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Global Fields (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Global Fields" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Entries (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Entries" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Assets (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Assets" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Environments (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environments" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Locales (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Locales" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Extensions (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Extensions" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Webhooks (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Webhooks" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Custom Roles (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Roles" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Branches (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Branches" }
+    },
+    {
+      "action": "verify",
+      "target": "Usage by Stacks table column Branch Aliases (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Branch Aliases" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics API Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "API Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Bandwidth Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Bandwidth Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Assets section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Assets" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Entries section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Entries" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Top URLs section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Top URLs" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Status Codes section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Status Codes" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Cache Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Cache Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics SDK Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "SDK Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics Device Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Device Usage" }
+    }
+  ]
+}

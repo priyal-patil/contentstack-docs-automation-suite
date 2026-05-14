@@ -3,6 +3,8 @@
 #
 # Usage:
 #   ./scripts/run-docs-audit-background.sh CMS [flowReportDir]
+#   ./scripts/run-docs-audit-background.sh Launch [flowReportDir]
+#   ./scripts/run-docs-audit-background.sh Data-and-Insights [flowReportDir]
 #   DOCS_AUDIT_PROJECT=CMS REPORT_DIR=reports/my-audit npx playwright test ...
 #
 # Env:
@@ -12,7 +14,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT="${1:?Usage: $0 CMS|Launch|Personalize [flowReportDir]}"
+PROJECT="${1:?Usage: $0 CMS|Launch|Personalize|Data-and-Insights [flowReportDir]}"
 FLOW_REPORT_DIR="${2:-}"
 
 TS="$(date +%Y%m%d-%H%M%S)"

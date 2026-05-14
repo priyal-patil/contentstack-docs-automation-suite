@@ -1,0 +1,111 @@
+{
+  "id": "event-tracking-in-contentstack-launch",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/launch/event-tracking-in-contentstack-launch",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: Enable Event Tracking — project → Environments → row ⋮ → Settings → Event Tracking tab → Enable Real-Time User Event Tracking toggle → consent checkbox → Yes, Enable Event Tracking. Then disable per doc (toggle again → Yes, Disable Event Tracking). Prerequisites (DAL/Lytics org setup) must be satisfied or toggles may be unavailable. DOM: data/dom/Launch/env-event-tracking.html. Lives under Data-and-Insights/set-up-data-insights for module grouping next to other Lytics/DAL flows. Redeploy, site consent modal, jstag.optIn/optOut, and caching notes are out of Launch UI scope.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch dashboard entry (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Projects page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch Projects", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch first project card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Environments page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Environments first table row environment name visible (doc step)",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Launch first environment row Actions ellipsis (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment vertical action menu Settings list item (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment actions Settings menu item (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Settings left sidebar Settings section header visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Settings left navigation Environments active (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Environments", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Event Tracking tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Event Tracking", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch environment settings Event Tracking tab (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Event Tracking Real-Time User Event Tracking field label visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Real-Time User Event Tracking (Lytics)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Event Tracking Enable Real-Time User Event Tracking toggle label visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Enable Real-Time User Event Tracking", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Event Tracking enable toggle (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Launch Event Tracking enable consent checkbox (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Launch Event Tracking Yes Enable Event Tracking button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Yes, Enable Event Tracking", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Event Tracking Yes Enable Event Tracking button (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch environment settings Event Tracking tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Event Tracking", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch Event Tracking Enable Real-Time User Event Tracking toggle label visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Enable Real-Time User Event Tracking", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Event Tracking disable toggle (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Launch Event Tracking Yes Disable Event Tracking button visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Yes, Disable Event Tracking", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "Launch Event Tracking Yes Disable Event Tracking button (doc step)", "timeoutMs": 90000 }
+  ]
+}

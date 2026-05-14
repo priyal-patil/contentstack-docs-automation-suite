@@ -1,0 +1,100 @@
+{
+  "id": "delete-item-in-knowledge-vault",
+  "project": "BrandKit",
+  "module": "knowledge-vault",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/delete-item-in-knowledge-vault",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Delete Item in Knowledge Vault — Actions ⋯ → Delete → Delete Item modal → Delete. Modal DOM: data/dom/BrandKit/kv-delete-item.html (delete-item-modal, cs-modal-title-delete-item, brand-kit-click-btn-primary-action-item-delete-modal-delete). Row menu: kv-vert-ellip-menu.html. Targets row AUTO-KV-IMPORT-DUMMY from import-item-in-knowledge-vault (fixture name). Folder-delete doc steps are out of scope.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Knowledge Vault nav label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Knowledge Vault top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault listing Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-IMPORT-DUMMY" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-IMPORT-DUMMY", "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-KV-IMPORT-DUMMY" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Delete Item modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Delete Item", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault Delete Item modal Delete button visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault Delete Item modal confirm Delete (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

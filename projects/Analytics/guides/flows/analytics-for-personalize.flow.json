@@ -1,0 +1,129 @@
+{
+  "id": "analytics-for-personalize",
+  "project": "Analytics",
+  "module": "guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/analytics/analytics-for-personalize",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "https://www.contentstack.com/docs/analytics/analytics-for-personalize — Subscription Usage bullet metrics (Projects … Custom Events) and Key Sections per doc; Personalize tab `analytics-nav-personalize`. Shared automation path noted in other Analytics flows.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Analytics doc: header organization dropdown pick DEFAULT_ORG (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Analytics icon in left panel navigate to Analytics dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Analytics" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics doc: Organization dashboard Analytics product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics dashboard default CMS label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "CMS" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics hub Personalize dashboard tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics hub Personalize dashboard label visible after tab switch (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Personalize" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Subscription Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Projects (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Projects" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Experiences" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Audiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Audiences" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Attributes (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Attributes" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Manifest Requests (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Manifest Requests" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Events (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Events" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Impressions (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Impressions" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Subscription Usage parameter Custom Events (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Events" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics API Requests section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "API Requests" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Top URLs section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Top URLs" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Status Codes section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Status Codes" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Management API Device Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Management API Device Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize analytics Edge SDK Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Edge SDK Usage" }
+    }
+  ]
+}

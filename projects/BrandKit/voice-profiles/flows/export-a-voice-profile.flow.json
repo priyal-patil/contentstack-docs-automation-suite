@@ -1,0 +1,73 @@
+{
+  "id": "export-a-voice-profile",
+  "project": "BrandKit",
+  "module": "voice-profiles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/export-a-voice-profile",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Export a Voice Profile — Brand Kit nav → kit card (AUTO-CBK- or BRAND_KIT_VOICE_PROFILE_CARD_HINT) → Voice Profiles → under Actions, ⋯ on row AUTO-VP- (prerequisite: e.g. create-a-voice-profile) → Export. Doc also describes multi-select + floating Export; this flow covers the single-row path only.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Voice Profiles sidebar card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles landing page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Voice Profiles", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles listing Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipsis",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    },
+    {
+      "action": "verify",
+      "target": "Export",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-", "labelEquals": "Export", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Export",
+      "timeoutMs": 90000,
+      "expected": { "rowContains": "AUTO-VP-" }
+    }
+  ]
+}

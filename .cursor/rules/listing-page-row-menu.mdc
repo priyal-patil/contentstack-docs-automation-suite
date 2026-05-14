@@ -37,3 +37,7 @@ Behavior described here mirrors **`rules/core/actionRules.ts`** (`openRowActionM
 - Look for **`data-test-id`**, **`aria-label`**, **`role="button"`** on the ellipsis — **in that priority order**.
 - Do not use **`nth-child`** or position-based selectors.
 - If none of the above exist, use the **`title`** attribute as last resort.
+
+## See also
+
+- **⋮ → Edit / Settings (hover, `cs-ct-action-edit`, env wait):** **`vertical-ellipsis-edit-row-menu.mdc`**

@@ -10,6 +10,7 @@ import path from "path";
 import { collectCmsFlowSpecs, flowIdFromPlaywrightSpecTitle } from "../core/report/parseFlowSpecTitle";
 import { resolveFlowsResultsPath } from "../core/report/resolveFlowsResultsPath";
 import { parseExecutableFlowsPreferCumulative } from "../core/report/unifiedReportModel";
+
 const REPORT_DIR = path.resolve(
   process.cwd(),
   process.argv.includes("--reportDir") ? process.argv[process.argv.indexOf("--reportDir") + 1] : "reports/latest"
@@ -120,7 +121,7 @@ function main() {
   const warnings = warningsDoc?.warnings || [];
 
   const rows: Row[] = [];
-const execSpecs = parseExecutableFlowsPreferCumulative(REPORT_DIR, pw);
+  const execSpecs = parseExecutableFlowsPreferCumulative(REPORT_DIR, pw);
   for (const ex of execSpecs) {
     if (ex.project !== "CMS") continue;
     const flowId = ex.flowId;
@@ -128,7 +129,8 @@ const execSpecs = parseExecutableFlowsPreferCumulative(REPORT_DIR, pw);
     const timing = durationByFlow.get(flowId);
     const durationMs = timing?.durationMs ?? 0;
     const err = timing?.err ?? "";
-    const documentUrl = sourceByFlow.get(flowId) || docUrlFromCumulative.get(flowId) || "";    const fc = failures.filter((f) => f.flowId === flowId).length;
+    const documentUrl = sourceByFlow.get(flowId) || docUrlFromCumulative.get(flowId) || "";
+    const fc = failures.filter((f) => f.flowId === flowId).length;
     const wc = warnings.filter((w) => w.flowId === flowId).length;
     rows.push({
       flowId,

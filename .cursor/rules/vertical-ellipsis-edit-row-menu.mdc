@@ -1,0 +1,28 @@
+---
+description: Row ⋯ → Edit — canonical locators, env wait, CMS Global Field exception; matches rules/core/actionRules.ts
+alwaysApply: true
+---
+
+# Vertical ellipsis → Edit (listing tables)
+
+Use this pattern when authoring or updating flows that open a table row **⋮** menu and choose **Edit** (or doc-named variant such as **Edit Text**—runner still resolves **Edit**).
+
+## Execution (implemented)
+
+1. **Ellipsis:** `button[data-test-id="cs-table-action-options"]` scoped by **`expected.rowContains`** (see `listing-page-row-menu.mdc`). **`openRowActionMenu`** waits for the menu root to be visible (`ROW_MENU_VISIBLE_AFTER_ELLIPSIS`).
+2. **Stabilization:** After the menu is open, **`VERTICAL_ELLIPSIS_POST_OPEN_MS`** (default **2000**) — set in env; see **`.env.example`**. Applied in **`clickRowActionMenuItem`** / **Edit** verify paths in **`rules/core/actionRules.ts`**.
+3. **Edit item:** Prefer **`ul[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]`** — **hover** briefly, then **click** (inner `a` when present). No **`force: true`** on the menu item.
+
+## Flow JSON
+
+- Use **`"target": "vertical ellipsis"`** with **`expected.rowContains`** on every ⋯ step and on follow-on **Edit** / **Settings** steps that re-open the menu.
+- **Verify** doc-named control text with **`labelEquals`** per **`doc-step-parity.mdc`** (e.g. **Edit** vs **Edit Text**—match the document).
+- Add **`automationNotes`** on flows that use this path: cite **`cs-table-action-options`**, **`VERTICAL_ELLIPSIS_POST_OPEN_MS`**, and **`cs-vertical-action-tooltip-actions` / `cs-ct-action-edit`**.
+
+## Exceptions (do not assume `cs-ct-action-edit`)
+
+- **CMS Global Fields** listing **Edit** often uses **`li[data-test-id="cs-gf-action-edit"]`** — **`clickRowActionMenuItem`** Global Field branch handles this; selectors may still list both ids.
+
+## Taxonomy and doc-labeled targets
+
+- If the flow uses a **doc step** target string instead of **`vertical ellipsis`** (e.g. *Taxonomy listing first row Actions vertical ellipsis*), ensure the **module/flow selector map** still resolves to **`cs-table-action-options`** and passes **`rowContains`** when the table can have multiple rows.

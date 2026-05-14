@@ -1,0 +1,265 @@
+{
+  "id": "create-a-voice-profile",
+  "project": "BrandKit",
+  "module": "voice-profiles",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/create-a-voice-profile",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Create a Voice Profile — Brand Kit nav → kit card (AUTO-CBK- or BRAND_KIT_VOICE_PROFILE_CARD_HINT) → Voice Profiles → doc shows '+ New Voice Profile'; app control text is 'New Voice Profile' (Plus icon separate). Doc 'Add Manually' may appear as menu item or as app button 'Create Manually'; warning-only if label differs. Mixer tiers per doc; Playground controls; Save → Information tab.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Voice Profiles sidebar card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles landing page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Voice Profiles", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles list New Voice Profile (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "New Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profiles list New Voice Profile (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles Add Manually menu option visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Add Manually", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profiles Add Manually menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create Voice Profile page field labels vs create-voice-profile doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "documentedFields": [
+          "Voice Profile Name",
+          "Description",
+          "Communication Style Mixer",
+          "Formality Level",
+          "Tone Of Voice",
+          "Humor Level",
+          "Language Complexity Level",
+          "Custom Details",
+          "Insights",
+          "Sample Content",
+          "Playground",
+          "Enable Knowledge Vault",
+          "Provide Prompt"
+        ]
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profile Name label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Voice Profile Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Communication Style Mixer section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Communication Style Mixer", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Formality Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Formality Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Tone Of Voice slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Tone Of Voice", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Humor Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Humor Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Language Complexity Level slider label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Language Complexity Level", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Voice Profile mixer slider tier labels vs doc (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Custom Details section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Details", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Insights label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Insights", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Sample Content label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Sample Content", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Playground section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Playground", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Enable Knowledge Vault label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Enable Knowledge Vault", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Provide Prompt label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Provide Prompt", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Enable Knowledge Vault toggle click (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Name (doc step)",
+      "value": "AUTO-VP-{unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Description (doc step)",
+      "value": "AUTO Voice Profile description {unique}"
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Insights (doc step)",
+      "value": "Monitor industry trends, experiment with new content formats and strategies, incorporate ethical AI practices."
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Sample Content (doc step)",
+      "value": "Navigating the AI Landscape: Essential Insights for Aspiring Bloggers."
+    },
+    {
+      "action": "enter",
+      "target": "Voice Profile Provide Prompt (doc step)",
+      "value": "Write one sentence about brand tone."
+    },
+    {
+      "action": "verify",
+      "target": "Playground Clear Prompt beside Generate Response row (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Generate Response in Playground button (doc step)",
+      "timeoutMs": 180000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Playground Stop Generating Response visible (doc step)",
+      "timeoutMs": 45000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Playground panel title right sidebar (doc step)",
+      "timeoutMs": 60000,
+      "optional": true,
+      "expected": { "labelEquals": "Playground", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Playground right nav Playground tab visible (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Entry editor right sidebar",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Playground panel View Hide response caret visible (doc step)",
+      "timeoutMs": 60000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Playground Regenerate and Copy visible after hover Playground title (doc step)",
+      "timeoutMs": 90000,
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Create Voice Profile Save (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create Voice Profile Save (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profile Information icon right-side navigation (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Entry editor right sidebar"
+      }
+    }
+  ]
+}

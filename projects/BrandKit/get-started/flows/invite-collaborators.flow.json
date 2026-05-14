@@ -1,0 +1,144 @@
+{
+  "id": "invite-collaborators",
+  "project": "BrandKit",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/brand-kit/invite-collaborators",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: Invite Collaborators — Brand Kit → kit card → Settings → Collaborators → Invite Collaborator → email (+ optional message) → Invite. Cleanup: row ⋯ → Remove → confirm Remove. Email: step.value on email enter, or BRAND_KIT_COLLABORATOR_INVITE_EMAIL / CS_INVITE_TEST_EMAIL, else doc-bk-collab-{unique}@example.com. Card row: expected.rowContains AUTO-CBK- or BRAND_KIT_INVITE_COLLABORATORS_CARD_HINT.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Left Navigation Brand Kit label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Brand Kit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Brand Kit icon in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit from left nav or dashboard tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: open Brand Kit card for created kit (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "rowContains": "AUTO-CBK-" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit doc: verify Settings navigation placement per invite collaborators doc (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: click Settings navigation item per invite collaborators doc (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Settings left sidenav title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Collaborators settings sidenav row (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Collaborators", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: click Collaborators settings sidenav (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Collaborators page title (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Collaborators", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Invite Collaborator primary button label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ Invite Collaborator", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit doc: click Invite Collaborator primary button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Invite Collaborator modal title (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Invite Collaborator",
+        "labelEquals": "Invite Collaborator",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Invite Collaborator modal email field (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Brand Kit Invite Collaborator modal optional message field (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: Invite Collaborator modal Invite button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Invite", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Invite Collaborator modal primary Invite button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: collaborators table Actions column header (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit collaborators table vertical ellipsis for invited collaborator row (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit collaborators actions menu Remove for invited row (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Collaborators flow: remove collaborator dialog Remove button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Modal", "labelEquals": "Remove", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit remove collaborator confirm dialog Remove button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

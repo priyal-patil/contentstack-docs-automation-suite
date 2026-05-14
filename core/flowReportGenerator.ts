@@ -147,7 +147,8 @@ export function generateFlowReportHtml(
       const target = escapeHtml(String(s.target || ""));
       const expected = s.expected ? escapeHtml(JSON.stringify(s.expected)) : "—";
       const value = s.value ? escapeHtml(String(s.value)) : "—";
-      let statusCell = "<td>—</td>";
+      /** Explicit label avoids mistaking an empty cell for success — failures/warnings/skipped override below. */
+      let statusCell = '<td class="pass-msg"><strong>Passed</strong></td>';
       if (fail) {
         const missingBlock = fail.missing
           ? `<div class="missing-on-page"><strong>Not found on page:</strong> ${fail.missing}</div>`
@@ -215,6 +216,7 @@ export function generateFlowReportHtml(
     .fail-shot{margin-top:8px;font-size:12px}
     .fail-thumb{max-width:100%;max-height:280px;margin-top:6px;border-radius:6px;border:1px solid #fecaca;cursor:zoom-in}
     .warn-msg{color:#b45309;font-size:12px}
+    .pass-msg{color:#15803d;font-size:12px}
     .warnings-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px;margin-top:12px}
     .warnings-box h3{font-size:14px;margin:0 0 8px 0;color:#b45309}
     .warnings-box ul{margin:0;padding-left:18px}
@@ -226,12 +228,17 @@ export function generateFlowReportHtml(
     <div class="meta">
       Document: ${formatDocumentUrlForHtml(documentUrl)}<br/>
       Generated: ${escapeHtml(new Date().toISOString())}
+      ${
+        failureCount > 0
+          ? `<br/><strong style="color:#b91c1c">This flow had ${failureCount} failed step(s).</strong> Rows marked Passed ran before the failure (or have warnings only). See Failed steps section below.`
+          : ""
+      }
     </div>
     <div class="cards">
       <div class="card"><div class="value">${steps.length}</div><div class="label">Steps (in flow)</div></div>
       <div class="card"><div class="value ${failureCount > 0 ? "red" : "green"}">${failureCount}</div><div class="label">Failed steps</div></div>
       <div class="card"><div class="value amber">${warningCount}</div><div class="label">Warnings</div></div>
-      <div class="card"><div class="value green">${passedApprox}</div><div class="label">OK (ran, no fail/warn)</div></div>
+      <div class="card"><div class="value ${failureCount > 0 ? "amber" : "green"}">${passedApprox}</div><div class="label">Steps with no failure/warning in table below${failureCount > 0 ? " (not total success)" : ""}</div></div>
     </div>
 
     <section>

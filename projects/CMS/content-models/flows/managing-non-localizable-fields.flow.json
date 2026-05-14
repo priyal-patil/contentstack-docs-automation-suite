@@ -4,7 +4,7 @@
   "module": "content-models",
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/create-content-types/managing-non-localizable-fields",
-  "automationNote": "Observed: Group field Properties may have no Non-localizable toggle; align flow with UI or field type.",
+  "automationNotes": "Row ⋯ / Edit: `button[data-test-id=cs-table-action-options]` + VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms) + `li[data-test-id=cs-ct-action-edit]` hover/click. Observed: Group field Properties may have no Non-localizable toggle; align flow with UI or field type.",
   "type": "executable",
   "use": [
     "login",

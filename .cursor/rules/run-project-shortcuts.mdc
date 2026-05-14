@@ -12,13 +12,18 @@ When the user says any of the following, start the matching **background** headl
 | Run CMS, run cms, CMS batch, Run the CMS sequential module batch | `npm run launch:cms:bg` **or** `bash scripts/run-project-batch-background.sh CMS` |
 | Run Launch, run launch | `npm run launch:launch:bg` **or** `bash scripts/run-project-batch-background.sh Launch` |
 | Run Personalize, run personalize | `npm run launch:personalize:bg` **or** `bash scripts/run-project-batch-background.sh Personalize` |
+| Run Data and Insights (batch name `Data-and-Insights`) | `npm run launch:data-and-insights:bg` **or** `bash scripts/run-project-batch-background.sh Data-and-Insights` |
+| Run **headed**: Lytics DAL integration flow only (`create-data-and-insights-lytics-integration`) | `npm run test:data-and-insights:lytics-integration:headed` |
+| Run **headed**: Launch Event Tracking doc flow (`event-tracking-in-contentstack-launch`) | `npm run test:data-and-insights:event-tracking-launch:headed` |
+| Run CMS + Launch + Studio (one merged Slack, open dashboard once at end) | `npm run launch:cms-launch-studio:bg` **or** `bash scripts/run-cms-launch-studio-combined-background.sh` |
 
-Aliases in `package.json`: `npm run run:cms`, `npm run run:launch`, `npm run run:personalize` (same as `launch:*:bg`).
+Aliases in `package.json`: `npm run run:cms`, `npm run run:launch`, `npm run run:personalize`, `npm run run:data-and-insights` (same as `launch:*:bg`); `npm run run:cms-launch-studio` (combined batch).
 
 ## Behavior
 
 - **CMS:** Full sequential pipeline: `scripts/run-cms-sequential-modules-dashboard.sh` (modules in order → delete batch → trash → merge → dashboards → Slack). Opens **unified-dashboard.html** and **report-bundle/index.html** when done unless `SKIP_OPEN_DASHBOARD=1`.
-- **Launch / Personalize:** `scripts/run-generic-project-headless.sh` — all flows for that project, then `generateDashboardReport`, `generateUnifiedReport`, Slack, open unified dashboard.
+- **Launch / Personalize / Data-and-Insights:** `scripts/run-generic-project-headless.sh` — all flows for that project (requires `projects/<Project>/`), then dashboards, Slack, open unified dashboard.
+- **CMS + Launch + Studio (combined):** `scripts/run-cms-launch-studio-combined.sh` — full CMS pipeline, then Launch flows, then Studio flows; merges Playwright JSON; one Slack post with **By project** (CMS / Launch / Studio) counts; opens **unified-dashboard.html** at the end (not after each phase). Default `PW_WORKERS=4` in the background launcher (override when starting). Inner CMS does not post Slack or open HTML; set `SKIP_SLACK=1` or `SKIP_OPEN_DASHBOARD=1` on the combined run to skip the final step.
 
 ## Foreground (optional)
 

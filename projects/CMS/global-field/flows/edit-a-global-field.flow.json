@@ -5,6 +5,7 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/global-field/edit-a-global-field",
   "type": "executable",
+  "automationNotes": "Listing row ⋯ uses `button[data-test-id=cs-table-action-options]`; runner waits VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000) after open. Global Field Edit menu uses `li[data-test-id=cs-gf-action-edit]` under the vertical tooltip (not always `cs-ct-action-edit`); hover + click handled in actionRules Global Field branch.",
   "use": [
     "login",
     "selectStack"

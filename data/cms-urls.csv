@@ -1,4 +1,4 @@
-# Docs audit URL list: project,url
+# Docs audit URL list: project,url optional third field "keep" (pins row when not in any flow source / docs.json)
 # Sync: npm run sync:docs-urls | Legacy bare URLs are read as project CMS (override with DOCS_URL_LEGACY_PROJECT).
 project,url
 CMS,(not yet published — set to official docs URL when content is live)

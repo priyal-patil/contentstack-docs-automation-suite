@@ -14,7 +14,7 @@ const ranFlowIds = new Set<string>();
 // all remaining tests after the first failure in a serial group (204+ "skipped" in reports).
 //
 // Inner groups use describe.parallel by default (a failure in one URL must NOT skip the rest).
-// For CMS full batch, CMS_SEQUENTIAL_MODULE_ORDER=1 uses describe.serial per module so CRUD-sorted URLs run in order.
+// For CMS full batch, CMS_SEQUENTIAL_MODULE_ORDER=1 uses batched test.step per CMS bucket (all stages) so CRUD-sorted URLs run in order without fail-fast skip when CMS_CONTINUE_ON_FAIL=1.
 // When CMS_CONTINUE_ON_FAIL=1 (set by run-cms-sequential-modules-dashboard.sh), CMS Stage=main uses one test + test.step per flow
 // so every URL still runs after a failure (reports merge step rows via playwrightFlowStepExpansion.ts).
 
@@ -147,6 +147,24 @@ let flows = loadFlows().sort((a, b) => {
   // Explicit dependency ordering for entry lifecycle URLs
   const flowOrder = (f: any) => {
     const id = String(f?.id || "").toLowerCase();
+    // Brand Kit Voice Profiles: export before import so listing row AUTO-VP- is unambiguous; delete last (cleanup import fixture).
+    // Brand Kit Knowledge Vault: add/edit → export (AUTO-KV-FILE-) → import → delete imported row last (AUTO-KV-IMPORT-DUMMY).
+    if (String(f?.project) === "BrandKit" && String(f?.module) === "voice-profiles") {
+      if (id === "create-a-voice-profile") return 3001;
+      if (id === "edit-a-voice-profile") return 3002;
+      if (id === "export-a-voice-profile") return 3003;
+      if (id === "import-a-voice-profile") return 3004;
+      if (id === "delete-a-voice-profile") return 3099;
+      return 3000;
+    }
+    if (String(f?.project) === "BrandKit" && String(f?.module) === "knowledge-vault") {
+      if (id === "add-item-in-knowledge-vault") return 3101;
+      if (id === "edit-item-in-knowledge-vault") return 3102;
+      if (id === "export-item-from-knowledge-vault") return 3103;
+      if (id === "import-item-in-knowledge-vault") return 3104;
+      if (id === "delete-item-in-knowledge-vault") return 3199;
+      return 3100;
+    }
     if (id === "publish-an-entry") return 1;
     if (id === "bulk-publish-localized-entry-versions") return 2;
     if (id === "bulk-delete-localized-entry-versions") return 3;
@@ -431,7 +449,7 @@ const SERIAL_CHAIN_FLOW_IDS = new Set<string>([...PUBLISH_RULE_CHAIN_SERIAL, ...
 const flowsForParallel = flows.filter((f) => !SERIAL_CHAIN_FLOW_IDS.has(String(f.id || "")));
 const flowGroups = groupFlowsByProjectModuleStage(flowsForParallel);
 
-/** When CMS_SEQUENTIAL_MODULE_ORDER=1 (sequential module batch), CMS Stage=main runs one URL at a time per module in CRUD sort order. */
+/** When CMS_SEQUENTIAL_MODULE_ORDER=1 (sequential module batch), CMS runs with ordered batches per module/stage. */
 const cmsSequentialModuleOrder = process.env.CMS_SEQUENTIAL_MODULE_ORDER === "1";
 
 /** CMS sequential batch: run every flow in the module even if one fails (test.step per flow). Off unless "1". */
@@ -470,11 +488,9 @@ const cmsModuleBatchTimeoutMs = (() => {
 })();
 
 function registerModuleFlowTests(groupFlows: any[], bucketTitle: string): void {
+  /** All CMS stages (main, delete, trash, …): one batched test + test.step per URL so failures do not skip the rest of the bucket. */
   const useStepBundle =
-    cmsContinueOnFail &&
-    cmsSequentialModuleOrder &&
-    bucketTitle.startsWith("Project=CMS ") &&
-    bucketTitle.includes("Stage=main");
+    cmsContinueOnFail && cmsSequentialModuleOrder && bucketTitle.startsWith("Project=CMS ");
 
   if (useStepBundle) {
     const batchTitle = `${bucketTitle} · run-all-flows-continue-on-fail`;
@@ -548,7 +564,8 @@ test.describe.parallel("Flow suite (parallel across modules; all URLs in a modul
     const stage = first.stage || "main";
 
     const bucketTitle = `Project=${projectName} Module=${moduleName} Stage=${stage}`;
-    const serialInner = cmsSequentialModuleOrder && projectName === "CMS" && stage === "main";
+    /** CMS + sequential: use inner describe + module batch timeout for every stage (main, delete, …), not only Stage=main. */
+    const serialInner = cmsSequentialModuleOrder && projectName === "CMS";
 
     if (serialInner && cmsContinueOnFail) {
       test.describe(bucketTitle, () => {

@@ -9,6 +9,7 @@
     "login",
     "selectStack"
   ],
+  "automationNotes": "Same row menu as edit-content-type: ⋯ wait (VERTICAL_ELLIPSIS_POST_OPEN_MS, default 2000ms) then Edit on `ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit]`.",
   "steps": [
     {
       "action": "click",

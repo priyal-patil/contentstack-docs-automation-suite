@@ -1,0 +1,87 @@
+{
+  "id": "analytics-for-launch",
+  "project": "Analytics",
+  "module": "guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/analytics/analytics-for-launch",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "https://www.contentstack.com/docs/analytics/analytics-for-launch — org dropdown step warns when DEFAULT_ORG unset; left-nav Analytics step warn-only; opens Analytics via dashboard tile (`dashboard-analytics-card.html`); default CMS hub then doc switch via Launch tab (`analytics-nav-launch` in personalize.html DOM capture). Key Sections use exact doc headings with labelEquals; mismatches warn-only.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Analytics doc: header organization dropdown pick DEFAULT_ORG (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Analytics icon in left panel navigate to Analytics dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Analytics" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics doc: Organization dashboard Analytics product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics dashboard default CMS label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "CMS" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics hub Launch dashboard tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics hub Launch dashboard label visible after tab switch (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Launch" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Subscription Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Subscription Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics URL Requests section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "URL Requests" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Bandwidth Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Bandwidth Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Top URLs section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Top URLs" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Status Codes section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Status Codes" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Cache Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Cache Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Launch analytics Device Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Device Usage" }
+    }
+  ]
+}

@@ -1,0 +1,505 @@
+{
+  "id": "create-data-and-insights-lytics-integration",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/data-and-insights/create-data-and-insights-lytics-integration",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc parity: verify steps use labelEquals with doc wording (labelMatch exact where UI matches; contains for labels that append \"(required)\"). Data privacy + Proceed optional when consent skipped. CMS Stacks: type **AUTO** (`value` / `DAL_CMS_STACK_SEARCH` / `DEFAULT_STACK`), poll for async results, then pick stack row whose **aria-label** matches filter when possible (else first valid row), then checkbox/listbox fallbacks. Launch + Personalize: first visible option. Lytics Account: `DAL_LYTICS_ACCOUNT_SEARCH`. Edit subsection: ⋮ → **`li[data-test-id=cs-org-edit-lytics-tag-modal-cta]`** (fallback `cs-ct-action-edit`) → hover → soft-check Edit → click. App Switcher → Data & Insights: if panel already open from prior step, do not toggle close; then `app-switcher-lytics` / product title. Row ⋯ uses `AUTO-DAL-` / `__dalLyticsDalTitle`. Headed: `npm run test:data-and-insights:lytics-integration:headed`.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Administration product label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Administration",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher Administration product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Data Activation Layer administration nav label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Data Activation Layer",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Administration nav Data Activation Layer (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Data Activation Layer page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Data Activation Layer",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Add New DAL Configuration button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Add DAL Configuration",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Add DAL Configuration button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Data privacy confirmation checkbox (doc step)",
+      "optional": true,
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: Proceed button label (doc step)",
+      "optional": true,
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Proceed",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Proceed button after privacy confirmation (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal Title field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal Domain field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Domain",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal CMS Stacks field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "CMS Stacks",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal Launch Projects field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Launch Projects",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal Personalize Projects field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Personalize Projects",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify New DAL setup modal Lytics Account field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Data & Insights (Lytics) Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Add additional DAL Managers section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add additional DAL Managers",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Title field (doc step)",
+      "value": "AUTO-DAL-{unique}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Domain field (doc step)",
+      "value": "https://www.example-{unique}.test/",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: CMS Stacks async select filter (doc step)",
+      "value": "AUTO",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Launch Projects async select pick (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Personalize Projects async select pick (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Lytics Account dropdown filter (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Add Users open modal button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Add Users open Select Users modal (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select Users modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Select Users modal search field (doc step)",
+      "value": "test",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Select Users modal pick first visible user row checkbox (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select Users modal footer Add Users button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Select Users modal footer Add Users (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Test Connection button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Test Connection",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Test Connection button (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Save DAL configuration button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Save",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Save DAL configuration button (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Administration product label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Administration",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher Administration product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Data Activation Layer administration nav label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Data Activation Layer",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Administration nav Data Activation Layer (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Data Activation Layer page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Data Activation Layer",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Data Activation Layer listing Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: edit subsection table row vertical ellipsis (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "AUTO-DAL-"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: edit subsection row menu Edit (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "AUTO-DAL-"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Edit DAL modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Edit Data Activation Layer (DAL)",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Edit DAL modal scroll to Add additional DAL Managers section (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Add additional DAL Managers section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add additional DAL Managers",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Add Users open modal button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Add Users open Select Users modal (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select Users modal heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "DAL Lytics doc: Select Users modal search field (doc step)",
+      "value": "test",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Select Users modal pick first visible user row checkbox (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select Users modal footer Add Users button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Add Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Select Users modal footer Add Users (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Added Users section label under edit DAL modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Added Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Update DAL configuration button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Update",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Update edited DAL configuration button (doc step)",
+      "timeoutMs": 180000
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify App Switcher Data and Insights product label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Data & Insights",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: App Switcher Data and Insights product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select An Account modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select An Account",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: verify Select account row Select button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: Select account modal Select button opens OAuth tab (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "DAL Lytics doc: OAuth Authorize button label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DAL Lytics doc: OAuth Authorize button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

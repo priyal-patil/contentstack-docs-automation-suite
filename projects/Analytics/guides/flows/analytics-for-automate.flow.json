@@ -1,0 +1,75 @@
+{
+  "id": "analytics-for-automate",
+  "project": "Analytics",
+  "module": "guides",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/analytics/analytics-for-automate",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "https://www.contentstack.com/docs/analytics/analytics-for-automate — shared org/tile path; Automate tab uses `data-test-id=\"analytics-nav-agentos\"` (Automate product in DOM capture `personalize.html`). Key Sections match doc headings; warn-only verification.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Analytics doc: header organization dropdown pick DEFAULT_ORG (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Analytics icon in left panel navigate to Analytics dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Analytics" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics doc: Organization dashboard Analytics product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "CMS analytics dashboard default CMS label visible (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "CMS" }
+    },
+    {
+      "action": "click",
+      "target": "Analytics hub Automate dashboard tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics hub Automate dashboard label visible after tab switch (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Automate" }
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics Subscription Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Subscription Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics API Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "API Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics Bandwidth Usage section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Bandwidth Usage" }
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics Top URLs section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Top URLs" }
+    },
+    {
+      "action": "verify",
+      "target": "Automate analytics Status Codes section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Status Codes" }
+    }
+  ]
+}

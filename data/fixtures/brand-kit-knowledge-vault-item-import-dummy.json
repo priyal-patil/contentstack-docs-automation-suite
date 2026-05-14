@@ -1,0 +1,7 @@
+{
+  "knowledge_vault_item": {
+    "name": "AUTO-KV-IMPORT-DUMMY",
+    "text_content": "Automation fixture body for import-item-in-knowledge-vault. Replace this file with JSON exported from the app if validation fails.",
+    "source_type": "MANUAL_TEXT"
+  }
+}

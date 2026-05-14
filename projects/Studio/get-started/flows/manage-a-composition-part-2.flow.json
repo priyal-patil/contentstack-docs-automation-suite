@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/studio/manage-a-composition",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Part 2 — doc Create a Composition (Freeform) + Edit + Delete a Composition: after Save, row ⋮ Delete on updated name; confirm Delete Composition modal.",
+  "automationNotes": "Part 2 — doc Create a Composition (Freeform) + Edit + Delete a Composition: after Save, row ⋮ Delete on updated name; confirm Delete Composition modal. Row ⋯: cs-table-action-options; VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms); Edit via cs-vertical-action-tooltip-actions li[data-test-id=cs-ct-action-edit] (hover + click); Delete uses row menu Delete item.",
   "steps": [
     { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },

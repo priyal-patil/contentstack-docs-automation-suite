@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/create-content-types/show-as-tab",
   "type": "executable",
   "use": ["login", "selectStack"],
+  "automationNotes": "Row ⋯ + Edit: `cs-table-action-options` → post-open wait (default 2000ms, env VERTICAL_ELLIPSIS_POST_OPEN_MS) → `cs-vertical-action-tooltip-actions li[data-test-id=cs-ct-action-edit]`.",
   "steps": [
     { "action": "click", "target": "Content Models" },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },

@@ -96,6 +96,7 @@ function normalizeProject(p: string) {
   if (up.toLowerCase() === "cms") return "CMS";
   if (up.toLowerCase() === "launch") return "Launch";
   if (up.toLowerCase() === "personalize") return "Personalize";
+  if (up.toLowerCase() === "data-and-insights") return "Data-and-Insights";
   return up;
 }
 

@@ -1,0 +1,96 @@
+{
+  "id": "audience-insights-entry-sidebar",
+  "project": "Data-and-Insights",
+  "module": "set-up-data-insights",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/audience-insights",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Doc: Using the Audience Insights App as an Entry Sidebar — **Entries** listing → open an entry (first row; doc does not name a specific entry) → **Audience Insights** in right navigation panel → **Analyze** → sections **Topics** and **Audience Alignment** → **Re-analyze**. Verification uses doc-exact button/section names only.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries page (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights doc: open first entry from Entries list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify entry right nav Audience Insights app icon (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "Right navigation panel",
+        "labelEquals": "Audience Insights",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights doc: click entry right nav Audience Insights app icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Analyze button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Analyze",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights doc: click Analyze button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Topics section label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Topics", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Audience Alignment section label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Audience Alignment", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights doc: verify Re-analyze button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Re-analyze",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights doc: click Re-analyze button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

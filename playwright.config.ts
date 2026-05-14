@@ -73,6 +73,21 @@ export default defineConfig({
       },
     },
     {
+      name: "data-insights-chain",
+      testMatch: /data-and-insights-lytics-dal-then-job\.spec\.ts/,
+      use: {
+        storageState: "auth.json",
+        headless: useHeadless,
+        launchOptions: {
+          slowMo,
+          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+        },
+        screenshot: "only-on-failure",
+        video: "retain-on-failure",
+        trace: "on-first-retry",
+      },
+    },
+    {
       name: "flows",
       testMatch: /flows\.spec\.ts/,
       use: {
@@ -89,7 +104,7 @@ export default defineConfig({
     },
     {
       name: "default",
-      testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/, /flows\.spec\.ts/],
+      testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/, /flows\.spec\.ts/, /data-and-insights-lytics-dal-then-job\.spec\.ts/],
       use: {
         storageState: "auth.json",
         headless: useHeadless,
