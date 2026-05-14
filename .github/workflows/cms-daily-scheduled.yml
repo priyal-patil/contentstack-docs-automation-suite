@@ -5,7 +5,7 @@
 # → trash → docs merge/audit/reports — see scripts/run-cms-sequential-modules-dashboard.sh
 # and .cursor/rules/cms-execution-order.mdc
 #
-# Schedule: 09:00 IST = 03:30 UTC (India Standard Time is UTC+5:30, no DST)
+# Schedule: 03:00 IST = 21:30 UTC prior calendar day boundary (India is UTC+5:30, no DST)
 # Cron format: minute hour day-of-month month day-of-week
 # =============================================================================
 
@@ -24,9 +24,9 @@ on:
           - "false"
           - "true"
 
-  # Daily 09:00 IST → 03:30 UTC
+  # Daily 03:00 IST → 21:30 UTC
   schedule:
-    - cron: "30 3 * * *"
+    - cron: "30 21 * * *"
 
 # Avoid overlapping long CMS runs (do not cancel in-flight; stack new run if needed)
 concurrency:
