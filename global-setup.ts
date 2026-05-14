@@ -6,6 +6,16 @@ import { appUrl, loadRuntimeEnv } from "./core/env";
 const envPath = loadRuntimeEnv();
 console.log("✅ Loaded .env from:", envPath);
 
+/** Headed login is unreliable on Linux CI (no display). Matches PLAYWRIGHT_HEADLESS / CI usage in playwright.config.ts. */
+function globalSetupHeadless(): boolean {
+  if (process.env.GLOBAL_SETUP_HEADFUL === "true") return false;
+  return (
+    process.env.PLAYWRIGHT_HEADLESS === "1" ||
+    process.env.CI === "true" ||
+    process.env.GLOBAL_SETUP_HEADLESS === "true"
+  );
+}
+
 function mustGetEnv(name: string): string {
   const v = process.env[name];
   if (!v || !v.trim()) throw new Error(`Missing required env var: ${name}. Check ${envPath}`);
@@ -30,7 +40,10 @@ export default async () => {
       const hasOrigins = Array.isArray(existing?.origins) && existing.origins.length > 0;
       if (hasCookies || hasOrigins) {
         // Validate the saved session by opening stacks page once.
-        const browser = await chromium.launch({ headless: true });
+        const browser = await chromium.launch({
+          headless: true,
+          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+        });
         const context = await browser.newContext({ storageState: storagePath });
         const page = await context.newPage();
         await page.goto(appUrl("/#!/stacks"), { waitUntil: "commit", timeout: 120_000 });
@@ -50,7 +63,11 @@ export default async () => {
     }
   }
 
-  const browser = await chromium.launch({ headless: false });
+  const headless = globalSetupHeadless();
+  const browser = await chromium.launch({
+    headless,
+    args: headless ? ["--disable-dev-shm-usage", "--no-sandbox"] : [],
+  });
   const page = await browser.newPage();
 
   const email = mustGetEnv("CS_EMAIL");
