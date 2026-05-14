@@ -167,11 +167,16 @@ jobs:
       # 8) Lightweight Slack alert on workflow failure (optional Incoming Webhook)
       # Does not replace the product slack summary from urlRunSummaryAndSlack.ts when tokens are set.
       # ---------------------------------------------------------------------
+      # NOTE: `secrets.*` must not appear in step `if:` — GitHub errors with "Unrecognized named-value: 'secrets'".
       - name: Slack notify on workflow failure (optional webhook)
-        if: failure() && secrets.SLACK_INCOMING_WEBHOOK_URL != ''
+        if: failure()
         env:
           HOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
         run: |
+          if [[ -z "${HOOK:-}" ]]; then
+            echo "Skipping Slack webhook (SLACK_INCOMING_WEBHOOK_URL not configured)."
+            exit 0
+          fi
           curl -sS -X POST -H 'Content-type: application/json' \
             --data "{\"text\":\"❌ *CMS daily run failed* — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open run>\"}" \
             "$HOOK"
