@@ -5,8 +5,13 @@
 # → trash → docs merge/audit/reports — see scripts/run-cms-sequential-modules-dashboard.sh
 # and .cursor/rules/cms-execution-order.mdc
 #
-# Schedule: 03:00 IST = 21:30 UTC prior calendar day boundary (India is UTC+5:30, no DST)
+# Schedule: 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
 # Cron format: minute hour day-of-month month day-of-week
+#
+# GitHub-hosted runners: maximum job runtime is 6 hours (timeout-minutes capped at 360 below).
+# Scheduled cron sets SKIP_RETRY and SKIP_CMS_DOCS_SPEC; docs-audit runs in the background so the
+# workflow does not block on the full crawl. A bounded PID wait plus a separate docs-audit artifact
+# capture reports/docs-audit-CMS-* (see docs-audit-background.log under REPORT_DIR).
 # =============================================================================
 
 name: CMS — daily doc automation (scheduled)
@@ -16,7 +21,36 @@ on:
   workflow_dispatch:
     inputs:
       skip_retry:
-        description: "Set to true to pass SKIP_RETRY=1 (faster; skips retry-before-delete pass)"
+        description: "Manual only: true = skip retry-before-delete. Scheduled cron always sets SKIP_RETRY (6h runner cap)."
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      skip_slack:
+        description: "Set to true to skip urlRunSummaryAndSlack.ts (reports still uploaded as artifacts)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      skip_report_email:
+        description: "Set to true to skip SMTP daily report email (even if REPORT_EMAIL_* secrets are set)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      docs_audit_wait_secs:
+        description: "Manual only: override docs-audit PID wait after CMS (seconds, 0–7200). Empty = job default DOCS_AUDIT_GHA_WAIT_SECS."
+        required: false
+        default: ""
+        type: string
+      skip_docs_audit:
+        description: "Manual only: skip all CMS docs crawl (SKIP_DOCS_AUDIT=1, DOCS_AUDIT_BACKGROUND=0) for fastest CI."
         required: false
         default: "false"
         type: choice
@@ -24,9 +58,9 @@ on:
           - "false"
           - "true"
 
-  # Daily 03:00 IST → 21:30 UTC
+  # Daily 07:00 IST → 01:30 UTC
   schedule:
-    - cron: "30 21 * * *"
+    - cron: "30 1 * * *"
 
 # Avoid overlapping long CMS runs (do not cancel in-flight; stack new run if needed)
 concurrency:
@@ -45,15 +79,18 @@ jobs:
   cms-full-batch:
     name: CMS sequential batch (headless)
     runs-on: ubuntu-latest
-    # Full CMS + docs audit + reports can exceed 1–2h; raise if your org batch times out.
-    timeout-minutes: 480
+    # Hard cap for github-hosted jobs is 6h — values above 360 are truncated by GitHub.
+    timeout-minutes: 360
     env:
       CI: "true"
-      # ----- CI-friendly behaviour (no macOS open(), complete docs-audit in-tree for artifacts) -----
+      # ----- CI-friendly behaviour (no macOS open(), bounded wall clock for GHA 6h cap) -----
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
-      # Inline docs-audit so report folder is self-contained when the job ends
-      DOCS_AUDIT_BACKGROUND: "0"
+      # Background docs-audit matches scripts/run-cms-sequential-modules-dashboard.sh default: main
+      # pipeline does not wait on full crawl (see REPORT_DIR/docs-audit-background.log; audit may still
+      # run after merges/reports — upload artifacts ASAP). For fully merged audit HTML in-report-dir,
+      # run locally with DOCS_AUDIT_BACKGROUND=0 or split into a second job/workflow.
+      DOCS_AUDIT_BACKGROUND: "1"
       PLAYWRIGHT_HEADLESS: "1"
       OPEN_FLOW_REPORT: "false"
       # Deterministic report path for upload (script defaults would still work under reports/)
@@ -61,6 +98,8 @@ jobs:
       # Align with scripts/run-cms-sequential-modules-dashboard.sh defaults
       PW_FLOW_MAX_MINUTES: "15"
       PW_WORKERS: "6"
+      # Bounded wait after CMS for background docs-audit PID before artifacts upload.
+      DOCS_AUDIT_GHA_WAIT_SECS: "1200"
       # If Slack secrets are configured in the repo, the pipeline posts summary (optional)
       # SKIP_SLACK is unset — use SLACK_BOT_TOKEN + SLACK_CHANNEL_ID per scripts/urlRunSummaryAndSlack.ts
 
@@ -95,11 +134,12 @@ jobs:
 
       # ---------------------------------------------------------------------
       # 5) Credentials — NEVER echo secrets (GitHub masks secret values in logs)
-      # Required repo secrets (see README / docs in your handoff):
+      # Required repo secrets — see README "GitHub Actions (CMS daily) + Slack reports":
       #   CS_EMAIL, CS_PASSWORD, DEFAULT_STACK
       # Optional:
       #   CS_APP_ORIGIN (default https://app.contentstack.com)
       #   SLACK_BOT_TOKEN + SLACK_CHANNEL_ID (summary post)
+      #   REPORT_EMAIL_* — optional SMTP daily summary email (see README)
       #   ENCRYPTION_SECRET_KEY / ENCRYPTION_DATA_XLSX if your Slack path needs them
       # ---------------------------------------------------------------------
       - name: Write .env for automation (from secrets)
@@ -126,10 +166,48 @@ jobs:
           chmod 600 .env
           echo "✓ .env written (credentials not shown)"
 
-      # Optional retry skip from manual dispatch
+      # Retry + docs.spec HTTP sweep add wall clock — skip on cron to preserve headroom under GitHub-hosted 6h cap.
+      - name: Scheduled run — SKIP_RETRY + SKIP_CMS_DOCS_SPEC (GitHub-hosted 6h cap)
+        if: github.event_name == 'schedule'
+        run: |
+          echo "SKIP_RETRY=1" >> "$GITHUB_ENV"
+          echo "SKIP_CMS_DOCS_SPEC=1" >> "$GITHUB_ENV"
+          echo "Scheduled: SKIP_RETRY=1 SKIP_CMS_DOCS_SPEC=1 — see README (GitHub job max 6h). Manual dispatch can omit these."
+
+      # Optional retry / Slack skips from manual dispatch
       - name: Apply optional SKIP_RETRY (manual runs)
         if: github.event_name == 'workflow_dispatch' && inputs.skip_retry == 'true'
         run: echo "SKIP_RETRY=1" >> "$GITHUB_ENV"
+
+      - name: Apply optional SKIP_SLACK (manual runs)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_slack == 'true'
+        run: echo "SKIP_SLACK=1" >> "$GITHUB_ENV"
+
+      - name: Apply optional SKIP_REPORT_EMAIL (manual runs)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_report_email == 'true'
+        run: echo "SKIP_REPORT_EMAIL=1" >> "$GITHUB_ENV"
+
+      # Manual tuning: shorten runs or deepen docs-audit wait (workflow_dispatch inputs.*)
+      - name: Manual — skip all CMS docs audit (links crawl off)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_docs_audit == 'true'
+        run: |
+          echo "DOCS_AUDIT_BACKGROUND=0" >> "$GITHUB_ENV"
+          echo "SKIP_DOCS_AUDIT=1" >> "$GITHUB_ENV"
+          echo "Manual: SKIP_DOCS_AUDIT=1 and DOCS_AUDIT_BACKGROUND=0 — background docs-audit will not start."
+
+      - name: Manual — docs-audit PID wait override (seconds)
+        if: github.event_name == 'workflow_dispatch' && inputs.docs_audit_wait_secs != ''
+        run: |
+          set -euo pipefail
+          v="$(echo "${RAW}" | tr -d '[:space:]')"
+          if ! [[ "${v}" =~ ^[0-9]+$ ]] || [[ "${v}" -gt 7200 ]]; then
+            echo "::error::docs_audit_wait_secs must be an integer 0–7200."
+            exit 1
+          fi
+          echo "DOCS_AUDIT_GHA_WAIT_SECS=${v}" >> "$GITHUB_ENV"
+          echo "DOCS_AUDIT_GHA_WAIT_SECS=${v} (manual override)"
+        env:
+          RAW: ${{ inputs.docs_audit_wait_secs }}
 
       # ---------------------------------------------------------------------
       # 6) Run full CMS pipeline (module order, CRUD sort, continue-after-URL-failure,
@@ -141,6 +219,41 @@ jobs:
         id: cms_run
         run: npm run test:cms:foreground
 
+      # Background docs-audit output lives under reports/docs-audit-CMS-<timestamp>/ (see run-docs-audit-background.sh).
+
+      - name: Wait for CMS docs-audit background process (bounded)
+        if: always()
+        env:
+          REPORT_DIR_ABS: ${{ github.workspace }}/reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -eo pipefail
+          PIDFILE="${REPORT_DIR_ABS}/docs-audit-background.pid"
+          if [[ ! -f "${PIDFILE}" ]]; then
+            echo "No ${PIDFILE} (inline audit, or CMS exited before docs-audit fork) — skip wait."
+            exit 0
+          fi
+          pid="$(grep -Eo '[0-9]+' "${PIDFILE}" | head -1 || true)"
+          if [[ -z "${pid}" ]]; then
+            echo "Could not parse PID — skip wait."
+            exit 0
+          fi
+          max="${DOCS_AUDIT_GHA_WAIT_SECS:-1200}"
+          elapsed=0
+          if ! kill -0 "${pid}" 2>/dev/null; then
+            echo "docs-audit PID ${pid} already exited."
+            exit 0
+          fi
+          echo "Waiting up to ${max}s for docs-audit PID ${pid}…"
+          while kill -0 "${pid}" 2>/dev/null; do
+            if [[ "${elapsed}" -ge "${max}" ]]; then
+              echo "::warning::docs-audit still running after ${max}s — upload may be partial; see docs-audit-CMS-* and docs-audit-background.log."
+              exit 0
+            fi
+            sleep 10
+            elapsed=$((elapsed + 10))
+          done
+          echo "docs-audit PID ${pid} finished (waited ~${elapsed}s)."
+
       # ---------------------------------------------------------------------
       # 7) Upload artifacts (HTML, Excel, JSON, logs, Playwright report)
       # ---------------------------------------------------------------------
@@ -149,8 +262,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cms-reports-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}/**
+          path: reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 30
           if-no-files-found: warn
 
@@ -159,18 +271,88 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}/html/**
+          path: reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}/html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload CMS background docs-audit output (if present)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/docs-audit-CMS-*
           retention-days: 14
           if-no-files-found: ignore
 
       # ---------------------------------------------------------------------
-      # 8) Lightweight Slack alert on workflow failure (optional Incoming Webhook)
+      # 8) Daily report email via SMTP (optional — configure REPORT_EMAIL_* secrets)
+      # Sends after uploads so the mail points at the same run/artifacts; runs even if the CMS step failed.
+      # ---------------------------------------------------------------------
+      - name: Report email — gate on secrets + SKIP_REPORT_EMAIL
+        id: report_email_gate
+        if: always()
+        env:
+          TO: ${{ secrets.REPORT_EMAIL_TO }}
+          HOST: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          USER: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          PASS: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          FROM: ${{ secrets.REPORT_EMAIL_FROM }}
+          PORT_RAW: ${{ secrets.REPORT_EMAIL_SMTP_PORT }}
+        run: |
+          set -euo pipefail
+          if [[ "${SKIP_REPORT_EMAIL:-}" == "1" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Report email skipped (SKIP_REPORT_EMAIL=1)."
+            exit 0
+          fi
+          PORT="${PORT_RAW:-587}"
+          if [[ -z "${TO:-}" || -z "${HOST:-}" || -z "${USER:-}" || -z "${PASS:-}" || -z "${FROM:-}" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Report email skipped — set REPORT_EMAIL_TO, REPORT_EMAIL_SMTP_HOST, REPORT_EMAIL_SMTP_USERNAME, REPORT_EMAIL_SMTP_PASSWORD, REPORT_EMAIL_FROM (optional REPORT_EMAIL_SMTP_PORT, default 587)."
+            exit 0
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "server_port=${PORT}" >> "$GITHUB_OUTPUT"
+          if [[ "${PORT}" == "465" ]]; then
+            echo "secure=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "secure=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report email — write body file
+        id: report_email_body
+        if: always() && steps.report_email_gate.outputs.enabled == 'true'
+        env:
+          REPORT_DIR: ${{ github.workspace }}/reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
+          CMS_STEP_OUTCOME: ${{ steps.cms_run.outcome }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: npx ts-node scripts/gha/writeCmsDailyReportEmailBody.ts "${{ github.workspace }}/cms-daily-email-body.txt"
+
+      - name: Report email — send (SMTP)
+        if: always() && steps.report_email_gate.outputs.enabled == 'true' && steps.report_email_body.outcome == 'success'
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          server_port: ${{ steps.report_email_gate.outputs.server_port }}
+          username: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          password: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          secure: ${{ steps.report_email_gate.outputs.secure == 'true' }}
+          subject: >-
+            [CMS docs automation] ${{ steps.cms_run.outcome }} — ${{ github.repository }} (#${{ github.run_number }})
+          to: ${{ secrets.REPORT_EMAIL_TO }}
+          from: ${{ secrets.REPORT_EMAIL_FROM }}
+          body: file://${{ github.workspace }}/cms-daily-email-body.txt
+
+      # ---------------------------------------------------------------------
+      # 9) Lightweight Slack alert on workflow failure (optional Incoming Webhook)
       # Does not replace the product slack summary from urlRunSummaryAndSlack.ts when tokens are set.
       # ---------------------------------------------------------------------
       # NOTE: `secrets.*` must not appear in step `if:` — GitHub errors with "Unrecognized named-value: 'secrets'".
       - name: Slack notify on workflow failure (optional webhook)
-        if: failure()
+        if: ${{ failure() || cancelled() }}
         env:
           HOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
         run: |

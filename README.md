@@ -112,3 +112,65 @@ This generates:
 - `projects/<project>/<module>/selectors/<id>.selectors.ts` (stub if missing)
 - updates `projects/<project>/<module>/index.ts`
 
+### GitHub Actions (CMS daily) + Slack reports
+
+Workflow: **`.github/workflows/cms-daily-scheduled.yml`** (writes **`.env`** from secrets before `npm run test:cms:foreground`).
+
+In the repo → **Settings** → **Secrets and variables** → **Actions**, add repository secrets:
+
+| GitHub Actions secret name | Value (you obtain from Slack / Contentstack login) |
+| --- | --- |
+| **CS_EMAIL** | Contentstack login email (**required**) |
+| **CS_PASSWORD** | Contentstack login password (**required**) |
+| **DEFAULT_STACK** | Stack name (**required**) |
+| **CS_APP_ORIGIN** | Optional; default `https://app.contentstack.com` if unset |
+| **SLACK_BOT_TOKEN** | Slack **Bot User OAuth Token** (`xoxb-...`); scopes must allow posting (e.g. `chat:write`) (**optional**, for summary) |
+| **SLACK_CHANNEL_ID** | Slack **channel ID** (e.g. `C0123ABCDE`), not `#channel-name` (**optional**, paired with bot token) |
+| **SLACK_INCOMING_WEBHOOK_URL** | Optional Incoming Webhook URL; used only when the **workflow job fails** (short alert, not the full summary) |
+
+Invite the Slack app to the target channel. See **`.env.example`** (Slack section) for local vs Actions usage. Manual runs can set **skip_slack** to `true` to skip the summary post while still uploading report artifacts.
+
+#### Daily report email (SMTP, optional)
+
+After each CMS daily run (success or failure), the workflow can send a short **plain-text** summary plus a link to the GitHub Actions run (artifacts: Excel, dashboards, logs). Configure SMTP via repository secrets:
+
+| GitHub Actions secret name | Purpose |
+| --- | --- |
+| **REPORT_EMAIL_TO** | Recipient address(es), comma-separated |
+| **REPORT_EMAIL_FROM** | Sender, e.g. `CMS Automation <noreply@yourcompany.com>` |
+| **REPORT_EMAIL_SMTP_HOST** | SMTP host (e.g. `smtp.gmail.com`, Office365 SMTP hostname) |
+| **REPORT_EMAIL_SMTP_USERNAME** | SMTP username |
+| **REPORT_EMAIL_SMTP_PASSWORD** | SMTP password or app password |
+| **REPORT_EMAIL_SMTP_PORT** | Optional; default **587** (STARTTLS). Use **465** for implicit TLS (`secure` is set automatically). |
+
+If any required mail secret is missing, the email step is skipped (no failure). Manual dispatch can set **skip_report_email** to `true` to skip sending.
+
+Uses **`dawidd6/action-send-mail@v3`** (nodemailer). Large HTML reports are **not** attached — download **cms-reports-*** from the run instead.
+
+#### Scheduler vs manual: runtime, retry, docs-audit (GitHub-hosted)
+
+GitHub-hosted jobs are limited to **6 hours**. The CMS workflow caps **`timeout-minutes` at 360** and configures CI so typical runs finish inside that window:
+
+| Trigger | Behaviour |
+| --- | --- |
+| **`schedule`** (cron) | Sets **`SKIP_RETRY=1`** (no retry-before-delete pass) and **`SKIP_CMS_DOCS_SPEC=1`** (skip **`tests/docs.spec.ts`** CMS doc-only HTTP pass — link audit still covers URLs via docs-audit). Starts **background** CMS docs-audit (**`DOCS_AUDIT_BACKGROUND=1`**) so the main pipeline does not block on the full crawl. Waits **up to `DOCS_AUDIT_GHA_WAIT_SECS`** (default **1200**) for the docs-audit **PID**, then uploads artifacts. **`timeout-minutes: 360`** matches GitHub’s **hard 6-hour** hosted-runner limit (**`timeout-minutes: 480` is ineffective** — GitHub still stops the job at 6h). |
+| **`workflow_dispatch`** | Full pipeline by default (including **`SKIP_RETRY`** only if you set **skip_retry** to **true**). Use optional inputs below to shorten runs. |
+
+Artifacts (among others):
+
+- **`cms-reports-<run>-<attempt>`** — main **`REPORT_DIR`** (`reports/gha-cms-…`): flows, dashboards, **`docs-audit-background.log`** (pointer / log).
+- **`cms-docs-audit-<run>-<attempt>`** — **`reports/docs-audit-CMS-*`** (actual crawl output from **`run-docs-audit-background.sh`**, when produced).
+- **`playwright-html-*`** — Playwright HTML under **`reports/gha-cms-…/html`** when present.
+
+**Manual “Run workflow” inputs** (`cms-daily-scheduled.yml`):
+
+| Input | Effect |
+| --- | --- |
+| **skip_retry** | **`SKIP_RETRY=1`** — skip retry-before-delete pass |
+| **skip_slack** | **`SKIP_SLACK=1`** — skip **`urlRunSummaryAndSlack.ts`** |
+| **skip_report_email** | **`SKIP_REPORT_EMAIL=1`** — skip SMTP summary |
+| **skip_docs_audit** | **`SKIP_DOCS_AUDIT=1`** + **`DOCS_AUDIT_BACKGROUND=0`** — no docs link crawl (shortest CMS run) |
+| **docs_audit_wait_secs** | Override post-CMS PID wait (integer **0–7200** seconds); empty = job default (**1200**) |
+
+Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). **Nightly** multi-project QA uses **`.github/workflows/nightly-docs-automation.yml`** (Node **22**, **`timeout-minutes: 360`**, **`docs.spec`**, **`docs-audit`**, **`flows`**).
+
