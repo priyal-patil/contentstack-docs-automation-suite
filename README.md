@@ -116,25 +116,7 @@ This generates:
 
 Workflow: **`.github/workflows/cms-daily-scheduled.yml`** (writes **`.env`** from secrets before `npm run test:cms:foreground`).
 
-#### Self-hosted runner (no GitHub-hosted Actions usage)
-
-If you avoid **hosted** runners, jobs use **`runs-on: self-hosted`**: GitHub assigns the workflow to a **runner you install** on a machine you control — **hosted Actions minutes aren’t billed** for that compute (you pay only that machine’s cost / electricity).
-
-**What you take on:**
-
-- **Availability** — the runner process must run when workflows trigger (cron or **Run workflow**). If the VM is offline, the job waits or fails.
-- **Install & updates** — same stack the workflow assumes: Linux + **bash**, **git**, **Node 22**, **`npm ci`**, **`npx playwright install --with-deps chromium`** (or OS packages Playwright expects). Prefer **Ubuntu 22.04+** when following GitHub’s “Add runner” wizard.
-- **Security** — the runner listens to GitHub for jobs and executes your repo scripts with your secrets (`CS_*`, Slack, SMTP). Use a locked-down VM/dedicated machine; keep the runner patched; restrict who can run workflows on the repo ([GitHub: self-hosted runner security](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners#self-hosted-runner-security-with-public-repositories)).
-- **Account edge case** — if GitHub suspends workflows account-wide over **billing**, some accounts still block queued jobs entirely until billing is cleared. Self-hosted avoids **minute** billing; very rare suspension cases are outside repo config.
-
-**Register a runner:**
-
-1. GitHub repo → **Settings** → **Actions** → **Runners** → **New self-hosted runner**.
-2. Choose **Linux** and follow commands (download, `./config.sh`, `./run.sh`; on a server consider **svc.sh** install so it runs as a service).
-3. After the runner appears **idle** under **Settings → Actions → Runners**, trigger **CMS — weekly doc automation** with **workflow_dispatch**.
-4. If the job never starts (“No runners available”), add matching labels — this workflow expects the default **`self-hosted`** label (no extra labels required unless you customised registration).
-
-Revert to GitHub-hosted (billable minutes) by changing **`runs-on: self-hosted`** back to **`ubuntu-latest`** in **`.github/workflows/cms-daily-scheduled.yml`**.
+Jobs use **`runs-on: ubuntu-latest`** (GitHub-hosted Linux). **Private** repositories use billable **Actions minutes** per your plan; **public** repos follow GitHub’s hosted allowance.
 
 In the repo → **Settings** → **Secrets and variables** → **Actions**, add repository secrets:
 
@@ -169,7 +151,7 @@ Uses **`dawidd6/action-send-mail@v3`** (nodemailer). Large HTML reports are **no
 
 #### Scheduler vs manual: runtime, retry, docs-audit
 
-The workflow **`timeout-minutes`** is **360** (six hours wall clock unless you raise it). On **self-hosted** runners GitHub does not truncate this to hosted limits; lengthen if batches run longer.
+The workflow **`timeout-minutes`** is **360** (six hours wall clock unless you raise it within your account’s GitHub-hosted limits).
 
 | Trigger | Behaviour |
 | --- | --- |

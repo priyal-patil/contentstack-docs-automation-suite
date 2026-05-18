@@ -8,9 +8,8 @@
 # Schedule (weekly): Mondays 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
 # Cron format: minute hour day-of-month month day-of-week
 #
-# Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux runner (uses Actions minutes on private repos;
-# public repos get hosted runner allowance per GitHub policy). Alternatively use **`runs-on: self-hosted`** on a
-# machine you register if you want zero hosted-runner billing (see README → Self-hosted runner).
+# Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux (Actions minutes on private repos; hosted
+# allowance on public repos per GitHub policy).
 # Scheduled cron sets SKIP_RETRY, SKIP_CMS_DOCS_SPEC, and SKIP_DOCS_AUDIT (no link crawl) to shorten
 # wall-clock time; use workflow_dispatch for full docs-audit + optional retry/docs.spec.
 # Manual runs: docs-audit can run in the background (default) with a bounded PID wait and artifact
