@@ -172,5 +172,5 @@ Artifacts (among others):
 | **skip_docs_audit** | **`SKIP_DOCS_AUDIT=1`** + **`DOCS_AUDIT_BACKGROUND=0`** — no docs link crawl (shortest CMS run) |
 | **docs_audit_wait_secs** | Override post-CMS PID wait (integer **0–7200** seconds); empty = job default (**1200**) |
 
-Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). **Nightly** multi-project QA uses **`.github/workflows/nightly-docs-automation.yml`** (Node **22**, **`timeout-minutes: 360`**, **`docs.spec`**, **`docs-audit`**, **`flows`**).
+Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). **Nightly** multi-project QA uses **`.github/workflows/nightly-docs-automation.yml`** (Node **22**, **`timeout-minutes: 360`**, **`docs.spec`**, **`docs-audit`**, **`flows`**). That workflow writes **`.env`** from Actions secrets (**`CS_EMAIL`**, **`CS_PASSWORD`**, **`DEFAULT_STACK`** required; **`CS_APP_ORIGIN`** optional) so **`global-setup`** and stack selection match the CMS daily job.
 

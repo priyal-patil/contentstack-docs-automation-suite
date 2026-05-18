@@ -1,8 +1,12 @@
 # Nightly (or manual) Documentation Automation: Playwright + unified reports + Slack.
 #
+# GitHub-hosted job hard cap is ~6h; timeout-minutes is set to 360 below.
+#
 # Required repository secrets (Settings → Secrets and variables → Actions):
 #   CS_EMAIL          — Contentstack account email (global-setup login)
 #   CS_PASSWORD       — Contentstack account password
+#   DEFAULT_STACK     — Stack UID for `selectStack` flows (same as CMS daily workflow); without it,
+#                       `core/navigation.ts` throws and CMS (and any stack-scoped) Playwright flows fail.
 #
 # Optional:
 #   SLACK_WEBHOOK_URL — Incoming webhook URL for a short summary (pass / warn / fail counts)
@@ -16,12 +20,16 @@ name: Nightly documentation automation
 on:
   workflow_dispatch:
   schedule:
-    # 06:15 UTC daily — adjust or comment out if you only want manual runs
-    - cron: "15 6 * * *"
+    # 07:00 IST = 01:30 UTC daily — GHA uses UTC; adjust or comment out for manual-only
+    - cron: "30 1 * * *"
 
 concurrency:
   group: docs-automation-${{ github.ref }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write # upload-artifact (some org defaults require explicit grant)
 
 env:
   PLAYWRIGHT_HEADLESS: "1"
@@ -44,8 +52,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -53,12 +62,33 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      # global-setup + core/env.ts use loadRuntimeEnv(), which requires a real .env FILE on disk (not
+      # just step env). CMS flows also require DEFAULT_STACK for ensureOnStacksAndSelectStack — match
+      # .github/workflows/cms-daily-scheduled.yml so nightly runs don't fail immediately in CI.
+      - name: Write .env for automation (from secrets)
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?secret CS_EMAIL is required}"
+          : "${CS_PASSWORD:?secret CS_PASSWORD is required}"
+          : "${DEFAULT_STACK:?secret DEFAULT_STACK is required (stack UID for selectStack flows)}"
+          {
+            echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"
+            echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+          } > .env
+          chmod 600 .env
+          echo "✓ .env written for Playwright global-setup / navigation (values not shown)"
+
       - name: Run Playwright (docs HTTP + docs-audit + flows)
         id: playwright
         continue-on-error: true
         env:
-          CS_EMAIL: ${{ secrets.CS_EMAIL }}
-          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
           DOCS_URLS_CSV: ${{ github.workspace }}/data/docs-urls.csv
         run: |
           set -euo pipefail
