@@ -13,8 +13,9 @@ const fullyParallel = process.env.PW_FULLY_PARALLEL !== "0";
 const MAX_TEST_TIMEOUT_MS = 3_600_000; // 60 min hard cap (typos / absurd values)
 
 /**
- * Per-test timeout (ms). Default **3 minutes** locally so a stuck UI closes the browser soon; CI defaults to 15 minutes
- * unless you set PW_FLOW_MAX_MINUTES / PW_TEST_TIMEOUT_MS.
+ * Per-test timeout (ms). Default **15 minutes** locally (headed flows often exceed 3m — e.g. Developer Hub wizard);
+ * CI defaults to **15 minutes** unless you set PW_FLOW_MAX_MINUTES / PW_TEST_TIMEOUT_MS. Use SHORT_FLOW_LOCAL=1
+ * to restore ~3 minute local timeouts when debugging tiny flows.
  *
  * Override examples:
  *   PW_FLOW_MAX_MINUTES=10 PLAYWRIGHT_HEADLESS=0 playwright test tests/flows.spec.ts --project=flows --headed -g "your-flow"
@@ -32,7 +33,8 @@ function resolveTestTimeoutMs(): number {
     if (Number.isFinite(n) && n > 0) return Math.min(Math.round(n * 60_000), MAX_TEST_TIMEOUT_MS);
   }
   if (isCI) return 900_000; // 15 min — full-project / docs-audit style runs
-  return 180_000; // 3 min — local headed debugging
+  if (process.env.SHORT_FLOW_LOCAL === "1") return 180_000; // fast-fail local smoke
+  return 900_000; // 15 min — long single-flow runs (Dev Hub, etc.) without setting PW_FLOW_MAX_MINUTES
 }
 
 const testTimeoutMs = resolveTestTimeoutMs();

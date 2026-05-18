@@ -1,0 +1,83 @@
+{
+  "id": "app-hosting",
+  "project": "Developer-Hub",
+  "module": "create-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/app-hosting",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "**Custom Hosting** path: verifies **Hosting Type** radio labels (**Hosting with Launch** / **Custom Hosting**), selects **Custom Hosting**, sets a sample **App URL**, and clicks **Save** (doc **Save** on Hosting). Docs also describe Hosting with Launch; this flow does not create Launch projects. Doc §Step 1: left navigation Developer Hub icon — first step emits a drift **warning** and continues via the Organization dashboard Developer Hub tile.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Developer Hub App Hosting doc: left navigation Developer Hub entry (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub dashboard Developer Hub tile label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "click",
+      "target": "Organization dashboard Developer Hub product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    { "action": "click", "target": "Developer Hub doc open any app from listing (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub General Hosting sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Hosting" }
+    },
+    { "action": "click", "target": "Developer Hub app settings Hosting nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Hosting page heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Hosting" }
+    },
+    {
+      "action": "verify",
+      "target": "Hosting Type Hosting with Launch radio label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Hosting with Launch" }
+    },
+    {
+      "action": "verify",
+      "target": "Hosting Type Custom Hosting radio label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Hosting" }
+    },
+    {
+      "action": "click",
+      "target": "Hosting tab Custom Hosting option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Hosting App URL label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "App URL" }
+    },
+    {
+      "action": "enter",
+      "target": "Developer Hub Hosting App URL input (doc step)",
+      "value": "https://example.com",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Hosting tab Save button label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save" }
+    },
+    {
+      "action": "click",
+      "target": "Hosting tab Save button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

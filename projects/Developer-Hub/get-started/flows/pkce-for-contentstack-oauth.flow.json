@@ -1,0 +1,84 @@
+{
+  "id": "pkce-for-contentstack-oauth",
+  "project": "Developer-Hub",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/pkce-for-contentstack-oauth",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Org dashboard → Developer Hub → **any** app. After **User Token**: select **two** scope rows from the User Token scopes table, strict-verify the visible PKCE **pre-toggle** status text (product: **PKCE Disabled** — throws on mismatch), enable PKCE, strict-verify **PKCE Enabled** + switch checked (throws on mismatch), Save. Requires ≥1 app.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Developer Hub dashboard Developer Hub tile label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "click",
+      "target": "Organization dashboard Developer Hub product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub PKCE doc open any app from listing (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub Manage OAuth sidebar item (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "OAuth" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub app settings OAuth nav (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub OAuth User Token section heading (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "User Token" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub OAuth User Token scopes table row 1 checkbox (pkce doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub OAuth User Token scopes table row 2 checkbox (pkce doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub OAuth Allow PKCE label strict verify (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "PKCE Disabled" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub OAuth Allow PKCE toggle (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "PKCE Disabled" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub OAuth Allow PKCE toggle enabled strict verify (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "PKCE Enabled" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub OAuth Save button label (pkce doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Save" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub OAuth Save button (pkce doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

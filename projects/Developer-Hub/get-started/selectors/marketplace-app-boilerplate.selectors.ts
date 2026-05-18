@@ -71,9 +71,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Developer Hub UI location Custom Field Data Type dropdown (doc step)":
     '[data-test-id="uilocation-custom-field-1-data-type"] div.Select__control',
 
-  /** Field Modifier — Allowed Field Types (react-select); alternate id allowed-field-types seen in some builds */
+  /** Field Modifier — Allowed Field Types (react-select); placeholder + numbered id seen in-product */
   "Developer Hub UI location Field Modifier Allowed Field Types dropdown (doc step)":
-    '[data-test-id="uilocation-field-modifier-1-field-types"] div.Select__control, [data-test-id="uilocation-field-modifier-1-allowed-field-types"] div.Select__control',
+    '[data-test-id^="uilocation-field-modifier-"][data-test-id$="-field-types"] div.Select__control, [data-test-id^="uilocation-field-modifier-"][data-test-id$="-allowed-field-types"] div.Select__control, [data-test-id="uilocation-field-modifier-1-field-types"] div.Select__control, [data-test-id="uilocation-field-modifier-1-allowed-field-types"] div.Select__control',
 
   /** Install flow — optional */
   "Developer Hub Install App button (doc step)": '[data-test-id="install-app-cta"]:not([disabled])',

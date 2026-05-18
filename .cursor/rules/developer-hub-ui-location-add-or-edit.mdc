@@ -1,0 +1,35 @@
+---
+description: Developer Hub UI Locations row menu accepts Add or Edit (reuse apps); centralized in actionRules
+globs: projects/Developer-Hub/**/*
+alwaysApply: false
+---
+
+# Developer Hub UI Locations: **Add** vs **Edit** menu row
+
+Reuse orgs/apps often already have a UI location configured. The row **⋯** menu then shows **Edit UI Location** instead of **+ Add UI Location**. Automation must not hard-fail on that difference.
+
+## Flow JSON (all `projects/Developer-Hub/**` URLs)
+
+- Keep **doc parity**: verify target **`Developer Hub UI Locations row menu + Add UI Location label (doc step)`** with **`expected.labelEquals`** matching the doc (typically **`+ Add UI Location`**).
+- Keep click target **`Developer Hub Add UI Location menu item (doc step)`** even when the app shows **Edit** — the runner resolves the correct menu action.
+- **Do not** fork flows into separate “first run” / “reuse” JSON for this row; one flow definition is enough.
+
+## Runner behavior (`rules/core/actionRules.ts`)
+
+1. **Row kind:** The preceding **⋯** click step sets **`(flow as any)._dhAddUiLocationRow`** (e.g. `asset-sidebar`, `app-configuration`, `custom-field`, …) so **Add** / **Edit** clicks target the correct tile row.
+2. **Verify:** Locator for **`Developer Hub UI Locations row menu + Add UI Location label (doc step)`** matches **Add** or **Edit** **UI Location**. If the doc expects **`+ Add …`** but the UI shows **Edit …**, the runner records a **doc-step warning** and continues (**not** a hard fail).
+3. **Click `Developer Hub Add UI Location menu item (doc step)`:**  
+   - **Non–Custom Field** rows (`entry-sidebar`, `app-configuration`, `stack-dashboard`, `asset-sidebar`, `full-page`, `field-modifier`, `content-type-sidebar`, `global-full-page`, `json-rte`): prefers **Add UI Location**, then clicks **Edit UI Location** when **Add** is absent; same downstream poll **`pollCfLocationStepSatisfied`** as after **Add**.  
+   - **Custom Field:** **Edit UI Location** then inline **Add UI Location** (existing **`tryEditThenInlineAdd`** path).
+
+When adding new Developer Hub doc flows that open a UI location from the list row menu, reuse these **exact** verify + click **`target`** strings so this logic applies automatically.
+
+## App manifest / listing caveat
+
+Flows that use **`Developer Hub doc open any app from listing (doc step)`** may open an app whose manifest does **not** include every tile (e.g. only **App Configuration** and **Global Full Page**). A verify like **`Developer Hub UI Locations available Asset Sidebar label`** then legitimately fails: the tile is absent from **Available Location(s)**.
+
+**Runner mitigation:** For `module: ui-locations` flows that need Stack-scoped tiles (`asset-sidebar-location`, `sidebar-location`, `full-page-location`, `field-modifier-location`, `content-type-sidebar-location`, `dashboard-location`, `custom-field-location`), **`actionRules`** reorders listing candidates to try **Stack App** cards before **Organization app**, and puts **deep links** between Stack and Org (see **`dhUiLocFlowsPreferStackAppListing`** + **`Developer Hub doc open any app from listing`**). **`app-config-location`** and **`global-full-page`** keep the legacy order — org apps commonly include those tiles.
+
+**Canonical pinned app slugs** (`step.value` / **`DEV_HUB_LISTING_APP_NAME`**) and **Playwright `-g`** notes (e.g. **`sidebar-location`** substring trap): **`developer-hub-ui-locations-pins-and-grep.mdc`**.
+
+If no Stack app exists in the org, flows still fall back to organization cards / links; ensure at least one **Stack App** exists for deterministic runs of Asset Sidebar-style docs.

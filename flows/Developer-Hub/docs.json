@@ -1,4 +1,22 @@
 {
   "project": "Developer-Hub",
-  "urls": []
+  "urls": [
+    "https://www.contentstack.com/docs/developers/developer-hub/about-ui-locations",
+    "https://www.contentstack.com/docs/developers/developer-hub/app-development-best-practices",
+    "https://www.contentstack.com/docs/developers/developer-hub/app-manifest",
+    "https://www.contentstack.com/docs/developers/developer-hub/app-visibility-status",
+    "https://www.contentstack.com/docs/developers/developer-hub/configuring-an-app",
+    "https://www.contentstack.com/docs/developers/developer-hub/contentstack-oauth",
+    "https://www.contentstack.com/docs/developers/developer-hub/guide-to-convert-contentstack-extensions-to-marketplace-apps",
+    "https://www.contentstack.com/docs/developers/developer-hub/oauth-scopes",
+    "https://www.contentstack.com/docs/developers/developer-hub/pkce-for-contentstack-oauth",
+    "https://www.contentstack.com/docs/developers/developer-hub/securing-your-app",
+    "https://www.contentstack.com/docs/developers/marketplace-platform-guides/difference-between-marketplace-apps-and-extensions",
+    "https://www.contentstack.com/docs/developers/sdks/contentstack-app-sdk/typescript/about-contentstack-app-sdk",
+    "https://www.contentstack.com/docs/developers/sdks/contentstack-app-sdk/typescript/contentstack-app-sdk-v2.0.0-migration-guide",
+    "https://www.contentstack.com/docs/developers/sdks/contentstack-app-sdk/typescript/get-started-with-contentstack-app-sdk",
+    "https://www.contentstack.com/docs/developers/sdks/contentstack-app-sdk/typescript/json-rte-plugin-for-contentstack-app-sdk",
+    "https://www.contentstack.com/docs/developers/sdks/contentstack-app-sdk/typescript/reference",
+    "https://www.contentstack.com/docs/developers/venus-component-library"
+  ]
 }

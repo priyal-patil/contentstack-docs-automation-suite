@@ -15,6 +15,7 @@ When the user says any of the following, start the matching **background** headl
 | Run Data and Insights (batch name `Data-and-Insights`) | `npm run launch:data-and-insights:bg` **or** `bash scripts/run-project-batch-background.sh Data-and-Insights` |
 | Run **headed**: Lytics DAL integration flow only (`create-data-and-insights-lytics-integration`) | `npm run test:data-and-insights:lytics-integration:headed` |
 | Run **headed**: Launch Event Tracking doc flow (`event-tracking-in-contentstack-launch`) | `npm run test:data-and-insights:event-tracking-launch:headed` |
+| Run **headed**: Developer Hub Entry Sidebar doc flow only (`sidebar-location`; avoids matching `asset-sidebar-location` / `content-type-sidebar-location`) | `npm run test:devhub:sidebar-location:headed` |
 | Run CMS + Launch + Studio (one merged Slack, open dashboard once at end) | `npm run launch:cms-launch-studio:bg` **or** `bash scripts/run-cms-launch-studio-combined-background.sh` |
 
 Aliases in `package.json`: `npm run run:cms`, `npm run run:launch`, `npm run run:personalize`, `npm run run:data-and-insights` (same as `launch:*:bg`); `npm run run:cms-launch-studio` (combined batch).

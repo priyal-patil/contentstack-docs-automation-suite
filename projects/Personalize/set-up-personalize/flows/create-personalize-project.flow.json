@@ -1,0 +1,111 @@
+{
+  "id": "create-personalize-project",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-personalize-project",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → Personalize → Personalize Projects → + New Personalize Project; modal Name (required), Description (optional), Select Stack, Create Project. **`use` includes `orgDashboard`** (`#!/dashboard`) as a generic prerequisite; step 1 still follows the doc (top bar App Switcher → Personalize), not the org **Personalize** product tile. DOM: `data/dom/Personalize/personalize-projects.html`, `new-personalize-project.html`. Stack choice uses **`DEFAULT_STACK`** in `.env`. Handlers: `rules/core/actionRules.ts` (`create-personalize-project`).",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Create Personalize Project doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Personalize Project doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "New Personalize Project",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Personalize Project primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Personalize Project",
+        "labelEquals": "New Personalize Project",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Name (required)",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Project Name field (doc step)",
+      "value": "Doc Personalize Project {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Project Description field (doc step)",
+      "value": "Automation description {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Select Stack field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Stack",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal Select Stack control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal pick DEFAULT_STACK option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal Create Project submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

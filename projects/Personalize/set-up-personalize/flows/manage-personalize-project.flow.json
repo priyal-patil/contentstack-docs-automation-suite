@@ -1,0 +1,203 @@
+{
+  "id": "manage-personalize-project",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/manage-personalize-project",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → Personalize → **Projects** list → open project → top nav lists **Experiences**, **Audiences**, **Attributes**, **Events**, **Settings** → **Settings** → **General** (**Project Details**: Name/Description/`UID`; **Save** applies changes). Doc also describes **Reset** (discard) — automation follows **Save** only after edits so changes persist. **Users**: left nav **Users** → list **Status** / **Role** columns.**Invite User** subsection is not automated here (needs a deterministic invite target). Which project opens: substring **`PERSONALIZE_PROJECT_CARD_CONTAINS`** or **`DAL_PERSONALIZE_PROJECT_SEARCH`** (fallback **`Doc Personalize Project`**). DOM: `data/dom/Personalize/personalize-projects.html`, `settings-general.html`, `settings-users.html`. Handlers: `rules/core/actionRules.ts` (`manage-personalize-project`).",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Manage Personalize Project doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Manage Personalize Project doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage Personalize Project doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Experiences",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Audiences",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Attributes (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Attributes",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Events (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Events",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Settings",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Settings button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Settings left navigation General row (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "General",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Settings General page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "General",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Project Details section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Project Details",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Project Details Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name (required)",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Settings General Name field (doc step)",
+      "value": "Manage doc project {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Project Details Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Settings General Description field (doc step)",
+      "value": "Manage doc description {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Project Details UID field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "UID (read only)",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Settings General Save button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Settings left navigation Users row (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Settings left navigation Users row (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Settings Users page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Users list Status column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Status",
+        "labelMatch": "exact"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Users list Role column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Role",
+        "labelMatch": "exact"
+      }
+    }
+  ]
+}

@@ -458,8 +458,8 @@ const cmsContinueOnFail = process.env.CMS_CONTINUE_ON_FAIL === "1";
 const MAX_FLOW_SUITE_TIMEOUT_MS = 3_600_000;
 
 /**
- * Same rules as playwright.config.ts `timeout`: PW_TEST_TIMEOUT_MS, PW_FLOW_MAX_MINUTES, else 3m local / 15m CI.
- * Flow suite used to force 30m here — that masked the global 7m cap and felt "stuck forever" when headed.
+ * Same rules as playwright.config.ts `timeout`: PW_TEST_TIMEOUT_MS, PW_FLOW_MAX_MINUTES, else 15m local / 15m CI.
+ * Set SHORT_FLOW_LOCAL=1 for ~3m local caps when debugging short flows.
  */
 function flowSuitePerTestTimeoutMs(): number {
   const msRaw = process.env.PW_TEST_TIMEOUT_MS?.trim();
@@ -473,7 +473,8 @@ function flowSuitePerTestTimeoutMs(): number {
     if (Number.isFinite(n) && n > 0) return Math.min(Math.round(n * 60_000), MAX_FLOW_SUITE_TIMEOUT_MS);
   }
   if (process.env.CI) return 900_000;
-  return 180_000;
+  if (process.env.SHORT_FLOW_LOCAL === "1") return 180_000;
+  return 900_000;
 }
 
 /**

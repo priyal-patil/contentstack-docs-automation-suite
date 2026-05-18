@@ -1,0 +1,46 @@
+{
+  "id": "managing-your-apps",
+  "project": "Developer-Hub",
+  "module": "create-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/managing-your-apps",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc order: verify **Marketplace** in left navigation where present (warning if absent). Open Marketplace via left nav icon when visible; otherwise organization dashboard Marketplace tile (**Manage your apps**: left nav → Marketplace; product may only expose the tile). After Marketplace loads, verify **Manage** (doc wording) matches the Manage / installed-apps control, then click it. Sections **Installed Apps** and **Authorized Apps** verified per doc.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Managing your apps doc: verify Left Navigation Marketplace (doc step)",
+      "timeoutMs": 120000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Marketplace" }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace doc: open Marketplace from left nav or organization dashboard tile (managing apps doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace Manage button label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Manage" }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace Manage Apps button (managing apps doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace Manage Installed Apps section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Installed Apps" }
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace Manage Authorized Apps section heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Authorized Apps" }
+    }
+  ]
+}

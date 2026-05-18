@@ -1,0 +1,152 @@
+{
+  "id": "custom-field-location",
+  "project": "Developer-Hub",
+  "module": "ui-locations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/custom-field-location",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: **Custom Field** tile — **Name**, **Path**, **Data Type**, **Multiple**, **Signed**, **Enabled**, **Description**, **Required**, **Save**. Listing: **`value` on open-app step** (or **`DEV_HUB_LISTING_APP_NAME`**) pins app **M2188772c** (same pin as Asset / Content Type Sidebar flows) when org listing defaults omit the **Custom Field** tile.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Developer Hub UI Locations Via Console doc: left navigation Developer Hub entry (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub dashboard Developer Hub tile label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Developer Hub" }
+    },
+    { "action": "click", "target": "Organization dashboard Developer Hub product tile (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "click",
+      "target": "Developer Hub doc open any app from listing (doc step)",
+      "value": "M2188772c",
+      "timeoutMs": 120000,
+      "automationNotes": "Pin app slug **M2188772c** so **Custom Field** appears under Available Location(s). Override with **`DEV_HUB_LISTING_APP_NAME`**; remove **`value`** for doc “any app” behavior."
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub General UI Locations sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "UI Locations" }
+    },
+    { "action": "click", "target": "Developer Hub app settings UI Locations nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub hosting banner View Hosting cue (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "View Hosting" }
+    },
+    { "action": "click", "target": "Developer Hub UI Locations View Hosting link (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Hosting page heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Hosting" }
+    },
+    {
+      "action": "verify",
+      "target": "Hosting Type Custom Hosting radio label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "Custom Hosting" }
+    },
+    { "action": "click", "target": "Hosting tab Custom Hosting option (doc step)", "timeoutMs": 45000 },
+    {
+      "action": "verify",
+      "target": "Hosting App URL label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "App URL" }
+    },
+    {
+      "action": "enter",
+      "target": "Developer Hub Hosting App URL input (doc step)",
+      "value": "http://localhost:3000/?cs={unique8}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Hosting tab Save button label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "Save" }
+    },
+    { "action": "click", "target": "Hosting tab Save button (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Developer Hub app settings UI Locations nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub UI Locations available Custom Field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Custom Field" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub UI Locations Custom Field row ellipsis (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub UI Locations row menu + Add UI Location label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "+ Add UI Location" }
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub Add UI Location menu item (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "UI location Custom Field Name field label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "Name" }
+    },
+    {
+      "action": "verify",
+      "target": "UI location Custom Field Path field label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "Path" }
+    },
+    {
+      "action": "verify",
+      "target": "UI location Custom Field Data Type label (doc step)",
+      "timeoutMs": 45000,
+      "expected": { "labelEquals": "Data Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub UI Locations footer Save button label (doc step)",
+      "timeoutMs": 30000,
+      "expected": { "labelEquals": "Save" }
+    },
+    {
+      "action": "enter",
+      "target": "Developer Hub UI location Custom Field Name input (doc step)",
+      "value": "F{unique8}",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Developer Hub UI location Custom Field Path input (doc step)",
+      "value": "/custom-field",
+      "timeoutMs": 45000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub UI location Custom Field Data Type dropdown (doc step)",
+      "timeoutMs": 45000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub Custom Field Data Type option Text (doc step)",
+      "timeoutMs": 45000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub UI Locations footer Save button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

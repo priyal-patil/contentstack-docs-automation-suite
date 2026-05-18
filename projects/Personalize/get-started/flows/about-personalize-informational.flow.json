@@ -1,0 +1,11 @@
+{
+  "id": "about-personalize-informational",
+  "project": "Personalize",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/about-personalize",
+  "type": "informational",
+  "use": [],
+  "steps": [],
+  "automationNotes": "Placeholder so **`npm run test:personalize`** / **`run-generic-project-headless.sh Personalize`** register at least one test. Replace or extend with executable flows under **`projects/Personalize/<module>/flows/`**; DOM refs **`data/dom/Personalize/`**."
+}

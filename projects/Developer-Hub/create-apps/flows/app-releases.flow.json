@@ -1,0 +1,110 @@
+{
+  "id": "app-releases",
+  "project": "Developer-Hub",
+  "module": "create-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/app-releases",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc §App Releases: default **Basic Information** loads on app open; **Releases** lives in **left navigation** (qualifying **public** apps). Table columns **Release**, **Title**, **Type**, **App Version**, **Status**, **Created By**, **Created At**, **Actions**; then row **⋯** → **View** → release details **modal**. **Private** apps often omit **Releases** — flow may fail earlier. Empty release list fails row actions.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Developer Hub dashboard Developer Hub tile label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "click",
+      "target": "Organization dashboard Developer Hub product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    { "action": "click", "target": "Developer Hub doc open any app from listing (doc step)", "timeoutMs": 120000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub App Releases doc Basic Information default landing (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Basic Information" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub Manage Basic Information sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Basic Information" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub Releases sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Releases" }
+    },
+    { "action": "click", "target": "Developer Hub app settings Releases nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Releases page heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Releases" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Release column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Release" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Title column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Title" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Type column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Type" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table App Version column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "App Version" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Status column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Status" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Created By column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Created By" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Created At column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Created At" }
+    },
+    {
+      "action": "verify",
+      "target": "Releases table Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub Releases page New Release button (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "+ New Release" }
+    },
+    { "action": "click", "target": "Developer Hub Releases first row Actions ellipsis (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "Developer Hub Releases row menu View control (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Releases release details modal (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

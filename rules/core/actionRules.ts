@@ -1647,6 +1647,47 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       })
       .catch(() => false);
     if (looksLikeLeftNav) return;
+
+    /** Developer Hub app workspace: `#webhooks`, `#oauth`, etc. live under `#react-developerhub`, outside CMS sidebar test ids. */
+    const dhDevhubSidebarLeaf = await el
+      .evaluate((node) => {
+        const self = node as HTMLElement;
+        if (!self.closest("#react-developerhub")) return false;
+        const navIds =
+          /^(webhooks|oauth|ui-locations|hosting|manifest|info|version-logs|releases|variables|mappings|rewrites|general|advanced-group|manage)$/;
+        let cur: HTMLElement | null = self;
+        for (let i = 0; i < 16 && cur; i++) {
+          const id = (cur.getAttribute("id") || "").trim().toLowerCase();
+          if (navIds.test(id)) return true;
+          cur = cur.parentElement;
+        }
+        return false;
+      })
+      .catch(() => false);
+    if (dhDevhubSidebarLeaf) return;
+
+    /** Org / global shell: Marketplace entry in primary sidebar (`managing-your-apps` doc — left navigation). */
+    const orgMarketplaceNav = await el
+      .evaluate((node) => {
+        const self = node as HTMLElement;
+        let cur: HTMLElement | null = self;
+        for (let i = 0; i < 20 && cur; i++) {
+          const href = String(cur.getAttribute("href") || "").toLowerCase();
+          const dt = String(cur.getAttribute("data-test-id") || "").toLowerCase();
+          const role = String(cur.getAttribute("role") || "").toLowerCase();
+          const tag = cur.tagName;
+          const hasMarket =
+            /\bmarketplace\b/i.test(dt) ||
+            href.includes("/marketplace") ||
+            /\bmarketplace\b/i.test(href);
+          if (hasMarket && (tag === "A" || tag === "BUTTON" || role === "button" || role === "menuitem"))
+            return true;
+          cur = cur.parentElement;
+        }
+        return false;
+      })
+      .catch(() => false);
+    if (orgMarketplaceNav) return;
   }
 
   if (expectedWithin === "Top Bar") {
@@ -1654,10 +1695,11 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       .evaluate((node) => {
         const self = node as HTMLElement;
         const dt = self?.getAttribute?.("data-test-id") || "";
+        if (dt === "install-app-cta") return true;
         if (dt === "launch-nav-settings") return true;
         if (dt.startsWith("cms-nav-") || dt === "cs-cms-button" || dt === "cms-nav-apps") return true;
         return !!self?.closest?.(
-          'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], #topnav, .header, #header-content-wrapper-id, #navbar-items-wrapper-id'
+          'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], #topnav, .header, #header-content-wrapper-id, #navbar-items-wrapper-id, .SidebarWindow__tabs-container, [data-test-id="cs-sidebar-window"]'
         );
       })
       .catch(() => false);
@@ -3023,6 +3065,111 @@ const ANALYTICS_HUB_TAB_TEST_ID_BY_STEP: Record<string, string> = {
   "Analytics hub Brand Kit dashboard tab (doc step)": "analytics-nav-brandkit",
 };
 
+/** PKCE OAuth: User Token scopes table (react-select replaced by table in some product builds). */
+async function pickPkceUserTokenScopesTable(page: Page): Promise<Locator | null> {
+  const landmark = page.locator("#react-developerhub, main, [role='main']").first();
+  const h = page.getByRole("heading", { name: /^User Token$/i }).first();
+  await h.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+  await page.waitForTimeout(450);
+
+  /** Product may use `div[role="table"]` (no `<table>`) — `getByRole("table")` matches both. */
+  const tables = landmark.getByRole("table");
+  const c = await tables.count();
+  if (c >= 2) {
+    const last = tables.nth(c - 1);
+    if (await last.isVisible({ timeout: 14_000 }).catch(() => false)) return last;
+  }
+  if (c === 1) {
+    const one = tables.first();
+    if (await one.isVisible({ timeout: 10_000 }).catch(() => false)) return one;
+  }
+
+  /** Fallback: native `<table>` under landmark (older builds). */
+  const mainRoot = `(//*[self::main or @role='main'])[1]`;
+  const xps = [
+    `xpath=(${mainRoot}//h6[normalize-space(.)='User Token']/following::table)[1]`,
+    `xpath=(${mainRoot}//*[@role='heading'][normalize-space(.)='User Token']/following::table)[1]`,
+  ];
+  for (const xp of xps) {
+    const t = page.locator(xp).first();
+    if (await t.isVisible({ timeout: 8_000 }).catch(() => false)) return t;
+  }
+
+  if (await h.isVisible({ timeout: 6_000 }).catch(() => false)) {
+    const byNear = landmark
+      .locator("div, article, section")
+      .filter({ has: h })
+      .getByRole("table")
+      .first();
+    if (await byNear.isVisible({ timeout: 8_000 }).catch(() => false)) return byNear;
+  }
+
+  /** Page-level tables (outside landmark match quirks). */
+  const pageTables = page.getByRole("table");
+  const pc = await pageTables.count();
+  if (pc >= 2 && (await pageTables.nth(pc - 1).isVisible({ timeout: 5_000 }).catch(() => false))) {
+    return pageTables.nth(pc - 1);
+  }
+
+  return null;
+}
+
+/** Click Nth scope row checkbox in User Token table (OAuth v3 DOM), or react-select fallback. `rowIndex` 0-based. */
+async function clickPkceUserTokenScopeTableRow(page: Page, rowIndex: number, tDh: number): Promise<void> {
+  const utHeading = page.getByRole("heading", { name: /^User Token$/i }).first();
+  await utHeading.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+  await page.waitForTimeout(280);
+
+  const selectCandidates: Locator[] = [
+    page.locator('[data-test-id="oauth-user-token-scopes"] .Select__control').first(),
+    page.locator('[data-test-id*="user-token"] .Select__control').first(),
+    page
+      .locator("main .Field")
+      .filter({ has: page.getByText(/^User Token$/i) })
+      .locator(".Select__control")
+      .first(),
+  ];
+  for (const loc of selectCandidates) {
+    if (await loc.isVisible({ timeout: 2_900 }).catch(() => false)) {
+      await loc.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+      await loc.click({ timeout: tDh });
+      const opt = page.getByRole("option").nth(rowIndex);
+      await expect(opt).toBeVisible({ timeout: Math.min(tDh, 25_000) });
+      await opt.click({ timeout: tDh });
+      await page.keyboard.press("Escape").catch(() => {});
+      await page.waitForTimeout(380);
+      return;
+    }
+  }
+
+  const utTable = await pickPkceUserTokenScopesTable(page);
+  if (!utTable) {
+    throw new Error("PKCE: User Token scopes table not found (and no scopes react-select).");
+  }
+  await expect(utTable).toBeVisible({ timeout: Math.min(tDh, 18_000) });
+  const dataRows = utTable.locator('[role="row"]').filter({
+    has: page.locator('input[type="checkbox"][title^="select row"]'),
+  });
+  const row = dataRows.nth(rowIndex);
+  await expect(row).toBeVisible({ timeout: Math.min(tDh, 28_000) });
+  const rowCb = row.locator('input[type="checkbox"]').first();
+  await expect(rowCb).toBeVisible({ timeout: Math.min(tDh, 20_000) });
+  await rowCb.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+  await page.keyboard.press("Escape").catch(() => {});
+  await page.waitForTimeout(220);
+  if (!(await rowCb.isChecked().catch(() => false))) {
+    const box = row.locator("span.Checkbox__box").first();
+    const labelWrap = row.locator("label.Checkbox").first();
+    const clickTarget = (await box.isVisible({ timeout: 2_000 }).catch(() => false))
+      ? box
+      : (await labelWrap.isVisible({ timeout: 1_700 }).catch(() => false))
+        ? labelWrap
+        : rowCb;
+    await clickTarget.click({ timeout: tDh });
+  }
+  await page.waitForTimeout(350);
+}
+
 export async function performAction(
   page: Page,
   step: Step,
@@ -3071,7 +3218,8 @@ export async function performAction(
     flow &&
     typeof flow === "object" &&
     (flow as any)._developerHubReuseExistingApp === true &&
-    String((flow as any)?.id || "") === "marketplace-ecommerce-app-boilerplate" &&
+    (String((flow as any)?.id || "") === "marketplace-ecommerce-app-boilerplate" ||
+      String((flow as any)?.id || "") === "marketplace-dam-app-boilerplate") &&
     typeof step.target === "string" &&
     step.target.includes("Create Standard App");
   if (dhReuseSkip) {
@@ -3158,10 +3306,93 @@ export async function performAction(
         break;
       }
 
-      /** Developer Hub — Marketplace boilerplates (`marketplace-app-boilerplate`, `marketplace-ecommerce-app-boilerplate`). */
+      if (
+        step.target === "Organization dashboard Marketplace product tile (doc step)" ||
+        step.target === "Marketplace Manage Apps button (managing apps doc step)" ||
+        step.target === "Marketplace doc: open Marketplace from left nav or organization dashboard tile (managing apps doc step)"
+      ) {
+        const tm = getStepTimeoutMs(step, 120_000);
+
+        /** Managing your apps: prefer left-navigation Marketplace (`module.selectors`), else Organization dashboard tile (Brand Kit-style fallback). */
+        if (
+          step.target === "Marketplace doc: open Marketplace from left nav or organization dashboard tile (managing apps doc step)"
+        ) {
+          const { click: clickOv } = loadOverrides(flow);
+          const navSel =
+            clickOv["Marketplace left navigation item (managing apps doc step)"] ||
+            CLICK_SELECTORS["Marketplace left navigation item (managing apps doc step)"];
+          let navigatedViaLeftNav = false;
+          if (navSel && String(navSel).trim()) {
+            const leftNav = page.locator(navSel).first();
+            navigatedViaLeftNav = await leftNav.isVisible({ timeout: 12_000 }).catch(() => false);
+            if (navigatedViaLeftNav) {
+              await leftNav.scrollIntoViewIfNeeded().catch(() => {});
+              await leftNav.click({ timeout: tm });
+              await page.waitForLoadState("domcontentloaded").catch(() => {});
+              await page.waitForURL(/marketplace/i, { timeout: tm }).catch(() => {});
+              await page.locator('[alt="full page loader"]').first().waitFor({ state: "hidden", timeout: Math.min(tm, 90_000) }).catch(() => {});
+              await page.waitForLoadState("networkidle", { timeout: Math.min(tm, 90_000) }).catch(() => {});
+              await page.waitForTimeout(800);
+              break;
+            }
+          }
+          recordVerificationWarning(
+            step,
+            context,
+            'Marketplace (doc): Marketplace is not in the left navigation panel — continuing via Organization dashboard Marketplace product tile.'
+          );
+          let origin = "";
+          try {
+            origin = new URL(page.url()).origin;
+          } catch {
+            origin = "";
+          }
+          if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+          await page.goto(`${origin}/#!/dashboard`, { waitUntil: "domcontentloaded", timeout: tm });
+          await page.waitForTimeout(600);
+          const tileSel =
+            clickOv["Organization dashboard Marketplace product tile (doc step)"] ||
+            CLICK_SELECTORS["Organization dashboard Marketplace product tile (doc step)"] ||
+            '[data-test-id="cs-global-dashboard-product-tile-marketplace"]';
+          const tileFb = page.locator(tileSel).first();
+          await tileFb.scrollIntoViewIfNeeded().catch(() => {});
+          await expect(tileFb).toBeVisible({ timeout: Math.min(tm, 90_000) });
+          await tileFb.click({ timeout: tm });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForURL(/marketplace/i, { timeout: tm }).catch(() => {});
+          await page.locator('[alt="full page loader"]').first().waitFor({ state: "hidden", timeout: Math.min(tm, 90_000) }).catch(() => {});
+          await page.waitForLoadState("networkidle", { timeout: Math.min(tm, 90_000) }).catch(() => {});
+          await page.waitForTimeout(800);
+          break;
+        }
+
+        if (step.target === "Organization dashboard Marketplace product tile (doc step)") {
+          const tile = page.locator('[data-test-id="cs-global-dashboard-product-tile-marketplace"]').first();
+          await expect(tile).toBeVisible({ timeout: tm });
+          await tile.click({ timeout: tm });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForURL(/marketplace/i, { timeout: tm }).catch(() => {});
+          await page.locator('[alt="full page loader"]').first().waitFor({ state: "hidden", timeout: Math.min(tm, 90_000) }).catch(() => {});
+          await page.waitForLoadState("networkidle", { timeout: Math.min(tm, 90_000) }).catch(() => {});
+          await page.waitForTimeout(800);
+          break;
+        }
+        const manageApps = page.locator('a[href*="installed-apps"], [role="navigation"] a[href*="/marketplace/installed-apps"]').first();
+        await expect(manageApps).toBeVisible({ timeout: tm });
+        await manageApps.click({ timeout: tm });
+        await page.waitForTimeout(650);
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        break;
+      }
+
+      /** Developer Hub — Marketplace boilerplates, PKCE OAuth, **`module: create-apps`**, and **`module: ui-locations`** guide flows. */
       if (
         (flow as any)?.id === "marketplace-app-boilerplate" ||
-        (flow as any)?.id === "marketplace-ecommerce-app-boilerplate"
+        (flow as any)?.id === "marketplace-ecommerce-app-boilerplate" ||
+        (flow as any)?.id === "marketplace-dam-app-boilerplate" ||
+        (flow as any)?.id === "pkce-for-contentstack-oauth" ||
+        String((flow as any)?.module || "") === "create-apps" ||
+        String((flow as any)?.module || "") === "ui-locations"
       ) {
         const tDh = getStepTimeoutMs(step, 120_000);
         if (step.target === "Organization dashboard Developer Hub product tile (doc step)") {
@@ -3173,6 +3404,536 @@ export async function performAction(
           await page.waitForLoadState("networkidle", { timeout: Math.min(tDh, 90_000) }).catch(() => {});
           /** CTA often stays disabled until permissions / app-list APIs finish; give the shell time to settle. */
           await page.waitForTimeout(2500);
+          break;
+        }
+        if (
+          ((flow as any)?.id === "pkce-for-contentstack-oauth" ||
+            String((flow as any)?.module || "") === "create-apps" ||
+            String((flow as any)?.module || "") === "ui-locations") &&
+          (step.target === "Developer Hub PKCE doc open any app from listing (doc step)" ||
+            step.target === "Developer Hub doc open any app from listing (doc step)" ||
+            step.target === "Developer Hub PKCE doc open first Stack App card (doc step)")
+        ) {
+          /**
+           * Doc: open Developer Hub console, then open **any** app from the listing.
+           * Prefer stack/org card copy; fall back to first SPA deep-link to `/apps/` (hash routes).
+           */
+          await page.locator("main").first().waitFor({ state: "visible", timeout: Math.min(tDh, 30_000) }).catch(() => {});
+          /** Listing shell signals */
+          await page
+            .locator('button[data-test-id="new-app-cta"]')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(tDh, 45_000) })
+            .catch(() => {});
+          /**
+           * Apps grid often stays on skeleton placeholders for several seconds; anchors and “Stack App”
+           * badges are absent until APIs finish. Wait for real rows or an enabled New App CTA.
+           */
+          const listingReadyMs = Math.min(tDh, 90_000);
+          try {
+            await expect
+              .poll(
+                async () => {
+                  const newApp = page.locator('button[data-test-id="new-app-cta"]').first();
+                  const enabled = await newApp.isEnabled().catch(() => false);
+                  const mainEl = page.locator("main").first();
+                  const hasAppLink =
+                    (await page.locator('main a[href*="apps/"]').count().catch(() => 0)) > 0 ||
+                    (await page.locator('main a[href*="apps%2F"]').count().catch(() => 0)) > 0 ||
+                    (await page.locator('main a[href^="#!/developerhub/apps"]').count().catch(() => 0)) > 0;
+                  const hasBadge =
+                    (await mainEl.getByText(/stack\s*app/i).count().catch(() => 0)) > 0 ||
+                    (await mainEl.getByText(/organization\s*app/i).count().catch(() => 0)) > 0;
+                  return enabled || hasAppLink || hasBadge;
+                },
+                { timeout: listingReadyMs, intervals: [400, 900, 1_400, 2_200] },
+              )
+              .toBe(true);
+          } catch {
+            /* still try clicks — empty org / disabled CTA */
+          }
+          await page.waitForTimeout(650);
+
+          const tryClickListing = async (loc: Locator, visibilityMs: number): Promise<boolean> => {
+            if (!(await loc.isVisible({ timeout: visibilityMs }).catch(() => false))) return false;
+            await loc.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+            await loc.click({ timeout: tDh });
+            return true;
+          };
+
+          /**
+           * Optional **`step.value`** on this click step, or **`DEV_HUB_LISTING_APP_NAME`** env: open the listing
+           * row/link whose visible copy contains that substring (e.g. app slug **M2188772c**). When absent, preserve
+           * doc wording “any app” via the heuristic candidate list below.
+           */
+          const listingPickRaw = String((step as any)?.value ?? process.env.DEV_HUB_LISTING_APP_NAME ?? "").trim();
+          const tryOpenListingByContainedName = async (name: string): Promise<boolean> => {
+            const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const re = new RegExp(esc, "i");
+            const root = page.locator("main").first();
+            const appAnchors =
+              'a[href*="apps"], a[href*="apps%2F"], a[href^="#!/developerhub/apps"], a[href*="/developerhub/app/"]';
+            /** Slug is usually in nested spans — link-level **hasText** misses; subtree **filter({ has })** scopes to the right card. */
+            const linkWithSlugInSubtree = root.locator(appAnchors).filter({ has: root.getByText(re) }).first();
+            if (await linkWithSlugInSubtree.isVisible({ timeout: Math.min(tDh, 8_000) }).catch(() => false)) {
+              await linkWithSlugInSubtree.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+              await linkWithSlugInSubtree.click({ timeout: tDh });
+              return true;
+            }
+            const anchorMatch = root.locator(appAnchors).filter({ hasText: re }).first();
+            if (await anchorMatch.isVisible({ timeout: Math.min(tDh, 14_000) }).catch(() => false)) {
+              await anchorMatch.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+              await anchorMatch.click({ timeout: tDh });
+              return true;
+            }
+            const rowWithAnchor = root
+              .locator("div")
+              .filter({ hasText: re })
+              .filter({ has: page.locator('a[href*="apps"], a[href*="apps%2F"], a[href^="#!/developerhub/apps"], a[href*="/developerhub/app/"]') })
+              .first();
+            const innerA = rowWithAnchor.locator(appAnchors).first();
+            if (await innerA.isVisible({ timeout: Math.min(tDh, 10_000) }).catch(() => false)) {
+              await innerA.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+              await innerA.click({ timeout: tDh });
+              return true;
+            }
+            const textHit = root.getByText(re, { exact: false }).first();
+            if (await textHit.isVisible({ timeout: Math.min(tDh, 8_000) }).catch(() => false)) {
+              await textHit.scrollIntoViewIfNeeded({ timeout: 16_000 }).catch(() => {});
+              const ancestorLink = textHit.locator(
+                'xpath=ancestor::a[contains(@href,"developerhub/app") or contains(@href,"apps")][1]',
+              );
+              if (await ancestorLink.isVisible({ timeout: 2_200 }).catch(() => false)) {
+                await ancestorLink.click({ timeout: tDh });
+              } else {
+                await textHit.click({ timeout: tDh });
+              }
+              return true;
+            }
+            return false;
+          };
+
+          /**
+           * **Organization apps** often list only App Configuration + Global Full Page under Available Location(s).
+           * **Stack apps** expose Asset Sidebar, Entry Sidebar, Stack Dashboard, Custom Field, … — required for several `ui-locations` doc flows.
+           */
+          const dhUiLocFlowsPreferStackAppListing = new Set([
+            "asset-sidebar-location",
+            "sidebar-location",
+            "full-page-location",
+            "field-modifier-location",
+            "content-type-sidebar-location",
+            "dashboard-location",
+            "custom-field-location",
+          ]);
+          /** **Global Full Page** appears only under **Organization** apps; stack pins like **M2188772c** omit this tile (`actionRules.ts` snapshot: stack listing ends at Full Page / Content Type Sidebar). */
+          const dhUiLocFlowsPreferOrgAppListing = new Set(["global-full-page"]);
+          const preferStackAppListing =
+            String((flow as any)?.module || "") === "ui-locations" &&
+            dhUiLocFlowsPreferStackAppListing.has(String((flow as any)?.id || ""));
+          const preferOrgAppListing =
+            String((flow as any)?.module || "") === "ui-locations" &&
+            dhUiLocFlowsPreferOrgAppListing.has(String((flow as any)?.id || ""));
+
+          const stackPrivateCard = page
+            .locator("main")
+            .locator("div")
+            .filter({ has: page.getByText("Stack App", { exact: false }) })
+            .filter({ has: page.getByText("Private", { exact: false }) })
+            .first();
+          const stackAppCard = page
+            .locator("main")
+            .locator("div")
+            .filter({ has: page.getByText(/stack\s*app/i) })
+            .first();
+          const organizationAppCard = page
+            .locator("main")
+            .locator("div")
+            .filter({ has: page.getByText(/organization\s*app/i) })
+            .first();
+          /** Prefer deep links that sit under a **Stack App** listing row (avoids `main a[href*=apps]:first` hitting an org app). */
+          const stackScopedAppLink = page
+            .locator("main")
+            .locator("div")
+            .filter({ has: page.getByText(/stack\s*app/i) })
+            .locator('a[href*="apps"], a[href*="apps%2F"], a[href^="#!/developerhub/apps"]')
+            .first();
+          const appWorkspaceLinks: Locator[] = [
+            /** Hash / path links into an app workspace */
+            page.locator('main a[href*="apps/"]').first(),
+            page.locator('main a[href*="apps%2F"]').first(),
+            page.locator('main a[href^="#!/developerhub/apps"]').first(),
+            page.locator("main").locator('xpath=.//a[contains(@href,"apps")]').first(),
+            /** Some builds expose app rows only via nested test ids */
+            page.locator('main [data-test-id*="app"]').locator('a').first(),
+          ];
+
+          const candidates: Locator[] =
+            preferOrgAppListing ? [organizationAppCard, stackPrivateCard, stackAppCard, stackScopedAppLink, ...appWorkspaceLinks] : preferStackAppListing
+            ? [stackPrivateCard, stackAppCard, stackScopedAppLink, organizationAppCard, ...appWorkspaceLinks]
+            : [stackPrivateCard, stackAppCard, organizationAppCard, ...appWorkspaceLinks];
+
+          let opened = false;
+          if (listingPickRaw.length > 0) {
+            /** Named pin failed → **never** fall through to “first Stack App” heuristics (opens the wrong workspace). Poll — listing rows paint late. */
+            try {
+              await expect
+                .poll(
+                  async (): Promise<boolean> => {
+                    if (await tryOpenListingByContainedName(listingPickRaw)) return true;
+                    /** Scroll lazy grids so **M2188772c** becomes discoverable once. */
+                    await page.keyboard.press("End").catch(() => {});
+                    await page.waitForTimeout(350).catch(() => {});
+                    return (await tryOpenListingByContainedName(listingPickRaw)) === true;
+                  },
+                  { timeout: Math.min(tDh, 75_000), intervals: [400, 800, 1_400, 2_200, 3_200] },
+                )
+                .toBe(true);
+              opened = true;
+            } catch {
+              throw new Error(
+                `Developer Hub listing: could not open an app containing "${listingPickRaw}". ` +
+                  `Ensure that slug appears on an app card, or unset **value** /**DEV_HUB_LISTING_APP_NAME** to use doc “any app” heuristics.`,
+              );
+            }
+          }
+          const perCandidateVis = Math.min(tDh, 18_000);
+          if (listingPickRaw.length === 0) {
+          for (let i = 0; !opened && i < candidates.length; i++) {
+            const vis = i === 0 ? Math.min(tDh, 22_000) : perCandidateVis;
+            if (await tryClickListing(candidates[i], vis)) {
+              opened = true;
+              break;
+            }
+          }
+          }
+
+          if (!opened) {
+            throw new Error(
+              "Developer Hub: No app listing row/link found — open Developer Hub, ensure at least one app exists (create one or fix listing URL/copy), then rerun.",
+            );
+          }
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForLoadState("networkidle", { timeout: Math.min(tDh, 90_000) }).catch(() => {});
+          await page.waitForTimeout(1700);
+          /** Developer Hub app workspace: duplicate/hidden **`#react-developerhub`** (not always **`main`**) — wait for visible shell + rail, then app chrome (**Basic Information / UI Locations / Webhooks** nav + `page-title`) when shell races listing→SPA. */
+          if (
+            String((flow as any)?.module || "") === "create-apps" ||
+            String((flow as any)?.module || "") === "ui-locations"
+          ) {
+            const isUiLocMod = String((flow as any)?.module || "") === "ui-locations";
+            await page.waitForURL(/#!\/developerhub\//i, { timeout: Math.min(tDh, isUiLocMod ? 55_000 : 30_000) }).catch(() => {});
+            /** `ui-locations` docs reuse “open app from listing”: some shells omit `main#react-developerhub` / hide `main` from visibility checks transiently — wait on app chrome copy instead. */
+            if (isUiLocMod) {
+              const settleMs = Math.min(tDh, 120_000);
+              const inAppHeading = page
+                .getByRole("heading", { name: /^UI Locations$/i })
+                .or(page.getByRole("heading", { name: /^Basic Information$/i }))
+                .first();
+              await expect(inAppHeading).toBeVisible({ timeout: settleMs });
+              await page.waitForTimeout(500);
+            } else {
+              /**
+               * `create-apps` flows: **`#react-developerhub`** is not always **`main`** (nested root). Duplicate hidden
+               * nodes appear — match **visible** shell, then rail; mirror **`ui-locations`** heading fallback when shell
+               * checks race listing→SPA paint.
+               */
+              const settleMs = Math.min(tDh, 120_000);
+              const shellOuterMs = Math.min(tDh, 60_000);
+              const railMs = Math.min(tDh, 90_000);
+              const shell = page
+                .locator("#react-developerhub")
+                .filter({ visible: true })
+                .or(page.locator("main#react-developerhub").filter({ visible: true }))
+                .first();
+              try {
+                await expect(shell).toBeVisible({ timeout: shellOuterMs });
+                await expect(shell.locator("#general, #manage").first()).toBeVisible({ timeout: railMs });
+              } catch {
+                /**
+                 * Last-opened DH tab (**Webhooks**, **OAuth**, …) survives listing navigation; **`page-title`** / `AppSectionTitle`
+                 * often lack **role=\"heading\"** — include **page-title** + left-nav **Webhooks** (same subtree as `#general`).
+                 */
+                const pageChromeTitle = page.locator('[data-test-id="page-title"], h2.AppSectionTitle--title');
+                const webhooksNavChip = page
+                  .locator("#webhooks span.ncPxxNXm2AX3WsPmOsWA, #general #webhooks span, #webhooks span")
+                  .filter({ hasText: /^Webhooks$/i })
+                  .first();
+                const inAppChrome = page
+                  .getByRole("heading", { name: /^UI Locations$/i })
+                  .or(page.getByRole("heading", { name: /^Basic Information$/i }))
+                  .or(page.getByRole("heading", { name: /^Webhooks$/i }))
+                  .or(pageChromeTitle.filter({ hasText: /^UI Locations$/i }).first())
+                  .or(pageChromeTitle.filter({ hasText: /^Basic Information$/i }).first())
+                  .or(pageChromeTitle.filter({ hasText: /^Webhooks$/i }).first())
+                  .or(webhooksNavChip)
+                  .first();
+                await expect(inAppChrome).toBeVisible({ timeout: settleMs });
+              }
+              await page.waitForTimeout(400);
+            }
+          }
+          break;
+        }
+
+        if ((flow as any)?.id === "app-releases" && step.target === "Developer Hub Releases first row Actions ellipsis (doc step)") {
+          const root = page.locator("#react-developerhub, main").first();
+          await root.waitFor({ state: "visible", timeout: Math.min(tDh, 30_000) }).catch(() => {});
+          const table = root.locator('[data-test-id="cs-table"]').first();
+          await expect(table).toBeVisible({ timeout: Math.min(tDh, 45_000) });
+          const firstRow = table.locator('[data-test-id="cs-table-body-row-0"]').first();
+          await expect(firstRow).toBeVisible({ timeout: Math.min(tDh, 45_000) });
+          let ell = firstRow.locator('[data-test-id="cs-table-action-options"]').first();
+          if (!(await ell.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            ell = firstRow
+              .locator("button")
+              .filter({ has: page.locator('svg[name="DotsThreeLargeVertical"]') })
+              .first();
+          }
+          await expect(ell).toBeVisible({ timeout: Math.min(tDh, 25_000) });
+          await ell.scrollIntoViewIfNeeded().catch(() => {});
+          await ell.click({ timeout: tDh });
+          await page
+            .locator("#tableRowActionNode, [role='menu'], .VerticalActionTooltip")
+            .first()
+            .waitFor({ state: "visible", timeout: 10_000 })
+            .catch(() => {});
+          break;
+        }
+        if ((flow as any)?.id === "app-releases" && step.target === "Developer Hub Releases row menu View control (doc step)") {
+          const viewCtrl = page
+            .getByRole("menuitem", { name: /^View$/i })
+            .or(page.locator("[role='menu']").getByText(/^View$/i).first())
+            .first();
+          await expect(viewCtrl).toBeVisible({ timeout: Math.min(tDh, 20_000) });
+          await viewCtrl.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (
+          (flow as any)?.id === "app-versioning" &&
+          step.target === "Developer Hub Basic Information version dropdown toggle open (doc step)"
+        ) {
+          const w = page.locator(".versions-dropdown-wrapper").first();
+          await expect(w).toBeVisible({ timeout: Math.min(tDh, 40_000) });
+          await w.scrollIntoViewIfNeeded().catch(() => {});
+          const candidates = [
+            w.locator('.Select__control, div[class*="Select__control"]').first(),
+            w.locator('[role="combobox"]').first(),
+            w.locator("[tabindex]").first(),
+            w.locator("button").first(),
+            w.locator('[role="button"]').first(),
+            w.getByText(/Version\s*\d+|Latest/i).first(),
+          ];
+          let opened = false;
+          for (const c of candidates) {
+            if (await c.isVisible({ timeout: 2_400 }).catch(() => false)) {
+              await c.click({ timeout: tDh }).catch(async () => {
+                await w.click({ timeout: tDh }).catch(() => {});
+              });
+              opened = true;
+              break;
+            }
+          }
+          if (!opened) {
+            await w.click({ timeout: tDh }).catch(async () => {
+              await page.locator(".versions-dropdown-wrapper").nth(1).click({ timeout: tDh }).catch(() => {});
+            });
+          }
+          await page
+            .locator(".Dropdown__menu--primary, ul.Dropdown__menu__list, div.Dropdown__menu--primary")
+            .filter({ visible: true })
+            .first()
+            .waitFor({ state: "visible", timeout: 18_000 });
+          await page.waitForTimeout(400);
+          break;
+        }
+        if (
+          (flow as any)?.id === "app-versioning" &&
+          step.target === "Developer Hub Basic Information version dropdown select second version row (doc step)"
+        ) {
+          const rows = page.locator('li[data-test-id="version-test-id"]').filter({
+            hasNot: page.locator('[data-test-id="cs-skeleton-tile"]'),
+          });
+          const n = await rows.count();
+          if (n < 2) {
+            throw new Error(
+              "App versioning: need at least two app versions in the Version dropdown — publish or save the app again, then rerun.",
+            );
+          }
+          const row2 = rows.nth(1);
+          await expect(row2).toBeVisible({ timeout: Math.min(tDh, 25_000) });
+          await row2.scrollIntoViewIfNeeded().catch(() => {});
+          await row2.click({ timeout: tDh });
+          await page.waitForTimeout(550);
+          break;
+        }
+        if (
+          (flow as any)?.id === "app-versioning" &&
+          step.target === "Developer Hub Basic Information restore version Yes Restore prompt (doc step)"
+        ) {
+          const btn = page.getByRole("button", { name: /Yes,\s*Restore/i }).first();
+          await expect(btn).toBeVisible({ timeout: Math.min(tDh, 35_000) });
+          await btn.click({ timeout: tDh });
+          await page.waitForTimeout(650);
+          break;
+        }
+        if (
+          (flow as any)?.id === "app-versioning" &&
+          step.target === "Developer Hub Basic Information restore version confirm modal Yes Restore (doc step)"
+        ) {
+          const inDialog = page
+            .getByRole("dialog")
+            .filter({ visible: true })
+            .getByRole("button", { name: /Yes,\s*Restore/i })
+            .first();
+          if (await inDialog.isVisible({ timeout: 4_500 }).catch(() => false)) {
+            await inDialog.click({ timeout: tDh });
+          } else {
+            const second = page.getByRole("button", { name: /Yes,\s*Restore/i }).nth(1);
+            await expect(second).toBeVisible({ timeout: Math.min(tDh, 22_000) });
+            await second.click({ timeout: tDh });
+          }
+          await page.waitForTimeout(1000);
+          break;
+        }
+        if (
+          (flow as any)?.id === "app-versioning" &&
+          step.target === "Developer Hub Version Logs first row Actions View (doc step)"
+        ) {
+          const table = page.locator('[data-test-id="cs-table"]').first();
+          await expect(table).toBeVisible({ timeout: Math.min(tDh, 40_000) });
+          const row0 = table.locator('[data-test-id="cs-table-body-row-0"]').first();
+          await expect(row0).toBeVisible({ timeout: Math.min(tDh, 35_000) });
+          const inlineView = row0
+            .getByRole("button", { name: /^View$/i })
+            .or(row0.locator("a").filter({ hasText: /^View$/i }))
+            .first();
+          if (await inlineView.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await inlineView.click({ timeout: tDh });
+          } else {
+            const ell = row0.locator('[data-test-id="cs-table-action-options"]').first();
+            await expect(ell).toBeVisible({ timeout: Math.min(tDh, 20_000) });
+            await ell.click({ timeout: tDh });
+            await page.locator("#tableRowActionNode, [role='menu']").first().waitFor({ state: "visible", timeout: 12_000 }).catch(() => {});
+            await page.getByRole("menuitem", { name: /^View$/i }).first().click({ timeout: tDh });
+          }
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(1200);
+          break;
+        }
+        if (
+          (flow as any)?.id === "pkce-for-contentstack-oauth" &&
+          step.target === "Developer Hub app settings OAuth nav (doc step)"
+        ) {
+          const nav = page.locator("#oauth").first();
+          await expect(nav).toBeVisible({ timeout: tDh });
+          await nav.scrollIntoViewIfNeeded().catch(() => {});
+          await nav.click({ timeout: tDh });
+          await page.waitForTimeout(550);
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await expect(page.locator('[data-test-id="page-title"]').filter({ hasText: /^OAuth$/i }).first()).toBeVisible({
+            timeout: Math.min(tDh, 45_000),
+          });
+          break;
+        }
+        if (
+          (flow as any)?.id === "pkce-for-contentstack-oauth" &&
+          step.target === "Developer Hub OAuth User Token scopes table row 1 checkbox (pkce doc step)"
+        ) {
+          await clickPkceUserTokenScopeTableRow(page, 0, tDh);
+          break;
+        }
+        if (
+          (flow as any)?.id === "pkce-for-contentstack-oauth" &&
+          step.target === "Developer Hub OAuth User Token scopes table row 2 checkbox (pkce doc step)"
+        ) {
+          await clickPkceUserTokenScopeTableRow(page, 1, tDh);
+          break;
+        }
+        if (
+          (flow as any)?.id === "pkce-for-contentstack-oauth" &&
+          step.target === "Developer Hub OAuth Allow PKCE toggle (pkce doc step)"
+        ) {
+          /** Strict: `expected.labelEquals` must match visible pre-click PKCE status (e.g. `PKCE Disabled`); mismatch fails before click. */
+          const utHeading = page.getByRole("heading", { name: /^User Token$/i }).first();
+          await utHeading.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+          await page.keyboard.press("Escape").catch(() => {});
+          await page.waitForTimeout(240);
+          const preStatus = String(step.expected?.labelEquals ?? "").trim();
+          if (!preStatus) {
+            throw new Error(
+              `PKCE toggle click: missing expected.labelEquals (set to the visible pre-toggle PKCE status text, e.g. "PKCE Disabled").`,
+            );
+          }
+          const root = page.locator("#react-developerhub, main").first();
+          const statusEl = root.getByText(preStatus, { exact: true }).first();
+          await expect(statusEl).toBeVisible({ timeout: Math.min(tDh, 50_000) });
+          const gotPre = (
+            await statusEl.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim())
+          ).replace(/\s+/g, " ");
+          if (gotPre !== preStatus) {
+            throw new Error(`PKCE toggle click: expected pre-toggle label "${preStatus}"; resolved "${gotPre}".`);
+          }
+
+          const pkceToggleHost = statusEl.locator("xpath=ancestor::*[.//input[@type='checkbox'][@aria-label='aria-toggle-switch']][1]");
+          let sw = pkceToggleHost.locator(`input[type="checkbox"][aria-label="aria-toggle-switch"]`).first();
+          if (!(await sw.count())) {
+            sw = root.getByRole("row").filter({ has: page.getByText(/^PKCE$/i) }).getByRole("checkbox", { name: /^aria-toggle-switch$/i }).first();
+          }
+          if (!(await sw.count())) {
+            sw = utHeading.locator(`xpath=following::input[@type='checkbox'][@aria-label='aria-toggle-switch'][1]`).first();
+          }
+          if (!(await sw.count())) {
+            sw = page.locator(`input[type="checkbox"][aria-label="aria-toggle-switch"]`).first();
+          }
+          await expect(sw).toBeAttached({ timeout: Math.min(tDh, 35_000) });
+          await expect(sw).toBeEnabled({ timeout: Math.min(tDh, 50_000) });
+          await statusEl.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+          await pkceToggleHost.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+          await sw.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+          if (!(await sw.isChecked().catch(() => false))) {
+            /** Native checkbox is intentionally hidden (`visibility:hidden` style); toggle the real input after visible affordances fail. */
+            const hostHit = pkceToggleHost.locator("[class*='Switch'], [class*='Toggle'], [role='switch']").first();
+            const statusHit = statusEl
+              .locator("xpath=following::*[contains(@class,'Switch') or contains(@class,'Toggle') or @role='switch'][1]")
+              .first();
+            const useHostHit = await hostHit.isVisible({ timeout: 2_800 }).catch(() => false);
+            const useStatusHit = await statusHit.isVisible({ timeout: 2_000 }).catch(() => false);
+            if (useHostHit) await hostHit.click({ timeout: tDh });
+            else if (useStatusHit) await statusHit.click({ timeout: tDh });
+            else await sw.evaluate((n: HTMLInputElement) => n.click());
+          }
+          await expect(sw).toBeChecked({ timeout: Math.min(tDh, 25_000) });
+          await page.waitForTimeout(450);
+          break;
+        }
+        if (
+          (flow as any)?.id === "pkce-for-contentstack-oauth" &&
+          step.target === "Developer Hub OAuth Save button (pkce doc step)"
+        ) {
+          const oauthSaveCandidates = [
+            page.locator('[data-test-id="oauth-save-cta"]').first(),
+            page.locator('button[data-test-id*="oauth"][data-test-id*="save"]').first(),
+            page
+              .locator("main .App_info_section_footer button, main footer button")
+              .filter({ hasText: /^Save$/ })
+              .first(),
+            page.locator("main button.Button-save").filter({ hasText: /^Save$/ }).first(),
+          ];
+          let clickedSave = false;
+          for (const s of oauthSaveCandidates) {
+            if (await s.isVisible({ timeout: 2_600 }).catch(() => false)) {
+              await s.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await expect(s).toBeEnabled({ timeout: Math.min(tDh, 45_000) });
+              await s.click({ timeout: tDh });
+              clickedSave = true;
+              break;
+            }
+          }
+          if (!clickedSave) throw new Error("PKCE doc: OAuth Save button not found (oauth-save-cta / footer Save).");
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(850);
           break;
         }
         if (
@@ -3193,7 +3954,8 @@ export async function performAction(
           await newApp.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
 
           const tryOpenFirstExistingStackAppMarketplaceEcommerce = async (): Promise<boolean> => {
-            if (String((flow as any)?.id || "") !== "marketplace-ecommerce-app-boilerplate") return false;
+            const fidM = String((flow as any)?.id || "");
+            if (fidM !== "marketplace-ecommerce-app-boilerplate" && fidM !== "marketplace-dam-app-boilerplate") return false;
             const limitBanner = page.getByText(/Maximum app creation limit reached/i);
             if (!(await limitBanner.isVisible({ timeout: 3_500 }).catch(() => false))) return false;
             /** App list: each card shows `Stack App` + `Private`; open the first. */
@@ -3210,7 +3972,7 @@ export async function performAction(
             }
             // eslint-disable-next-line no-console
             console.warn(
-              "⚠️ Developer Hub: maximum app creation limit — opening first existing Stack App (marketplace-ecommerce-app-boilerplate); Create Standard App modal steps are skipped.",
+              "⚠️ Developer Hub: maximum app creation limit — opening first existing Stack App (Marketplace boilerplate flow); Create Standard App modal steps are skipped.",
             );
             await firstCard.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
             await firstCard.click({ timeout: tDh });
@@ -3260,6 +4022,67 @@ export async function performAction(
           await page.waitForTimeout(450);
           break;
         }
+        if (
+          String((flow as any)?.id || "") === "creating-an-app-in-developer-hub" &&
+          step.target === "Create New App modal Standard category (doc step)"
+        ) {
+          /** Doc: Create New App → **Standard** (vs Machine to Machine). Some builds omit a separate category control and open Organization/Stack App Type immediately. */
+          const dialog = page.locator("[role=\"dialog\"]").filter({ visible: true }).first();
+          await expect(dialog).toBeVisible({ timeout: Math.min(tDh, 45_000) });
+          const tryClick = async (loc: Locator): Promise<boolean> => {
+            if (await loc.isVisible({ timeout: 2_400 }).catch(() => false)) {
+              await loc.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await loc.click({ timeout: tDh });
+              await page.waitForTimeout(450);
+              return true;
+            }
+            return false;
+          };
+          const picked =
+            (await tryClick(dialog.getByRole("tab", { name: /^\s*Standard\s*$/i }).first())) ||
+            (await tryClick(dialog.getByRole("button", { name: /^\s*Standard\s*$/i }).first())) ||
+            (await tryClick(dialog.locator('[data-test-id="new-app-category-standard"]').first())) ||
+            (await tryClick(
+              dialog.locator('[data-test-id*="standard" i][data-test-id*="category" i]').first(),
+            ));
+          if (!picked) {
+            await page.waitForTimeout(200);
+          }
+          break;
+        }
+        if (step.target === "Create New App modal Machine to Machine category (doc step)") {
+          const fid = String((flow as any)?.id || "");
+          if (fid !== "creating-an-app-in-developer-hub") {
+            break;
+          }
+          const dialog = page.locator("[role=\"dialog\"]").filter({ visible: true }).first();
+          await expect(dialog).toBeVisible({ timeout: Math.min(tDh, 55_000) });
+          const tryClickCat = async (loc: Locator): Promise<boolean> => {
+            if (await loc.isVisible({ timeout: 3_200 }).catch(() => false)) {
+              await loc.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+              await loc.click({ timeout: tDh });
+              await page.waitForTimeout(520);
+              return true;
+            }
+            return false;
+          };
+          const m2mRadio = dialog
+            .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-machine-to-machine-app"])')
+            .first()
+            .or(dialog.locator('label[data-test-id="cs-radio"]:has([data-test-id*="machine-to-machine" i])').first())
+            .or(dialog.locator('label[data-test-id="cs-radio"]').filter({ hasText: /^Machine to Machine$/i }).first())
+            .or(dialog.getByRole("tab", { name: /Machine to Machine/i }).first())
+            .or(dialog.getByRole("button", { name: /Machine to Machine/i }).first());
+
+          let ok = await tryClickCat(m2mRadio);
+          if (!ok) ok = await tryClickCat(dialog.locator('[data-test-id*="machine" i][data-test-id*="category" i]').first());
+          if (!ok) {
+            throw new Error(
+              'Create New App modal: could not activate **Machine to Machine** category — add a locator for your build (see Developer Hub modal) or confirm org admin entitlement for M2M apps.',
+            );
+          }
+          break;
+        }
         if (step.target === "Create Standard App modal Create button (doc step)") {
           const nameIn = page.locator('[data-test-id="new-app-name"]').first();
           if (await nameIn.isVisible({ timeout: 8_000 }).catch(() => false)) {
@@ -3275,6 +4098,141 @@ export async function performAction(
           await page.waitForTimeout(700);
           break;
         }
+        if (
+          String((flow as any)?.id || "").toLowerCase() === "deleting-an-app" &&
+          step.target === "Developer Hub Delete App primary CTA click (doc step)"
+        ) {
+          const btn = page.locator('[data-test-id="delete-app-cta"]').first();
+          await expect(btn).toBeVisible({ timeout: tDh });
+          await btn.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+          await btn.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          await page
+            .locator('[data-test-id="cs-modal-title-delete-app"]')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(tDh, 35_000) })
+            .catch(() => {});
+          break;
+        }
+        if (
+          String((flow as any)?.id || "").toLowerCase() === "deleting-an-app" &&
+          step.target === "Developer Hub Delete App modal confirm Delete click (doc step)"
+        ) {
+          const btn = page.locator('[data-test-id="modal-form-delete"]').first();
+          await expect(btn).toBeVisible({ timeout: tDh });
+          await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 120_000) });
+          await btn.click({ timeout: tDh });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(1200);
+          break;
+        }
+        /** installing-your-app-via-developer-hub — stack path: overlay `authorization-window.html` (**Select stack** → terms → **Install**), then stack **App Configuration** + **Save** (defaults from `DEFAULT_STACK`; placeholder fills for empty inputs). Org apps skip stack select (see automationNotes). */
+        if (String((flow as any)?.id || "").toLowerCase() === "installing-your-app-via-developer-hub") {
+          if (step.target === "Developer Hub Install App top-right CTA click (doc step)") {
+            const btn = page.locator('[data-test-id="install-app-cta"]').first();
+            await expect(btn).toBeVisible({ timeout: tDh });
+            await btn.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
+            await btn.click({ timeout: tDh });
+            await page.waitForTimeout(650);
+            await page
+              .locator(".OAuth_Consent_Card, #InstallationCardContent, .OAuth_Background")
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tDh, 45_000) })
+              .catch(() => {});
+            break;
+          }
+          if (step.target === "Developer Hub install flow pick DEFAULT_STACK in stack select (doc step)") {
+            const stackName = String(process.env.DEFAULT_STACK || "").trim();
+            if (!stackName) {
+              throw new Error(
+                'installing-your-app-via-developer-hub: set DEFAULT_STACK in .env (doc: "select the stack … click Install").',
+              );
+            }
+            const needleRe = escapeRegex(stackName.slice(0, Math.min(48, stackName.length)));
+            const shell = page.locator("#InstallationCardContent, .OAuth_Consent_Card").filter({ visible: true }).first();
+            const wrap = shell.locator('[data-test-id="cs-select"]').first();
+            if (!(await wrap.isVisible({ timeout: Math.min(tDh, 12_000) }).catch(() => false))) {
+              throw new Error(
+                'Install overlay: stack **Select stack** control not visible — opened app may be an **Organization app** (org consent differs) or overlay did not render; use a Stack App from the Developer Hub listing or bump timeouts.',
+              );
+            }
+            await expect(wrap).toBeVisible({ timeout: Math.min(tDh, 35_000) });
+            const ctrl = wrap.locator(".Portal__control, div[class*='control']").first();
+            await ctrl.click({ timeout: tDh }).catch(() => {});
+            await page.waitForTimeout(400);
+            const menu = page
+              .locator(".Portal__menu, .Select__menu, [role='listbox'], [id^='react-select'][id$='-listbox']")
+              .filter({ visible: true })
+              .last();
+            if (await menu.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              const opt = menu
+                .locator('[role="option"], div[class*="option"], div.Portal__option')
+                .filter({ hasText: new RegExp(needleRe, "i") })
+                .first();
+              await expect(opt).toBeVisible({ timeout: Math.min(tDh, 28_000) });
+              await opt.click({ timeout: tDh });
+            } else {
+              const inp = wrap.locator('input[aria-label="cs-select-aria"], input[id^="react-select"]').first();
+              await expect(inp).toBeVisible({ timeout: 18_000 });
+              await inp.click({ timeout: tDh }).catch(() => {});
+              await inp.fill("");
+              await inp.pressSequentially(stackName.slice(0, 72), { delay: 14 });
+              await page.waitForTimeout(500);
+              await page.keyboard.press("Enter");
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (step.target === "Developer Hub install flow accept Marketplace terms checkbox (doc step)") {
+            const cb = page.locator('.Auth__Card--checkbox input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: Math.min(tDh, 35_000) });
+            if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: tDh });
+            await page.waitForTimeout(420);
+            break;
+          }
+          if (step.target === "Developer Hub install modal Install button confirm (doc step)") {
+            const btn = page
+              .locator('[data-testid="modal-form-install-authorize"], [data-test-id="modal-form-install-authorize"]')
+              .first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tDh, 55_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 180_000) });
+            await btn.click({ timeout: tDh });
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(1600);
+            break;
+          }
+          if (step.target === "Developer Hub App Configuration screen Save configuration click (doc step)") {
+            const tSav = Math.min(tDh, 120_000);
+            const candidates: Locator[] = [
+              page.locator('[data-test-id="installed-app-configuration-save-cta"]').first(),
+              page.locator('[data-test-id*="configuration"][data-test-id*="save"]').first(),
+              page.locator("main footer button.Button--primary").filter({ hasText: /^Save$/i }).first(),
+              page.locator("#react-stack main").getByRole("button", { name: /^Save$/i }).first(),
+              page.getByRole("button", { name: /^Save$/i }).first(),
+            ];
+            let clicked = false;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 2_900 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+                await expect(c).toBeEnabled({ timeout: tSav }).catch(() => {});
+                if (await c.isEnabled().catch(() => false)) {
+                  await c.click({ timeout: tDh });
+                  clicked = true;
+                  break;
+                }
+              }
+            }
+            if (!clicked) {
+              throw new Error(
+                'App Configuration: no visible enabled **Save** — add required configuration values first (extend placeholder fill step or set app-specific INSTALL_APP_* env values if you introduce them).'
+              );
+            }
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(900);
+            break;
+          }
+        }
         if (step.target === "Developer Hub Basic Information Save button (doc step)") {
           const desc = page.locator('[data-test-id="basic-info-description"] textarea, textarea[name="description"]').first();
           if (await desc.isVisible({ timeout: 8_000 }).catch(() => false)) {
@@ -3285,7 +4243,31 @@ export async function performAction(
           }
           const btn = page.locator('[data-test-id="standard-app-basic-info-save-cta"]').first();
           await expect(btn).toBeVisible({ timeout: tDh });
-          await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
+          const fidBasic = String(flow?.id || "").toLowerCase();
+          const pollMsDam =
+            fidBasic === "marketplace-dam-app-boilerplate" ? Math.min(tDh, 35_000) : Math.min(tDh, 90_000);
+          /** Icon preview / validation can defer enabling Save (especially DAM doc icon step). */
+          try {
+            await expect
+              .poll(async () => (await btn.isEnabled().catch(() => false)) === true, {
+                intervals: [250, 500, 800, 1_100],
+                timeout: pollMsDam,
+              })
+              .toBe(true);
+          } catch (err) {
+            if (fidBasic === "marketplace-dam-app-boilerplate") {
+              recordVerificationWarning(
+                step,
+                context,
+                "Basic Information Save stayed disabled after description/icon steps — forcing Save click (confirm icon validation / product rules in screenshot)."
+              );
+              await btn.click({ timeout: tDh, force: true });
+              await page.waitForLoadState("domcontentloaded").catch(() => {});
+              await page.waitForTimeout(900);
+              break;
+            }
+            throw err;
+          }
           await btn.click({ timeout: tDh });
           await page.waitForLoadState("domcontentloaded").catch(() => {});
           await page.waitForTimeout(900);
@@ -3297,14 +4279,35 @@ export async function performAction(
            * the list-row ⋯ does not exist — no-op; next step uses **Add Location** there.
            */
           (flow as any)._dhAddUiLocationRow = "custom-field";
+          const cfRow = page.locator('[data-test-id="uilocation-custom-field location-item"]').first();
           const cfEllipsis = page.locator(
             '[data-test-id="uilocation-custom-field location-item"] div.action-button-dropdown'
           );
-          if (await cfEllipsis.first().isVisible({ timeout: 4_000 }).catch(() => false)) {
-            await cfEllipsis.first().scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
-            await cfEllipsis.first().click({ timeout: tDh });
-            await page.waitForTimeout(450);
-          } else {
+          const exposeCfRowThenClick = async (): Promise<boolean> => {
+            await cfRow.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            await page.waitForTimeout(350);
+            if (await cfEllipsis.first().isVisible({ timeout: 3_800 }).catch(() => false)) {
+              await cfEllipsis.first().scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await cfEllipsis.first().click({ timeout: tDh });
+              await page.waitForTimeout(450);
+              return true;
+            }
+            return false;
+          };
+          /** CF tile sits below earlier locations; short initial wait often misses lazy paint after App Configuration save (DAM / Stack flows). */
+          let opened = await exposeCfRowThenClick();
+          if (!opened) {
+            await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+              const m = el as HTMLElement;
+              m.scrollTop = Math.max(m.scrollHeight - 420, 0);
+            }).catch(() => {});
+            await page.waitForTimeout(420);
+            opened = await exposeCfRowThenClick();
+          }
+          if (
+            !opened &&
+            !(await cfEllipsis.first().isVisible({ timeout: 2_600 }).catch(() => false))
+          ) {
             await page.waitForTimeout(400);
           }
           break;
@@ -3326,16 +4329,142 @@ export async function performAction(
         }
         if (step.target === "Developer Hub UI Locations App Configuration row ellipsis (doc step)") {
           (flow as any)._dhAddUiLocationRow = "app-configuration";
-          const el = page
-            .locator('[data-test-id="uilocation-app-configuration location-item"] div.action-button-dropdown')
-            .first();
-          if (await el.isVisible({ timeout: 4_000 }).catch(() => false)) {
-            await el.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
-            await el.click({ timeout: tDh });
-            await page.waitForTimeout(450);
-          } else {
+          const acRow = page.locator('[data-test-id="uilocation-app-configuration location-item"]').first();
+          const acEllipsis = page.locator(
+            '[data-test-id="uilocation-app-configuration location-item"] div.action-button-dropdown'
+          );
+          const exposeAcRowThenClick = async (): Promise<boolean> => {
+            await acRow.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            await page.waitForTimeout(350);
+            if (await acEllipsis.first().isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await acEllipsis.first().scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await acEllipsis.first().click({ timeout: tDh });
+              await page.waitForTimeout(450);
+              return true;
+            }
+            return false;
+          };
+          let acOpen = await exposeAcRowThenClick();
+          if (!acOpen) {
+            await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+              const m = el as HTMLElement;
+              m.scrollTop = 0;
+            }).catch(() => {});
+            await page.waitForTimeout(420);
+            acOpen = await exposeAcRowThenClick();
+          }
+          if (!acOpen) {
+            await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+              const m = el as HTMLElement;
+              m.scrollTop = Math.floor(m.scrollHeight * 0.25);
+            }).catch(() => {});
+            await page.waitForTimeout(420);
+            acOpen = await exposeAcRowThenClick();
+          }
+          if (
+            !acOpen &&
+            !(await acEllipsis.first().isVisible({ timeout: 2_600 }).catch(() => false))
+          ) {
             await page.waitForTimeout(400);
           }
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations JSON RTE row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "json-rte";
+          const jrRow = page.locator('[data-test-id="uilocation-json-rte location-item"]').first();
+          const jrEllipsis = page.locator(
+            '[data-test-id="uilocation-json-rte location-item"] div.action-button-dropdown'
+          );
+          const tryClickJr = async (): Promise<boolean> => {
+            await jrRow.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            await page.waitForTimeout(350);
+            if (await jrEllipsis.first().isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await jrEllipsis.first().scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              await jrEllipsis.first().click({ timeout: tDh });
+              await page.waitForTimeout(450);
+              return true;
+            }
+            return false;
+          };
+          let jrok = await tryClickJr();
+          if (!jrok) {
+            await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+              const m = el as HTMLElement;
+              m.scrollTop = Math.max(m.scrollHeight - 320, 0);
+            }).catch(() => {});
+            await page.waitForTimeout(420);
+            jrok = await tryClickJr();
+          }
+          if (!jrok) await page.waitForTimeout(400);
+          break;
+        }
+        /** List-row ⋯: set `_dhAddUiLocationRow` so **`Developer Hub Add UI Location`** re-opens the matching row menu (not Default Custom Field). */
+        const dhExposeUiLocEllipsisThenClick = async (
+          rowTestIdSuffix: string
+        ): Promise<void> => {
+          const row = page.locator(`[data-test-id="${rowTestIdSuffix}"]`).first();
+          const wrap = page.locator(`[data-test-id="${rowTestIdSuffix}"] div.action-button-dropdown`).first();
+          const header = wrap.locator(".Dropdown__header").first();
+          const ell = header.or(wrap);
+          const tryOnce = async (): Promise<boolean> => {
+            await row.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            await page.waitForTimeout(350);
+            if (await wrap.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await wrap.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+              const clickTarget = (await header.isVisible({ timeout: 1_200 }).catch(() => false)) ? header : ell;
+              await clickTarget.click({ timeout: tDh });
+              /** Row menus mount under `#dropdown-dom`; wait before doc verify so `.or()` chain resolves. */
+              await page.waitForTimeout(450);
+              const menuHint = /\b(Add|Edit)\s+UI\s+Location\b/i;
+              await page
+                .locator('[id="dropdown-dom"] span.ui_locations__tooltip-label')
+                .filter({ hasText: menuHint })
+                .first()
+                .waitFor({ state: "visible", timeout: Math.min(tDh, 12_000) })
+                .catch(() => {});
+              return true;
+            }
+            return false;
+          };
+          let ok = await tryOnce();
+          if (!ok) {
+            await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+              const m = el as HTMLElement;
+              m.scrollTop = Math.max(m.scrollHeight - 520, 0);
+            }).catch(() => {});
+            await page.waitForTimeout(420);
+            ok = await tryOnce();
+          }
+          if (!ok) await page.waitForTimeout(400);
+        };
+        if (step.target === "Developer Hub UI Locations Stack Dashboard row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "stack-dashboard";
+          await dhExposeUiLocEllipsisThenClick("uilocation-stack-dashboard location-item");
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Asset Sidebar row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "asset-sidebar";
+          await dhExposeUiLocEllipsisThenClick("uilocation-asset-sidebar location-item");
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Full Page row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "full-page";
+          await dhExposeUiLocEllipsisThenClick("uilocation-full-page location-item");
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Field Modifier row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "field-modifier";
+          await dhExposeUiLocEllipsisThenClick("uilocation-field-modifier location-item");
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Content Type Sidebar row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "content-type-sidebar";
+          await dhExposeUiLocEllipsisThenClick("uilocation-content-type-sidebar location-item");
+          break;
+        }
+        if (step.target === "Developer Hub UI Locations Global Full Page row ellipsis (doc step)") {
+          (flow as any)._dhAddUiLocationRow = "global-full-page";
+          await dhExposeUiLocEllipsisThenClick("uilocation-global-full-page location-item");
           break;
         }
         /** After Save on the Custom Field / Entry Sidebar configurator, **Go back** returns to the UI Locations list so row ⋯ steps resolve. */
@@ -3376,10 +4505,108 @@ export async function performAction(
           });
           break;
         }
+        if (step.target === "Developer Hub app settings Webhooks nav (doc step)") {
+          const nav = page.locator("#webhooks").first();
+          await expect(nav).toBeVisible({ timeout: tDh });
+          await nav.scrollIntoViewIfNeeded().catch(() => {});
+          await nav.click({ timeout: tDh });
+          await page.waitForTimeout(450);
+          const cfgDlg = page.getByRole("dialog").filter({ hasText: /Save Configuration/i });
+          if (await cfgDlg.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            const dlgSave = cfgDlg
+              .locator("button")
+              .filter({ hasNotText: /Leave without saving/i })
+              .filter({ hasText: /\bSave\b/i })
+              .first();
+            await expect(dlgSave).toBeVisible({ timeout: Math.min(tDh, 15_000) });
+            await dlgSave.click({ timeout: tDh });
+            await cfgDlg.waitFor({ state: "hidden", timeout: Math.min(tDh, 45_000) }).catch(() => {});
+            await page.waitForTimeout(700);
+            await nav.click({ timeout: tDh });
+            await page.waitForTimeout(450);
+          }
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await expect(page.locator('[data-test-id="page-title"]').filter({ hasText: /^Webhooks$/i }).first()).toBeVisible({
+            timeout: Math.min(tDh, 45_000),
+          });
+          break;
+        }
+        /** Reference: `data/dom/Developer-Hub/webhooks.html` — Managing Webhooks in an App doc. */
+        if (
+          String((flow as any)?.id || "").toLowerCase() === "managing-webhooks-in-an-app" &&
+          step.target === "Developer Hub Webhooks Enable Webhook toggle click (doc step)"
+        ) {
+          const tw = getStepTimeoutMs(step, Math.min(tDh, 120_000));
+          const host = page.locator('[data-test-id="webhooks-enable-webhook-cta"]').first();
+          await expect(host).toBeVisible({ timeout: tw });
+          const sw = host.locator(`input[type="checkbox"][aria-label="aria-toggle-switch"]`).first();
+          await expect(sw).toBeAttached({ timeout: Math.min(tw, 40_000) });
+          if (!(await sw.isChecked().catch(() => false))) {
+            const lab = host.locator("label.toggle-switch").first();
+            if (await lab.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              await lab.click({ timeout: tw }).catch(async () => {
+                await sw.evaluate((n: HTMLInputElement) => n.click()).catch(() => {});
+              });
+            } else {
+              await sw.evaluate((n: HTMLInputElement) => n.click()).catch(() => {});
+            }
+          }
+          await page.waitForTimeout(500);
+          break;
+        }
+        if (
+          String((flow as any)?.id || "").toLowerCase() === "managing-webhooks-in-an-app" &&
+          step.target === "Developer Hub Webhooks App event Installed checkbox (doc step)"
+        ) {
+          const tw = getStepTimeoutMs(step, Math.min(tDh, 90_000));
+          const installedRow = page.locator('[data-test-id="webhooks-the-app-is-installed"]').first();
+          await expect(installedRow).toBeVisible({ timeout: tw });
+          const chk = installedRow.locator('input[type="checkbox"]').first();
+          if (!(await chk.isChecked().catch(() => false))) {
+            await installedRow.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await installedRow.click({ timeout: tw });
+            await page.waitForTimeout(400);
+          }
+          break;
+        }
+        if (
+          String((flow as any)?.id || "").toLowerCase() === "managing-webhooks-in-an-app" &&
+          step.target === "Developer Hub Webhooks manifest Save click (doc step)"
+        ) {
+          const tw = getStepTimeoutMs(step, Math.min(tDh, 120_000));
+          const btn = page.locator('[data-test-id="webhooks-save-cta"]').first();
+          await expect(btn).toBeVisible({ timeout: tw });
+          await btn.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+          try {
+            await expect.poll(async () => (await btn.isEnabled().catch(() => false)) === true, {
+              intervals: [300, 600, 900, 1_400],
+              timeout: Math.min(tw, 90_000),
+            }).toBe(true);
+          } catch {
+            throw new Error(
+              "Managing webhooks doc: manifest **Save** stayed disabled — provide **URL to Notify** and required event selections.",
+            );
+          }
+          await btn.click({ timeout: tw });
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
+          await page.waitForTimeout(900);
+          break;
+        }
         if (step.target === "Developer Hub Add UI Location menu item (doc step)") {
           await page.waitForTimeout(650);
 
-          type DhAddUiLocationRow = "custom-field" | "entry-sidebar" | "app-configuration";
+          type DhAddUiLocationRow =
+            | "custom-field"
+            | "entry-sidebar"
+            | "app-configuration"
+            | "json-rte"
+            | "stack-dashboard"
+            | "asset-sidebar"
+            | "full-page"
+            | "field-modifier"
+            | "content-type-sidebar"
+            | "global-full-page";
+          /** When unset, **`Add UI Location`** must infer the row — default **custom-field** is unsafe after other locations were opened; leave unset only for CF-only boilerplate tails. */
           const rowKind = (): DhAddUiLocationRow =>
             ((flow as any)._dhAddUiLocationRow as DhAddUiLocationRow | undefined) || "custom-field";
           const clearRowKind = (): void => {
@@ -3404,6 +4631,41 @@ export async function performAction(
             if (k === "app-configuration") {
               return page
                 .locator('[data-test-id="uilocation-app-configuration location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "json-rte") {
+              return page
+                .locator('[data-test-id="uilocation-json-rte location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "stack-dashboard") {
+              return page
+                .locator('[data-test-id="uilocation-stack-dashboard location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "asset-sidebar") {
+              return page
+                .locator('[data-test-id="uilocation-asset-sidebar location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "full-page") {
+              return page
+                .locator('[data-test-id="uilocation-full-page location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "field-modifier") {
+              return page
+                .locator('[data-test-id="uilocation-field-modifier location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "content-type-sidebar") {
+              return page
+                .locator('[data-test-id="uilocation-content-type-sidebar location-item"] div.action-button-dropdown')
+                .first();
+            }
+            if (k === "global-full-page") {
+              return page
+                .locator('[data-test-id="uilocation-global-full-page location-item"] div.action-button-dropdown')
                 .first();
             }
             return page.locator('[data-test-id="uilocation-custom-field location-item"] div.action-button-dropdown').first();
@@ -3589,6 +4851,36 @@ export async function performAction(
 
           const pollCfLocationStepSatisfied = async (): Promise<boolean> => {
             const k = rowKind();
+            const anyVis = async (sel: string): Promise<boolean> =>
+              !!(await page.locator(sel).first().isVisible({ timeout: 1_200 }).catch(() => false));
+            if (k === "stack-dashboard") {
+              if (await anyVis('[data-test-id="uilocation-stack-dashboard-1-name"]')) return true;
+              if (await anyVis('[data-test-id="uilocation-stack-dashboard-1-path"]')) return true;
+              return await anyVis('[data-test-id="uilocation-stack-dashboard-1-width"]');
+            }
+            if (k === "asset-sidebar") {
+              if (await anyVis('[data-test-id="uilocation-asset-sidebar-1-name"]')) return true;
+              return await anyVis('[data-test-id="uilocation-asset-sidebar-1-path"]');
+            }
+            if (k === "full-page") {
+              if (await anyVis('[data-test-id="uilocation-full-page-1-name"]')) return true;
+              return await anyVis('[data-test-id="uilocation-full-page-1-path"]');
+            }
+            if (k === "field-modifier") {
+              if (await anyVis('[data-test-id="uilocation-field-modifier-1-name"]')) return true;
+              if (await anyVis('[data-test-id="uilocation-field-modifier-1-path"]')) return true;
+              return await anyVis(
+                '[data-test-id="uilocation-field-modifier-1-field-types"], [data-test-id="uilocation-field-modifier-1-allowed-field-types"]',
+              );
+            }
+            if (k === "content-type-sidebar") {
+              if (await anyVis('[data-test-id="uilocation-content-type-sidebar-1-name"]')) return true;
+              return await anyVis('[data-test-id="uilocation-content-type-sidebar-1-path"]');
+            }
+            if (k === "global-full-page") {
+              if (await anyVis('[data-test-id="uilocation-global-full-page-1-name"]')) return true;
+              return await anyVis('[data-test-id="uilocation-global-full-page-1-path"]');
+            }
             if (k === "entry-sidebar") {
               const byPrefix = await page
                 .locator('[data-test-id^="uilocation-entry-sidebar-"]')
@@ -3613,6 +4905,19 @@ export async function performAction(
                 .locator('[data-test-id="uilocation-app-configuration-1-path"]')
                 .first()
                 .isVisible({ timeout: 1_200 })
+                .catch(() => false));
+            }
+            if (k === "json-rte") {
+              const jn = await page
+                .locator('[data-test-id="uilocation-json-rte-1-name"]')
+                .first()
+                .isVisible({ timeout: 1_400 })
+                .catch(() => false);
+              if (jn) return true;
+              return !!(await page
+                .locator('[data-test-id="uilocation-json-rte-1-path"]')
+                .first()
+                .isVisible({ timeout: 900 })
                 .catch(() => false));
             }
             if (await secondCfAlreadyOpen()) return true;
@@ -3655,7 +4960,11 @@ export async function performAction(
           const ellipsisForRow = uilocationRowEllipsis();
           const openRowMenu = async () => {
             await ellipsisForRow.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
-            await ellipsisForRow.click({ timeout: tDh });
+            await ellipsisForRow.waitFor({ state: "visible", timeout: Math.min(tDh, 35_000) }).catch(() => {});
+            await ellipsisForRow.click({ timeout: tDh, force: false }).catch(async () => {
+              await ellipsisForRow.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+              await ellipsisForRow.click({ timeout: tDh, force: true }).catch(() => {});
+            });
             await page.waitForTimeout(450);
           };
 
@@ -3699,26 +5008,75 @@ export async function performAction(
                 return true;
               }
             }
+            /**
+             * Reused apps: row ⋯ may show **Edit UI Location** only (e.g. App Configuration already in one location).
+             * Same as **Add** for single-slot list rows — opens the configurator; outer code polls **`pollCfLocationStepSatisfied`**.
+             * Custom Field still uses **`tryEditThenInlineAdd`** (Edit → inline **Add UI Location**).
+             */
+            if (rowKind() !== "custom-field") {
+              const editCands: Locator[] = [
+                m.locator("span.ui_locations__tooltip-label").filter({ hasText: /^Edit UI Location$/i }).last(),
+                m.locator("span.ui_locations__tooltip-label").filter({ hasText: /Edit\s*UI\s*Location/i }).last(),
+                m.getByRole("menuitem", { name: /Edit\s*UI\s*Location/i }).last(),
+                m.locator('li[data-test-id^="cs-dropdown-elements"]').filter({ hasText: /Edit UI Location/i }).last(),
+                m.locator('[data-test-id="cs-dropdown-elements"]').filter({ hasText: /Edit UI Location/i }).last(),
+                page.getByRole("menuitem", { name: /Edit\s*UI\s*Location/i }).filter({ visible: true }).last(),
+                page
+                  .locator('[role="menu"]')
+                  .filter({ visible: true })
+                  .locator("span.ui_locations__tooltip-label")
+                  .filter({ hasText: /Edit\s*UI\s*Location/i })
+                  .last(),
+              ];
+              for (const loc of editCands) {
+                if (await loc.isVisible({ timeout: 2_200 }).catch(() => false)) {
+                  await loc.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+                  await loc.click({ timeout: tDh, force: true }).catch(() => loc.click({ timeout: tDh }));
+                  return true;
+                }
+              }
+            }
             return false;
           };
 
           /**
            * After the first Custom Field is saved, the row menu often shows **Edit UI Location**
            * instead of Add; choose Edit then click **Add UI Location** in the expanded section.
+           * For other location rows, **Edit UI Location** alone opens the configurator (no inline Add).
            */
           const tryEditThenInlineAdd = async (): Promise<boolean> => {
             const m = menuPanel();
             await m.waitFor({ state: "visible", timeout: Math.min(tDh, 10_000) }).catch(() => {});
-            const editItem = m
-              .locator("span.ui_locations__tooltip-label")
-              .filter({ hasText: /Edit\s*UI\s*Location/i })
-              .last();
-            if (!(await editItem.isVisible({ timeout: 2_800 }).catch(() => false))) {
+            const editCands: Locator[] = [
+              m.locator("span.ui_locations__tooltip-label").filter({ hasText: /^Edit UI Location$/i }).last(),
+              m.locator("span.ui_locations__tooltip-label").filter({ hasText: /Edit\s*UI\s*Location/i }).last(),
+              m.getByRole("menuitem", { name: /Edit\s*UI\s*Location/i }).last(),
+              m.locator('li[data-test-id^="cs-dropdown-elements"]').filter({ hasText: /Edit UI Location/i }).last(),
+              m.locator('[data-test-id="cs-dropdown-elements"]').filter({ hasText: /Edit UI Location/i }).last(),
+              page.getByRole("menuitem", { name: /Edit\s*UI\s*Location/i }).filter({ visible: true }).last(),
+              page
+                .locator('[role="menu"]')
+                .filter({ visible: true })
+                .locator("span.ui_locations__tooltip-label")
+                .filter({ hasText: /Edit\s*UI\s*Location/i })
+                .last(),
+            ];
+            let editItem: Locator | null = null;
+            for (const loc of editCands) {
+              if (await loc.isVisible({ timeout: 2_200 }).catch(() => false)) {
+                editItem = loc;
+                break;
+              }
+            }
+            if (!editItem) {
               return false;
             }
             await editItem.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
-            await editItem.click({ timeout: tDh, force: true }).catch(() => editItem.click({ timeout: tDh }));
+            await editItem.click({ timeout: tDh, force: true }).catch(() => editItem!.click({ timeout: tDh }));
             await page.waitForTimeout(750);
+            if (rowKind() !== "custom-field") {
+              return true;
+            }
             const scope = page.locator('[data-test-id="ui-locations-content"], [data-test-id="location-list"]');
             const inlineAdd: Locator[] = [
               scope.locator('[data-test-id="uilocation-custom-field-add-cta"]').last(),
@@ -3736,6 +5094,23 @@ export async function performAction(
             return false;
           };
 
+          /**
+           * Previous step ⋯ click often leaves the row menu OPEN (Add UI Location visible). Closing with ESC +
+           * re-opening ⋯ can flake/toggle; consume the visible item first when the menu is already up.
+           */
+          {
+            await menuPanel().waitFor({ state: "visible", timeout: 3_200 }).catch(() => {});
+            const okQuickMenu = await tryAdd();
+            if (okQuickMenu) {
+              await expect
+                .poll(async () => await pollCfLocationStepSatisfied(), { timeout: listPollMs })
+                .toBe(true);
+              await page.waitForTimeout(500);
+              clearRowKind();
+              break;
+            }
+          }
+
           /** Prior step may be only ⋯ ; menu closes before this step runs — always open fresh. */
           if (rowKind() !== "custom-field") {
             await page.keyboard.press("Escape").catch(() => {});
@@ -3748,17 +5123,82 @@ export async function performAction(
               .scrollIntoViewIfNeeded({ timeout: 12_000 })
               .catch(() => {});
           } else if (rowKind() === "app-configuration") {
-            await page
-              .locator('[data-test-id="uilocation-app-configuration location-item"]')
-              .first()
-              .scrollIntoViewIfNeeded({ timeout: 12_000 })
-              .catch(() => {});
+            const acProbe = page.locator('[data-test-id="uilocation-app-configuration location-item"]').first();
+            await acProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            let acEllProbe = uilocationRowEllipsis();
+            if (!(await acEllProbe.isVisible({ timeout: 4_500 }).catch(() => false))) {
+              await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+                const m = el as HTMLElement;
+                m.scrollTop = 0;
+              }).catch(() => {});
+              await page.waitForTimeout(450);
+              await acProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+              acEllProbe = uilocationRowEllipsis();
+              await acEllProbe.waitFor({ state: "visible", timeout: Math.min(tDh, 20_000) }).catch(() => {});
+            }
+          } else if (rowKind() === "json-rte") {
+            const jrRowProbe = page.locator('[data-test-id="uilocation-json-rte location-item"]').first();
+            await jrRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            let jrEllProbe = uilocationRowEllipsis();
+            if (!(await jrEllProbe.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+                const m = el as HTMLElement;
+                m.scrollTop = Math.max(m.scrollHeight - 420, 0);
+              }).catch(() => {});
+              await page.waitForTimeout(450);
+              await jrRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+              jrEllProbe = uilocationRowEllipsis();
+              await jrEllProbe.waitFor({ state: "visible", timeout: Math.min(tDh, 18_000) }).catch(() => {});
+            }
+          } else if (
+            rowKind() === "stack-dashboard" ||
+            rowKind() === "asset-sidebar" ||
+            rowKind() === "full-page" ||
+            rowKind() === "field-modifier" ||
+            rowKind() === "content-type-sidebar" ||
+            rowKind() === "global-full-page"
+          ) {
+            const rk2 = rowKind();
+            const rowSid =
+              rk2 === "stack-dashboard"
+                ? "uilocation-stack-dashboard location-item"
+                : rk2 === "asset-sidebar"
+                  ? "uilocation-asset-sidebar location-item"
+                  : rk2 === "full-page"
+                    ? "uilocation-full-page location-item"
+                    : rk2 === "field-modifier"
+                      ? "uilocation-field-modifier location-item"
+                      : rk2 === "content-type-sidebar"
+                        ? "uilocation-content-type-sidebar location-item"
+                        : "uilocation-global-full-page location-item";
+            const dhRowProbe = page.locator(`[data-test-id="${rowSid}"]`).first();
+            await dhRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            let dhEllProbe = uilocationRowEllipsis();
+            if (!(await dhEllProbe.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+                const m = el as HTMLElement;
+                m.scrollTop =
+                  rk2 === "global-full-page" ? Math.max(m.scrollHeight - 420, 0) : rk2 === "stack-dashboard" ? 0 : Math.floor(m.scrollHeight * 0.35);
+              }).catch(() => {});
+              await page.waitForTimeout(450);
+              await dhRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+              dhEllProbe = uilocationRowEllipsis();
+              await dhEllProbe.waitFor({ state: "visible", timeout: Math.min(tDh, 20_000) }).catch(() => {});
+            }
           } else {
-            await page
-              .locator('[data-test-id="uilocation-custom-field location-item"]')
-              .first()
-              .scrollIntoViewIfNeeded({ timeout: 12_000 })
-              .catch(() => {});
+            const cfRowProbe = page.locator('[data-test-id="uilocation-custom-field location-item"]').first();
+            await cfRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+            let ellProbe = uilocationRowEllipsis();
+            if (!(await ellProbe.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              await page.locator('[data-test-id="ui-locations-content"], main').first().evaluate((el) => {
+                const m = el as HTMLElement;
+                m.scrollTop = Math.max(m.scrollHeight - 480, 0);
+              }).catch(() => {});
+              await page.waitForTimeout(450);
+              await cfRowProbe.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+              ellProbe = uilocationRowEllipsis();
+              await ellProbe.waitFor({ state: "visible", timeout: Math.min(tDh, 18_000) }).catch(() => {});
+            }
           }
           await openRowMenu();
           let ok = await tryAdd();
@@ -3774,26 +5214,41 @@ export async function performAction(
             ok = await tryEditThenInlineAdd();
           }
           if (!ok && !(await secondCfAlreadyOpen())) {
-            const item = page
-              .locator('[data-test-id="cs-dropdown-elements"], li[data-test-id^="cs-dropdown-elements"]')
-              .filter({ hasText: /Add UI Location/i })
-              .last();
-            if (await item.isVisible({ timeout: Math.min(tDh, 14_000) }).catch(() => false)) {
-              await item.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
-              await item.click({ timeout: tDh, force: true }).catch(() => item.click({ timeout: tDh }));
+            const dropdownScope = page.locator('[data-test-id="cs-dropdown-elements"], li[data-test-id^="cs-dropdown-elements"]');
+            const addItem = dropdownScope.filter({ hasText: /Add UI Location/i }).last();
+            if (await addItem.isVisible({ timeout: Math.min(tDh, 14_000) }).catch(() => false)) {
+              await addItem.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+              await addItem.click({ timeout: tDh, force: true }).catch(() => addItem.click({ timeout: tDh }));
               ok = true;
+            } else if (rowKind() !== "custom-field") {
+              const editDd = dropdownScope.filter({ hasText: /Edit UI Location/i }).last();
+              if (await editDd.isVisible({ timeout: Math.min(tDh, 10_000) }).catch(() => false)) {
+                await editDd.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+                await editDd.click({ timeout: tDh, force: true }).catch(() => editDd.click({ timeout: tDh }));
+                ok = true;
+              }
             }
           }
           if (!ok && rowKind() !== "custom-field") {
             await openRowMenu();
-            const loose = page
+            const looseAdd = page
               .getByText(/\bAdd UI Location\b/i)
               .filter({ visible: true })
               .last();
-            if (await loose.isVisible({ timeout: 4_500 }).catch(() => false)) {
-              await loose.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
-              await loose.click({ timeout: tDh, force: true }).catch(() => loose.click({ timeout: tDh }));
+            if (await looseAdd.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              await looseAdd.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+              await looseAdd.click({ timeout: tDh, force: true }).catch(() => looseAdd.click({ timeout: tDh }));
               ok = true;
+            } else {
+              const looseEdit = page
+                .getByText(/\bEdit UI Location\b/i)
+                .filter({ visible: true })
+                .last();
+              if (await looseEdit.isVisible({ timeout: 4_500 }).catch(() => false)) {
+                await looseEdit.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+                await looseEdit.click({ timeout: tDh, force: true }).catch(() => looseEdit.click({ timeout: tDh }));
+                ok = true;
+              }
             }
           }
 
@@ -3811,14 +5266,55 @@ export async function performAction(
           break;
         }
         if (step.target === "Developer Hub Custom Field Data Type option Text (doc step)") {
-          await page.waitForSelector('[role="listbox"], [role="option"]', { state: "visible", timeout: 15_000 }).catch(() => {});
-          const opt = page.getByRole("option", { name: /^Text$/i }).first();
-          if (!(await opt.isVisible({ timeout: 2_500 }).catch(() => false))) {
-            const fallback = page.locator('[role="option"]').first();
-            await expect(fallback).toBeVisible({ timeout: Math.min(tDh, 15_000) });
-            await fallback.click({ timeout: tDh });
-          } else {
-            await opt.click({ timeout: tDh });
+          await page.waitForTimeout(400);
+          /** Mirror **JSON** branch: react-select portals `Select__menu` under `body`; options are not always `[role="option"]`. */
+          const freshMenu = (): Locator => page.locator("body div.Select__menu, body [class*='Select__menu']").last();
+          let menu = freshMenu();
+          await menu.waitFor({ state: "visible", timeout: 12_000 }).catch(() => {});
+          const tryClick = async (loc: Locator): Promise<boolean> => {
+            if (await loc.isVisible({ timeout: 1_800 }).catch(() => false)) {
+              await loc.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+              await loc.click({ timeout: tDh });
+              return true;
+            }
+            return false;
+          };
+          const buildPickers = (m: Locator): Locator[] => [
+            m.getByRole("option", { name: /^Text$/i }).first(),
+            m.locator('[role="option"]').filter({ hasText: /^Text$/i }).first(),
+            m.locator("div[class*='option'], div[class*='Option']").filter({ hasText: /^Text$/i }).first(),
+            page.getByRole("option", { name: /^Text$/i }).first(),
+            page.locator('[role="option"]').filter({ hasText: /^Text$/i }).last(),
+          ];
+          let pickers = buildPickers(menu);
+          let picked = false;
+          for (const p of pickers) {
+            picked = await tryClick(p);
+            if (picked) break;
+          }
+          if (!picked) {
+            const ctrl = page
+              .locator('[data-test-id="uilocation-custom-field-1-data-type"], [data-test-id="uilocation-custom-field-2-data-type"]')
+              .locator(".Select__control")
+              .last();
+            await ctrl.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+            await ctrl.click({ timeout: tDh }).catch(() => {});
+            await page.waitForTimeout(450);
+            menu = freshMenu();
+            await menu.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+            const inp = ctrl.locator('input[type="text"]').first();
+            if (await inp.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await inp.click({ timeout: 3_000 }).catch(() => {});
+              await inp.fill("");
+              await inp.type("Text", { delay: 55 });
+              await page.waitForTimeout(500);
+            }
+            pickers = buildPickers(menu);
+            for (const p of pickers) {
+              picked = await tryClick(p);
+              if (picked) break;
+            }
+            if (!picked) await page.keyboard.press("Enter").catch(() => {});
           }
           await page.waitForTimeout(450);
           break;
@@ -3878,29 +5374,60 @@ export async function performAction(
           break;
         }
         if (step.target === "Developer Hub Stack Dashboard Default Width choose default (doc step)") {
-          const wrap = page.locator('[data-test-id="uilocation-stack-dashboard-1-width"]').first();
-          if (await wrap.isVisible({ timeout: 6_000 }).catch(() => false)) {
-            await wrap.locator(".Select__control, [role='combobox']").first().click({ timeout: tDh }).catch(() => {});
+          const wrap = page.getByTestId(/^uilocation-stack-dashboard-\d+-width$/).first();
+          /**
+           * **`cs-select-aria`** exists on every react-select — **page-wide .first()** can target the wrong field and never set **Default Width**, leaving **Save** disabled.
+           * Prefer **main** + **Choose Width** (same shell as field label verify); then **-width** wrapper; then **main**-scoped aria.
+           */
+          let selectControl: Locator | undefined;
+          const fromChooseWidthPlaceholder = page
+            .locator("main")
+            .getByText(/^Choose Width$/i)
+            .first()
+            .locator(
+              "xpath=ancestor::*[.//span[contains(@class,'Select__control')] or .//*[@role='combobox']][1]",
+            )
+            .locator(".Select__control, [role='combobox']")
+            .first();
+          if (await fromChooseWidthPlaceholder.isVisible({ timeout: 4_500 }).catch(() => false)) {
+            selectControl = fromChooseWidthPlaceholder;
+          } else if (await wrap.isVisible({ timeout: 2_200 }).catch(() => false)) {
+            selectControl = wrap.locator(".Select__control, [role='combobox']").first();
+          } else {
+            const byAriaMain = page.locator("main").getByRole("textbox", { name: /^cs-select-aria$/i }).first();
+            selectControl = (await byAriaMain.isVisible({ timeout: 4_500 }).catch(() => false))
+              ? byAriaMain
+              : page.getByRole("textbox", { name: /^cs-select-aria$/i }).first();
+          }
+          if (await selectControl.isVisible({ timeout: 6_000 }).catch(() => false)) {
+            await selectControl.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await selectControl.click({ timeout: tDh }).catch(() => {});
             await page.waitForTimeout(400);
-            const def = page.getByRole("option", { name: /default/i }).first();
-            if (await def.isVisible({ timeout: 4_000 }).catch(() => false)) {
-              await def.click({ timeout: tDh });
+            /** React-select: portaled menu — pick **first** option so we do not depend on copy like **Default**. */
+            const menu = (): Locator => page.locator("body div.Select__menu, body [class*='Select__menu']").last();
+            const m = menu();
+            await m.waitFor({ state: "visible", timeout: 8_000 }).catch(() => {});
+            const firstInMenu = m
+              .getByRole("option")
+              .first()
+              .or(m.locator("div.Select__option").first())
+              .or(m.locator("div[class*='Select__option']").first());
+            if (await firstInMenu.isVisible({ timeout: 4_500 }).catch(() => false)) {
+              await firstInMenu.scrollIntoViewIfNeeded({ timeout: 8_000 }).catch(() => {});
+              await firstInMenu.click({ timeout: tDh });
             } else {
-              const firstOpt = page.locator('[role="option"]').first();
-              if (await firstOpt.isVisible({ timeout: 3_000 }).catch(() => false)) {
-                await firstOpt.click({ timeout: tDh });
+              const inp = selectControl.locator('input[type="text"]').first();
+              if (await inp.isVisible({ timeout: 2_600 }).catch(() => false)) {
+                await inp.fill("");
+                await page.keyboard.press("ArrowDown").catch(() => {});
+                await page.waitForTimeout(200);
+                await page.keyboard.press("Enter").catch(() => {});
+              } else if (await m.locator('[role="option"]').first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+                await m.locator('[role="option"]').first().click({ timeout: tDh });
               }
             }
             await page.waitForTimeout(400);
           }
-          break;
-        }
-        if (step.target === "Developer Hub Field Modifier Allowed Field Types first option (doc step)") {
-          await page.waitForSelector('[role="listbox"], [role="option"]', { state: "visible", timeout: 15_000 }).catch(() => {});
-          const firstOpt = page.locator('[role="option"]').first();
-          await expect(firstOpt).toBeVisible({ timeout: Math.min(tDh, 15_000) });
-          await firstOpt.click({ timeout: tDh });
-          await page.waitForTimeout(450);
           break;
         }
         if (
@@ -3961,7 +5488,8 @@ export async function performAction(
         }
         if (step.target === "Hosting tab Save button (doc step)") {
           const unique8 = unique.replace(/-/g, "").slice(0, 8);
-          const hostingUrl = `http://localhost:3000/?cs=${unique8}`;
+          const hostingOrgDefaultUrl = `http://localhost:3000/?cs=${unique8}`;
+          const fidHost = String(flow?.id || "").toLowerCase();
           const externalLab = page.locator('label[data-test-id="cs-radio"]:has(input[value="external"])').first();
           if (await externalLab.isVisible({ timeout: 8_000 }).catch(() => false)) {
             await externalLab.click({ timeout: tDh });
@@ -3969,13 +5497,24 @@ export async function performAction(
           }
           const urlIn = page.locator(".app-url-input-container input, [data-test-id='cs-text-input'] input").first();
           await expect(urlIn).toBeVisible({ timeout: Math.min(tDh, 30_000) });
-          await urlIn.click({ timeout: tDh });
-          await urlIn.fill("", { timeout: 15_000 });
-          await urlIn.fill(hostingUrl, { timeout: Math.min(tDh, 30_000) });
-          await urlIn.dispatchEvent("input");
-          await urlIn.dispatchEvent("change");
-          await urlIn.blur();
-          await page.waitForTimeout(500);
+          /** Org Marketplace boilerplate (3000/?cs=) — DAM sets its own localhost URLs (:4000, :1268); never clobber those. */
+          if (fidHost === "marketplace-dam-app-boilerplate") {
+            await urlIn.click({ timeout: tDh }).catch(() => {});
+            await urlIn.dispatchEvent("input");
+            await urlIn.dispatchEvent("change");
+            await urlIn.blur();
+            await page.waitForTimeout(650);
+          } else if (fidHost === "app-hosting") {
+            await page.waitForTimeout(400);
+          } else {
+            await urlIn.click({ timeout: tDh });
+            await urlIn.fill("", { timeout: 15_000 });
+            await urlIn.fill(hostingOrgDefaultUrl, { timeout: Math.min(tDh, 30_000) });
+            await urlIn.dispatchEvent("input");
+            await urlIn.dispatchEvent("change");
+            await urlIn.blur();
+            await page.waitForTimeout(500);
+          }
           const btn = page.locator('[data-test-id="hosting-save-cta"]').first();
           await expect(btn).toBeVisible({ timeout: tDh });
           await expect(btn).toBeEnabled({ timeout: Math.min(tDh, 90_000) });
@@ -13433,6 +14972,199 @@ export async function performAction(
         }
       }
 
+      // Personalize — set-up-personalize (`create-personalize-project`, `manage-personalize-project`).
+      {
+        const fidP = String(flow?.id || "").toLowerCase();
+        if (
+          String(flow?.project || "") === "Personalize" &&
+          (fidP === "create-personalize-project" || fidP === "manage-personalize-project") &&
+          step.action === "click"
+        ) {
+          const tP = getStepTimeoutMs(step, 120_000);
+          const personalizeProjectModal = (): Locator =>
+            page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-personalize-project"]') })
+              .first();
+
+          const personalizeAppSwitcherIconTargets = new Set([
+            "Create Personalize Project doc: App Switcher icon (doc step)",
+            "Manage Personalize Project doc: App Switcher icon (doc step)",
+          ]);
+          if (personalizeAppSwitcherIconTargets.has(step.target)) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            await opener.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(opener).toBeVisible({ timeout: Math.min(tP, 120_000) });
+            await opener.click({ timeout: tP, force: true });
+            await page.waitForTimeout(450);
+            await page
+              .locator('[data-test-id="app-switcher-body"]')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tP, 45_000) })
+              .catch(() => {});
+            break;
+          }
+
+          const personalizeAppSwitcherProductTargets = new Set([
+            "Create Personalize Project doc: App Switcher Personalize product (doc step)",
+            "Manage Personalize Project doc: App Switcher Personalize product (doc step)",
+          ]);
+          if (personalizeAppSwitcherProductTargets.has(step.target)) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const body = page.locator('[data-test-id="app-switcher-body"]').first();
+            const persProbe = page.locator('[data-test-id="app-switcher-personalize"]').first();
+            const alreadyOpen =
+              (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
+              (await persProbe.isVisible({ timeout: 600 }).catch(() => false));
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tP, force: true }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+            await body.waitFor({ state: "visible", timeout: Math.min(tP, 30_000) }).catch(() => {});
+            const candidates: Locator[] = [
+              page.locator('[data-test-id="app-switcher-personalize"]').first(),
+              page.locator('[data-test-id="app-switcher-body"] a[href*="personalize" i]').first(),
+              page.getByRole("button", { name: /^Personalize$/i }).first(),
+              page
+                .locator('[data-test-id="app-switcher-body"]')
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^Personalize$/i })
+                .first(),
+            ];
+            let clicked = false;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 12_000 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded().catch(() => {});
+                await c.click({ timeout: tP, force: true });
+                clicked = true;
+                break;
+              }
+            }
+            if (!clicked) {
+              throw new Error(
+                "Personalize doc: Personalize product not found in App Switcher (tried app-switcher-personalize, href, role=button)."
+              );
+            }
+            await page.waitForTimeout(900);
+            await page.waitForURL(/personalize/i, { timeout: Math.min(tP, 60_000) }).catch(() => {});
+            break;
+          }
+
+          if (fidP === "manage-personalize-project" && step.target === "Manage Personalize Project doc: open project card from Projects list (doc step)") {
+            const needleRaw =
+              String(process.env.PERSONALIZE_PROJECT_CARD_CONTAINS || process.env.DAL_PERSONALIZE_PROJECT_SEARCH || "").trim() ||
+              "Doc Personalize Project";
+            const needle = needleRaw.slice(0, 120);
+            const card = page
+              .locator('[data-test-id="cs-generic-card"]')
+              .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+              .first();
+            await expect(card).toBeVisible({ timeout: tP });
+            const link = card.locator("a[href*='/personalize/projects/']").first();
+            if (await link.isVisible({ timeout: 2_500 }).catch(() => false)) {
+              await link.click({ timeout: tP });
+            } else {
+              const title = card.locator("h4.GenericCard__title, .GenericCard__title, h4 span").first();
+              await expect(title).toBeVisible({ timeout: Math.min(tP, 15_000) });
+              await title.click({ timeout: tP });
+            }
+            await page.waitForURL(/\/personalize\/projects\/[^/]+/i, { timeout: Math.min(tP, 90_000) });
+            await page.waitForTimeout(800);
+            break;
+          }
+
+          if (fidP === "manage-personalize-project" && step.target === "Personalize workspace top navigation Settings button (doc step)") {
+            const btn = page.locator('[data-test-id="personalize-nav-settings"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await btn.click({ timeout: tP });
+            await page.waitForURL(/\/settings/i, { timeout: Math.min(tP, 60_000) }).catch(() => {});
+            await page.waitForTimeout(600);
+            break;
+          }
+
+          if (fidP === "manage-personalize-project" && step.target === "Personalize Settings General Save button (doc step)") {
+            const btn = page.locator('[data-testid="details-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_500);
+            break;
+          }
+
+          if (fidP === "manage-personalize-project" && step.target === "Personalize Settings left navigation Users row (doc step)") {
+            const row = page.locator('[data-test-id="cs-list-row"]#users').first();
+            await expect(row).toBeVisible({ timeout: tP });
+            await row.scrollIntoViewIfNeeded().catch(() => {});
+            await row.click({ timeout: tP });
+            await page.waitForTimeout(600);
+            await expect(page.locator('[data-test-id="cs-page-title"]').first()).toBeVisible({ timeout: 20_000 });
+            break;
+          }
+
+          if (fidP === "create-personalize-project" && step.target === "New Personalize Project primary button (doc step)") {
+            const btn = page
+              .locator(
+                'button[aria-label="add-new-project-button"], [data-test-id="cs-page-layout-header"] button.Button--primary'
+              )
+              .filter({ hasText: /New Personalize Project/i })
+              .first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(500);
+            break;
+          }
+
+          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal Select Stack control (doc step)") {
+            const dlg = personalizeProjectModal();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const ctl = dlg.locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control').first();
+            await expect(ctl).toBeVisible({ timeout: tP });
+            await ctl.click({ timeout: tP, force: true });
+            await page.waitForTimeout(350);
+            break;
+          }
+
+          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal pick DEFAULT_STACK option (doc step)") {
+            const stack = String(process.env.DEFAULT_STACK || "").trim();
+            if (!stack) {
+              throw new Error("DEFAULT_STACK must be set in .env for create-personalize-project (doc: select an existing stack).");
+            }
+            const menu = page.locator(".Select__menu, [role='listbox']").last();
+            await expect(menu).toBeVisible({ timeout: tP });
+            const needle = stack.slice(0, Math.min(28, stack.length));
+            const opt = menu
+              .locator("[role=option], .Select__option")
+              .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+              .first();
+            if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
+              await opt.click({ timeout: tP, force: true });
+            } else {
+              const dlg = personalizeProjectModal();
+              const inp = dlg.locator('input[aria-label="cs-select-aria"]').first();
+              await expect(inp).toBeVisible({ timeout: 15_000 });
+              await inp.fill("");
+              await inp.pressSequentially(stack.slice(0, 48), { delay: 12 });
+              await page.waitForTimeout(400);
+              await page.keyboard.press("Enter");
+            }
+            await page.waitForTimeout(400);
+            break;
+          }
+
+          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal Create Project submit (doc step)") {
+            const dlg = personalizeProjectModal();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const btn = dlg.locator('[data-testid="project-modal-form-submit"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_000);
+            break;
+          }
+        }
+      }
+
       // Analytics guides — optional org switch + dashboard Analytics tile + hub dashboard tabs.
       if (step.action === "click" && ANALYTICS_GUIDE_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
         const tAn = getStepTimeoutMs(step);
@@ -13641,6 +15373,101 @@ export async function performAction(
             break;
           }
         }
+      }
+
+      /** Field Modifier **Allowed Field Types** — react-select placeholder is often a **sibling** of **`cs-select-aria`**, so **ancestor::Select__control** chains miss. Must run **before** **`resolveTarget`** (listing CSS omits real DOM). */
+      if (step.target === "Developer Hub UI location Field Modifier Allowed Field Types dropdown (doc step)") {
+        const tFm = getStepTimeoutMs(step, 120_000);
+        const main = page.locator("main").first();
+        const placeholder = main.getByText(/Choose Allowed Field Types/i).first();
+        const rowScope = placeholder.locator(
+          `xpath=ancestor::*[
+            .//*[normalize-space(.)="Allowed Field Types"]
+            and .//*[contains(normalize-space(.),"Choose Allowed Field Types")]
+          ][1]`,
+        );
+        const byWrap = page
+          .locator(
+            '[data-test-id^="uilocation-field-modifier-"][data-test-id$="-field-types"], [data-test-id^="uilocation-field-modifier-"][data-test-id$="-allowed-field-types"]',
+          )
+          .first();
+        const ctrls: Locator[] = [
+          rowScope.getByRole("combobox").first(),
+          rowScope.locator("[class*='Select__control']").first(),
+          rowScope.locator("div[class*='control']").filter({ visible: true }).first(),
+          rowScope.getByRole("textbox", { name: /^cs-select-aria$/i }).first(),
+          placeholder.locator(
+            `xpath=ancestor::*[contains(translate(@class,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'control')][1]`,
+          ),
+          placeholder.locator("xpath=ancestor::*[@role='combobox'][1]"),
+          byWrap.locator(".Select__control, [role='combobox']").first(),
+          main
+            .getByRole("combobox")
+            .filter({ has: page.locator("main").getByText(/Choose Allowed Field Types/i) })
+            .first(),
+        ];
+        let opened = false;
+        for (const c of ctrls) {
+          if (await c.isVisible({ timeout: 2_600 }).catch(() => false)) {
+            await c.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await c.click({ timeout: tFm }).catch(() => {});
+            opened = true;
+            break;
+          }
+        }
+        if (!opened) {
+          if (await placeholder.isVisible({ timeout: 8_000 }).catch(() => false)) {
+            await placeholder.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await placeholder.click({ timeout: tFm }).catch(() => {});
+          } else if (await rowScope.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await rowScope.scrollIntoViewIfNeeded({ timeout: 12_000 }).catch(() => {});
+            await rowScope.click({ timeout: tFm }).catch(() => {});
+          } else {
+            throw new Error(
+              "Field Modifier Allowed Field Types: no visible combobox / placeholder row — extend rowScope or ctrls (allowed-field-types DOM).",
+            );
+          }
+        }
+        await page.waitForTimeout(400);
+        break;
+      }
+      if (step.target === "Developer Hub Field Modifier Allowed Field Types first option (doc step)") {
+        const tFm = getStepTimeoutMs(step, 120_000);
+        await page
+          .waitForSelector('[role="listbox"], [role="menu"], div.Select__menu, [class*="Select__menu"]', {
+            state: "visible",
+            timeout: 18_000,
+          })
+          .catch(() => {});
+        const m = page.locator("body div.Select__menu, body [class*='Select__menu']").last();
+        await m.waitFor({ state: "visible", timeout: 14_000 }).catch(() => {});
+        const defaultCand = m.getByRole("option", { name: /default/i }).first().or(m.locator("div[class*='option']").filter({ hasText: /default/i }).first());
+        const firstCand = m.getByRole("option").first().or(m.locator("div.Select__option").first()).or(m.locator("div[class*='Select__option']").first());
+        let pick = (await defaultCand.isVisible({ timeout: 3_800 }).catch(() => false)) ? defaultCand : firstCand;
+        if (await pick.isVisible({ timeout: 12_000 }).catch(() => false)) {
+          await pick.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+          await pick.click({ timeout: tFm });
+        } else {
+          const main = page.locator("main").first();
+          const rowScope = main
+            .locator("div")
+            .filter({ has: main.getByText(/^Allowed Field Types$/i) })
+            .filter({ has: main.getByText(/Choose Allowed Field Types/i) })
+            .first();
+          const inp = rowScope.getByRole("textbox", { name: /^cs-select-aria$/i }).first();
+          if (await inp.isVisible({ timeout: 4_500 }).catch(() => false)) {
+            await inp.focus().catch(() => {});
+            await inp.press("ArrowDown").catch(() => {});
+            await page.waitForTimeout(200);
+            await page.keyboard.press("Enter").catch(() => {});
+          } else {
+            await page.keyboard.press("ArrowDown").catch(() => {});
+            await page.waitForTimeout(220);
+            await page.keyboard.press("Enter").catch(() => {});
+          }
+        }
+        await page.waitForTimeout(450);
+        break;
       }
 
       const { click } = loadOverrides(flow);
@@ -16092,11 +17919,266 @@ export async function performAction(
         }
       }
 
-      /** Developer Hub — Marketplace boilerplate flows (page headings + sidebar labels match doc wording). */
+      /** PKCE OAuth — strict label/toggle checks (throw on mismatch; not doc-warning-only). */
+      {
+        const fidPkce = String(flow?.id || "").toLowerCase();
+        if (fidPkce === "pkce-for-contentstack-oauth") {
+          const vt = getStepTimeoutMs(step, 75_000);
+          if (
+            step.target === "Developer Hub OAuth Allow PKCE label strict verify (pkce doc step)" ||
+            step.target === "Developer Hub OAuth Allow PKCE toggle enabled strict verify (pkce doc step)"
+          ) {
+            const ut = page.getByRole("heading", { name: /^User Token$/i }).first();
+            await ut.scrollIntoViewIfNeeded({ timeout: 14_000 }).catch(() => {});
+
+            if (step.target === "Developer Hub OAuth Allow PKCE label strict verify (pkce doc step)") {
+              const want = String(step.expected?.labelEquals ?? "").trim();
+              if (!want) throw new Error(`PKCE strict verify (${step.target}): missing expected.labelEquals.`);
+              const lbl = page.locator("#react-developerhub, main").first().getByText(want, { exact: true }).first();
+              await expect(lbl).toBeVisible({ timeout: vt });
+              const gotRaw = await lbl.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim());
+              const got = gotRaw.replace(/\s+/g, " ").trim();
+              if (got !== want) {
+                throw new Error(`PKCE strict verify: expected "${want}" in OAuth page; resolved "${got}".`);
+              }
+            } else {
+              const wantStatus = String(step.expected?.labelEquals ?? "").trim();
+              if (!wantStatus) {
+                throw new Error(`PKCE strict verify (${step.target}): missing expected.labelEquals (toggle status label).`);
+              }
+              const statusEl = page
+                .locator("#react-developerhub, main")
+                .first()
+                .getByText(wantStatus, { exact: true })
+                .first();
+              await expect(statusEl).toBeVisible({ timeout: vt });
+              const gotStatusRaw = await statusEl.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim());
+              const gotStatus = gotStatusRaw.replace(/\s+/g, " ").trim();
+              if (gotStatus !== wantStatus) {
+                throw new Error(`PKCE strict verify: expected toggle status "${wantStatus}"; resolved "${gotStatus}".`);
+              }
+              const rootV = page.locator("#react-developerhub, main").first();
+              const pkceToggleHost = statusEl.locator("xpath=ancestor::*[.//input[@type='checkbox'][@aria-label='aria-toggle-switch']][1]");
+              let sw = pkceToggleHost.locator(`input[type="checkbox"][aria-label="aria-toggle-switch"]`).first();
+              if (!(await sw.count())) {
+                sw = rootV.getByRole("row").filter({ has: page.getByText(/^PKCE$/i) }).getByRole("checkbox", { name: /^aria-toggle-switch$/i }).first();
+              }
+              if (!(await sw.count())) {
+                sw = page.locator(`input[type="checkbox"][aria-label="aria-toggle-switch"]`).first();
+              }
+              await expect(sw).toBeAttached({ timeout: vt });
+              await expect(sw).toBeChecked({ timeout: Math.min(vt, 35_000) });
+            }
+            break;
+          }
+        }
+      }
+
+      /** Developer Hub — Marketplace boilerplate flows + PKCE + `module: create-apps` + `module: ui-locations` (shared verify locators). */
       {
         const fidM = String(flow?.id || "").toLowerCase();
-        if (fidM === "marketplace-app-boilerplate" || fidM === "marketplace-ecommerce-app-boilerplate") {
+        if (
+          String(flow?.project || "") === "Developer-Hub" &&
+          (fidM === "marketplace-app-boilerplate" ||
+            fidM === "marketplace-ecommerce-app-boilerplate" ||
+            fidM === "marketplace-dam-app-boilerplate" ||
+            fidM === "pkce-for-contentstack-oauth" ||
+            String((flow as any)?.module || "") === "create-apps" ||
+            String((flow as any)?.module || "") === "ui-locations")
+        ) {
           const tm = getStepTimeoutMs(step, 120_000);
+
+          /** App Releases doc: after opening an app, Basic Information is the default section (title in main and/or **Basic Information** in left nav under Manage). */
+          if (
+            fidM === "app-releases" &&
+            step.target === "Developer Hub App Releases doc Basic Information default landing (doc step)"
+          ) {
+            const tR = tm;
+            const shell = page.locator("#react-developerhub, main").first();
+            await shell.waitFor({ state: "visible", timeout: Math.min(tR, 35_000) }).catch(() => {});
+            await page.waitForTimeout(900);
+            const titleLike = shell
+              .locator('[data-test-id="page-title"], h1, h2, h3, .AppSectionTitle--title')
+              .filter({ hasText: /^Basic Information$/i })
+              .first();
+            const navItem = page
+              .locator("#manage #info span, #info span.ncPxxNXm2AX3WsPmOsWA, #info span")
+              .filter({ hasText: /^Basic Information$/i })
+              .first();
+            let el = titleLike;
+            if (!(await titleLike.isVisible({ timeout: 7_000 }).catch(() => false))) {
+              el = navItem;
+            }
+            await expect(el).toBeVisible({ timeout: Math.min(tR, 55_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(el, step.expected.labelEquals, "contains");
+              } catch (err: any) {
+                recordVerificationWarning(step, context, err?.message ?? String(err));
+              }
+            }
+            break;
+          }
+
+          /** UI Locations console docs (app-config, asset sidebar, …): same left-nav **Developer Hub** drift as App Hosting; runner uses org dashboard tile. */
+          if (
+            String(flow?.module || "").toLowerCase() === "ui-locations" &&
+            step.target === "Developer Hub UI Locations Via Console doc: left navigation Developer Hub entry (doc step)"
+          ) {
+            await page
+              .locator('[role="navigation"], [data-test-id*="sidebar" i], aside')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tm, 15_000) })
+              .catch(() => {});
+            const navScope = page
+              .locator(
+                '[data-test-id="cs-left-nav"], [data-test-id="cs-primary-sidebar"], [data-test-id="cs-page-layout-leftSidebar"], [role="navigation"], aside.Navigation, aside.PageLayout__leftSidebar, aside'
+              )
+              .first();
+            const hubInNav = navScope
+              .getByRole("link", { name: /^Developer Hub$/i })
+              .or(navScope.getByRole("button", { name: /^Developer Hub$/i }))
+              .or(navScope.locator('[data-test-id*="developer-hub" i]').first())
+              .or(navScope.getByText(/^Developer Hub$/i).first())
+              .first();
+            const scopeLabel = "Developer Hub UI Locations (doc)";
+            let msg =
+              `${scopeLabel}: Navigate to Developer Hub via the Developer Hub icon in the left navigation panel — automation enters Developer Hub from the Organization dashboard Developer Hub product tile (see \`use\`: orgDashboard) instead of following that sidebar path.`;
+            const okHub = await hubInNav.isVisible({ timeout: Math.min(tm, 12_000) }).catch(() => false);
+            if (!okHub) {
+              msg += " Left navigation Developer Hub entry was not visible on this dashboard.";
+            }
+            recordVerificationWarning(step, context, msg);
+            if (okHub) {
+              if (step.expected?.within) {
+                try {
+                  await ensureWithin(page, hubInNav, step.expected.within, step.expected?.withinStrict === true);
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(hubInNav, step.expected.labelEquals, (step.expected.labelMatch as any) || "equals");
+                } catch (err: any) {
+                  recordVerificationWarning(step, context, err?.message ?? String(err));
+                }
+              }
+            }
+            break;
+          }
+
+          /** App Hosting / App Versioning / Creating an app docs: left navigation Developer Hub icon; runner uses org dashboard tile (`use`: orgDashboard). Warning-only. */
+          if (
+            (fidM === "app-hosting" ||
+              fidM === "app-versioning" ||
+              fidM === "creating-an-app-in-developer-hub") &&
+            (step.target === "Developer Hub App Hosting doc: left navigation Developer Hub entry (doc step)" ||
+              step.target === "Developer Hub App Versioning doc: left navigation Developer Hub entry (doc step)" ||
+              step.target === "Developer Hub creating an app doc: left navigation Developer Hub entry (doc step)")
+          ) {
+            await page
+              .locator('[role="navigation"], [data-test-id*="sidebar" i], aside')
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tm, 15_000) })
+              .catch(() => {});
+            const navScope = page
+              .locator(
+                '[data-test-id="cs-left-nav"], [data-test-id="cs-primary-sidebar"], [data-test-id="cs-page-layout-leftSidebar"], [role="navigation"], aside.Navigation, aside.PageLayout__leftSidebar, aside'
+              )
+              .first();
+            const hubInNav = navScope
+              .getByRole("link", { name: /^Developer Hub$/i })
+              .or(navScope.getByRole("button", { name: /^Developer Hub$/i }))
+              .or(navScope.locator('[data-test-id*="developer-hub" i]').first())
+              .or(navScope.getByText(/^Developer Hub$/i).first())
+              .first();
+
+            const scopeLabel =
+              fidM === "app-versioning"
+                ? "App Versioning (doc)"
+                : fidM === "creating-an-app-in-developer-hub"
+                  ? "Creating an app in Developer Hub (doc)"
+                  : "App Hosting (doc)";
+            let msg = `${scopeLabel}: Navigate to Developer Hub via the Developer Hub icon in the left navigation panel — automation enters Developer Hub from the Organization dashboard Developer Hub product tile (see \`use\`: orgDashboard) instead of following that sidebar path.`;
+            const ok = await hubInNav.isVisible({ timeout: Math.min(tm, 12_000) }).catch(() => false);
+            if (!ok) {
+              msg += " Left navigation Developer Hub entry was not visible on this dashboard.";
+            }
+            recordVerificationWarning(step, context, msg);
+            break;
+          }
+
+          /** App Versioning: Version dropdown list row shows version #, creator name, date/time (reference: `data/dom/Developer-Hub/version-menu.html`). */
+          if (
+            fidM === "app-versioning" &&
+            step.target === "Developer Hub Basic Information version dropdown panel lists version creator and timestamp (doc step)"
+          ) {
+            const tp = tm;
+            const menu = page.locator(".Dropdown__menu--primary, ul.Dropdown__menu__list").filter({ visible: true }).first();
+            await menu.waitFor({ state: "visible", timeout: Math.min(tp, 25_000) });
+            const firstRow = menu
+              .locator('li[data-test-id="version-test-id"]')
+              .filter({ hasNot: page.locator('[data-test-id="cs-skeleton-tile"]') })
+              .first();
+            await expect(firstRow).toBeVisible({ timeout: Math.min(tp, 22_000) });
+            const verLine = firstRow.locator(".dropdown-app-version").first();
+            await expect(verLine).toBeVisible();
+            const verText = (
+              await verLine.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim()).catch(() => "")
+            ).replace(/\s+/g, " ");
+            if (!/Version\s+\d+/i.test(verText)) {
+              throw new Error(
+                `App versioning doc: expected ".dropdown-app-version" like "Version 29"; got "${verText.slice(0, 160)}".`,
+              );
+            }
+            const ts = firstRow.locator(".version-time-stamp").first();
+            await expect(ts).toBeVisible();
+            const stamp = ((await ts.innerText().catch(() => "")) || "").trim().replace(/\s+/g, " ");
+            if (stamp.length < 8) {
+              throw new Error(`App versioning doc: expected version creation date/time in .version-time-stamp; got "${stamp}".`);
+            }
+            const creator = firstRow.locator(".user-info-section").first();
+            await expect(creator).toBeVisible({ timeout: 10_000 });
+            const nameEl = creator.locator('[data-test-id="cs-truncate"], .middle-truncate, .user-name').first();
+            await expect(nameEl).toBeVisible({ timeout: 10_000 });
+            const nm = (
+              await nameEl.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim()).catch(() => "")
+            ).trim();
+            if (nm.length < 1) {
+              throw new Error("App versioning doc: creator name should appear in version dropdown (.user-info-section).");
+            }
+            break;
+          }
+
+          /** Doc: Version Logs View opens Basic Information for that version preview. */
+          if (
+            fidM === "app-versioning" &&
+            step.target === "Developer Hub App Versioning View from Version Logs Basic Information preview heading (doc step)"
+          ) {
+            const tR = tm;
+            const shell = page.locator("#react-developerhub, main").first();
+            await shell.waitFor({ state: "visible", timeout: Math.min(tR, 35_000) }).catch(() => {});
+            await page.waitForTimeout(650);
+            const titleLike = shell
+              .locator('[data-test-id="page-title"], h1, h2, h3, .AppSectionTitle--title')
+              .filter({ hasText: /^Basic Information$/i })
+              .first();
+            await expect(titleLike).toBeVisible({ timeout: Math.min(tR, 50_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(titleLike, step.expected.labelEquals, "contains");
+              } catch (err: any) {
+                recordVerificationWarning(step, context, err?.message ?? String(err));
+              }
+            }
+            break;
+          }
+
           const pageTitle = () => page.locator('[data-test-id="page-title"], h2.AppSectionTitle--title');
           const locators: Record<string, () => Locator> = {
             "Developer Hub dashboard Developer Hub tile label (doc step)": () =>
@@ -16107,6 +18189,50 @@ export async function performAction(
               page
                 .locator("button")
                 .filter({ hasText: /^\s*\+?\s*New App\s*$/i })
+                .first(),
+            /** Doc Creating an App: Create New App modal — **Standard** vs **Machine to Machine** category (tabs/buttons/build-dependent). See `create-standard-app.html` for Organization/Stack App Type; M2M form may omit App Type radios. */
+            "Create New App modal Standard category label (doc step)": () =>
+              page
+                .locator('[role="dialog"]')
+                .filter({ visible: true })
+                .first()
+                .getByRole("tab", { name: /^\s*Standard\s*$/i })
+                .or(
+                  page
+                    .locator('[role="dialog"]')
+                    .filter({ visible: true })
+                    .first()
+                    .getByRole("button", { name: /^\s*Standard\s*$/i }),
+                )
+                .first(),
+            "Create New App modal Machine to Machine category label (doc step)": () =>
+              page
+                .locator('[role="dialog"]')
+                .filter({ visible: true })
+                .first()
+                .locator('label[data-test-id="cs-radio"]:has([data-test-id="new-app-app-type-machine-to-machine-app"]) .Radio__label')
+                .or(
+                  page
+                    .locator('[role="dialog"]')
+                    .filter({ visible: true })
+                    .first()
+                    .locator('label[data-test-id="cs-radio"] span.Radio__label')
+                    .filter({ hasText: /^Machine to Machine$/i }),
+                )
+                .or(
+                  page
+                    .locator('[role="dialog"]')
+                    .filter({ visible: true })
+                    .first()
+                    .getByRole("tab", { name: /Machine to Machine/i }),
+                )
+                .or(
+                  page
+                    .locator('[role="dialog"]')
+                    .filter({ visible: true })
+                    .first()
+                    .getByRole("button", { name: /Machine to Machine/i }),
+                )
                 .first(),
             "Create Standard App modal App Type heading (doc step)": () =>
               page.locator('[data-test-id="cs-modal-description"] .Modal_Form_heading strong').first(),
@@ -16136,14 +18262,243 @@ export async function performAction(
               page.locator('label.FieldLabel[for="app-description"][data-test-id="cs-field-label"]').first(),
             "Create Standard App modal Create button (doc step)": () =>
               page.locator('[data-test-id="new-app-create-standard-app-cta"]').first(),
+            /** Doc Marketplace DAM boilerplate §Creating a Project: Status defaults to Private. */
+            "Create Standard App modal Status field label (doc step)": () =>
+              page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-create-standard-app"]') })
+                .first()
+                .locator('label[data-test-id="cs-field-label"]')
+                .filter({ hasText: /^\s*Status\s*$/ })
+                .first(),
+            "Create Standard App modal Status value Private (doc step)": () => {
+              const modal = page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-create-standard-app"]') })
+                .first();
+              const statusField = modal
+                .locator(".Field, div[data-test-id='cs-field']")
+                .filter({ has: modal.locator("label").filter({ hasText: /^\s*Status\s*$/ }) })
+                .first();
+              const bySelectVal = statusField.locator(".Select__single-value").first();
+              return bySelectVal.or(statusField.getByText(/^Private$/).first());
+            },
             "Developer Hub Manage section heading (doc step)": () =>
               page.locator("#manage .YzbqLKQBmAe3QEINHK9H").filter({ hasText: /^Manage$/ }).first(),
             "Developer Hub UI Locations page heading (doc step)": () =>
               pageTitle().filter({ hasText: /^UI Locations$/i }).first(),
+            "Developer Hub Version Logs page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^Version Logs$/i }).first(),
             "Developer Hub Manage Basic Information sidebar item (doc step)": () =>
               page.locator("#manage #info span, #info span.ncPxxNXm2AX3WsPmOsWA").filter({ hasText: /^Basic Information$/ }).first(),
+            "Developer Hub Manage OAuth sidebar item (pkce doc step)": () =>
+              page.locator("#manage #oauth span, #oauth span.ncPxxNXm2AX3WsPmOsWA, #oauth span").filter({ hasText: /^OAuth$/ }).first(),
             "Developer Hub Basic Information page heading (doc step)": () =>
               pageTitle().filter({ hasText: /^Basic Information$/i }).first(),
+            "Developer Hub Basic Information App icon field label (doc step)": () =>
+              page.locator('[data-test-id="basic-info-app-icon-label"]').first(),
+            "Developer Hub Basic Information Save button (doc step)": () =>
+              page.locator('[data-test-id="standard-app-basic-info-save-cta"]').first(),
+            "Developer Hub General UI Locations sidebar item (doc step)": () =>
+              page.locator("#ui-locations span.ncPxxNXm2AX3WsPmOsWA, #ui-locations span").filter({ hasText: /^UI Locations$/ }).first(),
+            /** DOM: `#general` group contains `div#webhooks` + `span` label (see `data/dom/Developer-Hub/webhooks.html`). */
+            "Developer Hub General Webhooks sidebar item (doc step)": () =>
+              page
+                .locator("#webhooks span.ncPxxNXm2AX3WsPmOsWA, #general #webhooks span, #webhooks span")
+                .filter({ hasText: /^Webhooks$/i })
+                .first(),
+            "Developer Hub General Hosting sidebar item (doc step)": () =>
+              page.locator("#hosting span.ncPxxNXm2AX3WsPmOsWA, #hosting span").filter({ hasText: /^Hosting$/ }).first(),
+            "Developer Hub General App Manifest sidebar item (doc step)": () =>
+              page.locator("#manifest span.ncPxxNXm2AX3WsPmOsWA, #manifest span").filter({ hasText: /^App Manifest$/ }).first(),
+            "Developer Hub Manage Version Logs sidebar item (doc step)": () =>
+              page
+                .locator("#version-logs span.ncPxxNXm2AX3WsPmOsWA, #manage #version-logs span, #version-logs span")
+                .filter({ hasText: /^Version Logs$/ })
+                .first(),
+            "Developer Hub Basic Information versions dropdown wrapper (doc step)": () =>
+              page.locator(".versions-dropdown-wrapper").first(),
+            "Version Logs Version column header (doc step)": () =>
+              page.getByRole("columnheader", { name: /^Version$/i }).first(),
+            "Version Logs Created By column header (doc step)": () =>
+              page.getByRole("columnheader", { name: /^Created By$/i }).first(),
+            "Version Logs Created At column header (doc step)": () =>
+              page.getByRole("columnheader", { name: /^Created At$/i }).first(),
+            "Version Logs Actions column header (doc step)": () =>
+              page.getByRole("columnheader", { name: /^Actions$/i }).first(),
+            "Hosting tab Save button label (doc step)": () =>
+              page.locator('[data-test-id="hosting-save-cta"]').first(),
+            "Marketplace Manage Installed Apps section heading (doc step)": () =>
+              page.getByText(/^Installed Apps$/i).first(),
+            "Marketplace Manage Authorized Apps section heading (doc step)": () =>
+              page.getByText(/^Authorized Apps$/i).first(),
+            /** Marketplace top chrome — doc “Manage” button; UI may show “Manage Apps” on the installed-apps anchor. */
+            "Marketplace Manage button label (doc step)": () =>
+              page
+                .locator(
+                  '[role="navigation"] a[href*="installed-apps"], [role="navigation"] a[href*="/marketplace/installed-apps"], a[href*="installed-apps"]'
+                )
+                .first(),
+            "Marketplace organization dashboard tile label (doc step)": () =>
+              page.locator('[data-test-id="cs-global-dashboard-product-tile-marketplace"] p[data-test-id="cs-paragraph-tag"]').first(),
+            "Developer Hub Releases page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^Releases$/i }).first(),
+            /** Managing webhooks (`data/dom/Developer-Hub/webhooks.html`) — field & accordion headings match doc wording; UI may append `*` or spaces. */
+            "Developer Hub Webhooks page heading (doc step)": () =>
+              pageTitle().filter({ hasText: /^Webhooks$/i }).first(),
+            "Developer Hub Webhooks Enable Webhook section heading (doc step)": () =>
+              page.locator('[data-test-id="webhook-enable-webhook-section-heading"]').first(),
+            "Developer Hub Webhooks Configure Webhook section heading (doc step)": () =>
+              page
+                .locator(".Configure_webhook_section_wrapper_V2")
+                .first()
+                .locator(
+                  '[data-test-id="cs-heading-tag"], .Section_header_title, h6.Section_header_title, h6'
+                )
+                .filter({ hasText: /^Configure Webhook\b/i })
+                .first(),
+            "Developer Hub Webhooks URL to Notify field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="notifyURL"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks HTTP Basic Auth Username field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="httpAuthUserName"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks HTTP Basic Auth Password field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="httpAuthPassword"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks Custom Headers accordion title (doc step)": () =>
+              page.locator('.Configure_webhook_section_wrapper_V2 [title="Custom Headers"]').first(),
+            "Developer Hub Webhooks Custom Headers Header Name field label (doc step)": () =>
+              page.locator('label.FieldLabel.field_header[for="header_name"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks Custom Headers Value field label (doc step)": () =>
+              page.locator('label.FieldLabel.field_header_value[for="value"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks Custom Header add button (doc step)": () =>
+              page.locator('[data-test-id="webhooks-add-custom-header-cta"]').first(),
+            "Developer Hub Webhooks App Events accordion title (doc step)": () =>
+              page.locator('.Configure_webhook_section_wrapper_V2 [title^="App Events"]').first(),
+            "Developer Hub Webhooks App Events The App Is label (doc step)": () =>
+              page
+                .locator(".Configure_webhook_section_wrapper_V2 label.FieldLabel")
+                .filter({ hasText: /\bThe App Is\b/ })
+                .first(),
+            "Developer Hub Webhooks App event Installed option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-the-app-is-installed-label"]').first(),
+            "Developer Hub Webhooks App event Updated option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-the-app-is-updated-label"]').first(),
+            "Developer Hub Webhooks App event Upgraded option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-the-app-is-upgraded-label"]').first(),
+            "Developer Hub Webhooks App event Uninstalled option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-the-app-is-uninstalled-label"]').first(),
+            "Developer Hub Webhooks Branch-level Scope accordion title (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-scope"] [data-test-id="cs-truncate"]').first(),
+            "Developer Hub Webhooks Branch scope Branch dropdown value Main Branch (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-scope-select"] .Select__single-value').first(),
+            "Developer Hub Webhooks Branch Event accordion title (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-events"] [data-test-id="cs-truncate"]').first(),
+            "Developer Hub Webhooks Branch Event subgroup label (doc step)": () =>
+              page
+                .locator('[data-test-id="webhooks-branch-events"] .Accordion__open label.FieldLabel')
+                .filter({ hasText: /Branch Event/i })
+                .first(),
+            "Developer Hub Webhooks Branch event Create Completed option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-event(s)-create---completed-label"]').first(),
+            "Developer Hub Webhooks Branch event Delete Completed option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-event(s)-delete---completed-label"]').first(),
+            "Developer Hub Webhooks Branch Alias accordion title (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-alias-events"] [data-test-id="cs-truncate"]').first(),
+            "Developer Hub Webhooks Branch alias Assigned option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-alias(es)-event(s)-assigned-label"]').first(),
+            "Developer Hub Webhooks Branch alias Unassigned option label (doc step)": () =>
+              page.locator('[data-test-id="webhooks-branch-alias(es)-event(s)-unassigned-label"]').first(),
+            "Developer Hub Webhooks Stack Events accordion title (doc step)": () =>
+              page.locator('.Configure_webhook_section_wrapper_V2 [title^="Stack Events"]').first(),
+            "Developer Hub Webhooks Stack Events subgroup Any Entry label (doc step)": () =>
+              page
+                .locator(".Configure_webhook_section_wrapper_V2 .Accordion.webhook_accordion")
+                .filter({ has: page.locator('[title^="Stack Events"]') })
+                .locator(".Accordion__open label.FieldLabel")
+                .filter({ hasText: /^\s*Any Entry\s*/ })
+                .first(),
+            "Developer Hub Webhooks User(s) to Notify field label (doc step)": () =>
+              page.locator('label.FieldLabel[for="webhookNotifier"][data-test-id="cs-field-label"]').first(),
+            "Developer Hub Webhooks manifest Save button control (doc step)": () =>
+              page.locator('[data-test-id="webhooks-save-cta"]').first(),
+            "Developer Hub Webhooks Enable Webhook toggle label (doc step)": () =>
+              page.getByText(/^Enable Webhook$/i).first(),
+            "Developer Hub Delete App button label (doc step)": () =>
+              page.locator('[data-test-id="delete-app-cta"]').first(),
+            /** Reference: `data/dom/Developer-Hub/delete-app-modal.html` */
+            "Developer Hub Delete App modal title (doc step)": () =>
+              page.locator('[data-test-id="cs-modal-title-delete-app"]').first(),
+            "Developer Hub Delete App modal Name field label (doc step)": () =>
+              page
+                .locator('[role="dialog"]')
+                .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-app"]') })
+                .first()
+                .locator('label.FieldLabel[for="app-name"][data-test-id="cs-field-label"]')
+                .first(),
+            "Developer Hub Delete App modal Delete button control (doc step)": () =>
+              page.locator('[data-test-id="modal-form-delete"]').first(),
+            "Developer Hub Releases sidebar item (doc step)": () =>
+              page.locator("#releases span.ncPxxNXm2AX3WsPmOsWA, #releases span").filter({ hasText: /^Releases$/i }).first(),
+            "Developer Hub Releases page New Release button (doc step)": () =>
+              page.getByRole("button", { name: /\+\s*New Release/i }).first(),
+            /** App Releases doc: table on Releases page (scope to table that exposes Release + App Version headers). */
+            "Releases table Release column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Release$/i }).first();
+            },
+            "Releases table Title column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Title$/i }).first();
+            },
+            "Releases table Type column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Type$/i }).first();
+            },
+            "Releases table App Version column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /^Release$/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^App Version$/i }).first();
+            },
+            "Releases table Status column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Status$/i }).first();
+            },
+            "Releases table Created By column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Created By$/i }).first();
+            },
+            "Releases table Created At column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Created At$/i }).first();
+            },
+            "Releases table Actions column header (doc step)": () => {
+              const tbl = page
+                .locator('[data-test-id="cs-table"]')
+                .filter({ has: page.getByRole("columnheader", { name: /App Version/i }) })
+                .first();
+              return tbl.getByRole("columnheader", { name: /^Actions$/i }).first();
+            },
+            "Developer Hub Releases release details modal (doc step)": () =>
+              page.getByRole("dialog").filter({ hasText: /release|detail|version/i }).first(),
             "Developer Hub hosting banner View Hosting cue (doc step)": () => {
               const root = page.locator('[data-test-id="ui-locations-content"]');
               const byClass = root.locator("span.view_hosting, .view_hosting").filter({ hasText: /View Hosting/i });
@@ -16166,6 +18521,13 @@ export async function performAction(
             },
             "Developer Hub Hosting page heading (doc step)": () =>
               pageTitle().filter({ hasText: /^Hosting$/i }).first(),
+            "Developer Hub OAuth User Token section heading (pkce doc step)": () =>
+              page.getByRole("heading", { name: /^User Token$/ }).first(),
+            "Developer Hub OAuth Save button label (pkce doc step)": () =>
+              page
+                .locator('[data-test-id="oauth-save-cta"]')
+                .first()
+                .or(page.locator("main button.Button-save").filter({ hasText: /^Save$/ }).first()),
             "Hosting Type Hosting with Launch radio label (doc step)": () =>
               page.locator('label[data-test-id="cs-radio"]:has(input[value="launch"]) .Radio__label').first(),
             "Hosting Type Custom Hosting radio label (doc step)": () =>
@@ -16175,15 +18537,39 @@ export async function performAction(
             "Developer Hub UI Locations available Stack Dashboard label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-stack-dashboard location-item"] span.location-name[data-test-id="location-name"]')
-                .filter({ hasText: /^Stack Dashboard$/ }),
+                .filter({ hasText: /\bStack Dashboard\b/i })
+                .first()
+                .or(
+                  page
+                    .locator('[data-test-id*="uilocation-stack-dashboard"]')
+                    .locator('span.location-name, span[data-test-id="location-name"]')
+                    .filter({ hasText: /\bStack Dashboard\b/i })
+                    .first(),
+                ),
             "Developer Hub UI Locations available Asset Sidebar label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-asset-sidebar location-item"] span.location-name[data-test-id="location-name"]')
-                .filter({ hasText: /^Asset Sidebar$/ }),
+                .filter({ hasText: /\bAsset Sidebar\b/i })
+                .first()
+                .or(
+                  page
+                    .locator('[data-test-id*="uilocation-asset-sidebar"]')
+                    .locator('span.location-name, span[data-test-id="location-name"]')
+                    .filter({ hasText: /\bAsset Sidebar\b/i })
+                    .first(),
+                ),
             "Developer Hub UI Locations available Custom Field label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-custom-field location-item"] span.location-name[data-test-id="location-name"]')
-                .filter({ hasText: /^Custom Field$/ }),
+                .filter({ hasText: /\bCustom Field\b/i })
+                .first()
+                .or(
+                  page
+                    .locator('[data-test-id*="uilocation-custom-field"]')
+                    .locator('span.location-name, span[data-test-id="location-name"]')
+                    .filter({ hasText: /\bCustom Field\b/i })
+                    .first(),
+                ),
             "Developer Hub UI Locations available Entry Sidebar label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-entry-sidebar location-item"] span.location-name[data-test-id="location-name"]')
@@ -16203,23 +18589,168 @@ export async function performAction(
             "Developer Hub UI Locations available Content Type Sidebar label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-content-type-sidebar location-item"] span.location-name[data-test-id="location-name"]')
-                .filter({ hasText: /^Content Type Sidebar$/ }),
+                .filter({ hasText: /\bContent Type Sidebar\b/i })
+                .first()
+                .or(
+                  page
+                    .locator('[data-test-id*="uilocation-content-type-sidebar"]')
+                    .locator('span.location-name, span[data-test-id="location-name"]')
+                    .filter({ hasText: /\bContent Type Sidebar\b/i })
+                    .first(),
+                ),
+            /**
+             * After row ⋯, docs describe **+ Add UI Location**; menu text often omits a literal `+` (icon).
+             * See click handler **`Developer Hub Add UI Location menu item`** — same menu panel scope.
+             */
+            "Developer Hub UI Locations row menu + Add UI Location label (doc step)": () => {
+              const item =
+                'span.ui_locations__tooltip-label, [role="menuitem"], li[data-test-id^="cs-dropdown-elements"], li, a, button, span';
+              /** Row ⋯: **Add UI Location** (first slot) or **Edit UI Location** (reuse / already configured) — same doc row action. */
+              const textRe = /\b(Add|Edit)\s+UI\s+Location\b/i;
+              /** Prefer `#dropdown-dom` menu row — **`li`** filter avoids strict-mode ambiguity with nested `span` + `.or()`. */
+              const fromDropdownDomLi = page
+                .locator('[id="dropdown-dom"] li[data-test-id^="cs-dropdown-elements"]')
+                .filter({ hasText: textRe })
+                .last()
+                .locator("span.ui_locations__tooltip-label")
+                .first();
+              const fromRowHost = page
+                .locator("#tableRowActionNode, .VerticalActionTooltip")
+                .filter({ visible: true })
+                .first()
+                .locator(item)
+                .filter({ hasText: textRe })
+                .first();
+              const fromDropdown = page
+                .locator(
+                  '.Dropdown__menu--primary, .Dropdown__menu--secondary, .Dropdown__menu:not(.Select__menu), [role="menu"]:not(.Select__menu)',
+                )
+                .filter({ visible: true })
+                .last()
+                .locator(item)
+                .filter({ hasText: textRe })
+                .first();
+              const fromPortalMenu = page
+                .getByRole("menu")
+                .filter({ visible: true })
+                .last()
+                .locator(item)
+                .filter({ hasText: textRe })
+                .first();
+              return fromDropdownDomLi.or(fromRowHost).or(fromDropdown).or(fromPortalMenu);
+            },
             "Developer Hub UI Locations available Global Full Page label (doc step)": () =>
               page
                 .locator('[data-test-id="uilocation-global-full-page location-item"] span.location-name[data-test-id="location-name"]')
-                .filter({ hasText: /^Global Full Page$/ }),
+                .filter({ hasText: /\bGlobal Full Page\b/i })
+                .first()
+                .or(
+                  page
+                    .locator('[data-test-id*="uilocation-global-full-page"]')
+                    .locator('span.location-name, span[data-test-id="location-name"]')
+                    .filter({ hasText: /\bGlobal Full Page\b/i })
+                    .first(),
+                ),
+
+            "Developer Hub UI Locations available JSON RTE label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-json-rte location-item"] span.location-name[data-test-id="location-name"]')
+                .filter({ hasText: /^JSON RTE$/ }),
 
             "UI location Stack Dashboard Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-stack-dashboard-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Stack Dashboard Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-stack-dashboard-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
-            "UI location Stack Dashboard Default Width field label (doc step)": () =>
-              page.locator('[data-test-id="uilocation-stack-dashboard-1-width"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Stack Dashboard Default Width field label (doc step)": () => {
+              /**
+               * Stack Dashboard width row often uses **generic** label text (not **label**); **cs-field** ancestors may be absent.
+               * Anchor from **textbox "cs-select-aria"** (react-select) and the **Choose Width** placeholder so we do not rely on **main** subtree filters or **page-wide** Default Width (hidden dupes elsewhere).
+               */
+              const byTestId = page.getByTestId(/^uilocation-stack-dashboard-\d+-width$/).first();
+              const widthRowAnchor = (): Locator =>
+                page
+                  .getByRole("textbox", { name: /^cs-select-aria$/i })
+                  .first()
+                  .locator(
+                    'xpath=ancestor::*[.//*[normalize-space(.)="Default Width"] and .//*[normalize-space(.)="Choose Width"]][1]',
+                  );
+              const byWidthRowGeneric = (): Locator =>
+                widthRowAnchor().getByText(/^Default Width$/i).first();
+              const scopeForForm = (): Locator =>
+                page.locator("main").or(page.locator('[role="main"]')).first();
+              const modern = (): Locator =>
+                scopeForForm()
+                  .filter({ has: page.getByText(/^Choose Width$/i) })
+                  .filter({ has: page.getByText(/^Default Width$/i) })
+                  .getByText(/^Default Width$/i)
+                  .first();
+              const modernBody = page
+                .locator("body")
+                .filter({ has: page.locator('[data-test-id="uilocation-stack-dashboard-1-name"], [data-test-id^="uilocation-stack-dashboard-"][data-test-id$="-name"]') })
+                .filter({ has: page.getByText(/^Choose Width$/i) })
+                .filter({ has: page.getByText(/^Default Width$/i) })
+                .getByText(/^Default Width$/i)
+                .first();
+              const byChoosePlaceholder = (): Locator =>
+                page
+                  .getByText(/^Choose Width$/i)
+                  .first()
+                  .locator(
+                    "xpath=ancestor::*[.//span[contains(@class,'Select__control')] or .//*[@role='combobox']][1]",
+                  )
+                  .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                  .locator('label, [data-test-id="cs-field-label"] span, [data-test-id="cs-field-label"], [class*="Label"]')
+                  .filter({ hasText: /^Default Width$/i })
+                  .first();
+              const anchoredFromPath = (): Locator =>
+                page
+                  .locator('[data-test-id^="uilocation-stack-dashboard-"][data-test-id$="-path"]')
+                  .first()
+                  .locator('xpath=following::*[normalize-space(.)="Default Width"][1]');
+              return byWidthRowGeneric()
+                .or(modern())
+                .or(modernBody)
+                .or(byTestId.locator("xpath=preceding-sibling::label[1]").first())
+                .or(
+                  byTestId
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"] span, [data-test-id="cs-field-label"]')
+                    .first(),
+                )
+                .or(
+                  byTestId
+                    .locator(".Select__control, [role='combobox']")
+                    .first()
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"], [data-test-id="cs-field-label"] span')
+                    .filter({ hasText: /^Default Width$/i })
+                    .first(),
+                )
+                .or(byChoosePlaceholder())
+                .or(anchoredFromPath())
+                .or(page.locator("main").getByText(/^Default Width$/i).first());
+            },
 
             "UI location Asset Sidebar Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-asset-sidebar-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Asset Sidebar Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-asset-sidebar-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Asset Sidebar Width field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-width"]').locator("xpath=preceding-sibling::label[1]").first(),
+            /**
+             * **`uilocation-asset-sidebar-1-blur`** is absent in some builds; label is plain text (often + help icon row) under **Width**.
+             * Match the first following node whose **own** text is **`Blur`**, or whose **descendant text** is exactly **`Blur`** (icon doesn’t add text nodes).
+             */
+            "UI location Asset Sidebar Blur field label (doc step)": () =>
+              page
+                .locator('[data-test-id="uilocation-asset-sidebar-1-width"]')
+                .locator(
+                  'xpath=following::*[normalize-space(.)="Blur" or .//*[not(*) and normalize-space(.)="Blur"]][1]',
+                )
+                .first()
+                .or(page.locator('[data-test-id="uilocation-asset-sidebar-1-blur"]').locator("xpath=preceding-sibling::label[1]").first()),
+            "UI location Asset Sidebar Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-asset-sidebar-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "UI location Custom Field Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-custom-field-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
@@ -16240,37 +18771,210 @@ export async function performAction(
               page.locator('[data-test-id="uilocation-entry-sidebar-1-name"] input').first(),
             "UI location Entry Sidebar Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-entry-sidebar-1-path"] input').first(),
+            "UI location Entry Sidebar Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-entry-sidebar-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "UI location App Configuration Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-app-configuration-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location App Configuration Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-app-configuration-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
+            /** Toggle rows: input is often `aria-hidden`/visually hidden — verify the **Field** tile (label text still via `extractElementLabel` from `label` inside). */
+            "UI location App Configuration Signed field label (doc step)": () =>
+              page
+                .locator('[data-test-id*="uilocation-app-configuration"][data-test-id*="signed" i]')
+                .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                .first(),
+            "UI location App Configuration Enabled field label (doc step)": () =>
+              page
+                .locator('[data-test-id*="uilocation-app-configuration"][data-test-id*="enabled" i]')
+                .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                .first(),
+            "UI location App Configuration Required field label (doc step)": () =>
+              page
+                .locator('[data-test-id*="uilocation-app-configuration"][data-test-id*="required" i]')
+                .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                .first(),
 
             "UI location Full Page Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-full-page-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Full Page Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-full-page-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Full Page Location Icon field label (doc step)": () => {
+              /**
+               * Icon row is often a **react-select** (`cs-select-aria`); **label** is not a **preceding-sibling** of the test-id wrapper.
+               * Anchor from **Choose Icon** / **Choose Location Icon** and numbered **`uilocation-full-page-{n}-*`** ids.
+               */
+              const byTestId = page
+                .locator(
+                  '[data-test-id^="uilocation-full-page-"][data-test-id$="-location-icon"], [data-test-id^="uilocation-full-page-"][data-test-id$="-icon"]',
+                )
+                .first();
+              const labelInRow = (placeholderRe: RegExp): Locator =>
+                page
+                  .locator("main")
+                  .getByText(placeholderRe)
+                  .first()
+                  .locator("xpath=ancestor::*[.//*[normalize-space(.)='Location Icon']][1]")
+                  .getByText(/^Location Icon$/i)
+                  .first();
+              const byComboboxRow = (): Locator =>
+                page
+                  .getByRole("textbox", { name: /^cs-select-aria$/i })
+                  .first()
+                  .locator("xpath=ancestor::*[.//*[normalize-space(.)='Location Icon']][1]")
+                  .getByText(/^Location Icon$/i)
+                  .first();
+              const anchoredFromPath = (): Locator =>
+                page
+                  .locator('[data-test-id^="uilocation-full-page-"][data-test-id$="-path"]')
+                  .first()
+                  .locator('xpath=following::*[normalize-space(.)="Location Icon"][1]');
+              return labelInRow(/^Choose Icon$/i)
+                .or(labelInRow(/^Choose Location Icon$/i))
+                .or(byComboboxRow())
+                .or(anchoredFromPath())
+                .or(byTestId.locator("xpath=preceding-sibling::label[1]").first())
+                .or(
+                  byTestId
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"] span, [data-test-id="cs-field-label"]')
+                    .filter({ hasText: /^Location Icon$/i })
+                    .first(),
+                )
+                .or(
+                  byTestId
+                    .locator(".Select__control, [role='combobox']")
+                    .first()
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"], [data-test-id="cs-field-label"] span')
+                    .filter({ hasText: /^Location Icon$/i })
+                    .first(),
+                )
+                .or(page.locator("main").getByText(/^Location Icon$/i).first());
+            },
+            "UI location Full Page Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-full-page-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "UI location Field Modifier Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-field-modifier-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Field Modifier Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-field-modifier-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
-            "UI location Field Modifier Allowed Field Types label (doc step)": () =>
-              page
-                .locator(
-                  '[data-test-id="uilocation-field-modifier-1-field-types"], [data-test-id="uilocation-field-modifier-1-allowed-field-types"]'
+            "UI location Field Modifier Allowed Field Types label (doc step)": () => {
+              /**
+               * Field row often uses **generic** copy for **Allowed Field Types** (no **label** sibling of the select).
+               * Prefer **main** + **Choose Allowed Field Types** anchor; support numbered **`uilocation-field-modifier-{n}-*`** wrappers.
+               */
+              const byTestId = page.locator(
+                '[data-test-id^="uilocation-field-modifier-"][data-test-id$="-field-types"], [data-test-id^="uilocation-field-modifier-"][data-test-id$="-allowed-field-types"]',
+              ).first();
+              const fromPlaceholderRow = (): Locator =>
+                page
+                  .locator("main")
+                  .getByText(/^Choose Allowed Field Types$/i)
+                  .first()
+                  .locator(
+                    'xpath=ancestor::*[.//*[normalize-space(.)="Allowed Field Types"] and .//*[normalize-space(.)="Choose Allowed Field Types"]][1]',
+                  )
+                  .getByText(/^Allowed Field Types$/i)
+                  .first();
+              const anchoredFromPath = (): Locator =>
+                page
+                  .locator('[data-test-id^="uilocation-field-modifier-"][data-test-id$="-path"]')
+                  .first()
+                  .locator('xpath=following::*[normalize-space(.)="Allowed Field Types"][1]');
+              const fromMainFirstSelectRow = (): Locator =>
+                page
+                  .locator("main")
+                  .getByRole("textbox", { name: /^cs-select-aria$/i })
+                  .first()
+                  .locator(
+                    'xpath=ancestor::*[.//*[normalize-space(.)="Allowed Field Types"] and .//*[normalize-space(.)="Choose Allowed Field Types"]][1]',
+                  )
+                  .getByText(/^Allowed Field Types$/i)
+                  .first();
+              return fromPlaceholderRow()
+                .or(fromMainFirstSelectRow())
+                .or(byTestId.locator("xpath=preceding-sibling::label[1]").first())
+                .or(
+                  byTestId
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"] span, [data-test-id="cs-field-label"]')
+                    .filter({ hasText: /^Allowed Field Types$/i })
+                    .first(),
                 )
-                .first()
-                .locator("xpath=preceding-sibling::label[1]")
-                .first(),
+                .or(anchoredFromPath())
+                .or(page.locator("main").getByText(/^Allowed Field Types$/i).first());
+            },
+            "UI location Field Modifier Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-field-modifier-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "UI location Content Type Sidebar Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-content-type-sidebar-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Content Type Sidebar Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-content-type-sidebar-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Content Type Sidebar Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-content-type-sidebar-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "UI location Global Full Page Name field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-global-full-page-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
             "UI location Global Full Page Path field label (doc step)": () =>
               page.locator('[data-test-id="uilocation-global-full-page-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location Global Full Page Location Icon field label (doc step)": () => {
+              const byTestId = page
+                .locator(
+                  '[data-test-id^="uilocation-global-full-page-"][data-test-id$="-location-icon"], [data-test-id^="uilocation-global-full-page-"][data-test-id$="-icon"]',
+                )
+                .first();
+              const labelInRow = (placeholderRe: RegExp): Locator =>
+                page
+                  .locator("main")
+                  .getByText(placeholderRe)
+                  .first()
+                  .locator("xpath=ancestor::*[.//*[normalize-space(.)='Location Icon']][1]")
+                  .getByText(/^Location Icon$/i)
+                  .first();
+              const byComboboxRow = (): Locator =>
+                page
+                  .getByRole("textbox", { name: /^cs-select-aria$/i })
+                  .first()
+                  .locator("xpath=ancestor::*[.//*[normalize-space(.)='Location Icon']][1]")
+                  .getByText(/^Location Icon$/i)
+                  .first();
+              const anchoredFromPath = (): Locator =>
+                page
+                  .locator('[data-test-id^="uilocation-global-full-page-"][data-test-id$="-path"]')
+                  .first()
+                  .locator('xpath=following::*[normalize-space(.)="Location Icon"][1]');
+              return labelInRow(/^Choose Icon$/i)
+                .or(labelInRow(/^Choose Location Icon$/i))
+                .or(byComboboxRow())
+                .or(anchoredFromPath())
+                .or(byTestId.locator("xpath=preceding-sibling::label[1]").first())
+                .or(
+                  byTestId
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"] span, [data-test-id="cs-field-label"]')
+                    .filter({ hasText: /^Location Icon$/i })
+                    .first(),
+                )
+                .or(
+                  byTestId
+                    .locator(".Select__control, [role='combobox']")
+                    .first()
+                    .locator("xpath=ancestor::div[@data-test-id='cs-field' or contains(@class,'Field')][1]")
+                    .locator('label, [data-test-id="cs-field-label"], [data-test-id="cs-field-label"] span')
+                    .filter({ hasText: /^Location Icon$/i })
+                    .first(),
+                )
+                .or(page.locator("main").getByText(/^Location Icon$/i).first());
+            },
+            "UI location Global Full Page Description field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-global-full-page-1-description"]').locator("xpath=preceding-sibling::label[1]").first(),
+
+            "UI location JSON RTE Name field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-json-rte-1-name"]').locator("xpath=preceding-sibling::label[1]").first(),
+            "UI location JSON RTE Path field label (doc step)": () =>
+              page.locator('[data-test-id="uilocation-json-rte-1-path"]').locator("xpath=preceding-sibling::label[1]").first(),
 
             "Developer Hub UI Locations footer Save button label (doc step)": () => {
               const cancelRow = page.locator("main").locator("button").filter({ hasText: /^Cancel$/ }).first();
@@ -16282,6 +18986,31 @@ export async function performAction(
             },
             "Developer Hub Install App button visible before install flow (doc step)": () =>
               page.locator('[data-test-id="install-app-cta"]').first(),
+            /** Stack install overlay: `authorization-window.html` */
+            "Developer Hub install stack picker Select stack field label (doc step)": () =>
+              page
+                .locator("#InstallationCardContent, .OAuth_Consent_Card")
+                .filter({ visible: true })
+                .first()
+                .locator('[data-test-id="cs-field-label"] span')
+                .filter({ hasText: /^\s*Select\s+stack/ })
+                .first(),
+            "Developer Hub install modal Primary Install action label (doc step)": () =>
+              page
+                .locator('[data-testid="modal-form-install-authorize"], [data-test-id="modal-form-install-authorize"]')
+                .first(),
+            /** Post-install routing (matches [Configuring an App](https://www.contentstack.com/docs/developers/developer-hub/configuring-an-app) title). */
+            "Developer Hub App Configuration screen heading (doc step)": () =>
+              page
+                .locator('[data-test-id="page-title"], .page-header-title, h1, h2, h3')
+                .filter({ hasText: /App\s+Configuration/i })
+                .first(),
+            "Developer Hub installed app Save configuration button label (doc step)": () =>
+              page
+                .locator("#react-stack main footer")
+                .getByRole("button", { name: /^Save$/i })
+                .first()
+                .or(page.locator("main footer").getByRole("button", { name: /^Save$/i }).first()),
             "Developer Hub OAuth Install button label (doc step)": () =>
               page.locator('[data-test-id="modal-form-install-authorize"]').first(),
 
@@ -16292,6 +19021,9 @@ export async function performAction(
               page.locator('[data-test-id="uilocation-custom-field-1-name"] input').first(),
             "Developer Hub UI location Custom Field 1 Path value (doc step)": () =>
               page.locator('[data-test-id="uilocation-custom-field-1-path"] input').first(),
+            /** Custom Field CF#1 react-select displayed value — doc: Data Type **JSON**. */
+            "Developer Hub UI location Custom Field 1 Data Type value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-custom-field-1-data-type"] .Select__single-value').first(),
             "Developer Hub UI location Custom Field 2 Name value (doc step)": () =>
               page.locator('[data-test-id="uilocation-custom-field-2-name"] input').first(),
             "Developer Hub UI location Custom Field 2 Path value (doc step)": () =>
@@ -16326,6 +19058,10 @@ export async function performAction(
               page.locator('[data-test-id="uilocation-content-type-sidebar-1-name"] input').first(),
             "Developer Hub UI location Content Type Sidebar Path value (doc step)": () =>
               page.locator('[data-test-id="uilocation-content-type-sidebar-1-path"] input').first(),
+            "Developer Hub UI location JSON RTE Name value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-json-rte-1-name"] input').first(),
+            "Developer Hub UI location JSON RTE Path value (doc step)": () =>
+              page.locator('[data-test-id="uilocation-json-rte-1-path"] input').first(),
           };
           const pick = locators[String(step.target || "")];
           if (pick) {
@@ -16333,7 +19069,14 @@ export async function performAction(
             if (
               step.target === "Developer Hub hosting banner View Hosting cue (doc step)" ||
               step.target === "Developer Hub hosting banner View Hosting Settings cue (doc step)" ||
-              step.target === "Developer Hub UI Locations footer Save button label (doc step)"
+              step.target === "Developer Hub UI Locations footer Save button label (doc step)" ||
+              step.target === "Developer Hub UI Locations row menu + Add UI Location label (doc step)" ||
+              /^UI location Asset Sidebar .+ field label \(doc step\)$/.test(String(step.target || "")) ||
+              step.target === "UI location Stack Dashboard Default Width field label (doc step)" ||
+              step.target === "UI location Full Page Location Icon field label (doc step)" ||
+              step.target === "UI location Global Full Page Location Icon field label (doc step)" ||
+              /^Developer Hub Webhooks .+ \(doc step\)$/.test(String(step.target || "")) ||
+              /^Releases table .+ column header \(doc step\)$/.test(String(step.target || ""))
             ) {
               await el.scrollIntoViewIfNeeded({ timeout: 15_000 }).catch(() => {});
             }
@@ -16354,6 +19097,8 @@ export async function performAction(
                 const st = String(step.target || "");
                 const devHubHostingOrFieldValueVerify =
                   st === "Developer Hub Hosting App URL input value (doc step)" ||
+                  st === "Create Standard App modal Status value Private (doc step)" ||
+                  st === "Developer Hub UI location Custom Field 1 Data Type value (doc step)" ||
                   /^Developer Hub UI location .+ (Path|Name) value \(doc step\)$/.test(st);
                 if (devHubHostingOrFieldValueVerify) {
                   await el.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
@@ -16374,23 +19119,84 @@ export async function performAction(
                       `Doc field value mismatch for "${step.target}": expected "${expectedRaw}", got "${actualVal || "(empty)"}".`
                     );
                   }
+                } else if (
+                  step.target === "Developer Hub UI Locations row menu + Add UI Location label (doc step)" &&
+                  step.expected?.labelEquals
+                ) {
+                  /** Doc **+ Add UI Location**; product shows **Edit UI Location** when that row already has a saved config (reuse). */
+                  await el.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+                  const raw = await extractElementLabel(el);
+                  const actualN = normalizeLabelText(raw);
+                  if (!/\b(edit|add)\s+ui\s+location\b/.test(actualN)) {
+                    recordVerificationWarning(
+                      step,
+                      context,
+                      `Row menu "+ Add UI Location" (doc): expected Add or Edit UI Location affordance; got "${(raw || "").trim().slice(0, 240)}".`,
+                    );
+                  } else if (/\bedit\s+ui\s+location\b/.test(actualN) && /\+/.test(String(step.expected.labelEquals))) {
+                    recordVerificationWarning(
+                      step,
+                      context,
+                      `Doc vs app: doc "${step.expected.labelEquals}"; row menu shows "${(raw || "").trim().slice(0, 240)}" (typical when this UI location already has a saved instance).`,
+                    );
+                  } else if (normalizeLabelText(String(step.expected.labelEquals)) !== actualN) {
+                    recordVerificationWarning(
+                      step,
+                      context,
+                      `Doc label vs row menu copy: doc "${step.expected.labelEquals}"; app "${(raw || "").trim().slice(0, 240)}".`,
+                    );
+                  }
                 } else {
                   const uiLocationLabelLoose =
                     /^UI location .+ label \(doc step\)$/.test(st) &&
-                    st !== "UI location Stack Dashboard Default Width field label (doc step)";
-                const loose =
-                  step.target === "Developer Hub OAuth Install button label (doc step)" ||
+                    st !== "UI location Stack Dashboard Default Width field label (doc step)" &&
+                    st !== "UI location Full Page Location Icon field label (doc step)" &&
+                    st !== "UI location Global Full Page Location Icon field label (doc step)";
+                  const webhookDocStepLoose = /^Developer Hub Webhooks .+ \(doc step\)$/.test(st);
+                  const loose =
+                    webhookDocStepLoose ||
+                    step.target === "Developer Hub OAuth Install button label (doc step)" ||
+                  step.target === "Developer Hub install stack picker Select stack field label (doc step)" ||
+                  step.target === "Developer Hub install modal Primary Install action label (doc step)" ||
+                  step.target === "Developer Hub App Configuration screen heading (doc step)" ||
+                  step.target === "Developer Hub installed app Save configuration button label (doc step)" ||
+                  step.target === "Developer Hub OAuth Save button label (pkce doc step)" ||
                   step.target === "Hosting App URL label (doc step)" ||
                   step.target === "Developer Hub + New App button (doc step)" ||
                   step.target === "Create Standard App modal Name field label (doc step)" ||
                   step.target === "Create Standard App modal Description field label (doc step)" ||
                   step.target === "Create Standard App modal Create button (doc step)" ||
+                  step.target === "Create Standard App modal Status field label (doc step)" ||
                   step.target === "Create Standard App Organization app type description (doc step)" ||
                   step.target === "Create Standard App Stack app type description (doc step)" ||
+                  step.target === "Create New App modal Standard category label (doc step)" ||
+                  step.target === "Create New App modal Machine to Machine category label (doc step)" ||
                   step.target === "Developer Hub hosting banner View Hosting Settings cue (doc step)" ||
                   step.target === "Hosting Type Hosting with Launch radio label (doc step)" ||
                   step.target === "Hosting Type Custom Hosting radio label (doc step)" ||
+                  step.target === "Marketplace Manage Installed Apps section heading (doc step)" ||
+                  step.target === "Marketplace Manage Authorized Apps section heading (doc step)" ||
+                  step.target === "Marketplace Manage button label (doc step)" ||
+                  step.target === "Marketplace organization dashboard tile label (doc step)" ||
+                  step.target === "Hosting tab Save button label (doc step)" ||
+                  step.target === "Version Logs Version column header (doc step)" ||
+                  step.target === "Version Logs Created By column header (doc step)" ||
+                  step.target === "Version Logs Created At column header (doc step)" ||
+                  step.target === "Version Logs Actions column header (doc step)" ||
                   step.target === "Developer Hub UI Locations footer Save button label (doc step)" ||
+                  step.target === "Developer Hub Delete App button label (doc step)" ||
+                  step.target === "Developer Hub Delete App modal Name field label (doc step)" ||
+                  step.target === "Developer Hub Delete App modal Delete button control (doc step)" ||
+                  step.target === "Developer Hub Releases sidebar item (doc step)" ||
+                  step.target === "Developer Hub Releases page New Release button (doc step)" ||
+                  step.target === "Releases table Release column header (doc step)" ||
+                  step.target === "Releases table Title column header (doc step)" ||
+                  step.target === "Releases table Type column header (doc step)" ||
+                  step.target === "Releases table App Version column header (doc step)" ||
+                  step.target === "Releases table Status column header (doc step)" ||
+                  step.target === "Releases table Created By column header (doc step)" ||
+                  step.target === "Releases table Created At column header (doc step)" ||
+                  step.target === "Releases table Actions column header (doc step)" ||
                   uiLocationLabelLoose;
                   await assertLabelMatch(el, step.expected.labelEquals, loose ? "contains" : "exact");
                 }
@@ -16489,6 +19295,54 @@ export async function performAction(
             break;
           }
           await expect(icon).toBeVisible({ timeout: Math.min(t, 25_000) });
+          break;
+        }
+
+        /** Developer Hub → Managing your apps: doc left navigation Marketplace label (fallback to dashboard tile handled in composite click step). */
+        if (fidC === "managing-your-apps" && step.target === "Managing your apps doc: verify Left Navigation Marketplace (doc step)") {
+          const t = getStepTimeoutMs(step, 60_000);
+          const { click } = loadOverrides(flow);
+          const navSel =
+            click["Marketplace left navigation item (managing apps doc step)"] ||
+            CLICK_SELECTORS["Marketplace left navigation item (managing apps doc step)"];
+          const el = page.locator(navSel).first();
+          await page
+            .locator('[role="navigation"], [data-test-id*="sidebar" i], aside')
+            .first()
+            .waitFor({ state: "visible", timeout: Math.min(t, 15_000) })
+            .catch(() => {});
+          const ok = await el.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false);
+          if (!ok) {
+            recordVerificationWarning(
+              step,
+              context,
+              'Marketplace (doc): "Marketplace" is not visible in the left navigation panel — flow will try the Organization dashboard Marketplace product tile.'
+            );
+            break;
+          }
+          await expect(el).toBeVisible({ timeout: Math.min(t, 25_000) });
+          if (step.expected?.within) {
+            try {
+              await ensureWithin(page, el, step.expected.within, step.expected?.withinStrict === true);
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Left Navigation placement vs doc (Marketplace): ${err?.message ?? String(err)}`
+              );
+            }
+          }
+          if (step.expected?.labelEquals) {
+            try {
+              await assertLabelMatch(el, step.expected.labelEquals, "exact");
+            } catch (err: any) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Left Navigation Marketplace label vs doc: ${err?.message ?? String(err)}`
+              );
+            }
+          }
           break;
         }
 
@@ -24988,6 +27842,121 @@ export async function performAction(
     }
 
     case "enter": {
+      /** deleting-an-app: modal echoes the exact app name in `<strong>` — fill `data-test-id="app-name-to-delete"` to enable **Delete**. */
+      if (
+        String(flow?.id || "").toLowerCase() === "deleting-an-app" &&
+        step.target === "Developer Hub Delete App modal type app name to confirm (doc step)"
+      ) {
+        const tDel = getStepTimeoutMs(step, 120_000);
+        const modal = page
+          .locator('[role="dialog"]')
+          .filter({ has: page.locator('[data-test-id="cs-modal-title-delete-app"]') })
+          .first();
+        await expect(modal).toBeVisible({ timeout: Math.min(tDel, 45_000) });
+        let nameToType = String(step.value ?? "").trim().split("{unique}").join(unique);
+        const magic = "{{DELETE_APP_CONFIRM_NAME}}";
+        if (!nameToType || nameToType === magic) {
+          const strong = modal.locator(".Modal_Form_description strong").first();
+          await expect(strong).toBeVisible({ timeout: Math.min(tDel, 30_000) });
+          nameToType = (await strong.evaluate((el) => ((el as HTMLElement).innerText || el.textContent || "").trim()))
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+        if (!nameToType) {
+          throw new Error(
+            `Delete App modal: could not resolve app name (use step.value="${magic}" or type the exact app name from the modal).`,
+          );
+        }
+        const inp = modal.locator('[data-test-id="app-name-to-delete"]').first();
+        await expect(inp).toBeVisible({ timeout: Math.min(tDel, 35_000) });
+        await inp.click({ timeout: Math.min(tDel, 25_000) }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(nameToType);
+        await inp.dispatchEvent("input");
+        await inp.dispatchEvent("change");
+        await inp.blur();
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      if (
+        String(flow?.id || "").toLowerCase() === "managing-webhooks-in-an-app" &&
+        step.target === "Developer Hub Webhooks URL to Notify input (doc step)"
+      ) {
+        const tw = getStepTimeoutMs(step, 120_000);
+        const raw = String(step.value ?? "https://example.com/webhook-{unique}").trim().split("{unique}").join(unique);
+        const inp = page.locator('[data-test-id="webhooks-notify-url"]').first();
+        await expect(inp).toBeVisible({ timeout: tw });
+        await inp.click({ timeout: Math.min(tw, 35_000) }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(raw);
+        await inp.dispatchEvent("input");
+        await inp.dispatchEvent("change");
+        await inp.blur();
+        await page.waitForTimeout(400);
+        break;
+      }
+
+      if (
+        String(flow?.id || "").toLowerCase() === "installing-your-app-via-developer-hub" &&
+        step.target === "Developer Hub App Configuration doc fill empty fields with placeholders (doc step)"
+      ) {
+        const tCfg = getStepTimeoutMs(step, 120_000);
+        const roots = [
+          page.locator("#react-stack").first(),
+          page.locator("#content main").first(),
+          page.locator("main").first(),
+        ];
+        let root: Locator | null = null;
+        for (const r of roots) {
+          if (await r.isVisible({ timeout: 4_500 }).catch(() => false)) {
+            root = r;
+            break;
+          }
+        }
+        const rootEl = root || page.locator("main").first();
+        await expect(rootEl).toBeVisible({ timeout: Math.min(tCfg, 55_000) });
+        const base = unique.replace(/-/g, "").slice(0, 8);
+        const fillProbe = async (candidate: Locator): Promise<void> => {
+          const n = await candidate.count().catch(() => 0);
+          let filled = 0;
+          for (let i = 0; i < Math.min(n, 28); i++) {
+            const inp = candidate.nth(i);
+            if (!(await inp.isVisible({ timeout: 900 }).catch(() => false))) continue;
+            let v = "";
+            try {
+              v = (await inp.inputValue({ timeout: 900 }).catch(() => "")) ?? "";
+            } catch {
+              v = "";
+            }
+            if (String(v).trim() !== "") continue;
+            await inp.click({ timeout: 8_000 }).catch(() => {});
+            await inp.fill("");
+            await inp.fill(`AUTO-INST-${base}-${filled}`);
+            await inp.blur().catch(() => {});
+            filled++;
+          }
+        };
+        await fillProbe(page.locator("input.TextInput__input:not([readonly]):not([disabled])"));
+        await fillProbe(rootEl.locator('[data-test-id="cs-text-input"] input:not([readonly]):not([disabled])'));
+        const ta = rootEl.locator("textarea:not([readonly]):not([disabled])");
+        const tn = await ta.count().catch(() => 0);
+        for (let i = 0; i < Math.min(tn, 6); i++) {
+          const t = ta.nth(i);
+          if (!(await t.isVisible({ timeout: 900 }).catch(() => false))) continue;
+          let v = "";
+          try {
+            v = (await t.inputValue({ timeout: 900 }).catch(() => "")) ?? "";
+          } catch {
+            v = "";
+          }
+          if (String(v).trim() !== "") continue;
+          await t.fill(`AUTO-INST-DESC-${base}-${i}`);
+        }
+        await page.waitForTimeout(450);
+        break;
+      }
+
       if (
         String(flow?.id || "").toLowerCase() === "edit-item-in-knowledge-vault" &&
         step.target === "Knowledge Vault manual item Text Content input (doc step)"
@@ -27064,6 +30033,10 @@ export async function performAction(
 
     case "navigate": {
       let url = String(step.target || "").trim();
+      if (url === "{{DEVELOPER_HUB_LIST_URL}}") {
+        const origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+        url = `${origin}/#!/developerhub`;
+      }
       if (url === "{{GET_STARTED_WORKFLOWS_ENTRY_URL}}") {
         url = (process.env.GET_STARTED_WORKFLOWS_ENTRY_URL || "").trim();
         if (!url) {
@@ -27141,7 +30114,25 @@ export async function performAction(
         throw new Error(`upload: file not found: ${filePath}`);
       }
       const fileInput = page.locator(uploadSel).first();
+      /** Some Developer Hub builds only wire the browse dialog from the Upload CTA. */
+      if (String(step.target || "").includes("Developer Hub Basic Information app icon file input")) {
+        const cta = page.locator('[data-test-id="basic-info-upload-cta"]').first();
+        if (await cta.isVisible({ timeout: 4_500 }).catch(() => false)) {
+          await cta.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {});
+          await cta.click({ timeout: getStepTimeoutMs(step, 30_000) }).catch(() => {});
+          await page.waitForTimeout(350);
+        }
+      }
       await fileInput.setInputFiles(filePath);
+      if (String(step.target || "").includes("Developer Hub Basic Information app icon file input")) {
+        await fileInput
+          .evaluate((el: HTMLInputElement) => {
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+          })
+          .catch(() => {});
+        await page.waitForTimeout(1_900);
+      }
       break;
     }
 

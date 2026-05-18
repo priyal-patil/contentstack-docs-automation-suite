@@ -1,0 +1,108 @@
+{
+  "id": "app-versioning",
+  "project": "Developer-Hub",
+  "module": "create-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/developer-hub/app-versioning",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: left-navigation **Developer Hub** icon traceability (**warning)** — automation uses org dashboard DH tile (`use`: orgDashboard). **Basic Information** **Version** dropdown matches `data/dom/Developer-Hub/version-menu.html` (version label, `.version-time-stamp`, creator `.user-info-section`). **Restore** selects the **second** saved version (**Yes, Restore** twice if confirm appears). Requires **≥2** versions and **≥1** Version Logs row after restore. Then **Version Logs** tab/columns, **View** → **Basic Information** preview **App Manifest** in left nav (optional browse doc).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Developer Hub dashboard Developer Hub tile label (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Developer Hub" }
+    },
+    {
+      "action": "click",
+      "target": "Organization dashboard Developer Hub product tile (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub doc open any app from listing (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub App Versioning doc: left navigation Developer Hub entry (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub Manage Basic Information sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Basic Information" }
+    },
+    { "action": "click", "target": "Developer Hub app settings Basic Information nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Basic Information versions dropdown wrapper (doc step)",
+      "timeoutMs": 90000
+    },
+    { "action": "click", "target": "Developer Hub Basic Information version dropdown toggle open (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Basic Information version dropdown panel lists version creator and timestamp (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Developer Hub Basic Information version dropdown select second version row (doc step)",
+      "timeoutMs": 60000
+    },
+    { "action": "click", "target": "Developer Hub Basic Information restore version Yes Restore prompt (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Developer Hub Basic Information restore version confirm modal Yes Restore (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Manage Version Logs sidebar item (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "within": "Left Navigation", "labelEquals": "Version Logs" }
+    },
+    { "action": "click", "target": "Developer Hub app settings Version Logs nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub Version Logs page heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Version Logs" }
+    },
+    {
+      "action": "verify",
+      "target": "Version Logs Version column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Version" }
+    },
+    {
+      "action": "verify",
+      "target": "Version Logs Created By column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Created By" }
+    },
+    {
+      "action": "verify",
+      "target": "Version Logs Created At column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Created At" }
+    },
+    {
+      "action": "verify",
+      "target": "Version Logs Actions column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "labelEquals": "Actions" }
+    },
+    { "action": "click", "target": "Developer Hub Version Logs first row Actions View (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Developer Hub App Versioning View from Version Logs Basic Information preview heading (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelEquals": "Basic Information" }
+    },
+    {
+      "action": "verify",
+      "target": "Developer Hub General App Manifest sidebar item (doc step)",
+      "timeoutMs": 60000,
+      "expected": { "within": "Left Navigation", "labelEquals": "App Manifest" }
+    }
+  ]
+}

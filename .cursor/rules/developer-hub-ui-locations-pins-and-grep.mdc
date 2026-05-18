@@ -1,0 +1,51 @@
+---
+description: Developer Hub UI Locations — canonical listing app pins, env overrides, Playwright grep pitfalls, headed shortcuts
+globs: projects/Developer-Hub/ui-locations/**/*
+alwaysApply: false
+---
+
+# Developer Hub `ui-locations`: listing pins & CLI grep
+
+## Canonical **`step.value`** on **Developer Hub doc open any app from listing (doc step)**
+
+| Flow id | Listing pin | Notes |
+|--------|-------------|--------|
+| `asset-sidebar-location` | **M2188772c** | Stack app (shared with most stack-tile docs) |
+| `content-type-sidebar-location` | **M2188772c** | |
+| `custom-field-location` | **M2188772c** | |
+| `dashboard-location` | **M2188772c** | |
+| `field-modifier-location` | **M2188772c** | |
+| `full-page-location` | **M2188772c** | |
+| `sidebar-location` | **M2188772c** | Entry Sidebar doc flow |
+| `global-full-page` | **Mc55a2cb6** | Organization app — **Global Full Page** is not on typical stack manifests |
+| `app-config-location` | *(unset)* | Heuristic listing order favors org tiles (`developer-hub-ui-location-add-or-edit.mdc`) |
+
+**Overrides:** **`DEV_HUB_LISTING_APP_NAME`** env or **`value`** on the open-app step wins over “any app” heuristics. Stack-tile flows also use **`dhUiLocFlowsPreferStackAppListing`** in **`rules/core/actionRules.ts`**.
+
+Authoritative copies live in **`projects/Developer-Hub/ui-locations/flows/*.flow.json`** (`automationNotes` on the flow / open-app step).
+
+## Playwright **`--grep` / `-g`** (substring trap)
+
+Flow **test titles** are the flow **`id`** (e.g. `sidebar-location`). **`grep`** is applied to the **full** title string.
+
+- **Bad:** `-g sidebar-location` also matches **`asset-sidebar-location`** and **`content-type-sidebar-location`** (substring).
+- **Good (Entry Sidebar only):** regex ending anchor + negative lookbehind so hyphen-prefixed ids do not alias:
+
+```bash
+-g '(?<!-)sidebar-location$'
+```
+
+## Headed shortcut (saved in **`package.json`**)
+
+```bash
+npm run test:devhub:sidebar-location:headed
+```
+
+Equivalent:
+
+```bash
+PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-60} PLAYWRIGHT_HEADLESS=0 PW_WORKERS=1 \
+  npx playwright test tests/flows.spec.ts --project=flows --headed -g '(?<!-)sidebar-location$'
+```
+
+For the whole **`ui-locations`** module headed: **`npm run test:devhub:ui-locations:headed`** (`run-project-shortcuts.mdc`).
