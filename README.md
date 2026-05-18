@@ -174,5 +174,5 @@ Artifacts (among others):
 | **skip_docs_audit** | **`SKIP_DOCS_AUDIT=1`** + **`DOCS_AUDIT_BACKGROUND=0`** — no docs link crawl (shortest CMS run) |
 | **docs_audit_wait_secs** | Override post-CMS PID wait (integer **0–7200** seconds); empty = job default (**1200**) |
 
-Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). Scheduled GitHub Actions use **`.github/workflows/cms-daily-scheduled.yml`** (weekly cron unless you edit it). To run **`docs.spec`**, **`docs-audit`**, and all **`flows.spec.ts`** projects locally or in CI, use **`npx playwright test`** / **`npm run test:all-and-report`** (see **`package.json`**) or trigger **CMS — weekly doc automation** manually with the inputs you need.
+Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). Scheduled GitHub Actions use **`.github/workflows/cms-daily-scheduled.yml`** (**daily** cron at **01:30 UTC** ≈ **07:00 IST** — edit the workflow to change time). To run **`docs.spec`**, **`docs-audit`**, and all **`flows.spec.ts`** projects locally or in CI, use **`npx playwright test`** / **`npm run test:all-and-report`** (see **`package.json`**) or trigger **CMS — daily doc automation (scheduled)** manually with the inputs you need.
 

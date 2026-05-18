@@ -1,11 +1,11 @@
 # =============================================================================
-# CMS documentation URL automation — weekly schedule (cron) + manual dispatch
+# CMS documentation URL automation — daily schedule (cron) + manual dispatch
 # =============================================================================
 # Policy alignment: sequential CMS modules → retry (optional) → delete batch
 # → trash → docs merge/audit/reports — see scripts/run-cms-sequential-modules-dashboard.sh
 # and .cursor/rules/cms-execution-order.mdc
 #
-# Schedule (weekly): Mondays 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
+# Schedule (daily): 07:00 IST = 01:30 UTC every calendar day (India is UTC+5:30, no DST; GHA cron is UTC)
 # Cron format: minute hour day-of-month month day-of-week
 #
 # Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux (Actions minutes on private repos; hosted
@@ -16,7 +16,7 @@
 # reports/docs-audit-CMS-* (see docs-audit-background.log under REPORT_DIR).
 # =============================================================================
 
-name: CMS — weekly doc automation (scheduled)
+name: CMS — daily doc automation (scheduled)
 
 on:
   # Manual run from Actions tab (same pipeline as schedule)
@@ -60,9 +60,9 @@ on:
           - "false"
           - "true"
 
-  # Weekly: Monday 07:00 IST → 01:30 UTC (day-of-week: 1 = Monday)
+  # Daily: 07:00 IST → 01:30 UTC (every day)
   schedule:
-    - cron: "30 1 * * 1"
+    - cron: "30 1 * * *"
 
 # Avoid overlapping long CMS runs (do not cancel in-flight).
 # Scoped by repository so fork clones do not collide with upstream queue keys if you copy this file.
