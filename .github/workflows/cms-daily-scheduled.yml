@@ -8,9 +8,9 @@
 # Schedule (weekly): Mondays 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
 # Cron format: minute hour day-of-month month day-of-week
 #
-# Runner: **`runs-on: self-hosted`** — executes on YOUR machine or VM so you do not consume GitHub-hosted
-# Actions minutes (no hosted-runner billing). You must register a runner (see README → Self-hosted runner).
-# GitHub-hosted alternative was `ubuntu-latest` (max job runtime typically 6h; workflow timeout below).
+# Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux runner (uses Actions minutes on private repos;
+# public repos get hosted runner allowance per GitHub policy). Alternatively use **`runs-on: self-hosted`** on a
+# machine you register if you want zero hosted-runner billing (see README → Self-hosted runner).
 # Scheduled cron sets SKIP_RETRY, SKIP_CMS_DOCS_SPEC, and SKIP_DOCS_AUDIT (no link crawl) to shorten
 # wall-clock time; use workflow_dispatch for full docs-audit + optional retry/docs.spec.
 # Manual runs: docs-audit can run in the background (default) with a bounded PID wait and artifact
@@ -65,10 +65,14 @@ on:
   schedule:
     - cron: "30 1 * * 1"
 
-# Avoid overlapping long CMS runs (do not cancel in-flight; stack new run if needed)
+# Avoid overlapping long CMS runs (do not cancel in-flight).
+# Scoped by repository so fork clones do not collide with upstream queue keys if you copy this file.
 concurrency:
-  group: cms-daily-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.repository }}-${{ github.ref }}
   cancel-in-progress: false
+
+# Fork / secret exposure note: triggers are only workflow_dispatch + schedule (no pull_request*).
+# Default GHA semantics do not expose repository secrets to pull requests from forks.
 
 defaults:
   run:
@@ -81,8 +85,9 @@ permissions:
 jobs:
   cms-full-batch:
     name: CMS sequential batch (headless)
-    runs-on: self-hosted
-    # Hosted runners were capped at 6h; self-hosted jobs can exceed that — adjust if CMS batch needs more wall clock.
+    runs-on: ubuntu-latest
+    # GitHub-hosted jobs: max wall clock typically 360 minutes on standard accounts; raise only if your plan allows.
+    # Do not shrink to ~30: the sequential CMS pipeline + optional docs-audit wait routinely exceeds 30 minutes.
     timeout-minutes: 360
     env:
       CI: "true"
