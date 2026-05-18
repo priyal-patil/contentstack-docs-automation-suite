@@ -112,9 +112,29 @@ This generates:
 - `projects/<project>/<module>/selectors/<id>.selectors.ts` (stub if missing)
 - updates `projects/<project>/<module>/index.ts`
 
-### GitHub Actions (CMS daily) + Slack reports
+### GitHub Actions (CMS scheduled) + Slack reports
 
 Workflow: **`.github/workflows/cms-daily-scheduled.yml`** (writes **`.env`** from secrets before `npm run test:cms:foreground`).
+
+#### Self-hosted runner (no GitHub-hosted Actions usage)
+
+If you avoid **hosted** runners, jobs use **`runs-on: self-hosted`**: GitHub assigns the workflow to a **runner you install** on a machine you control — **hosted Actions minutes aren’t billed** for that compute (you pay only that machine’s cost / electricity).
+
+**What you take on:**
+
+- **Availability** — the runner process must run when workflows trigger (cron or **Run workflow**). If the VM is offline, the job waits or fails.
+- **Install & updates** — same stack the workflow assumes: Linux + **bash**, **git**, **Node 22**, **`npm ci`**, **`npx playwright install --with-deps chromium`** (or OS packages Playwright expects). Prefer **Ubuntu 22.04+** when following GitHub’s “Add runner” wizard.
+- **Security** — the runner listens to GitHub for jobs and executes your repo scripts with your secrets (`CS_*`, Slack, SMTP). Use a locked-down VM/dedicated machine; keep the runner patched; restrict who can run workflows on the repo ([GitHub: self-hosted runner security](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners#self-hosted-runner-security-with-public-repositories)).
+- **Account edge case** — if GitHub suspends workflows account-wide over **billing**, some accounts still block queued jobs entirely until billing is cleared. Self-hosted avoids **minute** billing; very rare suspension cases are outside repo config.
+
+**Register a runner:**
+
+1. GitHub repo → **Settings** → **Actions** → **Runners** → **New self-hosted runner**.
+2. Choose **Linux** and follow commands (download, `./config.sh`, `./run.sh`; on a server consider **svc.sh** install so it runs as a service).
+3. After the runner appears **idle** under **Settings → Actions → Runners**, trigger **CMS — weekly doc automation** with **workflow_dispatch**.
+4. If the job never starts (“No runners available”), add matching labels — this workflow expects the default **`self-hosted`** label (no extra labels required unless you customised registration).
+
+Revert to GitHub-hosted (billable minutes) by changing **`runs-on: self-hosted`** back to **`ubuntu-latest`** in **`.github/workflows/cms-daily-scheduled.yml`**.
 
 In the repo → **Settings** → **Secrets and variables** → **Actions**, add repository secrets:
 
@@ -132,7 +152,7 @@ Invite the Slack app to the target channel. See **`.env.example`** (Slack sectio
 
 #### Daily report email (SMTP, optional)
 
-After each CMS daily run (success or failure), the workflow can send a short **plain-text** summary plus a link to the GitHub Actions run (artifacts: Excel, dashboards, logs). Configure SMTP via repository secrets:
+After each CMS scheduled/manual run (success or failure), the workflow can send a short **plain-text** summary plus a link to the GitHub Actions run (artifacts: Excel, dashboards, logs). Configure SMTP via repository secrets:
 
 | GitHub Actions secret name | Purpose |
 | --- | --- |
@@ -147,14 +167,14 @@ If any required mail secret is missing, the email step is skipped (no failure). 
 
 Uses **`dawidd6/action-send-mail@v3`** (nodemailer). Large HTML reports are **not** attached — download **cms-reports-*** from the run instead.
 
-#### Scheduler vs manual: runtime, retry, docs-audit (GitHub-hosted)
+#### Scheduler vs manual: runtime, retry, docs-audit
 
-GitHub-hosted jobs are limited to **6 hours**. The CMS workflow caps **`timeout-minutes` at 360** and configures CI so typical runs finish inside that window:
+The workflow **`timeout-minutes`** is **360** (six hours wall clock unless you raise it). On **self-hosted** runners GitHub does not truncate this to hosted limits; lengthen if batches run longer.
 
 | Trigger | Behaviour |
 | --- | --- |
-| **`schedule`** (cron) | Sets **`SKIP_RETRY=1`** (no retry-before-delete pass) and **`SKIP_CMS_DOCS_SPEC=1`** (skip **`tests/docs.spec.ts`** CMS doc-only HTTP pass — link audit still covers URLs via docs-audit). Starts **background** CMS docs-audit (**`DOCS_AUDIT_BACKGROUND=1`**) so the main pipeline does not block on the full crawl. Waits **up to `DOCS_AUDIT_GHA_WAIT_SECS`** (default **1200**) for the docs-audit **PID**, then uploads artifacts. **`timeout-minutes: 360`** matches GitHub’s **hard 6-hour** hosted-runner limit (**`timeout-minutes: 480` is ineffective** — GitHub still stops the job at 6h). |
-| **`workflow_dispatch`** | Full pipeline by default (including **`SKIP_RETRY`** only if you set **skip_retry** to **true**). Use optional inputs below to shorten runs. |
+| **`schedule`** (cron) | Sets **`SKIP_RETRY=1`**, **`SKIP_CMS_DOCS_SPEC=1`**, and **`SKIP_DOCS_AUDIT=1`** (no docs link crawl) to **shorten CI time**. Flow automation, merge, reports, and Slack (if configured) still run. For **link-audit** artifacts, run **`workflow_dispatch`** (default includes background docs-audit). Waits **up to `DOCS_AUDIT_GHA_WAIT_SECS`** for a docs-audit PID only when one was started (manual default). |
+| **`workflow_dispatch`** | Full CMS pipeline by default (**background** docs-audit when **`skip_docs_audit`** is false). Set **skip_retry** / **skip_docs_audit** / etc. to shorten runs. |
 
 Artifacts (among others):
 
@@ -172,5 +192,5 @@ Artifacts (among others):
 | **skip_docs_audit** | **`SKIP_DOCS_AUDIT=1`** + **`DOCS_AUDIT_BACKGROUND=0`** — no docs link crawl (shortest CMS run) |
 | **docs_audit_wait_secs** | Override post-CMS PID wait (integer **0–7200** seconds); empty = job default (**1200**) |
 
-Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). **Nightly** multi-project QA uses **`.github/workflows/nightly-docs-automation.yml`** (Node **22**, **`timeout-minutes: 360`**, **`docs.spec`**, **`docs-audit`**, **`flows`**). That workflow writes **`.env`** from Actions secrets (**`CS_EMAIL`**, **`CS_PASSWORD`**, **`DEFAULT_STACK`** required; **`CS_APP_ORIGIN`** optional) so **`global-setup`** and stack selection match the CMS daily job.
+Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). Scheduled GitHub Actions use **`.github/workflows/cms-daily-scheduled.yml`** (weekly cron unless you edit it). To run **`docs.spec`**, **`docs-audit`**, and all **`flows.spec.ts`** projects locally or in CI, use **`npx playwright test`** / **`npm run test:all-and-report`** (see **`package.json`**) or trigger **CMS — weekly doc automation** manually with the inputs you need.
 

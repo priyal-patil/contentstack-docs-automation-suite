@@ -1,20 +1,23 @@
 # =============================================================================
-# CMS documentation URL automation — daily schedule + manual dispatch
+# CMS documentation URL automation — weekly schedule (cron) + manual dispatch
 # =============================================================================
 # Policy alignment: sequential CMS modules → retry (optional) → delete batch
 # → trash → docs merge/audit/reports — see scripts/run-cms-sequential-modules-dashboard.sh
 # and .cursor/rules/cms-execution-order.mdc
 #
-# Schedule: 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
+# Schedule (weekly): Mondays 07:00 IST = 01:30 UTC (India is UTC+5:30, no DST; GHA cron is UTC)
 # Cron format: minute hour day-of-month month day-of-week
 #
-# GitHub-hosted runners: maximum job runtime is 6 hours (timeout-minutes capped at 360 below).
-# Scheduled cron sets SKIP_RETRY and SKIP_CMS_DOCS_SPEC; docs-audit runs in the background so the
-# workflow does not block on the full crawl. A bounded PID wait plus a separate docs-audit artifact
-# capture reports/docs-audit-CMS-* (see docs-audit-background.log under REPORT_DIR).
+# Runner: **`runs-on: self-hosted`** — executes on YOUR machine or VM so you do not consume GitHub-hosted
+# Actions minutes (no hosted-runner billing). You must register a runner (see README → Self-hosted runner).
+# GitHub-hosted alternative was `ubuntu-latest` (max job runtime typically 6h; workflow timeout below).
+# Scheduled cron sets SKIP_RETRY, SKIP_CMS_DOCS_SPEC, and SKIP_DOCS_AUDIT (no link crawl) to shorten
+# wall-clock time; use workflow_dispatch for full docs-audit + optional retry/docs.spec.
+# Manual runs: docs-audit can run in the background (default) with a bounded PID wait and artifact
+# reports/docs-audit-CMS-* (see docs-audit-background.log under REPORT_DIR).
 # =============================================================================
 
-name: CMS — daily doc automation (scheduled)
+name: CMS — weekly doc automation (scheduled)
 
 on:
   # Manual run from Actions tab (same pipeline as schedule)
@@ -58,9 +61,9 @@ on:
           - "false"
           - "true"
 
-  # Daily 07:00 IST → 01:30 UTC
+  # Weekly: Monday 07:00 IST → 01:30 UTC (day-of-week: 1 = Monday)
   schedule:
-    - cron: "30 1 * * *"
+    - cron: "30 1 * * 1"
 
 # Avoid overlapping long CMS runs (do not cancel in-flight; stack new run if needed)
 concurrency:
@@ -78,18 +81,16 @@ permissions:
 jobs:
   cms-full-batch:
     name: CMS sequential batch (headless)
-    runs-on: ubuntu-latest
-    # Hard cap for github-hosted jobs is 6h — values above 360 are truncated by GitHub.
+    runs-on: self-hosted
+    # Hosted runners were capped at 6h; self-hosted jobs can exceed that — adjust if CMS batch needs more wall clock.
     timeout-minutes: 360
     env:
       CI: "true"
       # ----- CI-friendly behaviour (no macOS open(), bounded wall clock for GHA 6h cap) -----
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
-      # Background docs-audit matches scripts/run-cms-sequential-modules-dashboard.sh default: main
-      # pipeline does not wait on full crawl (see REPORT_DIR/docs-audit-background.log; audit may still
-      # run after merges/reports — upload artifacts ASAP). For fully merged audit HTML in-report-dir,
-      # run locally with DOCS_AUDIT_BACKGROUND=0 or split into a second job/workflow.
+      # Manual workflow_dispatch: SKIP_DOCS_AUDIT unset → background crawl (bounded PID wait below).
+      # Cron sets SKIP_DOCS_AUDIT → no crawl (saves Actions minutes); see sequential batch script.
       DOCS_AUDIT_BACKGROUND: "1"
       PLAYWRIGHT_HEADLESS: "1"
       OPEN_FLOW_REPORT: "false"
@@ -166,13 +167,15 @@ jobs:
           chmod 600 .env
           echo "✓ .env written (credentials not shown)"
 
-      # Retry + docs.spec HTTP sweep add wall clock — skip on cron to preserve headroom under GitHub-hosted 6h cap.
-      - name: Scheduled run — SKIP_RETRY + SKIP_CMS_DOCS_SPEC (GitHub-hosted 6h cap)
+      # Retry, docs.spec HTTP sweep, and docs link crawl add wall clock + CPU — skip on cron to save
+      # Actions minutes and stay under the 6h cap. Full audit: run workflow_dispatch (default keeps docs-audit).
+      - name: Scheduled run — SKIP_RETRY + SKIP_CMS_DOCS_SPEC + SKIP_DOCS_AUDIT
         if: github.event_name == 'schedule'
         run: |
           echo "SKIP_RETRY=1" >> "$GITHUB_ENV"
           echo "SKIP_CMS_DOCS_SPEC=1" >> "$GITHUB_ENV"
-          echo "Scheduled: SKIP_RETRY=1 SKIP_CMS_DOCS_SPEC=1 — see README (GitHub job max 6h). Manual dispatch can omit these."
+          echo "SKIP_DOCS_AUDIT=1" >> "$GITHUB_ENV"
+          echo "Scheduled: SKIP_RETRY=1 SKIP_CMS_DOCS_SPEC=1 SKIP_DOCS_AUDIT=1 — shorter run; use manual dispatch for link audit."
 
       # Optional retry / Slack skips from manual dispatch
       - name: Apply optional SKIP_RETRY (manual runs)
@@ -362,5 +365,5 @@ jobs:
             exit 0
           fi
           curl -sS -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"❌ *CMS daily run failed* — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open run>\"}" \
+            --data "{\"text\":\"❌ *CMS scheduled run failed* — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open run>\"}" \
             "$HOOK"
