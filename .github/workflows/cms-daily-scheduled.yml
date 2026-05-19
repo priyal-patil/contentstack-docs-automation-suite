@@ -6,6 +6,9 @@
 # and .cursor/rules/cms-execution-order.mdc
 #
 # Schedule (daily): **7:00 AM IST** (Asia/Kolkata, UTC+5:30) → **01:30 UTC** (GitHub cron is UTC-only).
+# ⚠️ GitHub `schedule` can be delayed or jittered — it is NOT an exact IST alarm clock. For **reliable enqueue
+# at 07:00 IST**, trigger **`repository_dispatch` → `cms-daily-7am-ist`** from an external cron (cron-job.org,
+# Cloud Scheduler, etc.) — see README. Keep `schedule` below as backup.
 # Cron format: minute hour day-of-month month day-of-week
 #
 # Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux (Actions minutes on private repos; hosted
@@ -60,7 +63,12 @@ on:
           - "false"
           - "true"
 
-  # Daily at 7:00 AM IST → cron 01:30 UTC (`30 1 * * *`)
+  # External IST clock (recommended): POST `repository_dispatch` with event_type `cms-daily-7am-ist` at 07:00 Asia/Kolkata.
+  repository_dispatch:
+    types:
+      - cms-daily-7am-ist
+
+  # Daily at 7:00 AM IST → cron 01:30 UTC (`30 1 * * *`) — best-effort backup only; see header note.
   schedule:
     - cron: "30 1 * * *"
 
@@ -70,7 +78,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.repository }}-${{ github.ref }}
   cancel-in-progress: false
 
-# Fork / secret exposure note: triggers are only workflow_dispatch + schedule (no pull_request*).
+# Fork / secret exposure note: triggers are workflow_dispatch + schedule + repository_dispatch (no pull_request*).
 # Default GHA semantics do not expose repository secrets to pull requests from forks.
 
 defaults:
@@ -173,13 +181,14 @@ jobs:
 
       # Retry, docs.spec HTTP sweep, and docs link crawl add wall clock + CPU — skip on cron to save
       # Actions minutes and stay under the 6h cap. Full audit: run workflow_dispatch (default keeps docs-audit).
-      - name: Scheduled run — SKIP_RETRY + SKIP_CMS_DOCS_SPEC + SKIP_DOCS_AUDIT
-        if: github.event_name == 'schedule'
+      # Cron or external IST webhook — shorten CI (same as legacy schedule-only behaviour).
+      - name: Scheduled or IST repository_dispatch — SKIP_RETRY + SKIP_CMS_DOCS_SPEC + SKIP_DOCS_AUDIT
+        if: github.event_name == 'schedule' || (github.event_name == 'repository_dispatch' && github.event.action == 'cms-daily-7am-ist')
         run: |
           echo "SKIP_RETRY=1" >> "$GITHUB_ENV"
           echo "SKIP_CMS_DOCS_SPEC=1" >> "$GITHUB_ENV"
           echo "SKIP_DOCS_AUDIT=1" >> "$GITHUB_ENV"
-          echo "Scheduled: SKIP_RETRY=1 SKIP_CMS_DOCS_SPEC=1 SKIP_DOCS_AUDIT=1 — shorter run; use manual dispatch for link audit."
+          echo "Short daily CMS path: SKIP_RETRY=1 SKIP_CMS_DOCS_SPEC=1 SKIP_DOCS_AUDIT=1 (workflow_dispatch untouched for full runs)."
 
       # Optional retry / Slack skips from manual dispatch
       - name: Apply optional SKIP_RETRY (manual runs)

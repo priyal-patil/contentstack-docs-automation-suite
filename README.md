@@ -132,6 +132,29 @@ In the repo → **Settings** → **Secrets and variables** → **Actions**, add 
 
 Invite the Slack app to the target channel. See **`.env.example`** (Slack section) for local vs Actions usage. Manual runs can set **skip_slack** to `true` to skip the summary post while still uploading report artifacts.
 
+#### Reliable **07:00 IST** enqueue (recommended)
+
+GitHub’s built-in **`schedule`** cron (**UTC-only**) often works around **01:30 UTC (= 07:00 IST)**, but **GitHub does not promise** an exact IST start — runs can queue **minutes to hours later** when Actions is busy. **Nobody can force “without fail only from YAML cron.”**
+
+For a **trusted wall-clock enqueue** every day **07:00 Asia/Kolkata**, use an external scheduler that calls **`repository_dispatch`** (same shortcut flags as **`schedule`**):
+
+1. Create a [**classic PAT**](https://github.com/settings/tokens) with **`repo`** scope (**simplest way** to allow `repository_dispatch`; fine‑grained tokens need permissions that vary by org — use GitHub docs if classic is disallowed). Store it **only** in the scheduler’s vault, **never** in the repo.
+2. Every day **07:00** in timezone **`Asia/Kolkata`**, **`POST`**:
+
+```bash
+curl -sS -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer YOUR_CLASSIC_OR_FG_PAT" \
+  https://api.github.com/repos/OWNER/REPO/dispatches \
+  -d '{"event_type":"cms-daily-7am-ist","client_payload":{"source":"external-cron"}}'
+```
+
+Replace **`OWNER/REPO`** (e.g. **`priyal-patil/docs-contentstack-ai-automation`**). **`event_type`** must be exactly **`cms-daily-7am-ist`** (matches **`.github/workflows/cms-daily-scheduled.yml`**).
+
+The workflow still keeps **`schedule: '30 1 * * *'`** as **backup**. If both fire the same calendar minute you may occasionally get **two** short CMS runs — either remove **`schedule`** after the external cron is stable, or keep both and accept duplicates (`concurrency` does **not** cancel in-flight).
+
+Even with **`repository_dispatch`**, the CMS job **starts when a runner is free**; that can add **small delays** vs your HTTP request time — this is unavoidable on GitHub-hosted runners.
+
 #### Daily report email (SMTP, optional)
 
 After each CMS scheduled/manual run (success or failure), the workflow can send a short **plain-text** summary plus a link to the GitHub Actions run (artifacts: Excel, dashboards, logs). Configure SMTP via repository secrets:
@@ -155,7 +178,8 @@ The workflow **`timeout-minutes`** is **360** (six hours wall clock unless you r
 
 | Trigger | Behaviour |
 | --- | --- |
-| **`schedule`** (cron) | Sets **`SKIP_RETRY=1`**, **`SKIP_CMS_DOCS_SPEC=1`**, and **`SKIP_DOCS_AUDIT=1`** (no docs link crawl) to **shorten CI time**. Flow automation, merge, reports, and Slack (if configured) still run. For **link-audit** artifacts, run **`workflow_dispatch`** (default includes background docs-audit). Waits **up to `DOCS_AUDIT_GHA_WAIT_SECS`** for a docs-audit PID only when one was started (manual default). |
+| **`schedule`** (cron backup) | Best-effort **01:30 UTC** daily; same **`SKIP_*`** short path when it fires. Treat as **fallback**, not a strict IST clock—see **Reliable 07:00 IST** above. |
+| **`repository_dispatch`** (`cms-daily-7am-ist`) | Same **short** path as **`schedule`** (**`SKIP_RETRY`**, **`SKIP_CMS_DOCS_SPEC`**, **`SKIP_DOCS_AUDIT`**). Intended to be pinged daily **07:00 IST** by **external cron** + PAT. |
 | **`workflow_dispatch`** | Full CMS pipeline by default (**background** docs-audit when **`skip_docs_audit`** is false). Set **skip_retry** / **skip_docs_audit** / etc. to shorten runs. |
 
 Artifacts (among others):
@@ -174,5 +198,5 @@ Artifacts (among others):
 | **skip_docs_audit** | **`SKIP_DOCS_AUDIT=1`** + **`DOCS_AUDIT_BACKGROUND=0`** — no docs link crawl (shortest CMS run) |
 | **docs_audit_wait_secs** | Override post-CMS PID wait (integer **0–7200** seconds); empty = job default (**1200**) |
 
-Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). Scheduled GitHub Actions use **`.github/workflows/cms-daily-scheduled.yml`** (**daily** cron: **7:00 AM IST** = **01:30 UTC** — edit **`cms-daily-scheduled.yml`** to change time). To run **`docs.spec`**, **`docs-audit`**, and all **`flows.spec.ts`** projects locally or in CI, use **`npx playwright test`** / **`npm run test:all-and-report`** (see **`package.json`**) or trigger **CMS — daily doc automation (scheduled)** manually with the inputs you need.
+Failures or cancellations optionally notify **`SLACK_INCOMING_WEBHOOK_URL`** (Incoming Webhook). Scheduled / backup **`schedule`** **`cms-daily-scheduled.yml`** uses **cron `30 1 * * *`** (≈ **7:00 AM IST**) plus optional **`repository_dispatch`** **`cms-daily-7am-ist`** for a precise IST enqueue — edit the workflow/README to tune. To run **`docs.spec`**, **`docs-audit`**, and all **`flows.spec.ts`** projects locally or in CI, use **`npx playwright test`** / **`npm run test:all-and-report`** (see **`package.json`**) or trigger **CMS — daily doc automation (scheduled)** manually with the inputs you need.
 
