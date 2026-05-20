@@ -1,0 +1,89 @@
+{
+  "id": "create-an-entry-variant",
+  "project": "Personalize",
+  "module": "variants",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/content-managers/entry-variants/create-an-entry-variant",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Doc: [Create an Entry Variant](https://www.contentstack.com/docs/content-managers/entry-variants/create-an-entry-variant). **Stack:** after Headless CMS, opens **Stacks list** and clicks **`DEFAULT_STACK`** from `.env` (same handler as Personalize CMS entry-variants flows; stack name must match list card, e.g. **priyaldocs**). **Prereqs:** that stack has variant groups linked; **First Entry row** = doc \"select existing\". **`Entries`** top-navbar placement warning on verify step. Variant option: **`expected.rowContains`** / **`PERSONALIZE_CREATE_ENTRY_VARIANT_OPTION_CONTAINS`** (default **Headline Test**).",
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: stacks list pick DEFAULT_STACK stack card (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create an Entry Variant doc: verify Entries icon left navigation panel (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create an Entry Variant doc: verify entry editor Base Entry dropdown label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "within": "the entry editor",
+        "labelEquals": "[Base Entry]"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create an Entry Variant doc: entry editor variant scope dropdown [Base Entry] (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create an Entry Variant doc: pick variant scope option from dropdown (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "timeoutMs": 60000,
+      "value": "AUTO Entry Variant {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create an Entry Variant doc: verify Variant Field tag (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variant Field"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create an Entry Variant doc: verify Save (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

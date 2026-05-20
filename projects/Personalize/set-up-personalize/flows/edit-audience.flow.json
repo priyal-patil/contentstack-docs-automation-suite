@@ -1,0 +1,138 @@
+{
+  "id": "edit-audience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/edit-audience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → **Personalize** → project → **Audiences** → **Actions** ⋮ (**`button[data-test-id=\"cs-table-action-options\"]`** on the row; scope via **`PERSONALIZE_EDIT_AUDIENCE_ROW_CONTAINS`**, default **`AUTO Audience`**) → wait **`VERTICAL_ELLIPSIS_POST_OPEN_MS`** (default **2000**) → **`[data-test-id=\"cs-vertical-action-tooltip-actions\"] li[data-test-id=\"cs-ct-action-edit\"]`** (hover, verify doc **Edit**; UI may show **Edit Text**) → **Audience** editor: verify **Rules** (**`audience-rule-builder-section`**) + **Match … conditions** (**`audience-rule-combination-group`**), append **Description** → **Save** (edit: **`save-audience-button`**; create-only layout: **`audience-create-button`**).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Audience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Audience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Audience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Audiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify Audiences table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Audience doc: Audiences listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify row Actions vertical tooltip Edit menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Audience doc: Audiences row Actions Edit menu item (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor Description field (doc step)",
+      "value": "Doc edit audience — description updated {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify Rules section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Rules"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify Match All or Any of the below conditions (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Audience doc: verify Save button audience editor (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor Save audience submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

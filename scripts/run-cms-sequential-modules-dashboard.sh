@@ -113,7 +113,9 @@ if [[ ! -f "$ROOT/auth.json" ]]; then
 fi
 
 DOCS_AUDIT_BACKGROUND="${DOCS_AUDIT_BACKGROUND:-1}"
-if [[ "$DOCS_AUDIT_BACKGROUND" == "1" ]]; then
+if [[ "${SKIP_DOCS_AUDIT:-0}" == "1" ]]; then
+  echo "SKIP_DOCS_AUDIT=1 — not starting background docs-audit" | tee -a "$REPORT_DIR/cms-sequential.log"
+elif [[ "$DOCS_AUDIT_BACKGROUND" == "1" ]]; then
   echo "Starting background docs-audit for CMS (DOCS_URLS_CSV=$DOCS_URLS_CSV)…" | tee -a "$REPORT_DIR/cms-sequential.log"
   npx ts-node "$ROOT/scripts/syncDocsUrlsToCsv.ts" >>"$REPORT_DIR/docs-audit-background.log" 2>&1 || true
   nohup env DOCS_URLS_CSV="$DOCS_URLS_CSV" bash "$ROOT/scripts/run-docs-audit-background.sh" CMS "$REPORT_DIR" >>"$REPORT_DIR/docs-audit-background.log" 2>&1 &

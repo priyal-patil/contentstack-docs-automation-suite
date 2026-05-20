@@ -1,0 +1,204 @@
+{
+  "id": "add-event-to-ab-test-experience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/add-event-to-ab-test-experience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: https://www.contentstack.com/docs/personalize/add-event-to-ab-test-experience — **Prereq:** Personalize project + **at least one Event** (see doc). Path: **+ New Experience** → **A/B Test** → Overview **Save General Details** → **Configuration** (left nav) → **Metrics** → **+ Add Event** → pick event → **Save**. Reuses A/B draft handlers in **`rules/core/actionRules.ts`**; event pick: **`PERSONALIZE_AB_TEST_METRIC_EVENT_CONTAINS`** (optional; else first option). Project card: **`PERSONALIZE_PROJECT_CARD_CONTAINS`** / **`DAL_PERSONALIZE_PROJECT_SEARCH`**. Doc step **Save** — UI may show **Save Draft**; runner accepts both. DOM: **`create-ab-test-experience.selectors.ts`** patterns (`ab-testing-experience-draft-config-body`).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify New Experience button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Experience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Experiences page New Experience button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Select Experience Type modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Experience Type"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Select Experience Type modal A/B Test experience type heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "A/B Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Select Experience Type modal A/B Test experience type card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Overview tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Overview"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Overview Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Add Event to A/B Test Experience doc: Overview experience Name field (doc step)",
+      "value": "AUTO A/B Add Event {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Overview Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Add Event to A/B Test Experience doc: Overview experience Description field (doc step)",
+      "value": "Doc add event to A/B test {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Save General Details button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save General Details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Overview Save General Details footer button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Metrics"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Metrics Add Event button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Event"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics Add Event button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics select event from dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Configuration footer Save button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration footer Save button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

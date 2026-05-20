@@ -1,0 +1,113 @@
+{
+  "id": "prioritize-experiences",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/prioritize-experiences",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: [Prioritize Experiences](https://www.contentstack.com/docs/personalize/prioritize-experiences). **Prereq:** at least **two** experiences in the project (drag reorders the **second** row above the **first**). UI: Experiences listing **`data-testid=\"experiences-priority-sidebar-trigger\"`** → sidebar (`**prioritize-experience-page.html`**, **`generic-sidebar-header`**, **`drag-experience-priority-row`**) → **Save** (`**experiences-priority-sidebar-save`** enables after reorder). **Project card:** `PERSONALIZE_PROJECT_CARD_CONTAINS` / `DAL_PERSONALIZE_PROJECT_SEARCH`. DOM: `data/dom/Personalize/experiences.html`, `prioritize-experience-page.html`.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Prioritize Experiences doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Prioritize Experiences doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Prioritize Experiences doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: verify Experiences page Prioritize Experiences button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Prioritize Experiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Prioritize Experiences doc: click Experiences page Prioritize Experiences button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: verify Prioritize Experiences sidebar title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Prioritize Experiences"
+      }
+    },
+    {
+      "action": "drag",
+      "target": "Prioritize Experiences doc: drag source second priority experience row (doc step)",
+      "value": "Prioritize Experiences doc: drag drop target first priority experience row (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Prioritize Experiences doc: verify sidebar footer Save button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Prioritize Experiences doc: sidebar footer Save button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

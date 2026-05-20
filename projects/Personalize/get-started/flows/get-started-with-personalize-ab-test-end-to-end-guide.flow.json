@@ -1,0 +1,907 @@
+{
+  "id": "get-started-with-personalize-ab-test-end-to-end-guide",
+  "project": "Personalize",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/get-started-with-personalize-with-ab-test-end-to-end-guide",
+  "type": "executable",
+  "use": [
+    "login",
+    "orgDashboard"
+  ],
+  "automationNotes": "Single flow for the [end-to-end A/B guide](https://www.contentstack.com/docs/personalize/get-started-with-personalize-with-ab-test-end-to-end-guide). **Doc-minimal:** steps match guide wording only (no **`create-ab-test-experience`**-extra verifies during **initial** A/B draft where the guide omits them). **Runnable order:** §1 project → §5 event → §3 draft (Equally split + two variants + **Save Draft**) → §6 add metric → **§7 Create Entry Variants in CMS** (App Switcher → **Headless CMS** → **`DEFAULT_STACK`** → Settings → **Variants** → link CT → **Entries** / **Base Entries** → edit/save → publish) → §8 activate. **`warn`** = §2 SDK, §4 Live Preview/VB, §9 analytics, §10 Clearwinner. Stack: **`DEFAULT_STACK`** (same as Personalize project). Experience / variant group row: **`PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS`** (default **Headline Test**). CMS steps assume at least one content type can be linked and at least one base entry exists.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalize Project doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalize Project doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalize Project doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Personalize Project"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Personalize Project primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Personalize Project",
+        "labelEquals": "New Personalize Project"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Name (required)"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Project Name field (doc step)",
+      "value": "Doc Personalize Project {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Project Description field (doc step)",
+      "value": "Automation description {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Personalize Project Select Stack field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Stack"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal Select Stack control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal pick DEFAULT_STACK option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalize Project doc: verify Create Project button in modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Create Project"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Project modal Create Project submit (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "warn",
+      "value": "Guide § Set up SDK — configure the Personalize Edge SDK for your Next.js site (see SDK doc linked from the guide). Not executed in this browser automation."
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Events (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Events"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Events (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Events page + New Event primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Event"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: Events page + New Event primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Event modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Event",
+        "labelEquals": "New Event"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Event Key field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Key (required)"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Event modal Key field (doc step)",
+      "value": "AUTO_EVENT_{unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Event Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Event modal Description field (doc step)",
+      "value": "Doc create event — automation {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Create button in modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Create"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Event modal Create submit (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "warn",
+      "value": "Guide § Enable Live Preview and Visual Builder — enable on your CMS stack (Settings). Not executed in this Personalize-only flow."
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify New Experience button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Experience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Experiences page New Experience button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Experience Type"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal A/B Test experience type heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "A/B Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal A/B Test experience type card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Overview Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Overview experience Name field (doc step)",
+      "value": "Headline Test"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Overview Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Overview experience Description field (doc step)",
+      "value": "E2E guide description {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Save General Details button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save General Details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Overview Save General Details footer button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variant Distribution"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Equally split distribution option label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Equally split"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution dropdown open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution dropdown choose Equally split (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify + Add Variant button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Variant"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variants Add Variant button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Configuration first variant Variant Name field (doc step)",
+      "value": "Control"
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variants Add Variant button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Configuration second variant Variant Name field (doc step)",
+      "value": "Bold headline"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Save Draft button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience Configuration footer Save Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Experiences table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify row Actions vertical tooltip Edit menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit",
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences row Actions Edit menu item (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Metrics"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Metrics Add Event button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Event"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics Add Event button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration Metrics select event from dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Event to A/B Test Experience doc: verify Configuration footer Save button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Event to A/B Test Experience doc: Configuration footer Save button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Entry Variants in CMS doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Entry Variants in CMS doc: verify Headless CMS in App Switcher (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: App Switcher Headless CMS product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: stacks list pick DEFAULT_STACK stack card (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Settings sidebar Variants (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: variant groups table row open (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Link Content Types first content type checkbox (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Link Content Types Apply button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Variant Group details Save button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Entries navigation Base Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Variants dropdown (if available) (doc step)",
+      "timeoutMs": 15000,
+      "optional": true
+    },
+    {
+      "action": "enter",
+      "target": "Entry Title (doc step)",
+      "value": "E2E guide entry variant {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Publish (bottom-right) (doc step)",
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Publish (bottom-right) (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Publish Entry modal (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "modalTitle": "Publish Entry"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First Environment option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First Language option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Variants dropdown (if available) (doc step)",
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Now (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Send (doc step)",
+      "expected": {
+        "labelEquals": "Send",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Send (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Publish Review or Publish References modal (doc step)",
+      "optional": true
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Experiences table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify row Actions vertical tooltip Edit menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit",
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences row Actions Edit menu item (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Activate Draft footer button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Activate Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience footer Activate Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Activate confirmation modal Activate button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Activate"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Activate Experience confirmation modal Activate button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "warn",
+      "value": "Guide § View Experience Analytics — use the experience Analytics tab once data is available."
+    },
+    {
+      "action": "warn",
+      "value": "Guide § Automate Your Winning Strategy — Clearwinner app in the Contentstack Marketplace."
+    }
+  ]
+}

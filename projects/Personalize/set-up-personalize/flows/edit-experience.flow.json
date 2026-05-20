@@ -1,0 +1,175 @@
+{
+  "id": "edit-experience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/edit-experience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: [Edit an Experience](https://www.contentstack.com/docs/personalize/edit-experience) — **Editing an Experience Draft** path. **Prereq:** at least one **Draft** experience in the project. **Row ⋮:** `button[data-test-id=\"cs-table-action-options\"]` scoped by **`PERSONALIZE_EDIT_EXPERIENCE_ROW_CONTAINS`** (else substring **AUTO**). After open menu, wait **`VERTICAL_ELLIPSIS_POST_OPEN_MS`** (default **2000** ms), then **`[data-test-id=\"cs-vertical-action-tooltip-actions\"] li[data-test-id=\"cs-ct-action-edit\"]`** — hover, verify doc **Edit** (UI may show **Edit Text**). **Project card:** `PERSONALIZE_PROJECT_CARD_CONTAINS` / `DAL_PERSONALIZE_PROJECT_SEARCH`. DOM: `data/dom/Personalize/experiences.html`.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Experiences table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify row Actions vertical tooltip Edit menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Experiences row Actions Edit menu item (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Overview tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Overview"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Overview Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Edit Experience doc: Overview experience Name field (doc step)",
+      "value": "AUTO Edit Experience {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Overview Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Edit Experience doc: Overview experience Description field (doc step)",
+      "value": "Doc edit experience — description updated {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Save General Details button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save General Details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: Overview Save General Details footer button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: Configuration Variants section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variants"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Experience doc: verify Save Draft button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Experience doc: experience Configuration footer Save Draft button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

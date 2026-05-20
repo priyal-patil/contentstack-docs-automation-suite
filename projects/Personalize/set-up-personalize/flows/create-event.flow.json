@@ -1,0 +1,131 @@
+{
+  "id": "create-event",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-event",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → **Personalize** → **Personalize Projects** → project card → **Events** → **+ New Event** → modal **New Event** (**Key**, optional **Description**) → **Create**. Handlers / selectors: **`rules/core/actionRules.ts`** (`personalizeClickFlow`), **`personalize-nav-events`**, **`new-event-button`**, **`cs-modal-title-new-event`**, **`event-form-submit`**. Project card: **`PERSONALIZE_PROJECT_CARD_CONTAINS`** / **`DAL_PERSONALIZE_PROJECT_SEARCH`**. Verify **+ New Event** tolerates visible **New Event** (plus icon) per **actionRules**.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Events (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Events"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Events (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Events page + New Event primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Event"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Event doc: Events page + New Event primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Event modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Event",
+        "labelEquals": "New Event"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Event Key field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Key (required)"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Event modal Key field (doc step)",
+      "value": "AUTO_EVENT_{unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Event Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Event modal Description field (doc step)",
+      "value": "Doc create event — automation {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Event doc: verify Create button in modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Create"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Event modal Create submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

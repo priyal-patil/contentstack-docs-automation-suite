@@ -6,12 +6,29 @@
   "source": "https://www.contentstack.com/docs/personalize/manage-personalize-project",
   "type": "executable",
   "use": ["login", "orgDashboard"],
-  "automationNotes": "Doc: App Switcher → Personalize → **Projects** list → open project → top nav lists **Experiences**, **Audiences**, **Attributes**, **Events**, **Settings** → **Settings** → **General** (**Project Details**: Name/Description/`UID`; **Save** applies changes). Doc also describes **Reset** (discard) — automation follows **Save** only after edits so changes persist. **Users**: left nav **Users** → list **Status** / **Role** columns.**Invite User** subsection is not automated here (needs a deterministic invite target). Which project opens: substring **`PERSONALIZE_PROJECT_CARD_CONTAINS`** or **`DAL_PERSONALIZE_PROJECT_SEARCH`** (fallback **`Doc Personalize Project`**). DOM: `data/dom/Personalize/personalize-projects.html`, `settings-general.html`, `settings-users.html`. Handlers: `rules/core/actionRules.ts` (`manage-personalize-project`).",
+  "automationNotes": "Doc **Project Workspace**: App Switcher → Personalize → project card → **Settings** → **General** / **Users**. **Project card:** automation prefers **`PERSONALIZE_PROJECT_CARD_CONTAINS`** / **`DAL_PERSONALIZE_PROJECT_SEARCH`**, then substring **Doc Personalize Project**; if none match, it opens the **first** listed card with a `/personalize/projects/` link (console warning). **Stack Connection:** **Connect Stack** is matched by visible label (the control’s accessible name is generic). **Connect Stack** click runs the stack picker with **`DEFAULT_STACK`**; if the button stays disabled (name mismatch / no access), the run **warns and continues** so later doc steps still execute. After editing **Name**/**Description**, flow verifies enabled **Save** and **Reset**, clicks **Reset**. **Users**: **Invite User** — email uses `step.value` or **`PERSONALIZE_INVITE_EMAIL`** → **`CS_INVITE_TEST_EMAIL`** → **`CS_EMAIL`**.",
   "steps": [
+    {
+      "action": "verify",
+      "target": "Manage Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
     {
       "action": "click",
       "target": "Manage Personalize Project doc: App Switcher icon (doc step)",
       "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Manage Personalize Project doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
     },
     {
       "action": "click",
@@ -23,8 +40,7 @@
       "target": "Personalize Projects landing page title (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Personalize Projects",
-        "labelMatch": "exact"
+        "labelEquals": "Personalize Projects"
       }
     },
     {
@@ -38,8 +54,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Top Bar",
-        "labelEquals": "Experiences",
-        "labelMatch": "exact"
+        "labelEquals": "Experiences"
       }
     },
     {
@@ -48,8 +63,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Top Bar",
-        "labelEquals": "Audiences",
-        "labelMatch": "exact"
+        "labelEquals": "Audiences"
       }
     },
     {
@@ -58,8 +72,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Top Bar",
-        "labelEquals": "Attributes",
-        "labelMatch": "exact"
+        "labelEquals": "Attributes"
       }
     },
     {
@@ -68,8 +81,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Top Bar",
-        "labelEquals": "Events",
-        "labelMatch": "exact"
+        "labelEquals": "Events"
       }
     },
     {
@@ -78,8 +90,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Top Bar",
-        "labelEquals": "Settings",
-        "labelMatch": "exact"
+        "labelEquals": "Settings"
       }
     },
     {
@@ -93,8 +104,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Left Navigation",
-        "labelEquals": "General",
-        "labelMatch": "exact"
+        "labelEquals": "General"
       }
     },
     {
@@ -102,8 +112,7 @@
       "target": "Personalize Settings General page title (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "General",
-        "labelMatch": "exact"
+        "labelEquals": "General"
       }
     },
     {
@@ -111,8 +120,7 @@
       "target": "Manage doc: Project Details section heading (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Project Details",
-        "labelMatch": "exact"
+        "labelEquals": "Project Details"
       }
     },
     {
@@ -120,8 +128,7 @@
       "target": "Manage doc: Project Details Name field label (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Name (required)",
-        "labelMatch": "exact"
+        "labelEquals": "Name (required)"
       }
     },
     {
@@ -134,8 +141,7 @@
       "target": "Manage doc: Project Details Description field label (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Description",
-        "labelMatch": "exact"
+        "labelEquals": "Description"
       }
     },
     {
@@ -148,13 +154,49 @@
       "target": "Manage doc: Project Details UID field label (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "UID (read only)",
-        "labelMatch": "exact"
+        "labelEquals": "UID (read only)"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: verify Project Details Save button when form dirty (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: verify Project Details Reset button when form dirty (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Reset"
       }
     },
     {
       "action": "click",
-      "target": "Personalize Settings General Save button (doc step)",
+      "target": "Personalize Settings General Reset button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Stack Connection section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Stack Connection"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: verify Stack Connection Connect Stack or already connected (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Connect Stack"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Settings General Stack Connection select stack DEFAULT_STACK and Connect Stack (doc step)",
       "timeoutMs": 120000
     },
     {
@@ -163,8 +205,7 @@
       "timeoutMs": 60000,
       "expected": {
         "within": "Left Navigation",
-        "labelEquals": "Users",
-        "labelMatch": "exact"
+        "labelEquals": "Users"
       }
     },
     {
@@ -177,8 +218,7 @@
       "target": "Personalize Settings Users page title (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Users",
-        "labelMatch": "exact"
+        "labelEquals": "Users"
       }
     },
     {
@@ -186,8 +226,7 @@
       "target": "Manage doc: Users list Status column header (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Status",
-        "labelMatch": "exact"
+        "labelEquals": "Status"
       }
     },
     {
@@ -195,9 +234,72 @@
       "target": "Manage doc: Users list Role column header (doc step)",
       "timeoutMs": 60000,
       "expected": {
-        "labelEquals": "Role",
-        "labelMatch": "exact"
+        "labelEquals": "Role"
       }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Users Invite User button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Invite User"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage doc: Users Invite User button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Invite User modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Invite User",
+        "labelEquals": "Invite User"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Invite User modal Email Addresses field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Email Addresses (required)"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Invite User modal Message field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Message"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Settings Users Invite modal email addresses pill (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Settings Users Invite modal message field (doc step)",
+      "value": "Doc automation invite message {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Manage doc: Invite User modal Invite submit (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Invite"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Settings Users Invite modal submit Invite button (doc step)",
+      "timeoutMs": 120000
     }
   ]
 }

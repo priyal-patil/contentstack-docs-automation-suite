@@ -1,0 +1,198 @@
+{
+  "id": "create-personalized-content",
+  "project": "Personalize",
+  "module": "creating-personalize-content",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-personalized-content",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: [Create Personalized Content](https://www.contentstack.com/docs/personalize/create-personalized-content). **Experiences row:** `expected.rowContains` (default **Headline Test**), or **`PERSONALIZE_CREATE_PERSONALIZED_CONTENT_EXPERIENCE_ROW_CONTAINS`** / **`PERSONALIZE_EDIT_EXPERIENCE_ROW_CONTAINS`** / **`PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS`**; if no name match, runner uses **first visible** `cs-table-body-row` (warns). **Personalize path:** … capture **`__pcmConnectedStackLabel`**. **CMS path:** App Switcher → **Headless CMS** → **`DEFAULT_STACK`** fallback on stack card. **Settings** → **Variants** → …",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: Experiences table row open experience (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Information icon on right (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Information"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: Experience Information side tab (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Contentstack CMS Sync Status section label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Contentstack CMS Sync Status"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Connected Stack row title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Connected Stack"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: capture Connected Stack display name for CMS stacks picker (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Entry Variants in CMS doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Entry Variants in CMS doc: verify Headless CMS in App Switcher (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: App Switcher Headless CMS product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Personalized Content doc: stacks list pick Connected Stack card (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Settings top navigation control (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "Settings"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Variants left navigation label (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Variants"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Settings sidebar Variants (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: variant groups table row open (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "rowContains": "Headline Test"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Linked Content Types field label (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Linked Content Types"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Link Content Types first content type checkbox (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Apply button Link Content section (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Apply"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Link Content Types Apply button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Personalized Content doc: verify Save button variant group details (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Entry Variants in CMS doc: Variant Group details Save button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

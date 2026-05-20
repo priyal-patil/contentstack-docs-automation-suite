@@ -1,0 +1,112 @@
+{
+  "id": "delete-personalize-project",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/personalize/delete-personalize-project",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: [Delete a Personalize Project](https://www.contentstack.com/docs/personalize/delete-personalize-project). **Destructive** — permanently removes the project. Use a disposable project; set **`PERSONALIZE_DELETE_PROJECT_CARD_CONTAINS`** to the card substring to delete (overrides **`PERSONALIZE_PROJECT_CARD_CONTAINS`** / **`DAL_PERSONALIZE_PROJECT_SEARCH`** for this flow only). **`stage: delete`** runs after `main` module flows. Handlers: `rules/core/actionRules.ts` (Personalize delete + modal **DELETE** + **Delete**).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Delete Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Personalize Project doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Settings"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Settings button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project doc: scroll Delete Project heading into view (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Delete doc: Personalize Settings Delete Project section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Delete Project"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project doc: settings General Delete Project button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Personalize Project modal Cancel button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Cancel"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Delete Personalize Project modal type DELETE confirmation (doc step)",
+      "value": "DELETE"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Personalize Project modal destructive Delete button verify (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Personalize Project modal confirm Delete button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

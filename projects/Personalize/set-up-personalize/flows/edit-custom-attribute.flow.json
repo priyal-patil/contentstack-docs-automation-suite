@@ -1,0 +1,148 @@
+{
+  "id": "edit-custom-attribute",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/edit-custom-attribute",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → **Personalize** → **Personalize Projects** → project → **Attributes** → **Actions** ⋮ (**`button[data-test-id=\"cs-table-action-options\"]`** in row Actions cell) → wait **2s** → **`[data-test-id=\"cs-vertical-action-tooltip-actions\"] li[data-test-id=\"cs-ct-action-edit\"]`** (hover, verify doc **Edit** label, click) → **Edit Attribute** modal → **Save**. Row: **`PERSONALIZE_EDIT_CUSTOM_ATTRIBUTE_ROW_CONTAINS`** (default **`AUTO_LOYALTY`**). Save: **`attribute-form-submit`**.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Edit Custom Attribute doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Custom Attribute doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Custom Attribute doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Custom Attribute doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Custom Attribute doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Attributes (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Attributes"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Attributes (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Custom Attribute doc: verify Attributes table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Custom Attribute doc: Attributes listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Custom Attribute doc: verify row Actions vertical tooltip Edit menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Custom Attribute doc: Attributes row Actions Edit menu item (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Attribute modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "Edit Attribute",
+        "labelEquals": "Edit Attribute"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Attribute modal Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Attribute modal Key field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Key"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Attribute modal Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Edit Attribute modal Description field (doc step)",
+      "value": "Doc edit custom attribute — description updated {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Edit Custom Attribute doc: verify Save button in Edit Attribute modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Edit Attribute modal Save submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

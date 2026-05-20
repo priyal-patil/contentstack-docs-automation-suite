@@ -1,0 +1,180 @@
+{
+  "id": "add-custom-attribute-to-audience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/add-custom-attribute-to-audience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc path: App Switcher → **Personalize** → **Personalize Projects** → project → **Audiences** → **+ New Audience** → **Audience** page **Name** / **Description** → **Rules** → **Add Rule** → **Select attribute** → **Select Operator** → **Select Value** → **Save**. **Prerequisite**: a **custom** attribute must exist in the project (**create-custom-attribute** / API). Matching: **`PERSONALIZE_AUDIENCE_CUSTOM_ATTRIBUTE_CONTAINS`** (default **`AUTO_LOYALTY`**) narrows react-select results. **Criterion**: **`step.value`** on Select Value **`or`** **`PERSONALIZE_AUDIENCE_RULE_CRITERION`** (fallback **`AutomationCriterion`**). **Operator**: first actionable menu row after Attribute is selected. **`personalize-nav-audiences`**, **`add-new-audience-button`**, **`audience-add-rule-button`**, **`audience-create-button`**.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Add Custom Attribute to Audience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Custom Attribute to Audience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Add Custom Attribute to Audience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Custom Attribute to Audience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Custom Attribute to Audience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Audiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add Custom Attribute Audience doc: verify Audiences listing New Audience primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Audience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Custom Attribute Audience doc: Audiences listing New Audience primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor Name field (doc step)",
+      "value": "AUTO Audience Custom Attr {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor Description field (doc step)",
+      "value": "Doc audience with custom attribute rule {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Add Custom Attribute Audience doc: verify Rules section Add Rule primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Rule"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Custom Attribute Audience doc: Audience editor Rules section Add Rule button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Attribute field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select attribute"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule open Select Attribute control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule pick custom attribute menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Operator field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select Operator"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule open Select Operator control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule pick first Select Operator menu option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Value field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select Value"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor rule Select Value criterion field (doc step)",
+      "value": "AutomationCriterion {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Add Custom Attribute Audience doc: verify Save button audience editor header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor Save audience submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

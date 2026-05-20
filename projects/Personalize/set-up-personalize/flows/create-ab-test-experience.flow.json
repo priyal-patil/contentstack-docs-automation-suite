@@ -1,0 +1,376 @@
+{
+  "id": "create-ab-test-experience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-ab-test-experience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc URL: https://www.contentstack.com/docs/personalize/create-ab-test-experience — **Prereq:** at least one **Audience**, at least one **Event** in the project (see doc Prerequisites). **Variant Distribution:** after verifying default **Equally split**, the flow opens the distribution dropdown and verifies **Custom** and **Multi-Armed Bandit**, then re-selects **Equally split**. **Audience pick:** `PERSONALIZE_AB_TEST_EXPERIENCE_AUDIENCE_CONTAINS` or `PERSONALIZE_SEGMENTED_EXPERIENCE_AUDIENCE_CONTAINS` / `PERSONALIZE_EDIT_AUDIENCE_ROW_CONTAINS` / substring **AUTO Audience**. **Metric event:** `PERSONALIZE_AB_TEST_METRIC_EVENT_CONTAINS` (optional; else first event option). **Project card:** `PERSONALIZE_PROJECT_CARD_CONTAINS` / `DAL_PERSONALIZE_PROJECT_SEARCH`. **Activate Draft** → **Activate** matches the doc; CMS **Entry Variants** before go-live are recommended in the doc. DOM: `data/dom/Personalize/select-experience-type.html` (`ab-testing-experience`).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify New Experience button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Experience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Experiences page New Experience button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Experience Type"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal A/B Test experience type heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "A/B Test"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Select Experience Type modal A/B Test experience type card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Overview tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Overview"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Overview Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Overview experience Name field (doc step)",
+      "value": "AUTO A/B Test Experience {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Overview Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Overview experience Description field (doc step)",
+      "value": "Doc create A/B test experience {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Save General Details button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save General Details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Overview Save General Details footer button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Variants section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variants"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variant Distribution"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Equally split distribution option label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Equally split"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution dropdown open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Variant Distribution dropdown option Custom (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Custom"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Variant Distribution dropdown option Multi-Armed Bandit (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Multi-Armed Bandit"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variant Distribution dropdown choose Equally split (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify + Add Variant button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Variant"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variants Add Variant button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration variants table Short UID column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Short UID"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Variant Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variant name"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration variants Traffic Distribution column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Traffic Distribution in %"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Configuration first variant Variant Name field (doc step)",
+      "value": "AUTO Variant A {unique8}"
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Variants Add Variant button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Create A/B Test Experience doc: Configuration second variant Variant Name field (doc step)",
+      "value": "AUTO Variant B {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Metrics section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Metrics"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Metrics Add Event button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Event"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Metrics Add Event button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Metrics select event from dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Target Group section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Target Group"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Target Group Selective option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Target Group Condition field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Condition"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: Configuration Target Group Match All condition value label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Match All"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Configuration Target Group Audiences field open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Select Audience(s) modal pick audience row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Select Audience(s) modal Apply Selected Audiences button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Save Draft button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience Configuration footer Save Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Activate Draft footer button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Activate Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: experience footer Activate Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create A/B Test Experience doc: verify Activate confirmation modal Activate button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Activate"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create A/B Test Experience doc: Activate Experience confirmation modal Activate button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

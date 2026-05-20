@@ -1,0 +1,123 @@
+{
+  "id": "delete-experience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/personalize/delete-experience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: [Delete an Experience](https://www.contentstack.com/docs/personalize/delete-experience) — **draft** experience path. Destructive. Row ⋮ (**`button[data-test-id=\"cs-table-action-options\"]`**) → **`VERTICAL_ELLIPSIS_POST_OPEN_MS`** → **`li[data-test-id=\"cs-ct-action-delete\"]`** → **Delete Experience** modal → **Delete**. Set **`PERSONALIZE_DELETE_EXPERIENCE_ROW_CONTAINS`** (default **`AUTO`**) on a disposable draft row. **`stage: delete`** runs after `main`.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify Experiences table Actions column heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Actions"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: Experiences listing row vertical ellipsis (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify row Actions vertical tooltip Delete menu item label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Delete"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: Experiences row Actions Delete menu item (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify Delete Experience modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete Experience",
+        "modalTitle": "Delete Experience"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Experience doc: verify Delete Experience modal destructive Delete button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Delete"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Experience doc: Delete Experience modal confirm Delete button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

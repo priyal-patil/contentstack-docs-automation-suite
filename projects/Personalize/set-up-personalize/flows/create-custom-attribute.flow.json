@@ -1,0 +1,145 @@
+{
+  "id": "create-custom-attribute",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-custom-attribute",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc: App Switcher → **Personalize** → **Personalize Projects** → project card → **Attributes** → **+ New Attribute** → modal **New Attribute** (**Name**, **Key**, optional **Description**) → **Create**. Handlers / selectors: **`rules/core/actionRules.ts`** (`personalizeClickFlow`), **`personalize-nav-attributes`**, **`add-new-attribute-button`**, **`cs-modal-title-new-attribute`**, **`attribute-form-submit`**. Project card needle: **`PERSONALIZE_PROJECT_CARD_CONTAINS`** / **`DAL_PERSONALIZE_PROJECT_SEARCH`**, fallback **Doc Personalize Project**, else first card with `/personalize/projects/` link (see **manage-personalize-project**). Verify for **+ New Attribute** accepts UI text **New Attribute** (plus icon only) per **actionRules** special case.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Custom Attribute doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Custom Attribute doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Custom Attribute doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Custom Attribute doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Custom Attribute doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Attributes (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Attributes"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Attributes (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Custom Attribute doc: verify Attributes page + New Attribute primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Attribute"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Custom Attribute doc: Attributes page + New Attribute primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Attribute modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "modalTitle": "New Attribute",
+        "labelEquals": "New Attribute"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "New Attribute Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Name (required)"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Attribute modal Name field (doc step)",
+      "value": "AUTO Loyalty Member {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Attribute Key field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Key (required)"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Attribute modal Key field (doc step)",
+      "value": "AUTO_LOYALTY_{unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "New Attribute Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize New Attribute modal Description field (doc step)",
+      "value": "Doc custom attribute — loyalty program {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Custom Attribute doc: verify Create button in modal (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Create"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize New Attribute modal Create submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

@@ -36,9 +36,27 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   "Manage doc: Users list Status column header (doc step)": '[data-test-id="cs-table-head-text--2"]',
   "Manage doc: Users list Role column header (doc step)": '[data-test-id="cs-table-head-text--3"]',
+
+  /** Stack Connection heading + Invite (Save/Reset use dedicated verify/handlers — enabled-after-edit). */
+  "Manage doc: Stack Connection section heading (doc step)":
+    'main#react-personalize h3[data-test-id="cs-heading-tag"]:has-text("Stack Connection")',
+
+  /** Users — Invite User (header). */
+  "Manage doc: Users Invite User button (doc step)": '[data-testid="invite-users-button"]',
+  /** Invite modal title + Invite submit (within dialog). Prefer role when multiple modals stack. */
+  "Manage doc: Invite User modal title (doc step)": '[data-test-id="cs-modal-title-invite-user"]',
+  "Manage doc: Invite User modal Invite submit (doc step)":
+    '[role="dialog"]:has([data-test-id="cs-modal-title-invite-user"]) [data-testid="invite-users-form-submit-button"]',
+  "Manage doc: Invite User modal Email Addresses field label (doc step)":
+    '[role="dialog"] label[data-test-id="cs-field-label"][for="userEmails"], [data-testid="cs-modal"] label[data-test-id="cs-field-label"][for="userEmails"]',
+  "Manage doc: Invite User modal Message field label (doc step)":
+    '[role="dialog"] label[data-test-id="cs-field-label"][for="invitationMessage"], [data-testid="cs-modal"] label[data-test-id="cs-field-label"][for="invitationMessage"]',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
   "Personalize Settings General Name field (doc step)": '[data-testid="name-input"]',
   "Personalize Settings General Description field (doc step)": '[data-testid="description-input"]',
+
+  /** Invite User modal optional message (`Enter message`). */
+  "Personalize Settings Users Invite modal message field (doc step)": '[data-testid="invitation-message-input"]',
 };

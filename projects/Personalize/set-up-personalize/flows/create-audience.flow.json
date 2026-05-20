@@ -1,0 +1,198 @@
+{
+  "id": "create-audience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-audience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc URL: https://www.contentstack.com/docs/personalize/create-audience — **Rules**: **`[data-testid=\"audience-rule-combination-group\"]`** (Match … toolbar) → **Add Group** = **`.first()`** combo block’s **`aria-label=\"audience-add-group-button\"`** → nested combo **`.last()`** → **Add Rule** **`audience-add-rule-button`** → **Select Attribute** / **Operator** / **Value** (last rule row) → **Save**. **`PERSONALIZE_CREATE_AUDIENCE_ATTRIBUTE_CONTAINS`** (default **`Device`**).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Top Bar",
+        "labelEquals": "Audiences"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize workspace top navigation Audiences (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Audiences listing New Audience primary button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Audience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: Audiences listing New Audience primary button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor Name field (doc step)",
+      "value": "AUTO Audience Doc Create {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor Description field (doc step)",
+      "value": "Create audience doc Rules Add Group Rule {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Rules section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Rules"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Match All or Any of the below conditions (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Rules section Add Group button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Group"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: Audience editor Rules section Add Group button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: Audience editor Rules section Add Rule after Add Group button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Attribute field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select attribute"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule open Select Attribute control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create Audience doc: Audience editor rule pick attribute menu option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Operator field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select Operator"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule open Select Operator control (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor rule pick first Select Operator menu option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience editor Select Value field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Select Value"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Personalize Audience editor rule Select Value criterion field (doc step)",
+      "value": "AutomationCriterion {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Audience doc: verify Save button audience editor (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Personalize Audience editor Save audience submit (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

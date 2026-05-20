@@ -1,0 +1,277 @@
+{
+  "id": "create-segmented-experience",
+  "project": "Personalize",
+  "module": "set-up-personalize",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/personalize/create-segmented-experience",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Doc URL: https://www.contentstack.com/docs/personalize/create-segmented-experience — **Prereq:** at least one **Audience** in the project (run `create-audience` first or use an existing audience). **Audience pick:** `PERSONALIZE_SEGMENTED_EXPERIENCE_AUDIENCE_CONTAINS` (else `PERSONALIZE_EDIT_AUDIENCE_ROW_CONTAINS`, else substring **AUTO Audience**). **Project card:** `PERSONALIZE_PROJECT_CARD_CONTAINS` / `DAL_PERSONALIZE_PROJECT_SEARCH`. Final doc step **Activate Draft** → **Activate** runs the live-activation path (doc also recommends CMS **Entry Variants** before go-live). DOM refs: `data/dom/Personalize/experiences.html`, `select-experience-type.html`, `segmented-experience-page.html`, `seg-exp-configuration.html`.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify App Switcher icon top navigation bar (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "within": "top navigation bar",
+        "labelEquals": "App Switcher"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: App Switcher icon (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify Personalize in App Switcher (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Personalize"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: App Switcher Personalize product (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize Projects landing page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Personalize Projects"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: open project card from Projects list (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize workspace top navigation Experiences (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Experiences page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Experiences"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify New Experience button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ New Experience"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Experiences page New Experience button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Select Experience Type modal title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Select Experience Type"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Select Experience Type modal Segmented experience type heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Segmented"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Select Experience Type modal Segmented experience type card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Overview tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Overview"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Overview Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Name"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Segmented Experience doc: Overview experience Name field (doc step)",
+      "value": "AUTO Segmented Experience {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Overview Description field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Description"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Segmented Experience doc: Overview experience Description field (doc step)",
+      "value": "Doc create segmented experience {unique8}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify Save General Details button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save General Details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Overview Save General Details footer button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration tab label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Configuration"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: experience editor left navigation Configuration tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration Variants section heading (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variants"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify + Add Variant button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "+ Add Variant"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Configuration Variants Add Variant button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration variants table Short UID column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Short UID"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration Variant Name field label (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Variant name"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration variants table Condition column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Condition"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: Configuration variants table Audiences column header (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Audiences"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Create Segmented Experience doc: Configuration first variant Variant Name field (doc step)",
+      "value": "AUTO Variant {unique8}"
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Configuration Variants first variant Audiences field open (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Select Audience(s) modal pick audience row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Select Audience(s) modal Apply Selected Audiences button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify Save Draft button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Save Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: experience Configuration footer Save Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify Activate Draft footer button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Activate Draft"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: experience footer Activate Draft button (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Create Segmented Experience doc: verify Activate confirmation modal Activate button (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "within": "Modal",
+        "labelEquals": "Activate"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Segmented Experience doc: Activate Experience confirmation modal Activate button (doc step)",
+      "timeoutMs": 120000
+    }
+  ]
+}

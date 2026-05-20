@@ -63,6 +63,29 @@ function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * [Getting Started with Personalize + A/B Testing (end-to-end guide)](https://www.contentstack.com/docs/personalize/get-started-with-personalize-with-ab-test-end-to-end-guide)
+ * — executable part flows under `get-started` reuse the same handlers as canonical flows (`create-personalize-project`, `create-ab-test-experience`, …) by part index.
+ */
+function isPersonalizeE2eAbTestGuidePart(flow: { id?: string } | undefined, part: number): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return id === `get-started-with-personalize-ab-test-end-to-end-guide-part-${part}`;
+}
+
+/** Single-file E2E guide flow — aliases all section handlers (project, event, A/B draft, metrics, activate). */
+function isPersonalizeE2eAbTestGuideUnifiedFlow(flow: { id?: string } | undefined): boolean {
+  return String(flow?.id || "").toLowerCase() === "get-started-with-personalize-ab-test-end-to-end-guide";
+}
+
+/** Parts 1, 3, 5, 6, 8 use Personalize UI clicks/verify handlers (part 2/4/7/9/10 are informational). */
+function isPersonalizeE2eAbTestGuideExecutablePart(flow: { id?: string } | undefined): boolean {
+  const id = String(flow?.id || "").toLowerCase();
+  return (
+    id === "get-started-with-personalize-ab-test-end-to-end-guide" ||
+    /^get-started-with-personalize-ab-test-end-to-end-guide-part-(1|3|5|6|8)$/.test(id)
+  );
+}
+
 /** Lytics Import Entries job + Stack API Key authorization (standalone JSON or chained after DAL). */
 function isCreateJobLyticsAuthorizationFlow(flow?: { id?: string }): boolean {
   const id = String(flow?.id || "").toLowerCase();
@@ -1690,13 +1713,14 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
     if (orgMarketplaceNav) return;
   }
 
-  if (expectedWithin === "Top Bar") {
+  if (expectedWithin === "Top Bar" || String(expectedWithin || "").trim().toLowerCase() === "top navigation bar") {
     const looksLikeTopBar = await el
       .evaluate((node) => {
         const self = node as HTMLElement;
         const dt = self?.getAttribute?.("data-test-id") || "";
         if (dt === "install-app-cta") return true;
         if (dt === "launch-nav-settings") return true;
+        if (dt === "app-switcher") return true;
         if (dt.startsWith("cms-nav-") || dt === "cs-cms-button" || dt === "cms-nav-apps") return true;
         return !!self?.closest?.(
           'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], #topnav, .header, #header-content-wrapper-id, #navbar-items-wrapper-id, .SidebarWindow__tabs-container, [data-test-id="cs-sidebar-window"]'
@@ -2473,8 +2497,80 @@ async function openRowActionMenu(page: Page, step?: Step, flow?: any) {
   await clickEllipsis();
   await page.waitForSelector(ROW_MENU_VISIBLE_AFTER_ELLIPSIS, { state: "visible", timeout: 10_000 });
 }
-  
-  
+
+/**
+ * Personalize Attributes / Audiences / Experiences listing: row ⋮ surfaces **Edit** under `cs-vertical-action-tooltip-actions` → `cs-ct-action-edit`,
+ * sometimes portaled under `#tableRowActionNode`.
+ */
+async function resolvePersonalizeAttributesEditLi(page: Page, timeoutMs: number): Promise<Locator> {
+  const main = page.locator("main#react-personalize").first();
+  const primary = (): Locator =>
+    page.locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-edit"]').first();
+  const verticalTooltip = (): Locator =>
+    page.locator('.VerticalActionTooltip li[data-test-id="cs-ct-action-edit"]').first();
+  const fallbackNodeLi = (): Locator => page.locator('#tableRowActionNode [data-test-id="cs-ct-action-edit"]').first();
+  const fallbackMenuItem = (): Locator =>
+    page.locator('#tableRowActionNode').getByRole('menuitem', { name: /^Edit$/i }).first();
+  const nodePlainEdit = (): Locator => page.locator('#tableRowActionNode').getByText(/^Edit$/i).first();
+  /** SPA often portals the tooltip; last visible Edit menuitem inside Personalize main is typically the attribute row overflow. */
+  const mainScopedMenuEdit = (): Locator =>
+    main.getByRole("menuitem", { name: /^Edit$/i }).filter({ visible: true }).last();
+  /** Product may expose the row action as **Edit Text** (accessible name) while keeping `cs-ct-action-edit`. */
+  const mainScopedMenuEditText = (): Locator =>
+    main.getByRole("menuitem", { name: /^Edit\s+Text$/i }).filter({ visible: true }).last();
+  const budget = Math.min(Math.max(timeoutMs, 4_000), 90_000);
+  const deadline = Date.now() + budget;
+  while (Date.now() < deadline) {
+    for (const mk of [
+      primary,
+      verticalTooltip,
+      fallbackNodeLi,
+      fallbackMenuItem,
+      nodePlainEdit,
+      mainScopedMenuEdit,
+      mainScopedMenuEditText,
+    ]) {
+      const loc = mk();
+      if (await loc.isVisible({ timeout: 420 }).catch(() => false)) return loc;
+    }
+    await page.waitForTimeout(180);
+  }
+  throw new Error(
+    `Personalize listing row ⋮ Edit did not become visible within ${budget}ms (expected cs-vertical-action-tooltip-actions→cs-ct-action-edit, VerticalActionTooltip, #tableRowActionNode, plain Edit in #tableRowActionNode, or main#react-personalize menuitem Edit / Edit Text).`
+  );
+}
+
+/**
+ * Personalize **Audiences** listing: row ⋮ **Delete** under `cs-vertical-action-tooltip-actions` → `cs-ct-action-delete`,
+ * often portaled like Attributes **Edit**.
+ */
+async function resolvePersonalizeAudiencesOverflowDeleteLi(page: Page, timeoutMs: number): Promise<Locator> {
+  const main = page.locator("main#react-personalize").first();
+  const primary = (): Locator =>
+    page.locator('[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-delete"]').first();
+  const verticalTooltip = (): Locator =>
+    page.locator('.VerticalActionTooltip li[data-test-id="cs-ct-action-delete"]').first();
+  const fallbackNodeLi = (): Locator => page.locator('#tableRowActionNode [data-test-id="cs-ct-action-delete"]').first();
+  const fallbackMenuItem = (): Locator =>
+    page.locator('#tableRowActionNode').getByRole('menuitem', { name: /^Delete$/i }).first();
+  const nodePlainDel = (): Locator => page.locator('#tableRowActionNode').getByText(/^Delete$/i).first();
+  const mainScopedMenuDel = (): Locator =>
+    main.getByRole('menuitem', { name: /^Delete$/i }).filter({ visible: true }).last();
+  const budget = Math.min(Math.max(timeoutMs, 4_000), 90_000);
+  const deadline = Date.now() + budget;
+  while (Date.now() < deadline) {
+    for (const mk of [primary, verticalTooltip, fallbackNodeLi, fallbackMenuItem, nodePlainDel, mainScopedMenuDel]) {
+      const loc = mk();
+      if (await loc.isVisible({ timeout: 420 }).catch(() => false)) return loc;
+    }
+    await page.waitForTimeout(180);
+  }
+  throw new Error(
+    `Personalize Audiences: row ⋮ Delete did not become visible within ${budget}ms (expected cs-vertical-action-tooltip-actions→cs-ct-action-delete, VerticalActionTooltip, #tableRowActionNode Delete, or menuitem Delete in main).`
+  );
+}
+
+
 
 /**
  * ✅ Click menu item safely (prevents "opens then closes" flake)
@@ -14972,15 +15068,37 @@ export async function performAction(
         }
       }
 
-      // Personalize — set-up-personalize (`create-personalize-project`, `manage-personalize-project`).
+      // Personalize — set-up-personalize (`create-personalize-project`, …, `create-event`, `edit-event`, `delete-event`, `delete-audience`).
       {
         const fidP = String(flow?.id || "").toLowerCase();
-        if (
-          String(flow?.project || "") === "Personalize" &&
-          (fidP === "create-personalize-project" || fidP === "manage-personalize-project") &&
-          step.action === "click"
-        ) {
+        const personalizeClickFlow =
+          fidP === "create-personalize-project" ||
+          isPersonalizeE2eAbTestGuideExecutablePart(flow) ||
+          fidP === "manage-personalize-project" ||
+          fidP === "delete-personalize-project" ||
+          fidP === "create-custom-attribute" ||
+          fidP === "edit-custom-attribute" ||
+          fidP === "add-custom-attribute-to-audience" ||
+          fidP === "create-audience" ||
+          fidP === "edit-audience" ||
+          fidP === "delete-audience" ||
+          fidP === "delete-experience" ||
+          fidP === "delete-event" ||
+          fidP === "create-segmented-experience" ||
+          fidP === "create-personalized-content" ||
+          (fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+          (fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+          fidP === "prioritize-experiences" ||
+          (fidP === "create-event" || isPersonalizeE2eAbTestGuidePart(flow, 5) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+          (fidP === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+          fidP === "edit-event" ||
+          fidP === "user-permissions-invite-user" ||
+          fidP === "create-an-entry-variant";
+        if (String(flow?.project || "") === "Personalize" && personalizeClickFlow && step.action === "click") {
           const tP = getStepTimeoutMs(step, 120_000);
+          const audienceEditorRuleFlows =
+            fidP === "add-custom-attribute-to-audience" || fidP === "create-audience";
+          const audienceEditorSaveFlows = audienceEditorRuleFlows || fidP === "edit-audience";
           const personalizeProjectModal = (): Locator =>
             page
               .locator('[role="dialog"]')
@@ -14990,6 +15108,25 @@ export async function performAction(
           const personalizeAppSwitcherIconTargets = new Set([
             "Create Personalize Project doc: App Switcher icon (doc step)",
             "Manage Personalize Project doc: App Switcher icon (doc step)",
+            "Delete Personalize Project doc: App Switcher icon (doc step)",
+            "Create Custom Attribute doc: App Switcher icon (doc step)",
+            "Edit Custom Attribute doc: App Switcher icon (doc step)",
+            "Add Custom Attribute to Audience doc: App Switcher icon (doc step)",
+            "Create Audience doc: App Switcher icon (doc step)",
+            "Edit Audience doc: App Switcher icon (doc step)",
+            "Delete Audience doc: App Switcher icon (doc step)",
+            "Delete Event doc: App Switcher icon (doc step)",
+            "Delete Experience doc: App Switcher icon (doc step)",
+            "Create Segmented Experience doc: App Switcher icon (doc step)",
+            "Create A/B Test Experience doc: App Switcher icon (doc step)",
+            "Edit Experience doc: App Switcher icon (doc step)",
+            "Create Personalized Content doc: App Switcher icon (doc step)",
+            "Prioritize Experiences doc: App Switcher icon (doc step)",
+            "Create Event doc: App Switcher icon (doc step)",
+            "Add Event to A/B Test Experience doc: App Switcher icon (doc step)",
+            "Edit Event doc: App Switcher icon (doc step)",
+            "User Permissions doc: App Switcher icon (doc step)",
+            "Create Entry Variants in CMS doc: App Switcher icon (doc step)",
           ]);
           if (personalizeAppSwitcherIconTargets.has(step.target)) {
             const opener = page.locator('[data-test-id="app-switcher"]').first();
@@ -15008,6 +15145,24 @@ export async function performAction(
           const personalizeAppSwitcherProductTargets = new Set([
             "Create Personalize Project doc: App Switcher Personalize product (doc step)",
             "Manage Personalize Project doc: App Switcher Personalize product (doc step)",
+            "Delete Personalize Project doc: App Switcher Personalize product (doc step)",
+            "Create Custom Attribute doc: App Switcher Personalize product (doc step)",
+            "Edit Custom Attribute doc: App Switcher Personalize product (doc step)",
+            "Add Custom Attribute to Audience doc: App Switcher Personalize product (doc step)",
+            "Create Audience doc: App Switcher Personalize product (doc step)",
+            "Edit Audience doc: App Switcher Personalize product (doc step)",
+            "Delete Audience doc: App Switcher Personalize product (doc step)",
+            "Delete Event doc: App Switcher Personalize product (doc step)",
+            "Delete Experience doc: App Switcher Personalize product (doc step)",
+            "Create Segmented Experience doc: App Switcher Personalize product (doc step)",
+            "Create A/B Test Experience doc: App Switcher Personalize product (doc step)",
+            "Edit Experience doc: App Switcher Personalize product (doc step)",
+            "Create Personalized Content doc: App Switcher Personalize product (doc step)",
+            "Prioritize Experiences doc: App Switcher Personalize product (doc step)",
+            "Create Event doc: App Switcher Personalize product (doc step)",
+            "Add Event to A/B Test Experience doc: App Switcher Personalize product (doc step)",
+            "Edit Event doc: App Switcher Personalize product (doc step)",
+            "User Permissions doc: App Switcher Personalize product (doc step)",
           ]);
           if (personalizeAppSwitcherProductTargets.has(step.target)) {
             const opener = page.locator('[data-test-id="app-switcher"]').first();
@@ -15022,8 +15177,14 @@ export async function performAction(
               await page.waitForTimeout(500);
             }
             await body.waitFor({ state: "visible", timeout: Math.min(tP, 30_000) }).catch(() => {});
+            await page.waitForTimeout(250);
+
             const candidates: Locator[] = [
+              body.locator('[data-test-id="app-switcher-personalize"]').first(),
               page.locator('[data-test-id="app-switcher-personalize"]').first(),
+              body.locator('a[href*="personalize" i]').first(),
+              body.getByRole("link", { name: /^Personalize$/i }).first(),
+              body.getByRole("button", { name: /^Personalize$/i }).first(),
               page.locator('[data-test-id="app-switcher-body"] a[href*="personalize" i]').first(),
               page.getByRole("button", { name: /^Personalize$/i }).first(),
               page
@@ -15031,19 +15192,49 @@ export async function performAction(
                 .locator('[data-test-id="app-switcher-product-title"]')
                 .filter({ hasText: /^Personalize$/i })
                 .first(),
+              body.locator('[data-test-id="app-switcher-product-title"]').filter({ hasText: /^Personalize$/i }).first(),
             ];
+
+            const tryClickPersonalize = async (c: Locator): Promise<boolean> => {
+              if (!(await c.isVisible({ timeout: 3_500 }).catch(() => false))) return false;
+              await c.scrollIntoViewIfNeeded().catch(() => {});
+              try {
+                await c.click({ timeout: 18_000, force: true });
+                return true;
+              } catch {
+                try {
+                  await c.click({ timeout: 12_000, force: true });
+                  return true;
+                } catch {
+                  return false;
+                }
+              }
+            };
+
             let clicked = false;
             for (const c of candidates) {
-              if (await c.isVisible({ timeout: 12_000 }).catch(() => false)) {
-                await c.scrollIntoViewIfNeeded().catch(() => {});
-                await c.click({ timeout: tP, force: true });
+              if (await tryClickPersonalize(c)) {
                 clicked = true;
                 break;
               }
             }
             if (!clicked) {
+              console.warn(
+                "[Personalize] App Switcher: first Personalize click pass failed — reopening the switcher and retrying."
+              );
+              await opener.click({ timeout: Math.min(tP, 20_000), force: true }).catch(() => {});
+              await page.waitForTimeout(600);
+              await body.waitFor({ state: "visible", timeout: Math.min(tP, 25_000) }).catch(() => {});
+              for (const c of candidates) {
+                if (await tryClickPersonalize(c)) {
+                  clicked = true;
+                  break;
+                }
+              }
+            }
+            if (!clicked) {
               throw new Error(
-                "Personalize doc: Personalize product not found in App Switcher (tried app-switcher-personalize, href, role=button)."
+                "Personalize doc: Personalize product not found in App Switcher (tried scoped app-switcher-personalize, body links, product-title, role link/button)."
               );
             }
             await page.waitForTimeout(900);
@@ -15051,16 +15242,244 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "manage-personalize-project" && step.target === "Manage Personalize Project doc: open project card from Projects list (doc step)") {
+          /** E2E guide — App Switcher → Headless CMS (same stack as `DEFAULT_STACK` / project link). */
+          const e2eGuideHeadlessCmsSwitcherTargets = new Set([
+            "Create Entry Variants in CMS doc: App Switcher Headless CMS product (doc step)",
+          ]);
+          if (
+            (isPersonalizeE2eAbTestGuideUnifiedFlow(flow) || fidP === "create-personalized-content") &&
+            e2eGuideHeadlessCmsSwitcherTargets.has(step.target)
+          ) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const body = page.locator('[data-test-id="app-switcher-body"]').first();
+            const alreadyOpen = await body.isVisible({ timeout: 800 }).catch(() => false);
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: Math.min(tP, 120_000), force: true });
+              await page.waitForTimeout(500);
+            }
+            await body.waitFor({ state: "visible", timeout: Math.min(tP, 35_000) }).catch(() => {});
+            await page.waitForTimeout(250);
+
+            const headlessCandidates: Locator[] = [
+              body.locator('[data-test-id="app-switcher-headless"]').first(),
+              body.locator('[data-test-id="app-switcher-headless-cms"]').first(),
+              body.locator('[data-test-id="app-switcher-cms"]').first(),
+              page.locator('[data-test-id="app-switcher-headless-cms"]').first(),
+              body.locator('a[href*="headless" i]').first(),
+              body.getByRole("link", { name: /^Headless CMS$/i }).first(),
+              body.getByRole("button", { name: /^Headless CMS$/i }).first(),
+              body
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^Headless CMS$/i })
+                .first(),
+              body.getByRole("link", { name: /^CMS$/i }).first(),
+              body.getByRole("button", { name: /^CMS$/i }).first(),
+              body.locator("a[role='button']").filter({ hasText: /^CMS$/i }).first(),
+              body
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^CMS$/i })
+                .first(),
+              page.getByRole("link", { name: /^Headless CMS$/i }).first(),
+              page.getByRole("button", { name: /^Headless CMS$/i }).first(),
+            ];
+            let clickedHeadless = false;
+            for (const c of headlessCandidates) {
+              if (await c.isVisible({ timeout: 4_000 }).catch(() => false)) {
+                await c.scrollIntoViewIfNeeded().catch(() => {});
+                await c.click({ timeout: Math.min(tP, 120_000), force: true });
+                clickedHeadless = true;
+                break;
+              }
+            }
+            if (!clickedHeadless) {
+              throw new Error(
+                "Create Entry Variants in CMS doc: Headless CMS / CMS product not found in App Switcher (tried app-switcher-headless*, app-switcher-cms, CMS tile, product-title)."
+              );
+            }
+            await page.waitForTimeout(1200);
+            await page.waitForURL(/\/#!\/(stacks|stack|dashboard)/i, { timeout: Math.min(tP, 90_000) }).catch(() => {});
+            break;
+          }
+
+          if (
+            (isPersonalizeE2eAbTestGuideUnifiedFlow(flow) || fidP === "create-personalized-content") &&
+            step.target === "Create Entry Variants in CMS doc: variant groups table row open (doc step)"
+          ) {
+            let hint = String(step.expected?.rowContains || "").trim();
+            if (!hint) {
+              if (fidP === "create-personalized-content") {
+                hint = String(
+                  process.env.PERSONALIZE_CREATE_PERSONALIZED_CONTENT_VARIANT_GROUP_ROW_CONTAINS ||
+                    process.env.PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS ||
+                    process.env.PERSONALIZE_CREATE_PERSONALIZED_CONTENT_EXPERIENCE_ROW_CONTAINS ||
+                    "Headline Test"
+                ).trim();
+              } else {
+                hint = String(process.env.PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS || "Headline Test").trim();
+              }
+            }
+            if (!hint) {
+              throw new Error(
+                "Create Entry Variants in CMS doc: set expected.rowContains or PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS for the variant group row."
+              );
+            }
+            const row = page.getByRole("row", { name: new RegExp(escapeRegex(hint), "i") }).first();
+            await expect(row).toBeVisible({ timeout: Math.min(tP, 90_000) });
+            await row.click({ timeout: Math.min(tP, 120_000) });
+            await page.waitForTimeout(800);
+            break;
+          }
+
+          if (
+            (isPersonalizeE2eAbTestGuideUnifiedFlow(flow) || fidP === "create-personalized-content") &&
+            step.target === "Create Entry Variants in CMS doc: Link Content Types first content type checkbox (doc step)"
+          ) {
+            const box = page
+              .locator(
+                '[data-test-id*="link-content" i] input[type="checkbox"], section:has-text("Link Content") input[type="checkbox"], main input[type="checkbox"]:not(:checked)'
+              )
+              .first();
+            await expect(box).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await box.click({ timeout: Math.min(tP, 60_000), force: true });
+            await page.waitForTimeout(400);
+            break;
+          }
+
+          if (
+            fidP === "create-an-entry-variant" &&
+            step.target === "Create an Entry Variant doc: pick variant scope option from dropdown (doc step)"
+          ) {
+            const t = Math.min(getStepTimeoutMs(step, 120_000), 120_000);
+            let hint =
+              String(step.expected?.rowContains ?? process.env.PERSONALIZE_CREATE_ENTRY_VARIANT_OPTION_CONTAINS ?? "").trim();
+            /** Default matches common Personalize + E2E guide variant group naming. */
+            if (!hint) hint = String(process.env.PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS ?? "Headline Test").trim();
+            const menu = page
+              .locator('[role="listbox"]:visible')
+              .or(page.locator('ul[role="listbox"]:visible'))
+              .last();
+            await expect(menu).toBeVisible({ timeout: t });
+            const baseRe = /\[\s*Base Entry\s*\]|^Base Entry$/i;
+            let opt = menu.locator('[role="option"]').filter({ hasNotText: baseRe });
+            let pick = hint
+              ? opt.filter({ hasText: new RegExp(escapeRegex(hint), "i") }).first()
+              : opt.first();
+            if (hint && !(await pick.isVisible({ timeout: 5_500 }).catch(() => false))) {
+              pick = menu.getByRole("option", { name: new RegExp(escapeRegex(hint), "i") }).first();
+            }
+            if (!(await pick.isVisible({ timeout: 6_000 }).catch(() => false))) {
+              pick = menu.locator('[role="option"]').filter({ hasNotText: baseRe }).first();
+            }
+            await expect(pick).toBeVisible({ timeout: t });
+            await pick.scrollIntoViewIfNeeded().catch(() => {});
+            await pick.click({ timeout: Math.min(t, 90_000) });
+            await page.waitForTimeout(550);
+            break;
+          }
+
+          /** Same top-navbar **Entries** target as verification (doc cites left nav). Warning is recorded only on the verify step. */
+          if (fidP === "create-an-entry-variant" && step.target === "Entries (doc step)") {
+            const t = Math.min(getStepTimeoutMs(step, 120_000), 120_000);
+            const topScope = page.locator("#topnav, nav.TopNavbar, header.TopNavbar, .TopNavbar").first();
+            let ent = topScope.locator('[data-test-id="cms-nav-entries"]').first();
+            if (!(await ent.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+              ent = page.locator('[data-test-id="cms-nav-entries"]').first();
+            }
+            if (!(await ent.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false))) {
+              ent = topScope.getByRole("link", { name: /^Entries$/i }).first();
+            }
+
+            await expect(ent).toBeVisible({ timeout: t });
+            await ent.scrollIntoViewIfNeeded().catch(() => {});
+            await ent.click({ timeout: Math.min(t, 90_000) });
+            console.warn(
+              "[create-an-entry-variant] Entries click used **top navbar** locator (cms-nav-entries / Entries); doc placement warning is on verify step.",
+            );
+            await page.waitForTimeout(550);
+            break;
+          }
+
+          if (
+            isPersonalizeE2eAbTestGuideUnifiedFlow(flow) &&
+            step.target === "Create Entry Variants in CMS doc: Entries navigation Base Entries (doc step)"
+          ) {
+            const menuItem = page.getByRole("menuitem", { name: /^Base Entries$/i }).first();
+            if (await menuItem.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await menuItem.click({ timeout: Math.min(tP, 60_000) });
+            } else {
+              const link = page.getByRole("link", { name: /^Base Entries$/i }).first();
+              await expect(link).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await link.click({ timeout: Math.min(tP, 60_000) });
+            }
+            await page.waitForURL(/entries/i, { timeout: Math.min(tP, 90_000) }).catch(() => {});
+            await page.waitForTimeout(600);
+            break;
+          }
+
+          if (
+            (fidP === "manage-personalize-project" &&
+              step.target === "Manage Personalize Project doc: open project card from Projects list (doc step)") ||
+            (fidP === "delete-personalize-project" &&
+              step.target === "Delete Personalize Project doc: open project card from Projects list (doc step)") ||
+            (fidP === "create-custom-attribute" &&
+              step.target === "Create Custom Attribute doc: open project card from Projects list (doc step)") ||
+            (fidP === "edit-custom-attribute" &&
+              step.target === "Edit Custom Attribute doc: open project card from Projects list (doc step)") ||
+            (fidP === "add-custom-attribute-to-audience" &&
+              step.target === "Add Custom Attribute to Audience doc: open project card from Projects list (doc step)") ||
+            (fidP === "create-audience" &&
+              step.target === "Create Audience doc: open project card from Projects list (doc step)") ||
+            (fidP === "edit-audience" &&
+              step.target === "Edit Audience doc: open project card from Projects list (doc step)") ||
+            (fidP === "delete-audience" &&
+              step.target === "Delete Audience doc: open project card from Projects list (doc step)") ||
+            (fidP === "delete-event" &&
+              step.target === "Delete Event doc: open project card from Projects list (doc step)") ||
+            (fidP === "delete-experience" &&
+              step.target === "Delete Experience doc: open project card from Projects list (doc step)") ||
+            (fidP === "create-segmented-experience" &&
+              step.target === "Create Segmented Experience doc: open project card from Projects list (doc step)") ||
+            ((fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create A/B Test Experience doc: open project card from Projects list (doc step)") ||
+            ((fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "Edit Experience doc: open project card from Projects list (doc step)") ||
+            (fidP === "prioritize-experiences" &&
+              step.target === "Prioritize Experiences doc: open project card from Projects list (doc step)") ||
+            ((fidP === "create-event" || isPersonalizeE2eAbTestGuidePart(flow, 5) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create Event doc: open project card from Projects list (doc step)") ||
+            (fidP === "add-event-to-ab-test-experience" &&
+              step.target === "Add Event to A/B Test Experience doc: open project card from Projects list (doc step)") ||
+            (fidP === "edit-event" && step.target === "Edit Event doc: open project card from Projects list (doc step)") ||
+            (fidP === "user-permissions-invite-user" &&
+              step.target === "User Permissions doc: open project card from Projects list (doc step)") ||
+            (fidP === "create-personalized-content" &&
+              step.target === "Create Personalized Content doc: open project card from Projects list (doc step)")
+          ) {
+            const needlePrimary = String(process.env.PERSONALIZE_DELETE_PROJECT_CARD_CONTAINS || "").trim();
             const needleRaw =
-              String(process.env.PERSONALIZE_PROJECT_CARD_CONTAINS || process.env.DAL_PERSONALIZE_PROJECT_SEARCH || "").trim() ||
+              (fidP === "delete-personalize-project" && needlePrimary
+                ? needlePrimary
+                : String(process.env.PERSONALIZE_PROJECT_CARD_CONTAINS || process.env.DAL_PERSONALIZE_PROJECT_SEARCH || "").trim()) ||
               "Doc Personalize Project";
             const needle = needleRaw.slice(0, 120);
-            const card = page
-              .locator('[data-test-id="cs-generic-card"]')
-              .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
-              .first();
-            await expect(card).toBeVisible({ timeout: tP });
+            const allCards = page.locator('[data-test-id="cs-generic-card"]');
+            await expect(allCards.first()).toBeVisible({ timeout: tP });
+
+            let card = allCards.filter({ hasText: new RegExp(escapeRegex(needle), "i") }).first();
+            const matchedNeedle = await card.isVisible({ timeout: 15_000 }).catch(() => false);
+            if (!matchedNeedle) {
+              console.warn(
+                `[${fidP}] No Personalize project card matched "${needle}" (set PERSONALIZE_PROJECT_CARD_CONTAINS or DAL_PERSONALIZE_PROJECT_SEARCH). Using the first listed project card.`
+              );
+              const withProjectLink = allCards.filter({ has: page.locator("a[href*='/personalize/projects/']") }).first();
+              if (await withProjectLink.isVisible({ timeout: 10_000 }).catch(() => false)) {
+                card = withProjectLink;
+              } else {
+                card = allCards.first();
+              }
+            }
+
+            await expect(card).toBeVisible({ timeout: Math.min(tP, 45_000) });
             const link = card.locator("a[href*='/personalize/projects/']").first();
             if (await link.isVisible({ timeout: 2_500 }).catch(() => false)) {
               await link.click({ timeout: tP });
@@ -15074,7 +15493,825 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "manage-personalize-project" && step.target === "Personalize workspace top navigation Settings button (doc step)") {
+          /**
+           * **create-personalized-content** — doc path opens an experience by **clicking the table row**
+           * ([Create Personalized Content](https://www.contentstack.com/docs/personalize/create-personalized-content)),
+           * not **⋮ → Edit** (`edit-experience` flow).
+           */
+          if (fidP === "create-personalized-content" && step.target === "Create Personalized Content doc: Experiences table row open experience (doc step)") {
+            const hint =
+              String(
+                step.expected?.rowContains ||
+                  process.env.PERSONALIZE_CREATE_PERSONALIZED_CONTENT_EXPERIENCE_ROW_CONTAINS ||
+                  process.env.PERSONALIZE_EDIT_EXPERIENCE_ROW_CONTAINS ||
+                  process.env.PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS ||
+                  ""
+              ).trim() || "Headline Test";
+            const nameRe = new RegExp(escapeRegex(hint), "i");
+            const namedRows = page.getByRole("row", { name: nameRe });
+            const nNamed = await namedRows.count().catch(() => 0);
+
+            let row: Locator;
+            if (nNamed > 0) {
+              row = namedRows.first();
+            } else {
+              console.warn(
+                `[create-personalized-content] No accessible row matched "${hint}" — trying cell-text match, then first Experiences data row (set PERSONALIZE_CREATE_PERSONALIZED_CONTENT_EXPERIENCE_ROW_CONTAINS if wrong row).`
+              );
+              const candidates: Locator[] = [
+                page
+                  .locator("main#react-personalize .Table__body .Table__body__row[role='row']")
+                  .filter({ hasText: nameRe })
+                  .first(),
+                page
+                  .locator('[data-test-id="cs-table"] [role="row"]')
+                  .filter({ hasText: nameRe })
+                  .first(),
+                page.locator("main#react-personalize .Table__body .Table__body__row[role='row']").first(),
+                page.locator('[data-test-id^="cs-table-body-row"]').first(),
+                page
+                  .locator('[data-test-id="cs-table"]')
+                  .getByRole("row")
+                  .filter({
+                    has: page.locator(
+                      '[data-test-id="cs-table-action-options"], button[data-test-id="cs-table-action-options"]'
+                    ),
+                  })
+                  .first(),
+              ];
+              let picked: Locator | null = null;
+              for (const c of candidates) {
+                if (await c.isVisible({ timeout: 5_000 }).catch(() => false)) {
+                  picked = c;
+                  break;
+                }
+              }
+              row = picked ?? page.locator("main#react-personalize .Table__body .Table__body__row[role='row']").first();
+            }
+            await expect(row).toBeVisible({ timeout: tP });
+            await row.scrollIntoViewIfNeeded().catch(() => {});
+            await row.click({ timeout: tP });
+            await page
+              .waitForURL(/\/personalize\/projects\/[^/]+\/experiences\/[^/]+/i, { timeout: Math.min(tP, 120_000) })
+              .catch(() => {});
+            await page.waitForTimeout(700);
+            break;
+          }
+
+          if (
+            fidP === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: Experience Information side tab (doc step)"
+          ) {
+            const side = page.locator('[data-test-id="cs-sidebar-window"]').first();
+            await expect(side).toBeVisible({ timeout: Math.min(tP, 60_000) });
+            const tabItem = page
+              .locator(
+                '.SidebarWindow__tab-item:has([data-testid="info-tab-icon"]), .SidebarWindow__tabs-container div[tabindex="0"]:has(svg[name="Information"])'
+              )
+              .first();
+            await tabItem.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(tabItem).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await tabItem.click({ timeout: tP });
+            await page.waitForTimeout(500);
+            const body = page.locator('[data-testid="connected-cms-stack-heading"]').first();
+            if (!(await body.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              await tabItem.click({ timeout: Math.min(tP, 20_000) }).catch(() => {});
+              await page.waitForTimeout(400);
+            }
+            break;
+          }
+
+          if (
+            fidP === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: capture Connected Stack display name for CMS stacks picker (doc step)"
+          ) {
+            const nameEl = page
+              .locator('[data-testid="connected-stack-url"] .font-weight-semi-bold, [data-testid="connected-stack-url"] .font-size-xl')
+              .first();
+            await expect(nameEl).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            const raw = ((await nameEl.textContent()) || "").replace(/\s+/g, " ").trim();
+            if (!raw) {
+              throw new Error(
+                'Create Personalized Content doc: could not read the Connected Stack name from [data-testid="connected-stack-url"] (Contentstack CMS Sync Status).'
+              );
+            }
+            if (flow && typeof flow === "object") {
+              (flow as any).__pcmConnectedStackLabel = raw;
+            }
+            // eslint-disable-next-line no-console
+            console.log(`[create-personalized-content] Connected Stack label for CMS stacks list: "${raw}"`);
+            break;
+          }
+
+          if (
+            fidP === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: Variant Group link opens CMS stack settings (doc step)"
+          ) {
+            const tLink = Math.min(getStepTimeoutMs(step), 120_000);
+            const link = page.locator('[data-testid="variant-group-url"] a[href*="settings/variants"]').first();
+            await expect(link).toBeVisible({ timeout: tLink });
+            await link.scrollIntoViewIfNeeded().catch(() => {});
+            const popupPromise = page.context().waitForEvent("page", { timeout: tLink });
+            await link.click({ timeout: tLink });
+            const popup = await popupPromise.catch(() => null);
+            if (!popup) {
+              throw new Error(
+                "Create Personalized Content doc: Variant Group link did not open a new browser tab (expected target=_blank to CMS stack settings)."
+              );
+            }
+            await popup.waitForLoadState("domcontentloaded", { timeout: tLink }).catch(() => {});
+            await popup.bringToFront().catch(() => {});
+            return popup;
+          }
+
+          if (
+            (fidP === "edit-custom-attribute" &&
+              step.target === "Edit Custom Attribute doc: Attributes listing row vertical ellipsis (doc step)") ||
+            (fidP === "edit-audience" &&
+              step.target === "Edit Audience doc: Audiences listing row vertical ellipsis (doc step)") ||
+            (fidP === "delete-audience" &&
+              step.target === "Delete Audience doc: Audiences listing row vertical ellipsis (doc step)") ||
+            (fidP === "delete-experience" &&
+              step.target === "Delete Experience doc: Experiences listing row vertical ellipsis (doc step)") ||
+            (fidP === "delete-event" &&
+              step.target === "Delete Event doc: Events listing row vertical ellipsis (doc step)") ||
+            ((fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Edit Experience doc: Experiences listing row vertical ellipsis (doc step)") ||
+            (fidP === "edit-event" && step.target === "Edit Event doc: Events listing row vertical ellipsis (doc step)")
+          ) {
+            const rowNeedleRaw =
+              fidP === "edit-custom-attribute"
+                ? String(process.env.PERSONALIZE_EDIT_CUSTOM_ATTRIBUTE_ROW_CONTAINS || "").trim() || "AUTO_LOYALTY"
+                : fidP === "edit-event"
+                  ? String(process.env.PERSONALIZE_EDIT_EVENT_ROW_CONTAINS || "").trim() || "AUTO_EVENT"
+                : fidP === "delete-event"
+                  ? String(process.env.PERSONALIZE_DELETE_EVENT_ROW_CONTAINS || "").trim() || "AUTO_EVENT"
+                : fidP === "delete-audience"
+                  ? String(process.env.PERSONALIZE_DELETE_AUDIENCE_ROW_CONTAINS || "").trim() || "AUTO Audience"
+                  : fidP === "delete-experience"
+                    ? String(process.env.PERSONALIZE_DELETE_EXPERIENCE_ROW_CONTAINS || "").trim() || "AUTO"
+                    : fidP === "edit-experience"
+                      ? String(process.env.PERSONALIZE_EDIT_EXPERIENCE_ROW_CONTAINS || "").trim() || "AUTO"
+                      : isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)
+                        ? String(process.env.PERSONALIZE_E2E_AB_GUIDE_EXPERIENCE_ROW_CONTAINS || "").trim() || "Headline Test"
+                        : String(process.env.PERSONALIZE_EDIT_AUDIENCE_ROW_CONTAINS || "").trim() || "AUTO Audience";
+            const rowNeedle = rowNeedleRaw.slice(0, 120);
+            const synth = { ...step, expected: { ...(step.expected || {}), rowContains: rowNeedle } };
+            const row = rowLocatorMatchingHint(page, rowNeedle);
+            await expect(row).toBeVisible({ timeout: tP });
+            await row.hover({ timeout: tP }).catch(() => {});
+            await page.waitForTimeout(350);
+
+            const actionCell = row.locator('[role="cell"]').last();
+            const btnOv = row.locator('button[data-test-id="cs-table-action-options"]').first();
+            const anyOv = row.locator('[data-test-id="cs-table-action-options"]').first();
+            const menuOv = actionCell.getByRole("menu", { name: /\baction\b/i }).first();
+
+            const tryOpenWith = async (loc: Locator) => {
+              await loc.scrollIntoViewIfNeeded().catch(() => {});
+              await loc.hover({ timeout: 6_000 }).catch(() => {});
+              await page.waitForTimeout(200);
+              await loc.click({ timeout: tP }).catch(async () => {
+                await loc.click({ timeout: tP, force: true });
+              });
+            };
+
+            if (await btnOv.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await tryOpenWith(btnOv);
+            } else if (await anyOv.isVisible({ timeout: 3_500 }).catch(() => false)) {
+              await tryOpenWith(anyOv);
+            } else if (await menuOv.isVisible({ timeout: 3_500 }).catch(() => false)) {
+              await tryOpenWith(menuOv);
+            } else {
+              await openRowActionMenu(page, synth, flow);
+            }
+
+            const anchored = page.locator("#tableRowActionNode, .VerticalActionTooltip").filter({ visible: true }).first();
+            if (!(await anchored.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              await openRowActionMenu(page, synth, flow);
+            }
+
+            const stabilizeMs = Number(process.env.VERTICAL_ELLIPSIS_POST_OPEN_MS ?? "2000");
+            await page.waitForTimeout(Number.isFinite(stabilizeMs) ? stabilizeMs : 2000);
+            break;
+          }
+
+          if (
+            (fidP === "edit-custom-attribute" &&
+              step.target === "Edit Custom Attribute doc: Attributes row Actions Edit menu item (doc step)") ||
+            (fidP === "edit-audience" &&
+              step.target === "Edit Audience doc: Audiences row Actions Edit menu item (doc step)") ||
+            ((fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Edit Experience doc: Experiences row Actions Edit menu item (doc step)") ||
+            (fidP === "edit-event" && step.target === "Edit Event doc: Events row Actions Edit menu item (doc step)")
+          ) {
+            const editLi = await resolvePersonalizeAttributesEditLi(page, Math.min(tP, 35_000));
+            await editLi.hover({ timeout: tP }).catch(() => {});
+            await page.waitForTimeout(250);
+            const innerLink = editLi.locator("a[href]").first();
+            if ((await innerLink.count()) > 0 && (await innerLink.isVisible({ timeout: 1_200 }).catch(() => false))) {
+              await innerLink.scrollIntoViewIfNeeded().catch(() => {});
+              await innerLink.click({ timeout: tP });
+            } else {
+              await editLi.scrollIntoViewIfNeeded().catch(() => {});
+              await editLi.click({ timeout: tP });
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+
+          /**
+           * **edit-experience** — experience editor v2 (`PageLayout--secondary-edit--v2`): clicking the Configuration
+           * nav row must activate that sidebar item; generic selector maps sometimes attach to a non-interactive
+           * wrapper so the main body stays on **Overview** and **Variants** never appears.
+           */
+          if (
+            (fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Edit Experience doc: experience editor left navigation Configuration tab (doc step)"
+          ) {
+            const main = page.locator("main#react-personalize").first();
+            await expect(main).toBeVisible({ timeout: tP });
+            const configRow = main
+              .locator('[data-test-id="cs-list-row"]')
+              .filter({ hasText: /^Configuration$/i })
+              .first();
+            await configRow.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(configRow).toBeVisible({ timeout: Math.min(tP, 30_000) });
+            const openConfiguration = async (): Promise<void> => {
+              await configRow.click({ timeout: tP });
+              await page.waitForTimeout(400);
+              const labelOnly = configRow.locator('[data-test-id="cs-truncate"]').first();
+              if (await labelOnly.isVisible({ timeout: 800 }).catch(() => false)) {
+                await labelOnly.click({ timeout: tP }).catch(() => {});
+                await page.waitForTimeout(350);
+              }
+            };
+            await openConfiguration();
+            const draftShell = main.locator(
+              '[data-testid="segmented-experience-draft-config-body"], [data-testid="ab-testing-experience-draft-config-body"], [data-testid="ab-test-experience-draft-config-body"]'
+            );
+            const variantsTitle = main.locator(
+              'h3[data-test-id="cs-heading-tag"]:has-text("Variants"), h2[data-test-id="cs-heading-tag"]:has-text("Variants")'
+            );
+            let okDraft = await draftShell.first().isVisible({ timeout: 6_000 }).catch(() => false);
+            let okHeading = await variantsTitle.first().isVisible({ timeout: 4_000 }).catch(() => false);
+            if (!okDraft && !okHeading) {
+              await openConfiguration();
+              okDraft = await draftShell.first().isVisible({ timeout: 8_000 }).catch(() => false);
+              okHeading = await variantsTitle.first().isVisible({ timeout: 6_000 }).catch(() => false);
+            }
+            if (!okDraft && !okHeading) {
+              console.warn(
+                "[edit-experience] Configuration nav: draft shell / Variants heading not visible yet after tab click — continuing (next step will retry selectors)."
+              );
+            }
+            await page.waitForTimeout(200);
+            break;
+          }
+
+          if (
+            (fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Edit Experience doc: Overview Save General Details footer button (doc step)"
+          ) {
+            const saveBtn = page
+              .locator(
+                'main#react-personalize button[data-testid="experience-footer-save-button"]:has-text("Save General Details"), main button[data-testid="experience-footer-save-button"]:has-text("Save General Details")'
+              )
+              .first();
+            await expect(saveBtn).toBeVisible({ timeout: tP });
+            await expect(saveBtn).toBeEnabled({ timeout: Math.min(tP, 90_000) });
+            await saveBtn.click({ timeout: tP });
+            await page.waitForTimeout(1400);
+            break;
+          }
+
+          /**
+           * **Save Draft** is absent/disabled when there are no variant edits (overview saved via **Save General Details**).
+           * Do not fall back to **Activate Draft** (destructive). Skip click with a log line.
+           */
+          if (
+            (fidP === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Edit Experience doc: experience Configuration footer Save Draft button (doc step)"
+          ) {
+            const root = page.locator("main#react-personalize").first();
+            const saveDraftBtn = root
+              .locator('button[data-testid="experience-footer-save-button"]')
+              .filter({ hasText: /^Save Draft$/i })
+              .first();
+            const sVisible = await saveDraftBtn.isVisible({ timeout: Math.min(tP, 12_000) }).catch(() => false);
+            if (sVisible && (await saveDraftBtn.isEnabled().catch(() => false))) {
+              await saveDraftBtn.scrollIntoViewIfNeeded().catch(() => {});
+              await saveDraftBtn.click({ timeout: tP });
+              await page.waitForTimeout(900);
+              break;
+            }
+            console.warn(
+              "[edit-experience] Save Draft not present or disabled — skipping click (no variant changes to save)."
+            );
+            await page.waitForTimeout(400);
+            break;
+          }
+
+          if (
+            fidP === "delete-audience" &&
+            step.target === "Delete Audience doc: Audiences row Actions Delete menu item (doc step)"
+          ) {
+            const delLi = await resolvePersonalizeAudiencesOverflowDeleteLi(page, Math.min(tP, 35_000));
+            await delLi.hover({ timeout: tP }).catch(() => {});
+            await page.waitForTimeout(250);
+            const innerLink = delLi.locator("a[href]").first();
+            if ((await innerLink.count()) > 0 && (await innerLink.isVisible({ timeout: 1_200 }).catch(() => false))) {
+              await innerLink.scrollIntoViewIfNeeded().catch(() => {});
+              await innerLink.click({ timeout: tP });
+            } else {
+              await delLi.scrollIntoViewIfNeeded().catch(() => {});
+              await delLi.click({ timeout: tP });
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+
+          if (
+            fidP === "delete-event" &&
+            step.target === "Delete Event doc: Events row Actions Delete menu item (doc step)"
+          ) {
+            const delLi = await resolvePersonalizeAudiencesOverflowDeleteLi(page, Math.min(tP, 35_000));
+            await delLi.hover({ timeout: tP }).catch(() => {});
+            await page.waitForTimeout(250);
+            const innerLink = delLi.locator("a[href]").first();
+            if ((await innerLink.count()) > 0 && (await innerLink.isVisible({ timeout: 1_200 }).catch(() => false))) {
+              await innerLink.scrollIntoViewIfNeeded().catch(() => {});
+              await innerLink.click({ timeout: tP });
+            } else {
+              await delLi.scrollIntoViewIfNeeded().catch(() => {});
+              await delLi.click({ timeout: tP });
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+
+          if (
+            fidP === "delete-experience" &&
+            step.target === "Delete Experience doc: Experiences row Actions Delete menu item (doc step)"
+          ) {
+            const delLi = await resolvePersonalizeAudiencesOverflowDeleteLi(page, Math.min(tP, 35_000));
+            await delLi.hover({ timeout: tP }).catch(() => {});
+            await page.waitForTimeout(250);
+            const innerLink = delLi.locator("a[href]").first();
+            if ((await innerLink.count()) > 0 && (await innerLink.isVisible({ timeout: 1_200 }).catch(() => false))) {
+              await innerLink.scrollIntoViewIfNeeded().catch(() => {});
+              await innerLink.click({ timeout: tP });
+            } else {
+              await delLi.scrollIntoViewIfNeeded().catch(() => {});
+              await delLi.click({ timeout: tP });
+            }
+            await page.waitForTimeout(900);
+            break;
+          }
+
+          if (
+            fidP === "delete-audience" &&
+            step.target === "Delete Audience doc: Delete Audience modal confirm Delete button (doc step)"
+          ) {
+            let dlg = page
+              .getByRole("dialog")
+              .filter({ has: page.getByRole("heading", { name: /^Delete\s+Audience$/i }) })
+              .last();
+            if (!(await dlg.isVisible({ timeout: Math.min(tP, 6_000) }).catch(() => false))) {
+              dlg = page.getByRole("dialog").last();
+            }
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const del = dlg
+              .locator('[data-test-id="cs-button"], button')
+              .filter({ hasText: /^Delete$/i })
+              .first();
+            await expect(del).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await expect(del).toBeEnabled({ timeout: Math.min(tP, 35_000) });
+            await del.click({ timeout: tP });
+            await page.waitForTimeout(1200);
+            break;
+          }
+
+          if (
+            fidP === "delete-event" &&
+            step.target === "Delete Event doc: Delete Event modal confirm Delete button (doc step)"
+          ) {
+            let dlg = page
+              .getByRole("dialog")
+              .filter({ has: page.getByRole("heading", { name: /^Delete\s+Event$/i }) })
+              .last();
+            if (!(await dlg.isVisible({ timeout: Math.min(tP, 6_000) }).catch(() => false))) {
+              dlg = page.getByRole("dialog").last();
+            }
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const del = dlg
+              .locator('[data-test-id="cs-button"], button')
+              .filter({ hasText: /^Delete$/i })
+              .first();
+            await expect(del).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await expect(del).toBeEnabled({ timeout: Math.min(tP, 35_000) });
+            await del.click({ timeout: tP });
+            await page.waitForTimeout(1200);
+            break;
+          }
+
+          if (
+            fidP === "delete-experience" &&
+            step.target === "Delete Experience doc: Delete Experience modal confirm Delete button (doc step)"
+          ) {
+            let dlg = page
+              .getByRole("dialog")
+              .filter({ has: page.getByRole("heading", { name: /^Delete\s+Experience$/i }) })
+              .last();
+            if (!(await dlg.isVisible({ timeout: Math.min(tP, 6_000) }).catch(() => false))) {
+              dlg = page.getByRole("dialog").last();
+            }
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const del = dlg
+              .locator('[data-test-id="cs-button"], button')
+              .filter({ hasText: /^Delete$/i })
+              .first();
+            await expect(del).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await expect(del).toBeEnabled({ timeout: Math.min(tP, 35_000) });
+            await del.click({ timeout: tP });
+            await page.waitForTimeout(1200);
+            break;
+          }
+
+          if (
+            fidP === "prioritize-experiences" &&
+            step.target === "Prioritize Experiences doc: sidebar footer Save button (doc step)"
+          ) {
+            const saveBtn = page.locator('[data-testid="experiences-priority-sidebar-save"]').first();
+            await expect(saveBtn).toBeVisible({ timeout: tP });
+            await expect(saveBtn).toBeEnabled({ timeout: Math.min(tP, 90_000) });
+            await saveBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await saveBtn.click({ timeout: tP });
+            await page.waitForTimeout(900);
+            break;
+          }
+
+          if (
+            fidP === "create-segmented-experience" ||
+            (fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+            (fidP === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow))
+          ) {
+            if (
+              step.target === "Create Segmented Experience doc: Select Audience(s) modal pick audience row (doc step)" ||
+              step.target === "Create A/B Test Experience doc: Select Audience(s) modal pick audience row (doc step)"
+            ) {
+              const needlePrimaryAb = String(process.env.PERSONALIZE_AB_TEST_EXPERIENCE_AUDIENCE_CONTAINS || "").trim();
+              const needlePrimarySeg = String(process.env.PERSONALIZE_SEGMENTED_EXPERIENCE_AUDIENCE_CONTAINS || "").trim();
+              const needleRaw =
+                ((fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow))
+                  ? needlePrimaryAb || needlePrimarySeg
+                  : needlePrimarySeg) ||
+                String(process.env.PERSONALIZE_EDIT_AUDIENCE_ROW_CONTAINS || "").trim() ||
+                "AUTO Audience";
+              const needle = needleRaw.slice(0, 120);
+              const dlg = page.getByRole("dialog").filter({ hasText: /Audience/i }).first();
+              await expect(dlg).toBeVisible({ timeout: tP });
+
+              let row = dlg.locator('[role="row"], tr').filter({ hasText: new RegExp(escapeRegex(needle), "i") }).first();
+              const matched =
+                needle.length > 0 && (await row.isVisible({ timeout: Math.min(tP, 28_000) }).catch(() => false));
+
+              if (!matched) {
+                console.warn(
+                  `[${fidP}] No audience row matched "${needle}" (set PERSONALIZE_SEGMENTED_EXPERIENCE_AUDIENCE_CONTAINS or PERSONALIZE_AB_TEST_EXPERIENCE_AUDIENCE_CONTAINS) — using the first data row in Select Audience(s).`
+                );
+                const tbodyFirst = dlg.locator("tbody tr").first();
+                const rowByRole = dlg.getByRole("row").nth(1);
+                if (await tbodyFirst.isVisible({ timeout: 6_000 }).catch(() => false)) {
+                  row = tbodyFirst;
+                } else if (await rowByRole.isVisible({ timeout: 4_000 }).catch(() => false)) {
+                  row = rowByRole;
+                } else {
+                  row = dlg.locator('[role="row"]').filter({ hasText: /\S/ }).nth(1);
+                }
+              }
+
+              await expect(row).toBeVisible({ timeout: Math.min(tP, 35_000) });
+              const cb = row.locator('input[type="checkbox"]').first();
+              if (await cb.isVisible({ timeout: 2_500 }).catch(() => false)) {
+                /** Custom checkbox: visible `.Checkbox__box` intercepts clicks on the raw `<input>`. */
+                await cb.click({ timeout: tP, force: true });
+              } else {
+                await row.click({ timeout: tP, force: true });
+              }
+              await page.waitForTimeout(350);
+              break;
+            }
+            if (
+              step.target === "Create Segmented Experience doc: Select Audience(s) modal Apply Selected Audiences button (doc step)" ||
+              step.target === "Create A/B Test Experience doc: Select Audience(s) modal Apply Selected Audiences button (doc step)"
+            ) {
+              const dlg = page.getByRole("dialog").filter({ hasText: /Audience/i }).first();
+              await expect(dlg).toBeVisible({ timeout: tP });
+              /** Footer buttons often expose only `aria-button` to the a11y tree; match visible label. */
+              let btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /Apply Selected Audiences/i }).first();
+              if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                btn = dlg.getByRole("button", { name: /Apply Selected Audiences/i }).first();
+              }
+              if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                btn = dlg.locator("button, [data-test-id='cs-button']").filter({ hasText: /^Apply Selected Audiences$/i }).first();
+              }
+              await expect(btn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await btn.click({ timeout: tP, force: true });
+              await page.waitForTimeout(500);
+              break;
+            }
+            if (
+              step.target === "Create Segmented Experience doc: experience footer Activate Draft button (doc step)" ||
+              step.target === "Create A/B Test Experience doc: experience footer Activate Draft button (doc step)"
+            ) {
+              const mainReact = page.locator("main#react-personalize").first();
+              const mainAny = page.locator("main").first();
+              let btn = mainReact.locator('[data-testid="experience-footer-activate-draft-button"]').first();
+              if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                btn = mainAny.locator('[data-testid="experience-footer-activate-draft-button"]').first();
+              }
+              if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                btn = mainReact.locator("button, [data-test-id='cs-button']").filter({ hasText: /^Activate Draft$/i }).first();
+              }
+              if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                btn = mainAny.locator("button, [data-test-id='cs-button']").filter({ hasText: /^Activate Draft$/i }).first();
+              }
+              if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                btn = page.locator('[data-testid="experience-footer-activate-draft-button"]').first();
+              }
+              await expect(btn).toBeVisible({ timeout: tP });
+              await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+              await btn.click({ timeout: tP, force: true });
+              await page.waitForTimeout(700);
+              break;
+            }
+            if (
+              step.target === "Create Segmented Experience doc: Activate Experience confirmation modal Activate button (doc step)" ||
+              step.target === "Create A/B Test Experience doc: Activate Experience confirmation modal Activate button (doc step)"
+            ) {
+              let dlg = page
+                .getByRole("dialog")
+                .filter({ has: page.getByRole("heading", { name: /activate/i }) })
+                .last();
+              if (!(await dlg.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                dlg = page.getByRole("dialog").last();
+              }
+              await expect(dlg).toBeVisible({ timeout: tP });
+              let act = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Activate$/i }).first();
+              if (!(await act.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                act = dlg.getByRole("button", { name: /^Activate$/i }).first();
+              }
+              if (!(await act.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                act = dlg.locator("button").filter({ hasText: /^Activate$/i }).first();
+              }
+              await expect(act).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await expect(act).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+              await act.click({ timeout: tP, force: true });
+              await page.waitForTimeout(1400);
+              break;
+            }
+
+            if (
+              ((fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+                step.target === "Create A/B Test Experience doc: Configuration Metrics select event from dropdown (doc step)") ||
+              ((fidP === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+                step.target === "Add Event to A/B Test Experience doc: Configuration Metrics select event from dropdown (doc step)")
+            ) {
+              const main = page.locator("main#react-personalize").first();
+              await expect(main).toBeVisible({ timeout: tP });
+              const eventNeedle = String(process.env.PERSONALIZE_AB_TEST_METRIC_EVENT_CONTAINS || "").trim().slice(0, 120);
+
+              let body = main
+                .locator('[data-testid="ab-testing-experience-draft-config-body"], [data-testid="ab-test-experience-draft-config-body"]')
+                .first();
+              if (!(await body.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                body = main.locator("#PageLayout__body, .PageLayout__body, .experience-page-layout__content").first();
+              }
+              if (!(await body.isVisible({ timeout: 2_500 }).catch(() => false))) {
+                body = main;
+              }
+              /** Scope to **Metrics** — avoid Variant Distribution / Target Group selects. */
+              const metricsBlock = body.locator("div").filter({ has: body.getByRole("heading", { name: /^Metrics$/i }) }).first();
+              let control = metricsBlock
+                .locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control')
+                .first();
+              if (!(await control.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                control = metricsBlock.locator(".Select__control, .Portal__control, [class*='Select__control']").first();
+              }
+              if (!(await control.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                const eventNameRow = body.locator("div").filter({ has: body.getByText(/^Event Name$/i) }).first();
+                control = eventNameRow
+                  .locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control')
+                  .first();
+              }
+              if (!(await control.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                const mh = body.getByRole("heading", { name: /^Metrics$/i }).first();
+                await mh.scrollIntoViewIfNeeded().catch(() => {});
+                control = mh.locator("xpath=following::div[contains(@class,'Select__control')][1]").first();
+              }
+              if (!(await control.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                control = main.getByText("Select event", { exact: false }).first();
+              }
+              await expect(control).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await control.scrollIntoViewIfNeeded().catch(() => {});
+              await control.click({ timeout: tP, force: true }).catch(() => {});
+              await page.waitForTimeout(450);
+
+              let menu = page.locator(".Select__menu").last();
+              if (!(await menu.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                menu = page.locator("[role='listbox']").last();
+              }
+              await expect(menu).toBeVisible({ timeout: Math.min(tP, 35_000) });
+
+              /** Resolve options from the opened menu only (`page.getByRole("option")` can match hidden listboxes). */
+              const roleOpts = menu.getByRole("option");
+              const nRole = await roleOpts.count();
+              if (nRole > 0) {
+                let opt: Locator;
+                if (eventNeedle) {
+                  opt = roleOpts.filter({ hasText: new RegExp(escapeRegex(eventNeedle), "i") }).first();
+                  if (!(await opt.isVisible({ timeout: 2_000 }).catch(() => false))) {
+                    opt = roleOpts.first();
+                  }
+                } else {
+                  opt = roleOpts.first();
+                }
+                await opt.click({ timeout: tP, force: true });
+              } else {
+                await page.keyboard.press("ArrowDown");
+                await page.waitForTimeout(80);
+                await page.keyboard.press("Enter");
+              }
+              await page.waitForTimeout(500);
+
+              const metricsStale = await main
+                .getByText(/Event cannot be empty/i)
+                .first()
+                .isVisible({ timeout: 2_500 })
+                .catch(() => false);
+              if (metricsStale) {
+                await control.scrollIntoViewIfNeeded().catch(() => {});
+                await control.click({ timeout: tP, force: true });
+                await page.waitForTimeout(350);
+                const menu2 = page.locator(".Select__menu, [role='listbox']").last();
+                const n2 = await menu2.getByRole("option").count();
+                if (n2 > 0) {
+                  await menu2.getByRole("option").first().click({ timeout: tP, force: true });
+                } else {
+                  await page.keyboard.press("ArrowDown");
+                  await page.waitForTimeout(80);
+                  await page.keyboard.press("Enter");
+                }
+                await page.waitForTimeout(700);
+              }
+              let eventStillBad = await main
+                .getByText(/Event cannot be empty/i)
+                .first()
+                .isVisible({ timeout: 1_500 })
+                .catch(() => false);
+              if (eventStillBad) {
+                const innerInp = metricsBlock.locator('[data-test-id="cs-select"] input').first();
+                if (await innerInp.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                  await innerInp.click({ force: true });
+                  await page.waitForTimeout(250);
+                  await page.keyboard.press("ArrowDown");
+                  await page.waitForTimeout(120);
+                  await page.keyboard.press("Enter");
+                  await page.waitForTimeout(900);
+                }
+                eventStillBad = await main
+                  .getByText(/Event cannot be empty/i)
+                  .first()
+                  .isVisible({ timeout: 1_500 })
+                  .catch(() => false);
+              }
+              if (eventStillBad) {
+                throw new Error(
+                  "A/B Test (doc): could not select a Metrics event — create at least one Event in this Personalize project (doc Prerequisites), or set PERSONALIZE_AB_TEST_METRIC_EVENT_CONTAINS."
+                );
+              }
+              break;
+            }
+
+            if (
+              (fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create A/B Test Experience doc: Configuration Target Group Selective option (doc step)"
+            ) {
+              const main = page.locator("main#react-personalize").first();
+              await expect(main).toBeVisible({ timeout: tP });
+              let body = main
+                .locator('[data-testid="ab-testing-experience-draft-config-body"], [data-testid="ab-test-experience-draft-config-body"]')
+                .first();
+              if (!(await body.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                body = main.locator("#PageLayout__body, .PageLayout__body, .experience-page-layout__content").first();
+              }
+              if (!(await body.isVisible({ timeout: 2_500 }).catch(() => false))) {
+                body = main;
+              }
+              /** Target Group default is **Everyone** in a react-select — not a radio row. Open that control, then pick **Selective**. */
+              let tgControl = main
+                .locator('[data-test-id="cs-select"]')
+                .filter({ hasText: /Everyone/i })
+                .first()
+                .locator(".Select__control, .Portal__control")
+                .first();
+              if (!(await tgControl.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                const tgHeading = body.getByRole("heading", { name: /^Target Group$/i }).first();
+                await tgHeading.scrollIntoViewIfNeeded().catch(() => {});
+                tgControl = tgHeading
+                  .locator(
+                    "xpath=following::div[contains(@class,'Select__control') or contains(@class,'Portal__control')][1]"
+                  )
+                  .first();
+              }
+              if (!(await tgControl.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                tgControl = body.locator('[data-test-id="cs-select"] .Select__control').last();
+              }
+              await expect(tgControl).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await tgControl.scrollIntoViewIfNeeded().catch(() => {});
+              await tgControl.click({ timeout: tP, force: true });
+              await page.waitForTimeout(450);
+              let menu = page.locator(".Select__menu, [role='listbox']").last();
+              if (!(await menu.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                menu = page.locator("[role='listbox']").last();
+              }
+              await expect(menu).toBeVisible({ timeout: Math.min(tP, 25_000) });
+              let opt = menu.locator("[role=option], .Select__option, li[role='option']").filter({ hasText: /^Selective$/i }).first();
+              if (!(await opt.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                opt = menu.getByRole("option", { name: /^Selective$/i }).first();
+              }
+              await expect(opt).toBeVisible({ timeout: Math.min(tP, 35_000) });
+              await opt.click({ timeout: tP, force: true });
+              await page.waitForTimeout(400);
+              break;
+            }
+
+            if (
+              (fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create A/B Test Experience doc: Configuration Variant Distribution dropdown open (doc step)"
+            ) {
+              const main = page.locator("main#react-personalize").first();
+              await expect(main).toBeVisible({ timeout: tP });
+              let body = main
+                .locator('[data-testid="ab-testing-experience-draft-config-body"], [data-testid="ab-test-experience-draft-config-body"]')
+                .first();
+              if (!(await body.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                body = main.locator("#PageLayout__body, .PageLayout__body, .experience-page-layout__content").first();
+              }
+              if (!(await body.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                body = main;
+              }
+              await expect(body).toBeVisible({ timeout: tP });
+              const vdSection = body.locator("div").filter({ has: body.getByText(/^Variant Distribution$/i) }).first();
+              let control = vdSection.locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control').first();
+              if (!(await control.isVisible({ timeout: 4_000 }).catch(() => false))) {
+                control = body.locator('[data-test-id="cs-select"]').first().locator(".Select__control, .Portal__control").first();
+              }
+              if (!(await control.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                control = body.locator(".Select__control").first();
+              }
+              if (!(await control.isVisible({ timeout: 2_500 }).catch(() => false))) {
+                const vdHeading = body.getByText(/^Variant Distribution$/i).first();
+                await vdHeading.scrollIntoViewIfNeeded().catch(() => {});
+                control = vdHeading
+                  .locator("xpath=following::div[contains(@class,'Select__control') or contains(@class,'control')][1]")
+                  .first();
+              }
+              await expect(control).toBeVisible({ timeout: Math.min(tP, 45_000) });
+              await control.scrollIntoViewIfNeeded().catch(() => {});
+              await control.click({ timeout: tP, force: true });
+              await page.waitForTimeout(450);
+              break;
+            }
+
+            if (
+              (fidP === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create A/B Test Experience doc: Configuration Variant Distribution dropdown choose Equally split (doc step)"
+            ) {
+              let menu = page.locator(".Select__menu, [role='listbox']").last();
+              if (!(await menu.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                menu = page.locator("[role='listbox']").last();
+              }
+              await expect(menu).toBeVisible({ timeout: Math.min(tP, 35_000) });
+              let opt = menu.locator("[role=option], .Select__option").filter({ hasText: /^Equally split$/i }).first();
+              if (!(await opt.isVisible({ timeout: 3_500 }).catch(() => false))) {
+                opt = menu.getByRole("option", { name: /Equally\s+split/i }).first();
+              }
+              await expect(opt).toBeVisible({ timeout: Math.min(tP, 25_000) });
+              await opt.scrollIntoViewIfNeeded().catch(() => {});
+              await opt.click({ timeout: tP, force: true });
+              await page.waitForTimeout(450);
+              break;
+            }
+          }
+
+          if (
+            (fidP === "manage-personalize-project" ||
+              fidP === "delete-personalize-project" ||
+              fidP === "user-permissions-invite-user") &&
+            step.target === "Personalize workspace top navigation Settings button (doc step)"
+          ) {
             const btn = page.locator('[data-test-id="personalize-nav-settings"]').first();
             await expect(btn).toBeVisible({ timeout: tP });
             await btn.click({ timeout: tP });
@@ -15092,7 +16329,121 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "manage-personalize-project" && step.target === "Personalize Settings left navigation Users row (doc step)") {
+          if (fidP === "manage-personalize-project" && step.target === "Personalize Settings General Reset button (doc step)") {
+            const btn = page.locator('[data-testid="details-reset-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_500);
+            break;
+          }
+
+          /**
+           * General → Stack Connection: open stack picker, choose **DEFAULT_STACK**, click **Connect Stack** when disconnect UI exists;
+           * otherwise no-op when project already has a linked stack.
+           */
+          if (
+            fidP === "manage-personalize-project" &&
+            step.target === "Personalize Settings General Stack Connection select stack DEFAULT_STACK and Connect Stack (doc step)"
+          ) {
+            const stackHeading = page
+              .locator('main#react-personalize h3[data-test-id="cs-heading-tag"]')
+              .filter({ hasText: /^Stack Connection$/i })
+              .first();
+            await expect(stackHeading).toBeVisible({ timeout: tP });
+            await stackHeading.scrollIntoViewIfNeeded().catch(() => {});
+            await stackHeading.evaluate((el) =>
+              (el as HTMLElement).scrollIntoView({ block: "end", inline: "nearest" })
+            );
+            await page.waitForTimeout(500);
+            const stackBlock = stackHeading.locator("xpath=./following-sibling::div[1]").first();
+            await expect(stackBlock).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            const connectBtn = stackBlock
+              .locator('[data-test-id="cs-button"], button[data-testid="connect-stack-button"]')
+              .filter({ hasText: /^Connect\s+Stack$/i })
+              .first();
+            if (!(await connectBtn.isVisible({ timeout: 6_000 }).catch(() => false))) {
+              console.warn(
+                "[manage-personalize-project] Stack Connection pick+connect skipped (already connected)."
+              );
+              break;
+            }
+            const ctl = stackBlock.locator('[data-test-id="cs-select"]').first();
+            const ctlSurface = ctl
+              .locator(".Select__control, .Portal__control, [class*='control']")
+              .first();
+            await expect(ctlSurface).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await ctlSurface.click({ timeout: tP, force: true });
+            await page.waitForTimeout(450);
+            const stack = String(process.env.DEFAULT_STACK || "").trim();
+            if (!stack) {
+              throw new Error(
+                "DEFAULT_STACK must be set in .env for manage-personalize-project Stack Connection (doc: pick an existing stack)."
+              );
+            }
+            const inp = stackBlock.locator('input[aria-label="cs-select-aria"]').first();
+            await expect(inp).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await inp.focus();
+            await inp.fill("");
+            await inp.pressSequentially(stack.slice(0, Math.min(stack.length, 96)), { delay: 26 });
+            await page.waitForTimeout(900);
+            const menu = page.locator(".Select__menu, [role='listbox']").last();
+            await expect(menu).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            const needle = stack.slice(0, Math.min(48, stack.length));
+            let opt = menu
+              .locator("[role=option], .Select__option")
+              .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+              .first();
+            if (!(await opt.isVisible({ timeout: 5_500 }).catch(() => false))) {
+              opt = menu.locator("[role=option], .Select__option").first();
+            }
+            if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
+              await opt.scrollIntoViewIfNeeded().catch(() => {});
+              await opt.click({ timeout: tP, force: true });
+            } else {
+              await page.keyboard.press("ArrowDown");
+              await page.waitForTimeout(200);
+              await page.keyboard.press("Enter");
+            }
+            await page.waitForTimeout(800);
+            const connectFresh = stackBlock
+              .locator('[data-test-id="cs-button"], button[data-testid="connect-stack-button"]')
+              .filter({ hasText: /^Connect\s+Stack$/i })
+              .first();
+            await expect(connectFresh).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            try {
+              await expect(connectFresh).toBeEnabled({ timeout: 10_000 });
+              await connectFresh.click({ timeout: tP });
+              await page.waitForTimeout(2_500);
+            } catch {
+              console.warn(
+                "[manage-personalize-project] Connect Stack stayed disabled after the stack picker — confirm DEFAULT_STACK exactly matches a stack available to this org. Skipping connect click; continuing the doc flow."
+              );
+            }
+            break;
+          }
+
+          if (
+            (fidP === "manage-personalize-project" || fidP === "user-permissions-invite-user") &&
+            step.target === "Personalize Settings Users Invite modal submit Invite button (doc step)"
+          ) {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const btn = dlg.locator('[data-testid="invite-users-form-submit-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1200);
+            break;
+          }
+
+          if (
+            (fidP === "manage-personalize-project" || fidP === "user-permissions-invite-user") &&
+            step.target === "Personalize Settings left navigation Users row (doc step)"
+          ) {
             const row = page.locator('[data-test-id="cs-list-row"]#users').first();
             await expect(row).toBeVisible({ timeout: tP });
             await row.scrollIntoViewIfNeeded().catch(() => {});
@@ -15102,7 +16453,49 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "create-personalize-project" && step.target === "New Personalize Project primary button (doc step)") {
+          if (fidP === "delete-personalize-project" && step.target === "Delete Personalize Project doc: scroll Delete Project heading into view (doc step)") {
+            const h = page
+              .locator('main#react-personalize h3[data-test-id="cs-heading-tag"]')
+              .filter({ hasText: /^Delete Project$/i })
+              .first();
+            await expect(h).toBeVisible({ timeout: tP });
+            await h.scrollIntoViewIfNeeded().catch(() => {});
+            await page.waitForTimeout(400);
+            break;
+          }
+
+          if (
+            fidP === "delete-personalize-project" &&
+            step.target === "Delete Personalize Project doc: settings General Delete Project button (doc step)"
+          ) {
+            const btn = page.locator('[data-testid="delete-project-button"]').first();
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(btn).toBeVisible({ timeout: tP });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(600);
+            const dlg = page.getByRole("dialog").last();
+            await expect(dlg).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            break;
+          }
+
+          if (
+            fidP === "delete-personalize-project" &&
+            step.target === "Delete Personalize Project modal confirm Delete button (doc step)"
+          ) {
+            const dlg = page.getByRole("dialog").last();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const del = dlg
+              .locator('[data-test-id="cs-button"], button')
+              .filter({ hasText: /^Delete$/i })
+              .first();
+            await expect(del).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            await expect(del).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await del.click({ timeout: tP });
+            await page.waitForTimeout(2500);
+            break;
+          }
+
+          if ((fidP === "create-personalize-project" || isPersonalizeE2eAbTestGuidePart(flow, 1) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "New Personalize Project primary button (doc step)") {
             const btn = page
               .locator(
                 'button[aria-label="add-new-project-button"], [data-test-id="cs-page-layout-header"] button.Button--primary'
@@ -15115,7 +16508,7 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal Select Stack control (doc step)") {
+          if ((fidP === "create-personalize-project" || isPersonalizeE2eAbTestGuidePart(flow, 1) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "Personalize New Project modal Select Stack control (doc step)") {
             const dlg = personalizeProjectModal();
             await expect(dlg).toBeVisible({ timeout: tP });
             const ctl = dlg.locator('[data-test-id="cs-select"] .Select__control, [data-test-id="cs-select"] .Portal__control').first();
@@ -15125,7 +16518,7 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal pick DEFAULT_STACK option (doc step)") {
+          if ((fidP === "create-personalize-project" || isPersonalizeE2eAbTestGuidePart(flow, 1) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "Personalize New Project modal pick DEFAULT_STACK option (doc step)") {
             const stack = String(process.env.DEFAULT_STACK || "").trim();
             if (!stack) {
               throw new Error("DEFAULT_STACK must be set in .env for create-personalize-project (doc: select an existing stack).");
@@ -15152,7 +16545,7 @@ export async function performAction(
             break;
           }
 
-          if (fidP === "create-personalize-project" && step.target === "Personalize New Project modal Create Project submit (doc step)") {
+          if ((fidP === "create-personalize-project" || isPersonalizeE2eAbTestGuidePart(flow, 1) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "Personalize New Project modal Create Project submit (doc step)") {
             const dlg = personalizeProjectModal();
             await expect(dlg).toBeVisible({ timeout: tP });
             const btn = dlg.locator('[data-testid="project-modal-form-submit"]').first();
@@ -15160,6 +16553,314 @@ export async function performAction(
             await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
             await btn.click({ timeout: tP });
             await page.waitForTimeout(1_000);
+            break;
+          }
+
+          /** New Attribute modal: **Create** (`attribute-form-submit`); enable after Name + Key. */
+          if (fidP === "create-custom-attribute" && step.target === "Personalize New Attribute modal Create submit (doc step)") {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-attribute"]') })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const btn = dlg.locator('[data-testid="attribute-form-submit"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_000);
+            break;
+          }
+
+          /** New Event modal: **Create** (`event-form-submit`); enable after Key. */
+          if ((fidP === "create-event" || isPersonalizeE2eAbTestGuidePart(flow, 5) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) && step.target === "Personalize New Event modal Create submit (doc step)") {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-event"]') })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: tP });
+            const btn = dlg.locator('[data-testid="event-form-submit"]').first();
+            await expect(btn).toBeVisible({ timeout: tP });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_000);
+            break;
+          }
+
+          /**
+           * **add-event-to-ab-test-experience** — Configuration footer **Save Draft** (product) vs doc **Save**;
+           * clicks the primary non–Activate footer save control.
+           */
+          if (
+            (fidP === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Add Event to A/B Test Experience doc: Configuration footer Save button (doc step)"
+          ) {
+            const root = page.locator("main#react-personalize").first();
+            await expect(root).toBeVisible({ timeout: tP });
+            let btn = root.locator('button[data-testid="experience-footer-save-button"]').filter({ hasText: /^Save Draft$/i }).first();
+            if (!(await btn.isVisible({ timeout: 8_000 }).catch(() => false))) {
+              btn = root.locator('button[data-testid="experience-footer-save-button"]').filter({ hasText: /^Save$/i }).first();
+            }
+            if (!(await btn.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              btn = root.locator('button[data-testid="experience-footer-save-button"]').first();
+            }
+            await expect(btn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_200);
+            break;
+          }
+
+          /** Edit Event modal: **Save** (`event-form-submit`). */
+          if (fidP === "edit-event" && step.target === "Personalize Edit Event modal Save submit (doc step)") {
+            const titleMarker = page
+              .locator('[data-test-id="cs-modal-title-edit-event"]')
+              .or(page.locator('h3[data-test-id="cs-modal-title-new-event"]:has-text("Edit Event")'))
+              .or(page.locator('h3[data-test-id="cs-modal-title"]:has-text("Edit Event")'));
+
+            let dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: titleMarker })
+              .first();
+
+            if (!(await dlg.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              dlg = page
+                .locator(".ReactModal__Content")
+                .filter({ has: titleMarker })
+                .first();
+            }
+
+            await expect(dlg).toBeVisible({ timeout: tP });
+            let btn = dlg.locator('[data-testid="event-form-submit"]').first();
+            if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Save$/i }).first();
+            }
+            await expect(btn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_000);
+            break;
+          }
+
+          /** Edit Attribute modal: **Save** (`attribute-form-submit`); tolerate primary **Save** button. */
+          if (fidP === "edit-custom-attribute" && step.target === "Personalize Edit Attribute modal Save submit (doc step)") {
+            const titleMarker = page
+              .locator('[data-test-id="cs-modal-title-edit-attribute"]')
+              .or(page.locator('h3[data-test-id="cs-modal-title-new-attribute"]:has-text("Edit Attribute")'))
+              .or(page.locator('h3[data-test-id="cs-modal-title"]:has-text("Edit Attribute")'));
+
+            let dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: titleMarker })
+              .first();
+
+            if (!(await dlg.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              dlg = page
+                .locator(".ReactModal__Content")
+                .filter({ has: titleMarker })
+                .first();
+            }
+
+            await expect(dlg).toBeVisible({ timeout: tP });
+            let btn = dlg.locator('[data-testid="attribute-form-submit"]').first();
+            if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Save$/i }).first();
+            }
+            await expect(btn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await btn.click({ timeout: tP });
+            await page.waitForTimeout(1_000);
+            break;
+          }
+
+          /** Personalize audience editor — **Rules** (`create-audience`, `add-custom-attribute-to-audience`). */
+          if (
+            fidP === "create-audience" &&
+            step.target === "Create Audience doc: Audience editor Rules section Add Group button (doc step)"
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            /** Top **Match … conditions** toolbar: **Add Rule** \| **Add Group** in `[data-testid="audience-rule-combination-group"]` (always use **first** root group). */
+            const comboRoot = mainRp.locator('[data-testid="audience-rule-combination-group"]').first();
+            await expect(comboRoot).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            let addGroup = comboRoot.locator('button[aria-label="audience-add-group-button"]').first();
+            if (!(await addGroup.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              addGroup = comboRoot.getByRole("button", { name: /^\s*Add\s*Group\s*$/i }).first();
+            }
+            await expect(addGroup).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await addGroup.click({ timeout: tP });
+            await page.waitForTimeout(1_100);
+            break;
+          }
+
+          if (
+            fidP === "create-audience" &&
+            step.target === "Create Audience doc: Audience editor Rules section Add Rule after Add Group button (doc step)"
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            /** Nested group’s toolbar: **Add Rule** \| **Add Group** in inner **`audience-rule-combination-group`**; use **last** when a second block exists after **+ Add Group**, else **first**. */
+            const combos = mainRp.locator('[data-testid="audience-rule-combination-group"]');
+            const comboCount = await combos.count().catch(() => 0);
+            const comboNest = comboCount > 1 ? combos.last() : combos.first();
+            await expect(comboNest).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            let addRuleBtn = comboNest.locator('button[aria-label="audience-add-rule-button"]').first();
+            if (!(await addRuleBtn.isVisible({ timeout: 4_500 }).catch(() => false))) {
+              addRuleBtn = comboNest.getByRole("button", { name: /^\s*Add\s*Rule\s*$/i }).first();
+            }
+            await expect(addRuleBtn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await addRuleBtn.click({ timeout: tP });
+            await page.waitForTimeout(1_350);
+            break;
+          }
+
+          if (
+            fidP === "add-custom-attribute-to-audience" &&
+            step.target === "Add Custom Attribute Audience doc: Audience editor Rules section Add Rule button (doc step)"
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            const addRuleBtn = mainRp
+              .locator('[data-testid="audience-rule-builder-section"] button[aria-label="audience-add-rule-button"]')
+              .first();
+            await expect(addRuleBtn).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await addRuleBtn.click({ timeout: tP });
+            await page.waitForTimeout(1_350);
+            break;
+          }
+
+          if (
+            audienceEditorRuleFlows &&
+            step.target === "Personalize Audience editor rule open Select Attribute control (doc step)"
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            /** `create-audience`: after **+ Add Group** + **+ Add Rule**, use the **last** rule row’s controls. */
+            const ctl =
+              fidP === "create-audience"
+                ? mainRp.locator("#audience-rule-attribute-select .Select__control").last()
+                : mainRp.locator("#audience-rule-attribute-select .Select__control").first();
+            await expect(ctl).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await ctl.click({ timeout: tP, force: true });
+            await page.waitForTimeout(400);
+            break;
+          }
+
+          if (
+            (fidP === "add-custom-attribute-to-audience" &&
+              step.target === "Personalize Audience editor rule pick custom attribute menu option (doc step)") ||
+            (fidP === "create-audience" &&
+              step.target === "Create Audience doc: Audience editor rule pick attribute menu option (doc step)")
+          ) {
+            const needleRaw =
+              fidP === "create-audience"
+                ? String(process.env.PERSONALIZE_CREATE_AUDIENCE_ATTRIBUTE_CONTAINS || "").trim() || "Device"
+                : String(process.env.PERSONALIZE_AUDIENCE_CUSTOM_ATTRIBUTE_CONTAINS || "").trim() || "AUTO_LOYALTY";
+            const needle = needleRaw.slice(0, 120);
+            const menu = page.locator('[role="listbox"], .Select__menu, .Portal__menu').last();
+            await expect(menu).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            let typed = false;
+            const inp = page.locator('input[aria-label="cs-select-aria"]').first();
+            if (await inp.isVisible({ timeout: 2_800 }).catch(() => false)) {
+              await inp.fill("");
+              await inp.pressSequentially(needle.slice(0, Math.min(80, needle.length)), { delay: 15 });
+              await page.waitForTimeout(450);
+              typed = true;
+            }
+            const opt = menu
+              .locator("[role=option], .Select__option")
+              .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
+              .first();
+            if ((typed && (await opt.isVisible({ timeout: 6_000 }).catch(() => false))) || (await opt.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              await opt.click({ timeout: tP, force: true });
+              await page.waitForTimeout(500);
+              break;
+            }
+            const candidates = menu
+              .locator("[role=option], .Select__option")
+              .filter({ hasNotText: /^Select\s*Attribute\s*$/i });
+            const nth = candidates.first();
+            if (await nth.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await nth.click({ timeout: tP, force: true });
+              await page.waitForTimeout(450);
+              break;
+            }
+            if (fidP === "create-audience") {
+              throw new Error(
+                `create-audience: no Select attribute row matched "${needle}". Set PERSONALIZE_CREATE_AUDIENCE_ATTRIBUTE_CONTAINS to a substring of a preset/custom attribute.`,
+              );
+            }
+            throw new Error(
+              `add-custom-attribute-to-audience: no attribute option matched "${needle}". Set PERSONALIZE_AUDIENCE_CUSTOM_ATTRIBUTE_CONTAINS to a substring of your custom attribute (create-custom-attribute prerequisite).`,
+            );
+          }
+
+          if (
+            audienceEditorRuleFlows &&
+            step.target === "Personalize Audience editor rule open Select Operator control (doc step)"
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            const wrapper =
+              fidP === "create-audience"
+                ? mainRp.locator("#audience-rule-operator-select").last()
+                : mainRp.locator("#audience-rule-operator-select").first();
+            await expect(wrapper).toBeVisible({ timeout: Math.min(tP, 60_000) });
+            await expect(wrapper.locator(".Select__control--is-disabled")).not.toBeVisible({
+              timeout: Math.min(tP, 75_000),
+            });
+            const ctl = wrapper.locator(".Select__control").first();
+            await expect(ctl).toBeVisible({ timeout: Math.min(tP, 30_000) });
+            await ctl.click({ timeout: tP, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+
+          if (
+            audienceEditorRuleFlows &&
+            step.target === "Personalize Audience editor rule pick first Select Operator menu option (doc step)"
+          ) {
+            const menu = page.locator('[role="listbox"], .Select__menu, .Portal__menu').last();
+            await expect(menu).toBeVisible({ timeout: Math.min(tP, 35_000) });
+            const rows = menu.locator("[role=option], .Select__option");
+            const cnt = Math.min(await rows.count().catch(() => 0), 40);
+            let picked = false;
+            for (let i = 0; i < cnt; i++) {
+              const r = rows.nth(i);
+              const txt = (await r.innerText().catch(() => "")).replace(/\s+/g, " ").trim();
+              if (!txt || /^select\s*operator\s*$/i.test(txt)) continue;
+              await r.click({ timeout: tP, force: true });
+              picked = true;
+              break;
+            }
+            if (!picked) {
+              throw new Error(
+                `${fidP}: no selectable Select Operator menu row (unexpected menu state—check Select Attribute first).`,
+              );
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+
+          if (audienceEditorSaveFlows && step.target === "Personalize Audience editor Save audience submit (doc step)") {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: tP });
+            /** Create: **`audience-create-button`** — edit audience: **`save-audience-button`** (see failure snapshot edit flow). */
+            let save =
+              fidP === "edit-audience"
+                ? mainRp.locator('button[aria-label="save-audience-button"]').first()
+                : mainRp.locator('button[aria-label="audience-create-button"]').first();
+            if (!(await save.isVisible({ timeout: Math.min(tP, 8_000) }).catch(() => false))) {
+              save = mainRp
+                .locator(
+                  'button[aria-label="save-audience-button"], button[aria-label="audience-create-button"]',
+                )
+                .first();
+            }
+            await expect(save).toBeVisible({ timeout: Math.min(tP, 45_000) });
+            await expect(save).toBeEnabled({ timeout: Math.min(tP, 120_000) });
+            await save.click({ timeout: tP });
+            await page.waitForTimeout(900);
             break;
           }
         }
@@ -15937,9 +17638,12 @@ export async function performAction(
       }
 
       // BrandKit — get-started-with-brand-kit | create-a-brand-kit | voice-profiles flows | edit-a-brand-kit | delete-a-brand-kit | invite-collaborators: dashboard / stacks / modal stack picker / Brand Kit card / Settings / New Entry CT row (subset per flow).
+      // **create-personalized-content** / **create-an-entry-variant** reuse stacks-list pick DEFAULT_STACK (+ Connected Stack for personalize) + variants helpers in this block.
       if (
         step.action === "click" &&
         (String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" ||
+          String(flow?.id || "").toLowerCase() === "create-personalized-content" ||
+          String(flow?.id || "").toLowerCase() === "create-an-entry-variant" ||
           String(flow?.id || "").toLowerCase() === "create-a-brand-kit" ||
           String(flow?.id || "").toLowerCase() === "create-a-voice-profile" ||
           String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" ||
@@ -16014,11 +17718,21 @@ export async function performAction(
           await page.waitForTimeout(800);
           break;
         }
-        if (step.target === "Brand Kit doc: DEFAULT_STACK stack list card (doc step)") {
-          const stackName = String(process.env.DEFAULT_STACK || "").trim();
+        if (
+          step.target === "Brand Kit doc: DEFAULT_STACK stack list card (doc step)" ||
+          step.target === "Create Entry Variants in CMS doc: stacks list pick DEFAULT_STACK stack card (doc step)" ||
+          step.target === "Create Personalized Content doc: stacks list pick Connected Stack card (doc step)"
+        ) {
+          const fromConnected =
+            step.target === "Create Personalized Content doc: stacks list pick Connected Stack card (doc step)";
+          const stackName = fromConnected
+            ? String((flow as any).__pcmConnectedStackLabel || process.env.DEFAULT_STACK || "").trim()
+            : String(process.env.DEFAULT_STACK || "").trim();
           if (!stackName) {
             throw new Error(
-              "DEFAULT_STACK is required for Brand Kit flows (use the same stack linked to the Brand Kit)."
+              fromConnected
+                ? 'Create Personalized Content doc: no stack name — run "capture Connected Stack display name" first, or set DEFAULT_STACK to match the Connected Stack in Contentstack CMS Sync Status.'
+                : "DEFAULT_STACK is required (Brand Kit; Create Entry Variants in CMS / E2E guide; **`create-an-entry-variant`** stacks list pick — stack display name matches `cs-stacklist-card-*`/`hasText` fallback)."
             );
           }
           let origin = "";
@@ -16030,11 +17744,24 @@ export async function performAction(
           if (!origin) origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
           await page.goto(`${origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: tBk });
           await page.waitForTimeout(500);
-          const card = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
+          const byId = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
+          let card = byId;
+          if (!(await byId.isVisible({ timeout: 4_000 }).catch(() => false))) {
+            const needle = escapeRegex(stackName.slice(0, 80));
+            card = page.locator(`[data-test-id^="cs-stacklist-card-"]`).filter({ hasText: new RegExp(needle, "i") }).first();
+          }
           await card.scrollIntoViewIfNeeded().catch(() => {});
           await expect(card).toBeVisible({ timeout: 90_000 });
           await card.click({ timeout: tBk, force: true });
-          await page.waitForURL(/#!\/stack\/[^/]+\//i, { timeout: 90_000 }).catch(() => {});
+          try {
+            await page.waitForURL(/#!\/stack\/[^/]+\//i, { timeout: 90_000 });
+          } catch {
+            throw new Error(
+              `Stacks list: clicked stack "${stackName}" but URL did not become #!/stack/... within 90s (current: ${page.url()}).`
+            );
+          }
+          await page.locator('[alt="full page loader"]').first().waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
+          await page.waitForLoadState("domcontentloaded").catch(() => {});
           await page.waitForTimeout(800);
           break;
         }
@@ -17968,6 +19695,1867 @@ export async function performAction(
               }
               await expect(sw).toBeAttached({ timeout: vt });
               await expect(sw).toBeChecked({ timeout: Math.min(vt, 35_000) });
+            }
+            break;
+          }
+        }
+      }
+
+      /** Personalize — set-up-personalize: doc-named verify for App Switcher, Personalize product row, modal Create Project. */
+      {
+        const fidPv = String(flow?.id || "").toLowerCase();
+        if (
+          step.action === "verify" &&
+          String(flow?.project || "") === "Personalize" &&
+          (fidPv === "create-personalize-project" ||
+            isPersonalizeE2eAbTestGuideExecutablePart(flow) ||
+            fidPv === "manage-personalize-project" ||
+            fidPv === "delete-personalize-project" ||
+            fidPv === "create-custom-attribute" ||
+            fidPv === "edit-custom-attribute" ||
+            fidPv === "add-custom-attribute-to-audience" ||
+            fidPv === "create-audience" ||
+            fidPv === "edit-audience" ||
+            fidPv === "delete-audience" ||
+            fidPv === "delete-experience" ||
+            fidPv === "create-segmented-experience" ||
+            fidPv === "create-personalized-content" ||
+            (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+            (fidPv === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+            fidPv === "prioritize-experiences" ||
+            (fidPv === "create-event" || isPersonalizeE2eAbTestGuidePart(flow, 5) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+            (fidPv === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) ||
+            fidPv === "edit-event" ||
+            fidPv === "delete-event" ||
+            fidPv === "user-permissions-invite-user" ||
+            fidPv === "create-an-entry-variant")
+        ) {
+          const tPv = getStepTimeoutMs(step, 120_000);
+          const personalizeProjectModalVerify = (): Locator =>
+            page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-personalize-project"]') })
+              .first();
+
+          const personalizeAppSwitcherVerifyTargets = new Set([
+            "Create Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+            "Manage Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+            "Delete Personalize Project doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Custom Attribute doc: verify App Switcher icon top navigation bar (doc step)",
+            "Edit Custom Attribute doc: verify App Switcher icon top navigation bar (doc step)",
+            "Add Custom Attribute to Audience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Audience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Edit Audience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Delete Audience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Delete Event doc: verify App Switcher icon top navigation bar (doc step)",
+            "Delete Experience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Segmented Experience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create A/B Test Experience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Edit Experience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Personalized Content doc: verify App Switcher icon top navigation bar (doc step)",
+            "Prioritize Experiences doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Event doc: verify App Switcher icon top navigation bar (doc step)",
+            "Add Event to A/B Test Experience doc: verify App Switcher icon top navigation bar (doc step)",
+            "Edit Event doc: verify App Switcher icon top navigation bar (doc step)",
+            "User Permissions doc: verify App Switcher icon top navigation bar (doc step)",
+            "Create Entry Variants in CMS doc: verify App Switcher icon top navigation bar (doc step)",
+          ]);
+          if (personalizeAppSwitcherVerifyTargets.has(step.target)) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            await opener.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(opener).toBeVisible({ timeout: Math.min(tPv, 120_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, opener, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  opener,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (isPersonalizeE2eAbTestGuideUnifiedFlow(flow) || fidPv === "create-personalized-content") &&
+            step.target === "Create Entry Variants in CMS doc: verify Headless CMS in App Switcher (doc step)"
+          ) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const bodyAnchors = page.locator('[data-test-id="app-switcher-body"]');
+            const pickBody = async (): Promise<Locator> => {
+              const n = await bodyAnchors.count().catch(() => 0);
+              return bodyAnchors.nth(Math.max(0, n - 1));
+            };
+
+            let body = await pickBody();
+            const alreadyOpen = await body.isVisible({ timeout: 2_000 }).catch(() => false);
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tPv, force: true }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+            await bodyAnchors
+              .first()
+              .waitFor({ state: "visible", timeout: Math.min(tPv, 35_000) })
+              .catch(() => {});
+            body = await pickBody();
+            await page.waitForTimeout(200);
+
+            const collectHeadlessCandidates = (root: Locator): Locator[] => [
+              root.locator('[data-test-id="app-switcher-headless"]').first(),
+              root.locator('[data-test-id="app-switcher-headless-cms"]').first(),
+              root.locator('[data-test-id="app-switcher-cms"]').first(),
+              root.locator('[data-test-id*="headless" i]').first(),
+              root.locator('a[href*="headless" i]').first(),
+              root.getByRole("link", { name: /Headless\s*CMS/i }).first(),
+              root.getByRole("button", { name: /Headless\s*CMS/i }).first(),
+              root
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /Headless\s*CMS/i })
+                .first(),
+              root.getByText(/Headless\s*CMS/i).first(),
+              root.getByRole("link", { name: /^CMS$/i }).first(),
+              root.getByRole("button", { name: /^CMS$/i }).first(),
+              root.locator("a[role='button']").filter({ hasText: /^CMS$/i }).first(),
+              root
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^CMS$/i })
+                .first(),
+              page.locator('[data-test-id="app-switcher-headless-cms"]').first(),
+              page.getByRole("link", { name: /Headless\s*CMS/i }).first(),
+              page.getByRole("button", { name: /Headless\s*CMS/i }).first(),
+              page.getByText(/Headless\s*CMS/i).first(),
+              page.getByRole("link", { name: /^CMS$/i }).first(),
+              page.getByRole("button", { name: /^CMS$/i }).first(),
+            ];
+
+            let headlessFound: Locator | undefined;
+            const tryFind = async (root: Locator): Promise<Locator | undefined> => {
+              for (const c of collectHeadlessCandidates(root)) {
+                if (await c.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                  return c;
+                }
+              }
+              const loose = root
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /Headless/i })
+                .first();
+              if (await loose.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                return loose;
+              }
+              const looseCms = root
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^CMS$/i })
+                .first();
+              if (await looseCms.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                return looseCms;
+              }
+              return undefined;
+            };
+
+            for (let pass = 0; pass < 8 && !headlessFound; pass++) {
+              const nBodies = await bodyAnchors.count().catch(() => 0);
+              for (let i = 0; i < nBodies; i++) {
+                const b = bodyAnchors.nth(i);
+                if (await b.isVisible({ timeout: 400 }).catch(() => false)) {
+                  headlessFound = await tryFind(b);
+                  if (headlessFound) break;
+                }
+              }
+              if (!headlessFound) {
+                headlessFound = await tryFind(body);
+              }
+              if (headlessFound) break;
+              await body
+                .evaluate((el) => {
+                  try {
+                    el.scrollTop = Math.min(el.scrollTop + 160, el.scrollHeight);
+                  } catch {
+                    /* ignore */
+                  }
+                })
+                .catch(() => {});
+              await bodyAnchors.evaluateAll((els: HTMLElement[]) => {
+                for (const el of els) {
+                  try {
+                    el.scrollTop = Math.min(el.scrollTop + 160, el.scrollHeight);
+                  } catch {
+                    /* ignore */
+                  }
+                }
+              });
+              await page.waitForTimeout(180);
+            }
+            if (!headlessFound) {
+              throw new Error(
+                "Create Entry Variants in CMS doc: Headless CMS / CMS product not visible in App Switcher (verify; scrolled panel; app UI may label the tile **CMS** instead of “Headless CMS”)."
+              );
+            }
+            await expect(headlessFound).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            await page.keyboard.press("Escape").catch(() => {});
+            break;
+          }
+
+          const personalizeProductVerifyTargets = new Set([
+            "Create Personalize Project doc: verify Personalize in App Switcher (doc step)",
+            "Manage Personalize Project doc: verify Personalize in App Switcher (doc step)",
+            "Delete Personalize Project doc: verify Personalize in App Switcher (doc step)",
+            "Create Custom Attribute doc: verify Personalize in App Switcher (doc step)",
+            "Edit Custom Attribute doc: verify Personalize in App Switcher (doc step)",
+            "Add Custom Attribute to Audience doc: verify Personalize in App Switcher (doc step)",
+            "Create Audience doc: verify Personalize in App Switcher (doc step)",
+            "Edit Audience doc: verify Personalize in App Switcher (doc step)",
+            "Delete Audience doc: verify Personalize in App Switcher (doc step)",
+            "Delete Event doc: verify Personalize in App Switcher (doc step)",
+            "Delete Experience doc: verify Personalize in App Switcher (doc step)",
+            "Create Segmented Experience doc: verify Personalize in App Switcher (doc step)",
+            "Create A/B Test Experience doc: verify Personalize in App Switcher (doc step)",
+            "Edit Experience doc: verify Personalize in App Switcher (doc step)",
+            "Create Personalized Content doc: verify Personalize in App Switcher (doc step)",
+            "Prioritize Experiences doc: verify Personalize in App Switcher (doc step)",
+            "Create Event doc: verify Personalize in App Switcher (doc step)",
+            "Add Event to A/B Test Experience doc: verify Personalize in App Switcher (doc step)",
+            "Edit Event doc: verify Personalize in App Switcher (doc step)",
+            "User Permissions doc: verify Personalize in App Switcher (doc step)",
+          ]);
+          if (personalizeProductVerifyTargets.has(step.target)) {
+            const opener = page.locator('[data-test-id="app-switcher"]').first();
+            const body = page.locator('[data-test-id="app-switcher-body"]').first();
+            const persProbe = page.locator('[data-test-id="app-switcher-personalize"]').first();
+            const alreadyOpen =
+              (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
+              (await persProbe.isVisible({ timeout: 600 }).catch(() => false));
+            if (!alreadyOpen) {
+              await opener.scrollIntoViewIfNeeded().catch(() => {});
+              await opener.click({ timeout: tPv, force: true }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+            await body.waitFor({ state: "visible", timeout: Math.min(tPv, 30_000) }).catch(() => {});
+            const candidates: Locator[] = [
+              page.locator('[data-test-id="app-switcher-personalize"]').first(),
+              page.locator('[data-test-id="app-switcher-body"] a[href*="personalize" i]').first(),
+              page.getByRole("button", { name: /^Personalize$/i }).first(),
+              page
+                .locator('[data-test-id="app-switcher-body"]')
+                .locator('[data-test-id="app-switcher-product-title"]')
+                .filter({ hasText: /^Personalize$/i })
+                .first(),
+            ];
+            let row: Locator | null = null;
+            for (const c of candidates) {
+              if (await c.isVisible({ timeout: 12_000 }).catch(() => false)) {
+                row = c;
+                break;
+              }
+            }
+            if (!row) {
+              recordVerificationWarning(
+                step,
+                context,
+                'Personalize (doc): "Personalize" product not visible in App Switcher after opening the menu.'
+              );
+              break;
+            }
+            await expect(row).toBeVisible({ timeout: Math.min(tPv, 15_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  row,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Contentstack CMS Sync Status section label (doc step)"
+          ) {
+            const hdr = page.locator('[data-testid="connected-cms-stack-heading"]').first();
+            await hdr.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(hdr).toBeVisible({ timeout: tPv });
+            if (step.expected?.labelEquals) {
+              try {
+                const span = hdr.locator("span").first();
+                const el = (await span.count()) > 0 ? span : hdr;
+                await assertLabelMatch(
+                  el,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify CMS variant group settings page URL (doc step)"
+          ) {
+            await page.waitForURL(/\/settings\/variants\//i, { timeout: Math.min(tPv, 120_000) });
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Connected Stack row title (doc step)"
+          ) {
+            const rail = page.locator('[data-test-id="cs-sidebar-window"]').first();
+            await expect(rail).toBeVisible({ timeout: tPv });
+            const title = rail.locator(".InfoRowTitle").filter({ hasText: /^Connected Stack$/i }).first();
+            await expect(title).toBeVisible({ timeout: Math.min(tPv, 30_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  title,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Information icon on right (doc step)"
+          ) {
+            const rail = page.locator('[data-test-id="cs-sidebar-window"]').first();
+            await expect(rail).toBeVisible({ timeout: tPv });
+            const icon = rail.locator('[data-testid="info-tab-icon"]').first();
+            await expect(icon).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  icon,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Variant Group row label (doc step)"
+          ) {
+            const rail = page.locator('[data-test-id="cs-sidebar-window"]').first();
+            await expect(rail).toBeVisible({ timeout: tPv });
+            const title = rail.locator(".InfoRowTitle").filter({ hasText: /^Variant Group$/i }).first();
+            await expect(title).toBeVisible({ timeout: Math.min(tPv, 30_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  title,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Settings top navigation control (doc step)"
+          ) {
+            await page
+              .locator('[alt="full page loader"]')
+              .first()
+              .waitFor({ state: "hidden", timeout: 12_000 })
+              .catch(() => {});
+            const compoundSel =
+              'div.TopNavbar__content__items__list__redirect a[href*="/settings/stack"] button[data-test-id="cms-nav-settings"], ' +
+              'a[href*="/settings/stack"] [data-test-id="cms-nav-settings"], ' +
+              '[data-test-id="cms-nav-settings"], ' +
+              'nav.TopNavbar button[aria-label="Settings"], nav.TopNavbar a:has-text("Settings")';
+            const targetBtn = page.locator(compoundSel).first();
+            await targetBtn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(targetBtn).toBeVisible({ timeout: Math.min(tPv, 90_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, targetBtn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  targetBtn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Variants left navigation label (doc step)"
+          ) {
+            const side = page.locator('[data-test-id="cs-page-layout-leftSidebar"]').first();
+            await expect(side).toBeVisible({ timeout: Math.min(tPv, 90_000) });
+            const link = side.getByRole("link", { name: /^Variants$/i }).first();
+            await expect(link).toBeVisible({ timeout: Math.min(tPv, 60_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, link, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  link,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Linked Content Types field label (doc step)"
+          ) {
+            const lbl = page.getByText(/^Linked Content Types$/i).first();
+            await lbl.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(lbl).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  lbl,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Apply button Link Content section (doc step)"
+          ) {
+            const applyBtn = page.locator("main").getByRole("button", { name: /^Apply$/i }).first();
+            await expect(applyBtn).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  applyBtn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalized-content" &&
+            step.target === "Create Personalized Content doc: verify Save button variant group details (doc step)"
+          ) {
+            const saveBtn = page.locator('button[data-test-id="cs-save-button"]').first();
+            await expect(saveBtn).toBeVisible({ timeout: Math.min(tPv, 60_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  saveBtn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "prioritize-experiences" &&
+            step.target === "Prioritize Experiences doc: verify Experiences page Prioritize Experiences button (doc step)"
+          ) {
+            const btn = page.locator('[data-testid="experiences-priority-sidebar-trigger"]').first();
+            await expect(btn).toBeVisible({ timeout: tPv });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "prioritize-experiences" &&
+            step.target === "Prioritize Experiences doc: verify Prioritize Experiences sidebar title (doc step)"
+          ) {
+            const hdr = page.locator('[data-testid="generic-sidebar-header"]').first();
+            await expect(hdr).toBeVisible({ timeout: tPv });
+            const titleLn = hdr.getByText(/^Prioritize\s+Experiences$/i).first();
+            await expect(titleLn).toBeVisible({ timeout: Math.min(tPv, 30_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  titleLn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "prioritize-experiences" &&
+            step.target === "Prioritize Experiences doc: verify sidebar footer Save button (doc step)"
+          ) {
+            const btn = page.locator('[data-testid="experiences-priority-sidebar-save"]').first();
+            await expect(btn).toBeVisible({ timeout: tPv });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tPv, 90_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            ((fidPv === "create-audience" &&
+              step.target === "Create Audience doc: verify Rules section heading (doc step)") ||
+              (fidPv === "edit-audience" &&
+                step.target === "Edit Audience doc: verify Rules section heading (doc step)"))
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            const section = mainRp.locator('[data-testid="audience-rule-builder-section"]').first();
+            await expect(section).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            /** Doc **Rules** heading — UI may omit `heading` role (plain label / div). */
+            let rulesHeading = section.getByRole("heading", { name: /^Rules$/i }).first();
+            if (!(await rulesHeading.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              rulesHeading = section.locator(":is(h2,h3,h4,h5,h6,[role=\"heading\"])").filter({ hasText: /\bRules\b/i }).first();
+            }
+            if (!(await rulesHeading.isVisible({ timeout: 4_500 }).catch(() => false))) {
+              rulesHeading = section.getByText(/\bRules\b/i).first();
+            }
+            await expect(rulesHeading).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                const rawLbl = (((await rulesHeading.innerText()) || "") as string).replace(/\s+/g, " ").trim();
+                const actual = normalizeLabelText(rawLbl);
+                const want = normalizeLabelText(step.expected.labelEquals);
+                const stripped = normalizeLabelText(String(rawLbl || "").replace(/\s*\([^)]*\)\s*$/, "").trim());
+                /** UI surfaces **rules (required)** while the doc names [**Rules**](https://www.contentstack.com/docs/personalize/create-audience) ([**edit-audience**](https://www.contentstack.com/docs/personalize/edit-audience)). */
+                const ok = actual === want || stripped === want || (want.length >= 3 && stripped.includes(want));
+                if (!ok) {
+                  await assertLabelMatch(
+                    rulesHeading,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                }
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            ((fidPv === "create-audience" &&
+              step.target === "Create Audience doc: verify Match All or Any of the below conditions (doc step)") ||
+              (fidPv === "edit-audience" &&
+                step.target === "Edit Audience doc: verify Match All or Any of the below conditions (doc step)"))
+          ) {
+            const mainRp = page.locator("main#react-personalize").first();
+            await expect(mainRp).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            const combo = mainRp.locator('[data-testid="audience-rule-combination-group"]').first();
+            await expect(combo).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            const matchBelow = combo.getByText(/Match\s+(All|Any)\s+of\s+the\s+below\s+conditions/i).first();
+            const matchFollowing = combo.getByText(/Match\s+(All|Any)\s+of\s+the\s+following\s+conditions/i).first();
+            const visible =
+              (await matchBelow.isVisible({ timeout: Math.min(tPv, 22_000) }).catch(() => false)) ||
+              (await matchFollowing.isVisible({ timeout: 3_500 }).catch(() => false));
+            if (!visible) {
+              recordVerificationWarning(
+                step,
+                context,
+                `${fidPv}: Audience **Rules** toolbar — "Match (All|Any) of the below/following conditions" not visible inside first \`[data-testid="audience-rule-combination-group"]\`.`
+              );
+            }
+            break;
+          }
+
+          if (
+            ((fidPv === "edit-custom-attribute" &&
+              step.target === "Edit Custom Attribute doc: verify Attributes table Actions column heading (doc step)") ||
+              (fidPv === "edit-event" &&
+                step.target === "Edit Event doc: verify Events table Actions column heading (doc step)") ||
+              (fidPv === "edit-audience" &&
+                step.target === "Edit Audience doc: verify Audiences table Actions column heading (doc step)") ||
+              (fidPv === "delete-audience" &&
+                step.target === "Delete Audience doc: verify Audiences table Actions column heading (doc step)") ||
+              (fidPv === "delete-event" &&
+                step.target === "Delete Event doc: verify Events table Actions column heading (doc step)") ||
+              (fidPv === "delete-experience" &&
+                step.target === "Delete Experience doc: verify Experiences table Actions column heading (doc step)"))
+          ) {
+            const hdr = page
+              .locator('[data-test-id="cs-table"] [role="columnheader"]')
+              .filter({ hasText: /^Actions$/i })
+              .first();
+            await expect(hdr).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  hdr,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            ((fidPv === "edit-custom-attribute" &&
+              step.target === "Edit Custom Attribute doc: verify row Actions vertical tooltip Edit menu item label (doc step)") ||
+              (fidPv === "edit-event" &&
+                step.target === "Edit Event doc: verify row Actions vertical tooltip Edit menu item label (doc step)") ||
+              (fidPv === "edit-audience" &&
+                step.target === "Edit Audience doc: verify row Actions vertical tooltip Edit menu item label (doc step)") ||
+              ((fidPv === "edit-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+                step.target === "Edit Experience doc: verify row Actions vertical tooltip Edit menu item label (doc step)"))
+          ) {
+            const editLi = await resolvePersonalizeAttributesEditLi(page, Math.min(tPv, 35_000));
+            if (step.expected?.labelEquals) {
+              try {
+                const raw = (((await editLi.innerText()) || "") as string).replace(/\s+/g, " ").trim();
+                const norm = normalizeLabelText(raw);
+                const want = normalizeLabelText(step.expected.labelEquals);
+                const okExact = norm === want;
+                /** UI sometimes surfaces **Edit Text** while the doc names [**Edit**](https://www.contentstack.com/docs/personalize/edit-custom-attribute) or [**Edit**](https://www.contentstack.com/docs/personalize/edit-audience) or [**Edit**](https://www.contentstack.com/docs/personalize/edit-experience). */
+                const uiEditVariants =
+                  want === normalizeLabelText("Edit") &&
+                  [normalizeLabelText("Edit"), normalizeLabelText("Edit Text")].includes(norm);
+
+                if (!okExact && !uiEditVariants) {
+                  await assertLabelMatch(
+                    editLi,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                }
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "delete-audience" &&
+              step.target === "Delete Audience doc: verify row Actions vertical tooltip Delete menu item label (doc step)") ||
+            (fidPv === "delete-event" &&
+              step.target === "Delete Event doc: verify row Actions vertical tooltip Delete menu item label (doc step)") ||
+            (fidPv === "delete-experience" &&
+              step.target === "Delete Experience doc: verify row Actions vertical tooltip Delete menu item label (doc step)")
+          ) {
+            const delLi = await resolvePersonalizeAudiencesOverflowDeleteLi(page, Math.min(tPv, 35_000));
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  delLi,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "delete-audience" &&
+              step.target === "Delete Audience doc: verify Delete Audience modal title (doc step)") ||
+            (fidPv === "delete-experience" &&
+              step.target === "Delete Experience doc: verify Delete Experience modal title (doc step)") ||
+            (fidPv === "delete-event" &&
+              step.target === "Delete Event doc: verify Delete Event modal title (doc step)")
+          ) {
+            const deleteModalHeadingRe =
+              fidPv === "delete-audience"
+                ? /^Delete\s+Audience$/i
+                : fidPv === "delete-experience"
+                  ? /^Delete\s+Experience$/i
+                  : /^Delete\s+Event$/i;
+            let dlg = page
+              .getByRole("dialog")
+              .filter({
+                has: page.getByRole("heading", {
+                  name: deleteModalHeadingRe,
+                }),
+              })
+              .last();
+            if (!(await dlg.isVisible({ timeout: Math.min(tPv, 6_000) }).catch(() => false))) {
+              dlg = page.getByRole("dialog").last();
+            }
+            await expect(dlg).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            const titleLn = dlg.getByRole("heading", { name: deleteModalHeadingRe }).first();
+            if (await titleLn.isVisible({ timeout: 3_500 }).catch(() => false)) {
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    titleLn,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+            }
+            if (step.expected?.modalTitle) {
+              try {
+                if (STRICT_MODAL_TITLE) await assertModalTitle(page, step.expected.modalTitle);
+                else await warnIfModalTitleMismatch(page, step.expected.modalTitle);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Modal title verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, dlg, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "edit-custom-attribute" &&
+            step.target === "Edit Custom Attribute doc: verify Save button in Edit Attribute modal (doc step)"
+          ) {
+            const titleMarker = page
+              .locator('[data-test-id="cs-modal-title-edit-attribute"]')
+              .or(page.locator('h3[data-test-id="cs-modal-title-new-attribute"]:has-text("Edit Attribute")'))
+              .or(page.locator('h3[data-test-id="cs-modal-title"]:has-text("Edit Attribute")'));
+
+            let dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: titleMarker })
+              .first();
+
+            if (!(await dlg.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              dlg = page
+                .locator(".ReactModal__Content")
+                .filter({ has: titleMarker })
+                .first();
+            }
+
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            let btn = dlg.locator('[data-testid="attribute-form-submit"]').first();
+            if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Save$/i }).first();
+            }
+            await expect(btn).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tPv, 120_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "edit-event" &&
+            step.target === "Edit Event doc: verify Save button in Edit Event modal (doc step)"
+          ) {
+            const titleMarker = page
+              .locator('[data-test-id="cs-modal-title-edit-event"]')
+              .or(page.locator('h3[data-test-id="cs-modal-title-new-event"]:has-text("Edit Event")'))
+              .or(page.locator('h3[data-test-id="cs-modal-title"]:has-text("Edit Event")'));
+
+            let dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: titleMarker })
+              .first();
+
+            if (!(await dlg.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              dlg = page
+                .locator(".ReactModal__Content")
+                .filter({ has: titleMarker })
+                .first();
+            }
+
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            let btn = dlg.locator('[data-testid="event-form-submit"]').first();
+            if (!(await btn.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Save$/i }).first();
+            }
+            await expect(btn).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tPv, 120_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          /** Delete Personalize Project — Settings General **Delete Project** + confirmation modal. */
+          if (
+            fidPv === "delete-personalize-project" &&
+            step.target === "Delete doc: Personalize Settings Delete Project section heading (doc step)"
+          ) {
+            const h = page
+              .locator('main#react-personalize h3[data-test-id="cs-heading-tag"]')
+              .filter({ hasText: /^Delete Project$/i })
+              .first();
+            await expect(h).toBeVisible({ timeout: tPv });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  h,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "delete-personalize-project" &&
+            step.target === "Delete Personalize Project modal Cancel button (doc step)"
+          ) {
+            const dlg = page.getByRole("dialog").last();
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            /** Buttons use aria-label="aria-button"; label is visible text ("Cancel"). */
+            const cancel = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Cancel$/i }).first();
+            await expect(cancel).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, cancel, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  cancel,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            ((fidPv === "delete-personalize-project" &&
+              step.target === "Delete Personalize Project modal destructive Delete button verify (doc step)") ||
+              (fidPv === "delete-audience" &&
+                step.target === "Delete Audience doc: verify Delete Audience modal destructive Delete button (doc step)") ||
+              (fidPv === "delete-experience" &&
+                step.target === "Delete Experience doc: verify Delete Experience modal destructive Delete button (doc step)") ||
+              (fidPv === "delete-event" &&
+                step.target === "Delete Event doc: verify Delete Event modal destructive Delete button (doc step)"))
+          ) {
+            let dlg =
+              fidPv === "delete-audience"
+                ? page
+                    .getByRole("dialog")
+                    .filter({ has: page.getByRole("heading", { name: /^Delete\s+Audience$/i }) })
+                    .last()
+                : fidPv === "delete-experience"
+                  ? page
+                      .getByRole("dialog")
+                      .filter({ has: page.getByRole("heading", { name: /^Delete\s+Experience$/i }) })
+                      .last()
+                  : fidPv === "delete-event"
+                    ? page
+                        .getByRole("dialog")
+                        .filter({ has: page.getByRole("heading", { name: /^Delete\s+Event$/i }) })
+                        .last()
+                    : page.getByRole("dialog").last();
+            if (fidPv === "delete-audience" || fidPv === "delete-experience" || fidPv === "delete-event") {
+              if (!(await dlg.isVisible({ timeout: Math.min(tPv, 6_000) }).catch(() => false))) {
+                dlg = page.getByRole("dialog").last();
+              }
+            }
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            const del = dlg
+              .locator('[data-test-id="cs-button"], button')
+              .filter({ hasText: /^Delete$/i })
+              .first();
+            await expect(del).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, del, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  del,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          /** Manage Personalize Project — Settings General: dirty-form Save / Reset verification (enabled after edits). */
+          if (
+            fidPv === "manage-personalize-project" &&
+            step.target === "Manage doc: verify Project Details Save button when form dirty (doc step)"
+          ) {
+            const btn = page.locator('[data-testid="details-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tPv });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tPv, 120_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "manage-personalize-project" &&
+            step.target === "Manage doc: verify Project Details Reset button when form dirty (doc step)"
+          ) {
+            const btn = page.locator('[data-testid="details-reset-button"]').first();
+            await expect(btn).toBeVisible({ timeout: tPv });
+            await expect(btn).toBeEnabled({ timeout: Math.min(tPv, 120_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          /** Stack Connection — doc either shows Connect Stack + stack picker, or an already-connected stack (Disconnect). */
+          if (
+            fidPv === "manage-personalize-project" &&
+            step.target === "Manage doc: verify Stack Connection Connect Stack or already connected (doc step)"
+          ) {
+            const stackHeading = page
+              .locator('main#react-personalize h3[data-test-id="cs-heading-tag"]')
+              .filter({ hasText: /^Stack Connection$/i })
+              .first();
+            await expect(stackHeading).toBeVisible({ timeout: tPv });
+            await stackHeading.scrollIntoViewIfNeeded().catch(() => {});
+            await page.waitForTimeout(500);
+
+            const main = page.locator("main#react-personalize");
+            const scrollPersonalizeContent = async () => {
+              await page.evaluate(() => {
+                const scrollMax = (el: HTMLElement | null) => {
+                  if (!el) return;
+                  el.scrollTop = el.scrollHeight;
+                };
+                const candidates = Array.from(
+                  document.querySelectorAll(
+                    "[data-test-id='cs-page-layout-contentBody'], main#react-personalize .PageLayout__body, main#react-personalize .PageLayout__content, main#react-personalize"
+                  )
+                ).filter((n): n is HTMLElement => n instanceof HTMLElement);
+                for (const el of candidates) scrollMax(el);
+                window.scrollTo(0, document.body.scrollHeight);
+              });
+              await page.waitForTimeout(400);
+            };
+
+            const hasConnectUi = (): Locator =>
+              main
+                .locator('[data-test-id="cs-button"], button[data-testid="connect-stack-button"]')
+                .filter({ hasText: /^Connect\s+Stack$/i })
+                .first();
+
+            const hasWiredUi = (): Locator =>
+              main
+                .locator(
+                  [
+                    '[data-testid="disconnect-stack-button"]',
+                    '[data-test-id="disconnect-stack-button"]',
+                    '[data-testid="stack-url"]',
+                    '[data-test-id="stack-url"]',
+                  ].join(", ")
+                )
+                .or(
+                  main
+                    .locator('[data-test-id="cs-button"], button')
+                    .filter({ hasText: /^Disconnect\s+Stack$/i })
+                    .first()
+                );
+
+            const waitForStackUi = async (): Promise<"connect" | "wired"> => {
+              const budget = typeof step.timeoutMs === "number" && step.timeoutMs > 0 ? step.timeoutMs : tPv;
+              const deadline = Date.now() + Math.min(budget, 90_000);
+              while (Date.now() < deadline) {
+                const connectBtnInner = hasConnectUi();
+                const wiredInner = hasWiredUi();
+                if (await connectBtnInner.isVisible().catch(() => false)) return "connect";
+                if (await wiredInner.isVisible().catch(() => false)) return "wired";
+                await stackHeading.scrollIntoViewIfNeeded({ timeout: 6000 }).catch(() => {});
+                await stackHeading.evaluate((el) =>
+                  (el as HTMLElement).scrollIntoView({ block: "end", inline: "nearest" })
+                );
+                await scrollPersonalizeContent();
+                await stackHeading.press("PageDown").catch(() => {});
+                await page.keyboard.press("End").catch(() => {});
+                await page.waitForTimeout(450);
+              }
+              throw new Error(
+                "Stack Connection section: neither Connect Stack nor connected stack (Disconnect / stack link) became visible under main#react-personalize."
+              );
+            };
+
+            const which = await waitForStackUi();
+            const connectBtn = hasConnectUi();
+            const wired = hasWiredUi();
+
+            if (which === "connect") {
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    connectBtn,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+            } else {
+              await expect(wired).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+              console.warn(
+                "[manage-personalize-project] Stack already connected — Connect Stack / picker steps are skipped (expected when project has a linked stack)."
+              );
+            }
+            break;
+          }
+
+          /** [Create an Entry Variant](https://www.contentstack.com/docs/content-managers/entry-variants/create-an-entry-variant) — CMS entry editor + variant scope. */
+          if (fidPv === "create-an-entry-variant") {
+            const tCe = Math.min(getStepTimeoutMs(step, 120_000), 120_000);
+
+            if (step.target === "Create an Entry Variant doc: verify Entries icon left navigation panel (doc step)") {
+              /** Doc: left navigation; stack UI often exposes **Entries** only in **top navbar** — warn (warning-only mismatch per doc-step parity). */
+              recordVerificationWarning(
+                step,
+                context,
+                "Create an Entry Variant doc: copy references the **left navigation** Entries icon — automation verifies **Entries** from the **top navigation** (`cms-nav-entries`, stack header `a[href*=entries]` or **Entries** button/link)."
+              );
+
+              const topScope = page.locator("#topnav, nav.TopNavbar, header.TopNavbar, .TopNavbar").first();
+              /** Prefer **unique** `[data-test-id="cms-nav-entries"]` (top navbar) — avoid `.or()` with `a[href*=entries]` (strict-mode duplicate with sidebar link). */
+              let ent = topScope.locator('[data-test-id="cms-nav-entries"]').first();
+              if (!(await ent.isVisible({ timeout: Math.min(tCe, 12_000) }).catch(() => false))) {
+                ent = page.locator('[data-test-id="cms-nav-entries"]').first();
+              }
+              if (!(await ent.isVisible({ timeout: Math.min(tCe, 12_000) }).catch(() => false))) {
+                ent = topScope.getByRole("link", { name: /^Entries$/i }).first();
+              }
+
+              await expect(ent).toBeVisible({ timeout: tCe });
+
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    ent,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              break;
+            }
+
+            if (step.target === "Create an Entry Variant doc: verify entry editor Base Entry dropdown label (doc step)") {
+              const scopeCtrl = page
+                .getByRole("button", { name: /\[\s*Base Entry\s*\]|^Base Entry$/i })
+                .first()
+                .or(page.getByRole("combobox", { name: /\[\s*Base Entry\s*\]|^Base Entry$/i }).first());
+              await expect(scopeCtrl).toBeVisible({ timeout: tCe });
+              if (step.expected?.within) {
+                try {
+                  await ensureWithin(page, scopeCtrl, step.expected.within, step.expected?.withinStrict === true);
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    scopeCtrl,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}" (UI may show Base Entry without brackets): ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              break;
+            }
+
+            if (step.target === "Create an Entry Variant doc: verify Variant Field tag (doc step)") {
+              const tag = page
+                .locator("span, div, label, p")
+                .filter({ hasText: /^Variant Field$/ })
+                .first()
+                .or(page.getByText(/^Variant Field$/).first());
+              await expect(tag).toBeVisible({ timeout: tCe });
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    tag,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              break;
+            }
+
+            if (step.target === "Create an Entry Variant doc: verify Save (doc step)") {
+              let saveBtn = page.locator('[data-test-id="cs-entry-save"]').filter({ hasNot: page.locator("[disabled]") }).first();
+              if (!(await saveBtn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+                saveBtn = page.locator('[data-test-id="cs-entry-save"]').first();
+              }
+              if (!(await saveBtn.isVisible({ timeout: 5_000 }).catch(() => false))) {
+                saveBtn = page.getByRole("button", { name: /^Save$/ }).first();
+              }
+              await expect(saveBtn).toBeVisible({ timeout: tCe });
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    saveBtn,
+                    step.expected.labelEquals,
+                    ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+              break;
+            }
+          }
+
+          /** create-segmented-experience — **Segmented** card title: UI may use a longer phrase than the doc’s **Segmented** token. */
+          if (
+            fidPv === "create-segmented-experience" &&
+            step.target === "Create Segmented Experience doc: Select Experience Type modal Segmented experience type heading (doc step)"
+          ) {
+            const card = page.locator('[role="dialog"] [data-testid="segmented-experience"]').first();
+            await expect(card).toBeVisible({ timeout: tPv });
+            const h2 = card.locator("h2").first();
+            await expect(h2).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, h2, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            const want = String(step.expected?.labelEquals ?? "").trim();
+            if (want) {
+              const raw = (((await h2.innerText()) || "") as string).replace(/\s+/g, " ").trim();
+              const tokenOk =
+                raw.toLowerCase().startsWith(want.toLowerCase()) ||
+                new RegExp(`(?:^|[\\s:])${escapeRegex(want)}(?:[\\s:]|$)`, "i").test(raw);
+              if (!tokenOk) {
+                try {
+                  await assertLabelMatch(
+                    h2,
+                    want,
+                    ((step.expected?.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}" (expected doc token "${want}" in Segmented card title; UI text was "${raw}"): ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+            }
+            break;
+          }
+
+          /** create-ab-test-experience | add-event-to-ab-test-experience — **A/B Test** card title (`data-testid="ab-testing-experience"`). */
+          if (
+            ((fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Create A/B Test Experience doc: Select Experience Type modal A/B Test experience type heading (doc step)") ||
+            ((fidPv === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+              step.target === "Add Event to A/B Test Experience doc: Select Experience Type modal A/B Test experience type heading (doc step)")
+          ) {
+            const card = page.locator('[role="dialog"] [data-testid="ab-testing-experience"]').first();
+            await expect(card).toBeVisible({ timeout: tPv });
+            const h2 = card.locator("h2").first();
+            await expect(h2).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, h2, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            const want = String(step.expected?.labelEquals ?? "").trim();
+            if (want) {
+              const raw = (((await h2.innerText()) || "") as string).replace(/\s+/g, " ").trim();
+              const tokenOk =
+                raw.toLowerCase().includes("a/b") ||
+                raw.toLowerCase().includes("ab test") ||
+                new RegExp(`(?:^|[\\s:])${escapeRegex(want)}(?:[\\s:]|$)`, "i").test(raw);
+              if (!tokenOk) {
+                try {
+                  await assertLabelMatch(
+                    h2,
+                    want,
+                    ((step.expected?.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}" (expected doc token "${want}" in A/B Test card title; UI text was "${raw}"): ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Create A/B Test Experience doc: Variant Distribution dropdown option Custom (doc step)"
+          ) {
+            let menu = page.locator(".Select__menu, [role='listbox']").last();
+            if (!(await menu.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              menu = page.locator("[role='listbox']").last();
+            }
+            await expect(menu).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            let opt = menu.locator("[role=option], .Select__option").filter({ hasText: /^Custom$/i }).first();
+            if (!(await opt.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              opt = menu.getByRole("option", { name: /^Custom$/i }).first();
+            }
+            await expect(opt).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  opt,
+                  step.expected.labelEquals,
+                  ((step.expected?.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Create A/B Test Experience doc: Variant Distribution dropdown option Multi-Armed Bandit (doc step)"
+          ) {
+            let menu = page.locator(".Select__menu, [role='listbox']").last();
+            if (!(await menu.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              menu = page.locator("[role='listbox']").last();
+            }
+            await expect(menu).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            let opt = menu
+              .locator("[role=option], .Select__option")
+              .filter({ hasText: /Multi[\s-]*Armed[\s-]*Bandit/i })
+              .first();
+            if (!(await opt.isVisible({ timeout: 3_500 }).catch(() => false))) {
+              opt = menu.getByText(/^Multi-Armed Bandit$/i).first();
+            }
+            await expect(opt).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                const raw = String((await opt.textContent()) ?? "")
+                  .replace(/\s+/g, " ")
+                  .trim();
+                const docParityOk =
+                  /^multi[\s-]*armed[\s-]*bandit/i.test(raw) &&
+                  (/\(mab\)/i.test(raw) || /^multi[\s-]*armed[\s-]*bandit$/i.test(raw));
+                if (!docParityOk) {
+                  await assertLabelMatch(
+                    opt,
+                    step.expected.labelEquals,
+                    ((step.expected?.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                }
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          /** Table header is sentence case in product (“Traffic distribution in %”) while the doc uses title case — match case-insensitively for label parity. */
+          if (
+            (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Create A/B Test Experience doc: Configuration variants Traffic Distribution column header (doc step)"
+          ) {
+            const main = page.locator("main#react-personalize").first();
+            await expect(main).toBeVisible({ timeout: tPv });
+            let el = main.getByText(/^Traffic distribution in %$/i).first();
+            if (!(await el.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              el = main.locator('[role="columnheader"], div, span, p').filter({ hasText: /Traffic\s+distribution\s+in\s*%/i }).first();
+            }
+            await expect(el).toBeVisible({ timeout: Math.min(tPv, 60_000) });
+            if (step.expected?.labelEquals) {
+              try {
+                const raw = String((await el.textContent()) ?? "")
+                  .replace(/\s+/g, " ")
+                  .trim();
+                const want = String(step.expected.labelEquals).trim();
+                const fold = (s: string) => s.toLowerCase().replace(/\s+/g, " ");
+                if (fold(raw) !== fold(want)) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": expected doc token "${want}" (case-insensitive), UI showed "${raw}".`
+                  );
+                }
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          /** Doc names a **Condition** field; current product surfaces **Match All** / **Match Any** without a separate "Condition" text node — accept **Match All** visible under Target Group as parity with warning when "Condition" is absent. */
+          if (
+            (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Create A/B Test Experience doc: Configuration Target Group Condition field label (doc step)"
+          ) {
+            const main = page.locator("main#react-personalize").first();
+            await expect(main).toBeVisible({ timeout: tPv });
+            const conditionLbl = main.getByText(/^Condition$/).first();
+            const matchAllCtl = main.getByText(/^Match All$/).first();
+            if (await conditionLbl.isVisible({ timeout: 4_000 }).catch(() => false)) {
+              await expect(conditionLbl).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+              if (step.expected?.labelEquals) {
+                try {
+                  await assertLabelMatch(
+                    conditionLbl,
+                    step.expected.labelEquals,
+                    ((step.expected?.labelMatch as any) || "exact") as "exact" | "contains"
+                  );
+                } catch (err: any) {
+                  recordVerificationWarning(
+                    step,
+                    context,
+                    `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                  );
+                }
+              }
+            } else if (await matchAllCtl.isVisible({ timeout: 6_000 }).catch(() => false)) {
+              await expect(matchAllCtl).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+              recordVerificationWarning(
+                step,
+                context,
+                `Doc names a "Condition" label; UI shows the rule dropdown (e.g. Match All) without a separate "Condition" heading — treating rule control as the doc Condition step.`
+              );
+            } else {
+              throw new Error(
+                'Create A/B Test Experience (doc): neither "Condition" nor "Match All" is visible under Target Group after Selective — UI may have changed.'
+              );
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "create-segmented-experience" || (fidPv === "create-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 3) || isPersonalizeE2eAbTestGuidePart(flow, 8) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow))) &&
+            (step.target === "Create Segmented Experience doc: verify Activate confirmation modal Activate button (doc step)" ||
+              step.target === "Create A/B Test Experience doc: verify Activate confirmation modal Activate button (doc step)")
+          ) {
+            let dlg = page
+              .getByRole("dialog")
+              .filter({ has: page.getByRole("heading", { name: /activate/i }) })
+              .last();
+            if (!(await dlg.isVisible({ timeout: 5_000 }).catch(() => false))) {
+              dlg = page.getByRole("dialog").last();
+            }
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            let act = dlg.getByRole("button", { name: /^Activate$/i }).first();
+            if (!(await act.isVisible({ timeout: 4_000 }).catch(() => false))) {
+              act = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Activate$/i }).first();
+            }
+            await expect(act).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, act, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  act,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-personalize-project" &&
+            step.target === "Create Personalize Project doc: verify Create Project button in modal (doc step)"
+          ) {
+            const dlg = personalizeProjectModalVerify();
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            const btn = dlg.locator('[data-testid="project-modal-form-submit"]').first();
+            await expect(btn).toBeVisible({ timeout: tPv });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            fidPv === "create-custom-attribute" &&
+            step.target === "Create Custom Attribute doc: verify Create button in modal (doc step)"
+          ) {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-attribute"]') })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            const btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Create$/i }).first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "create-event" || isPersonalizeE2eAbTestGuidePart(flow, 5) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Create Event doc: verify Create button in modal (doc step)"
+          ) {
+            const dlg = page
+              .locator('[role="dialog"]')
+              .filter({ has: page.locator('[data-test-id="cs-modal-title-new-event"]') })
+              .first();
+            await expect(dlg).toBeVisible({ timeout: tPv });
+            const btn = dlg.locator('[data-test-id="cs-button"], button').filter({ hasText: /^Create$/i }).first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tPv, 35_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              try {
+                await assertLabelMatch(
+                  btn,
+                  step.expected.labelEquals,
+                  ((step.expected.labelMatch as any) || "exact") as "exact" | "contains"
+                );
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            break;
+          }
+
+          if (
+            (fidPv === "add-event-to-ab-test-experience" || isPersonalizeE2eAbTestGuidePart(flow, 6) || isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+            step.target === "Add Event to A/B Test Experience doc: verify Configuration footer Save button (doc step)"
+          ) {
+            const root = page.locator("main#react-personalize").first();
+            await expect(root).toBeVisible({ timeout: tPv });
+            const btn = root.locator('button[data-testid="experience-footer-save-button"]').first();
+            await expect(btn).toBeVisible({ timeout: Math.min(tPv, 45_000) });
+            if (step.expected?.within) {
+              try {
+                await ensureWithin(page, btn, step.expected.within, step.expected?.withinStrict === true);
+              } catch (err: any) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
+                );
+              }
+            }
+            if (step.expected?.labelEquals) {
+              const raw = await extractElementLabel(btn);
+              const actual = normalizeLabelText(raw);
+              const want = normalizeLabelText(step.expected.labelEquals);
+              const docSaysSave = /^save$/i.test(String(step.expected.labelEquals || "").trim());
+              const uiSaveLike = /^save(\s+draft)?$/i.test(String(raw || "").trim());
+              const ok = actual === want || (docSaysSave && uiSaveLike);
+              if (!ok) {
+                recordVerificationWarning(
+                  step,
+                  context,
+                  `Label verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs footer "${raw}" (doc allows Save; UI may show Save Draft).`
+                );
+              }
             }
             break;
           }
@@ -27237,6 +30825,45 @@ export async function performAction(
         : inputMapped
         ? page.locator(inputMapped).first()
         : await resolveTarget(page, step.target, flow);
+      /**
+       * **edit-experience** — Configuration footer: **Save Draft** only when variant edits are pending; otherwise
+       * UI may show **Activate Draft** only. Resolve `el` here (before other verify overrides) so visibility check
+       * does not wait on a missing Save-only selector map.
+       */
+      if (
+        step.action === "verify" &&
+        String(flow?.id || "").toLowerCase() === "edit-experience" &&
+        step.target === "Edit Experience doc: verify Save Draft button (doc step)"
+      ) {
+        const tVerify = getStepTimeoutMs(step);
+        const root = page.locator("main#react-personalize").first();
+        const saveDraftBtn = root
+          .locator('button[data-testid="experience-footer-save-button"]')
+          .filter({ hasText: /^Save Draft$/i })
+          .first();
+        /** Footer primary action may expose `aria-label="aria-button"` with label text only in a child — avoid role/name matching. */
+        const activateDraftBtn = root.locator('button[data-testid="experience-footer-activate-draft-button"]').first();
+        const activateByText = root.locator("button").filter({ hasText: /^Activate Draft$/i }).first();
+        if (await saveDraftBtn.isVisible({ timeout: Math.min(tVerify, 10_000) }).catch(() => false)) {
+          el = saveDraftBtn;
+        } else if (await activateDraftBtn.isVisible({ timeout: Math.min(tVerify, 8_000) }).catch(() => false)) {
+          el = activateDraftBtn;
+          recordVerificationWarning(
+            step,
+            context,
+            'Configuration footer shows "Activate Draft" but not "Save Draft"; doc names Save Draft after variant edits—no pending variant save in this session.'
+          );
+          (flow as any).__editExperienceVerifySaveDraftFallbackActivate = true;
+        } else if (await activateByText.isVisible({ timeout: Math.min(tVerify, 35_000) }).catch(() => false)) {
+          el = activateByText;
+          recordVerificationWarning(
+            step,
+            context,
+            'Configuration footer shows "Activate Draft" but not "Save Draft"; doc names Save Draft after variant edits—no pending variant save in this session.'
+          );
+          (flow as any).__editExperienceVerifySaveDraftFallbackActivate = true;
+        }
+      }
       // Workflow UI: "Next available stages" may be on the summary card (plain text) or in the expanded form (test-id).
       if (step.action === "verify" && step.target === "Next available stages All stages label (doc step)") {
         el = page
@@ -27773,6 +31400,137 @@ export async function performAction(
           if (STRICT_DOC_VERIFICATION) throw new Error(msg);
           recordVerificationWarning(step, context, msg);
         }
+      } else if (
+        step.target === "New Personalize Project primary button (doc step)" &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        (step.target === "Create Segmented Experience doc: verify + Add Variant button (doc step)" ||
+          step.target === "Create Segmented Experience doc: verify New Experience button (doc step)" ||
+          step.target === "Create A/B Test Experience doc: verify + Add Variant button (doc step)" ||
+          step.target === "Create A/B Test Experience doc: verify New Experience button (doc step)" ||
+          step.target === "Create A/B Test Experience doc: verify Metrics Add Event button (doc step)" ||
+          step.target === "Add Event to A/B Test Experience doc: verify New Experience button (doc step)" ||
+          step.target === "Add Event to A/B Test Experience doc: verify Metrics Add Event button (doc step)") &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        step.target === "Create Custom Attribute doc: verify Attributes page + New Attribute primary button (doc step)" &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        step.target === "Create Event doc: verify Events page + New Event primary button (doc step)" &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        (step.target === "Add Custom Attribute Audience doc: verify Audiences listing New Audience primary button (doc step)" ||
+          step.target === "Create Audience doc: verify Audiences listing New Audience primary button (doc step)") &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        (step.target === "Add Custom Attribute Audience doc: verify Rules section Add Rule primary button (doc step)" ||
+          step.target === "Create Audience doc: verify Rules section Add Group button (doc step)") &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const wantNoLeadingPlus = normalizeLabelText(String(step.expected.labelEquals).replace(/^\+\s*/, ""));
+        const ok = actual === want || actual === wantNoLeadingPlus;
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        (flow?.id === "edit-experience" ||
+          isPersonalizeE2eAbTestGuidePart(flow, 6) ||
+          isPersonalizeE2eAbTestGuidePart(flow, 8) ||
+          isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+        step.target === "Edit Experience doc: verify Save Draft button (doc step)" &&
+        step.expected?.labelEquals &&
+        (flow as any).__editExperienceVerifySaveDraftFallbackActivate
+      ) {
+        // Footer showed Activate Draft only; labelEquals "Save Draft" already warned above—do not assert.
+      } else if (step.target === "Audience editor Name field label (doc step)" && step.expected?.labelEquals) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const stripped = normalizeLabelText(String(raw || "").replace(/\s*\([^)]*\)\s*$/, "").trim());
+        const ok = actual === want || stripped === want || (want.length >= 3 && stripped.includes(want));
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
+      } else if (
+        (step.target === "Edit Attribute modal Name field label (doc step)" ||
+          step.target === "Edit Attribute modal Key field label (doc step)" ||
+          step.target === "Edit Attribute modal Description field label (doc step)" ||
+          step.target === "Edit Event modal Key field label (doc step)" ||
+          step.target === "Edit Event Key field label (doc step)") &&
+        step.expected?.labelEquals
+      ) {
+        const raw = await extractElementLabel(el);
+        const actual = normalizeLabelText(raw);
+        const want = normalizeLabelText(step.expected.labelEquals);
+        const stripped = normalizeLabelText(String(raw || "").replace(/\s*\([^)]*\)\s*$/, "").trim());
+        const ok = actual === want || stripped === want || (want.length >= 2 && stripped.includes(want));
+        if (!ok) {
+          const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+          if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+          recordVerificationWarning(step, context, msg);
+        }
       } else if (step.expected?.labelEquals) {
         try {
           await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
@@ -27876,6 +31634,43 @@ export async function performAction(
         await inp.dispatchEvent("change");
         await inp.blur();
         await page.waitForTimeout(500);
+        break;
+      }
+
+      if (
+        (String(flow?.id || "").toLowerCase() === "create-ab-test-experience" ||
+          isPersonalizeE2eAbTestGuidePart(flow, 3) ||
+          isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
+        step.target === "Create A/B Test Experience doc: Configuration second variant Variant Name field (doc step)"
+      ) {
+        const ta = getStepTimeoutMs(step, 120_000);
+        const main = page.locator("main#react-personalize").first();
+        await expect(main).toBeVisible({ timeout: Math.min(ta, 60_000) });
+        const raw = String(step.value ?? "")
+          .trim()
+          .split("{unique8}")
+          .join(unique.replace(/-/g, "").slice(0, 8))
+          .split("{unique}")
+          .join(unique);
+        let body = main
+          .locator('[data-testid="ab-testing-experience-draft-config-body"], [data-testid="ab-test-experience-draft-config-body"]')
+          .first();
+        if (!(await body.isVisible({ timeout: 4_000 }).catch(() => false))) {
+          body = main.locator("#PageLayout__body, .PageLayout__body, .experience-page-layout__content").first();
+        }
+        if (!(await body.isVisible({ timeout: 2_500 }).catch(() => false))) {
+          body = main;
+        }
+        let inp = body.locator('[data-testid="variant-name-text-input"]').nth(1);
+        if (!(await inp.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          inp = main.locator('[data-testid="variant-name-text-input"]').nth(1);
+        }
+        await expect(inp).toBeVisible({ timeout: Math.min(ta, 45_000) });
+        await inp.click({ timeout: Math.min(ta, 35_000) }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(raw);
+        await inp.blur().catch(() => {});
+        await page.waitForTimeout(350);
         break;
       }
 
@@ -29097,6 +32892,73 @@ export async function performAction(
         }
       }
 
+      if (
+        (String(flow?.id || "").toLowerCase() === "manage-personalize-project" ||
+          String(flow?.id || "").toLowerCase() === "user-permissions-invite-user") &&
+        step.target === "Personalize Settings Users Invite modal email addresses pill (doc step)"
+      ) {
+        const tM = getStepTimeoutMs(step, 120_000);
+        const dlg = page
+          .locator('[role="dialog"]')
+          .filter({ has: page.locator('[data-test-id="cs-modal-title-invite-user"]') })
+          .first();
+        await expect(dlg).toBeVisible({ timeout: tM });
+        const unique8early = unique.replace(/-/g, "").slice(0, 8);
+        const raw =
+          String(step.value ?? "").split("{unique8}").join(unique8early).split("{unique}").join(unique).trim() ||
+          (
+            process.env.PERSONALIZE_INVITE_EMAIL?.trim() ||
+            process.env.CS_INVITE_TEST_EMAIL?.trim() ||
+            process.env.CS_EMAIL?.trim() ||
+            ""
+          ).trim();
+        if (!raw || !raw.includes("@")) {
+          throw new Error(
+            "Personalize Invite User: set step.value to an email or define PERSONALIZE_INVITE_EMAIL / CS_INVITE_TEST_EMAIL / CS_EMAIL in .env."
+          );
+        }
+        const pill = dlg.locator('[data-test-id="cs-pill"], #cs-pill').first();
+        await expect(pill).toBeVisible({ timeout: tM });
+        await pill.click({ timeout: tM, force: true });
+        await page.waitForTimeout(200);
+        const innerInput = pill.locator("input").first();
+        if ((await innerInput.count().catch(() => 0)) > 0 && (await innerInput.isVisible({ timeout: 1_500 }).catch(() => false))) {
+          await innerInput.fill("");
+          await innerInput.fill(raw);
+          await innerInput.dispatchEvent("change");
+        } else {
+          await page.keyboard.type(raw, { delay: 14 });
+          await page.keyboard.press("Enter");
+        }
+        await page.waitForTimeout(350);
+        break;
+      }
+
+      if (
+        String(flow?.id || "").toLowerCase() === "delete-personalize-project" &&
+        step.target === "Delete Personalize Project modal type DELETE confirmation (doc step)"
+      ) {
+        const tD = getStepTimeoutMs(step, 120_000);
+        const dlg = page.getByRole("dialog").last();
+        await expect(dlg).toBeVisible({ timeout: tD });
+        const want = String(step.value ?? "DELETE").trim();
+        if (want !== "DELETE") {
+          throw new Error('delete-personalize-project: confirmation field must be the literal "DELETE" (doc step).');
+        }
+        let inp = dlg.locator('input[placeholder*="DELETE" i], input[aria-label*="DELETE" i]').first();
+        if (!(await inp.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          inp = dlg.locator('input[type="text"]:not([readonly]), input:not([type])').first();
+        }
+        await expect(inp).toBeVisible({ timeout: Math.min(tD, 45_000) });
+        await inp.click({ timeout: tD }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(want);
+        await inp.dispatchEvent("input").catch(() => {});
+        await inp.blur().catch(() => {});
+        await page.waitForTimeout(450);
+        break;
+      }
+
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
       const unique8 = unique.replace(/-/g, "").slice(0, 8);
       const rawVal = String(step.value ?? "")
@@ -29110,6 +32972,60 @@ export async function performAction(
       const isAppend = rawVal.startsWith(appendPrefix);
       const appendText = isAppend ? rawVal.slice(appendPrefix.length) : "";
       const val = rawVal;
+
+      if (
+        (String(flow?.id || "").toLowerCase() === "add-custom-attribute-to-audience" ||
+          String(flow?.id || "").toLowerCase() === "create-audience") &&
+        step.target === "Personalize Audience editor rule Select Value criterion field (doc step)"
+      ) {
+        const ta = getStepTimeoutMs(step, 120_000);
+        const mainEl = page.locator("main#react-personalize").first();
+        await expect(mainEl).toBeVisible({ timeout: ta });
+        const fidAud = String(flow?.id || "").toLowerCase();
+        const audienceRules = mainEl.locator('[data-testid="audience-rule"]');
+        const ruleRoot = fidAud === "create-audience" ? audienceRules.last() : audienceRules.first();
+        await expect(ruleRoot).toBeVisible({ timeout: ta });
+        try {
+          await expect(ruleRoot.locator('[data-testid="rule-field"]')).toHaveCount(3, {
+            timeout: Math.min(ta, 55_000),
+          });
+        } catch {
+          const flowIdAudience = String(flow?.id || "").toLowerCase();
+          console.warn(
+            `[${flowIdAudience}] fewer than three rule-field cells after operator — continuing with last field.`
+          );
+        }
+        const valueHost = ruleRoot.locator('[data-testid="rule-field"]').last();
+        await expect(valueHost).toBeVisible({ timeout: ta });
+        const envCrit = String(process.env.PERSONALIZE_AUDIENCE_RULE_CRITERION || "").trim();
+        const rawInner =
+          (!isAppend && String(val ?? "").trim()) || (!isAppend && envCrit) || (!isAppend ? "AutomationCriterion" : val);
+        let inp = valueHost
+          .locator('[data-test-id="cs-text-input"] input, input:not([readonly]):not([type="hidden"]), textarea')
+          .first();
+        if (!(await inp.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          const ctl = valueHost.locator(".Select__control").first();
+          if (await ctl.isVisible({ timeout: 4_000 }).catch(() => false)) {
+            await ctl.click({ timeout: ta });
+            await page.waitForTimeout(450);
+            const menu = page.locator(".Select__menu, [role='listbox']").last();
+            await expect(menu).toBeVisible({ timeout: Math.min(ta, 35_000) });
+            const opt = menu.locator("[role='option'], .Select__option").filter({ hasText: /\S/ }).first();
+            await opt.click({ timeout: ta, force: true });
+            await page.waitForTimeout(450);
+            break;
+          }
+          throw new Error(
+            `${String(flow?.id || "").toLowerCase()}: Select Value field not found (expected text input or react-select in last rule cell).`
+          );
+        }
+        await inp.click({ timeout: ta }).catch(() => {});
+        await inp.fill("");
+        await inp.fill(rawInner);
+        await inp.blur().catch(() => {});
+        await page.waitForTimeout(350);
+        break;
+      }
 
       if (String(flow?.id || "").toLowerCase() === "custom-preview-urls") {
         const t = Math.min(getStepTimeoutMs(step), 45_000);
