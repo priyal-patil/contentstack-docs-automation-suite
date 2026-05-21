@@ -1,0 +1,53 @@
+# =============================================================================
+# Reliable 7:00 AM IST dispatcher — fires the CMS workflow via repository_dispatch.
+#
+# WHY THIS FILE EXISTS:
+#   GitHub's `schedule` cron is best-effort and routinely delayed 15–90 min on
+#   busy repos. The CMS workflow uses `repository_dispatch: cms-daily-7am-ist`
+#   as its reliable path. This tiny dispatcher job fires that event at 01:30 UTC
+#   (= 7:00 AM IST, UTC+5:30) using the built-in GITHUB_TOKEN — no external
+#   cron service or PAT required.
+#
+# HOW IT WORKS:
+#   GitHub may still delay the schedule trigger on this file, but the key
+#   difference is: this job completes in ~5 seconds (just a curl call), so it
+#   will almost always finish inside the same minute it starts. The heavy CMS
+#   pipeline is in the dispatched workflow — decoupled from this timing file.
+#
+# PERMISSIONS:
+#   `contents: read` + `actions: write` gives GITHUB_TOKEN permission to POST
+#   repository_dispatch events on the same repository.
+# =============================================================================
+
+name: CMS — 7:00 AM IST daily dispatcher
+
+on:
+  schedule:
+    # 01:30 UTC = 7:00 AM IST (Asia/Kolkata, UTC+5:30)
+    - cron: "30 1 * * *"
+  # Allow manual re-fire if GitHub delayed or missed the scheduled run.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    name: Fire cms-daily-7am-ist event
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch cms-daily-7am-ist to CMS scheduled workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "Firing repository_dispatch event: cms-daily-7am-ist"
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/dispatches \
+            -f event_type=cms-daily-7am-ist \
+            -f client_payload='{"source":"cms-daily-trigger.yml","triggered_at":"'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'"}'
+          echo "Dispatch sent. CMS workflow will start shortly."

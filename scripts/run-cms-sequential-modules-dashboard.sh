@@ -204,7 +204,7 @@ fi
 
 echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
 echo ">>> Merging Playwright JSON parts" | tee -a "$REPORT_DIR/cms-sequential.log"
-merge_playwright_parts
+merge_playwright_parts || echo "WARNING: merge_playwright_parts failed (continuing to reports/Slack)" | tee -a "$REPORT_DIR/cms-sequential.log"
 
 if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
   cp "$REPORT_DIR/flows-results.json" "$REPORT_DIR/flows-results-cms.json"

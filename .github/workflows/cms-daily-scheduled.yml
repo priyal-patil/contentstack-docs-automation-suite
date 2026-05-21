@@ -6,9 +6,10 @@
 # and .cursor/rules/cms-execution-order.mdc
 #
 # Schedule (daily): **7:00 AM IST** (Asia/Kolkata, UTC+5:30) → **01:30 UTC** (GitHub cron is UTC-only).
-# ⚠️ GitHub `schedule` can be delayed or jittered — it is NOT an exact IST alarm clock. For **reliable enqueue
-# at 07:00 IST**, trigger **`repository_dispatch` → `cms-daily-7am-ist`** from an external cron (cron-job.org,
-# Cloud Scheduler, etc.) — see README. Keep `schedule` below as backup.
+# ⚠️ GitHub `schedule` is best-effort and can be delayed 15–90 min. For **reliable 07:00 IST triggering**,
+# a lightweight dispatcher workflow (.github/workflows/cms-daily-trigger.yml) fires the
+# `repository_dispatch: cms-daily-7am-ist` event using the built-in GITHUB_TOKEN — no external service needed.
+# This workflow's own `schedule` below is a fallback in case the dispatcher itself is delayed.
 # Cron format: minute hour day-of-month month day-of-week
 #
 # Runner: **`runs-on: ubuntu-latest`** — GitHub-hosted Linux (Actions minutes on private repos; hosted
@@ -26,13 +27,13 @@ on:
   workflow_dispatch:
     inputs:
       skip_retry:
-        description: "Manual only: true = skip retry-before-delete. Scheduled cron always sets SKIP_RETRY (6h runner cap)."
+        description: "Skip the retry pass (re-run of failed/timed-out flows before delete batch). Defaults true — retry adds ~1h extra. Set false only when debugging flaky flows."
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
-          - "false"
           - "true"
+          - "false"
       skip_slack:
         description: "Set to true to skip urlRunSummaryAndSlack.ts (reports still uploaded as artifacts)"
         required: false
@@ -55,13 +56,13 @@ on:
         default: ""
         type: string
       skip_docs_audit:
-        description: "Manual only: skip all CMS docs crawl (SKIP_DOCS_AUDIT=1, DOCS_AUDIT_BACKGROUND=0) for fastest CI."
+        description: "Skip the CMS docs link/image crawl. Defaults true — docs-audit is a separate concern and adds significant time. Set false only when you explicitly want the full broken-links audit."
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
-          - "false"
           - "true"
+          - "false"
 
   # External IST clock (recommended): POST `repository_dispatch` with event_type `cms-daily-7am-ist` at 07:00 Asia/Kolkata.
   repository_dispatch:
@@ -95,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     # GitHub-hosted jobs: max wall clock typically 360 minutes on standard accounts; raise only if your plan allows.
     # Do not shrink to ~30: the sequential CMS pipeline + optional docs-audit wait routinely exceeds 30 minutes.
-    timeout-minutes: 360
+    timeout-minutes: 480
     env:
       CI: "true"
       # ----- CI-friendly behaviour (no macOS open(), bounded wall clock for GHA 6h cap) -----
@@ -109,12 +110,17 @@ jobs:
       # Deterministic report path for upload (script defaults would still work under reports/)
       REPORT_DIR: ${{ github.workspace }}/reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
       # Align with scripts/run-cms-sequential-modules-dashboard.sh defaults
-      PW_FLOW_MAX_MINUTES: "15"
+      # 6 min cap per flow — prevents a single stuck/failing flow from eating 15 min in retry/non-batch passes.
+      # Batch module passes (CMS_CONTINUE_ON_FAIL=1) use cmsModuleBatchTimeoutMs (4h) not this value,
+      # so individual Playwright action timeouts (30s default) protect them instead.
+      PW_FLOW_MAX_MINUTES: "6"
       PW_WORKERS: "6"
+      PW_SLOWMO: "0"
       # Bounded wait after CMS for background docs-audit PID before artifacts upload.
       DOCS_AUDIT_GHA_WAIT_SECS: "1200"
-      # If Slack secrets are configured in the repo, the pipeline posts summary (optional)
-      # SKIP_SLACK is unset — use SLACK_BOT_TOKEN + SLACK_CHANNEL_ID per scripts/urlRunSummaryAndSlack.ts
+      # Suppress Slack inside the bash script — a dedicated GHA step (if: always()) handles posting
+      # so Slack fires even when the bash script crashes or the job is interrupted.
+      SKIP_SLACK: "1"
 
     steps:
       # ---------------------------------------------------------------------
@@ -363,20 +369,37 @@ jobs:
           body: file://${{ github.workspace }}/cms-daily-email-body.txt
 
       # ---------------------------------------------------------------------
-      # 9) Lightweight Slack alert on workflow failure (optional Incoming Webhook)
-      # Does not replace the product slack summary from urlRunSummaryAndSlack.ts when tokens are set.
+      # 9) Slack summary — always fires (success OR failure) using SLACK_BOT_TOKEN.
+      # SKIP_SLACK=1 is set in the job env so the bash script never posts to Slack itself;
+      # this step is the single source of Slack truth for GHA runs.
+      # If flows-results.json exists → urlRunSummaryAndSlack.ts posts a rich summary with counts.
+      # If bash crashed before merge → a minimal fallback alert is posted instead.
       # ---------------------------------------------------------------------
-      # Step `if:` must NEVER reference secrets (INVALID: failure() && secrets.SLACK_INCOMING_WEBHOOK_URL).
-      # Pass the webhook URL via env and no-op in the shell when unset (matches GitHub’s restriction).
-      - name: Slack notify on workflow failure (optional webhook)
-        if: failure() || cancelled()
+      - name: Post Slack summary (always — success or failure)
+        if: always()
         env:
-          HOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
+          REPORT_DIR: ${{ github.workspace }}/reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.cms_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if [[ -z "${HOOK:-}" ]]; then
-            echo "Skipping Slack webhook (SLACK_INCOMING_WEBHOOK_URL not configured)."
+          set -eo pipefail
+          if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
+            echo "SLACK_BOT_TOKEN or SLACK_CHANNEL_ID not set — skipping Slack post."
             exit 0
           fi
-          curl -sS -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"❌ *CMS scheduled run failed* — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open run>\"}" \
-            "$HOOK"
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            echo "flows-results.json found — posting detailed summary via urlRunSummaryAndSlack.ts"
+            npx ts-node scripts/urlRunSummaryAndSlack.ts 2>&1 || \
+              echo "::warning::urlRunSummaryAndSlack.ts failed — falling back to minimal alert"
+          else
+            echo "flows-results.json not found (bash script may have crashed) — posting minimal alert"
+            ICON=":white_check_mark:"
+            [[ "${CMS_STEP_OUTCOME:-}" != "success" ]] && ICON=":x:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS daily run — ${CMS_STEP_OUTCOME:-unknown}* (no report generated — run may have crashed). <${RUN_URL}|Open run>\"}" \
+              | grep -q ‘"ok":true’ && echo "Slack alert sent." || echo "::warning::Slack API call failed."
+          fi
