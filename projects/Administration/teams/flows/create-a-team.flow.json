@@ -1,0 +1,221 @@
+{
+  "id": "create-a-team",
+  "project": "Administration",
+  "module": "teams",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/teams/create-a-team",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/teams/create-a-team. Any step that fails means the app does not match the documentation; the documentation must be updated. DOM files were empty at time of authoring; selectors derived from naming patterns. Covers: Create Team (Org Admin → Teams → + New Team → verify Create New Team modal + Team Name label + Description label → enter values → Create Team), verify Team tab fields (Team Name, Description, Assign Organization Role, Invite to stacks), Add Users (Users tab → + Invite Users → email → Invite).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Teams menu item in Org Admin (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Teams",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Teams menu item in Org Admin (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Team button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "+ New Team",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Team button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Team modal title (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Create New Team",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Team Name label in Create New Team form (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Team Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Team name input field (doc step)",
+      "value": "Test Team",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Description label in Create New Team form (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Team description input field (doc step)",
+      "value": "Test team description",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Create Team button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Create Team",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Team button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Team tab on team configuration page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Team",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Team tab on team configuration page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Team Name label on Team tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Team Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Description label on Team tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Assign Organization Role section on Team tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Assign Organization Role",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Invite to stacks section on Team tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Invite to stacks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users tab on team configuration page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users tab on team configuration page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ Invite Users button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "+ Invite Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Invite Users button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Users modal title (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Invite Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email address input in Invite Users (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Email address input in Invite Users (doc step)",
+      "value": "test@example.com",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Invite button in Invite Users dialog (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Invite",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Invite button in Invite Users dialog (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "organization-settings-overview",
+  "project": "Administration",
+  "module": "organizations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/organization/organization-settings-overview",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/organization/organization-settings-overview. Any step that fails means the app does not match the documentation; the documentation must be updated. The document uses full section names (Organization Information, Organization Users, Organization Stacks) while the DOM nav uses short labels (Org Info, Users, Stacks) — mismatches are intentional failures to flag doc inaccuracy.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Organization settings management page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Organization Information section (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Organization Information",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Product Analytics section (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Product Analytics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Organization Users section (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Organization Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Organization Stacks section (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Organization Stacks",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

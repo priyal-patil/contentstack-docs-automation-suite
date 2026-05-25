@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write  # repository_dispatch API requires contents:write (not just read)
   actions: write
 
 jobs:

@@ -1,0 +1,168 @@
+{
+  "id": "invite-users-to-organization",
+  "project": "Administration",
+  "module": "organizations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/organization/invite-users-to-organization",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/organization/invite-users-to-organization. Any step that fails means the app does not match the documentation; the documentation must be updated. CMS product-row selectors derived from the 'organization' naming pattern (no CMS-state DOM was captured); text-based fallbacks included. Selectors in module.selectors.ts are the implementation detail for locating doc-described elements.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Administration in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Administration in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users nav in Administration (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users nav in Administration (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite User button on Users list page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Invite User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Invite User button on Users list page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite User page title (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Invite User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Email input on Invite User page (doc step)",
+      "value": "docs-qa-test-invite-{unique}@example.org",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "CMS section in Assign Product Roles (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "CMS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "CMS section Manage Roles button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "select",
+      "target": "Stacks dropdown in CMS manage roles sidebar (doc step)",
+      "value": "DEFAULT_STACK",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Member role checkbox in sidebar (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Save button in manage roles sidebar (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in manage roles sidebar (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Administration section in Assign Product Roles (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Administration section Manage Roles button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Member role checkbox in Administration sidebar (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Administration manage roles sidebar (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Administration manage roles sidebar (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Invite button on Invite User page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Invite",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Invite button on Invite User page (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

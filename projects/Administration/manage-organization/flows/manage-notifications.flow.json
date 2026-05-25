@@ -1,0 +1,95 @@
+{
+  "id": "manage-notifications",
+  "project": "Administration",
+  "module": "manage-organization",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/headless-cms/manage-notifications",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/headless-cms/manage-notifications. Any step that fails means the app does not match the documentation; the documentation must be updated. DOM files were empty at time of authoring; selectors derived from naming patterns. Covers: Access Notifications (bell icon), View and Interact (per-notification ellipsis → Mark as Read, Delete; panel-level three dots menu → Mark All Read, Delete All), Grouping and Sorting.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Bell icon in top right corner (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Bell icon in top right corner (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Notifications panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Ellipsis on notification (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Ellipsis on notification (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Mark as Read option in notification menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Mark as Read",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete option in notification menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Three dots menu on Notifications panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Three dots menu on Notifications panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Mark All Read option in Notifications menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Mark All Read",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete All option in Notifications menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Delete All",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

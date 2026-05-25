@@ -123,32 +123,105 @@ elif [[ "$DOCS_AUDIT_BACKGROUND" == "1" ]]; then
   echo "docs-audit background PID $(cat "$REPORT_DIR/docs-audit-background.pid") — log: $REPORT_DIR/docs-audit-background.log" | tee -a "$REPORT_DIR/cms-sequential.log"
 fi
 
-n=0
-for mod in "${CMS_MAIN_MODULES[@]}"; do
-  if [[ ! -d "$ROOT/projects/CMS/$mod" ]]; then
-    echo "(skip) No projects/CMS/$mod — not in repo" | tee -a "$REPORT_DIR/cms-sequential.log"
-    continue
-  fi
-  n=$((n + 1))
-  printf -v ord "%02d" "$n"
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 1 — Bootstrap: 14 foundational flows, 1 worker, exact order.
+# These create the base resources every subsequent module depends on.
+# ─────────────────────────────────────────────────────────────────────────────
+CMS_BOOTSTRAP_FLOWS=(
+  "add-an-environment"
+  "add-a-language"
+  "add-a-custom-language"
+  "create-a-branch"
+  "create-a-new-stack-part-1"
+  "create-content-type"
+  "create-a-new-release"
+  "create-a-global-field"
+  "create-a-global-field-part-2"
+  "create-upload-assets"
+  "create-a-folder"
+  "create-an-entry"
+  "add-a-comment"
+  "create-and-apply-labels"
+)
+
+# Comma-separated list passed to flows.spec.ts so Phase 2 batch skips these.
+CMS_SKIP_FLOW_IDS_VALUE="$(printf '%s,' "${CMS_BOOTSTRAP_FLOWS[@]}" | sed 's/,$//')"
+
+_saved_PW_WORKERS="${PW_WORKERS}"
+_saved_CMS_SEQ="${CMS_SEQUENTIAL_MODULE_ORDER}"
+_saved_CONTINUE="${CMS_CONTINUE_ON_FAIL}"
+
+# Switch to non-batch mode so each flow is a separate test (grep-able by flow ID).
+export PW_WORKERS=1
+export CMS_SEQUENTIAL_MODULE_ORDER=0
+export CMS_CONTINUE_ON_FAIL=0
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo "=== Phase 1: Bootstrap (${#CMS_BOOTSTRAP_FLOWS[@]} flows, 1 worker, serial) ===" | tee -a "$REPORT_DIR/cms-sequential.log"
+n_boot=0
+for flow_id in "${CMS_BOOTSTRAP_FLOWS[@]}"; do
+  n_boot=$((n_boot + 1))
+  printf -v boot_ord "%02d" "$n_boot"
   echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
-  echo ">>> [$ord] Project=CMS Module=$mod Stage=main (excluding delete flows)" | tee -a "$REPORT_DIR/cms-sequential.log"
-  run_playwright_part "${ord}-module-${mod}" \
-    -g "Project=CMS Module=${mod} Stage=main" \
-    --grep-invert "$CMS_DELETE_FLOW_GREP"
-
-  if [[ "$mod" == "workflows" ]]; then
-    echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
-    echo ">>> Publish rules chain (serial, after workflows module)" | tee -a "$REPORT_DIR/cms-sequential.log"
-    run_playwright_part "86-publish-rules-chain" -g 'publish rules chain \(serial\)'
-  fi
-
-  if [[ "$mod" == "users-and-roles" ]]; then
-    echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
-    echo ">>> Role lifecycle chain (serial, after users-and-roles module)" | tee -a "$REPORT_DIR/cms-sequential.log"
-    run_playwright_part "87-roles-chain" -g 'role lifecycle chain \(serial\)'
-  fi
+  echo ">>> [bootstrap-${boot_ord}] ${flow_id}" | tee -a "$REPORT_DIR/cms-sequential.log"
+  run_playwright_part "bootstrap-${boot_ord}-${flow_id}" \
+    -g "Project=CMS.*${flow_id}"
 done
+
+# Restore batch-mode settings for Phase 2.
+export PW_WORKERS="${_saved_PW_WORKERS}"
+export CMS_SEQUENTIAL_MODULE_ORDER="${_saved_CMS_SEQ}"
+export CMS_CONTINUE_ON_FAIL="${_saved_CONTINUE}"
+export CMS_SKIP_FLOW_IDS="${CMS_SKIP_FLOW_IDS_VALUE}"
+unset _saved_PW_WORKERS _saved_CMS_SEQ _saved_CONTINUE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 2 — Module runs (non-delete flows, bootstrap flows skipped via
+# CMS_SKIP_FLOW_IDS). Modules are grouped into 4 tiers so PW_WORKERS
+# parallelises across module batch-tests within each tier, cutting wall time
+# from ~21 sequential Playwright invocations to 4 grouped ones.
+#
+# Tier A → B → C → D preserves the broad dependency order:
+#   foundational → content structure → content creation → advanced features
+# Within each group the 6 workers run module batches in parallel;
+# within each module flows still execute serially in CRUD order.
+# ─────────────────────────────────────────────────────────────────────────────
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo "=== Phase 2: Module runs (grouped, CMS_SKIP_FLOW_IDS set) ===" | tee -a "$REPORT_DIR/cms-sequential.log"
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> [Tier A] environment | language | branches | stack" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "10-tier-A-foundational" \
+  -g "Project=CMS Module=(environment|language|branches|stack) Stage=main" \
+  --grep-invert "$CMS_DELETE_FLOW_GREP"
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> [Tier B] content-models | global-field | releases | assets | users-and-roles | tokens | security | webhook" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "20-tier-B-content-structure" \
+  -g "Project=CMS Module=(content-models|global-field|releases|assets|users-and-roles|tokens|security|webhook) Stage=main" \
+  --grep-invert "$CMS_DELETE_FLOW_GREP"
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> Role lifecycle chain (serial, after users-and-roles)" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "87-roles-chain" -g 'role lifecycle chain \(serial\)'
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> [Tier C] entries | json-rich-text-editor | live-preview | content-modeling" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "30-tier-C-content" \
+  -g "Project=CMS Module=(entries|json-rich-text-editor|live-preview|content-modeling) Stage=main" \
+  --grep-invert "$CMS_DELETE_FLOW_GREP"
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> [Tier D] workflows | taxonomy | search | visual-experience" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "40-tier-D-advanced" \
+  -g "Project=CMS Module=(workflows|taxonomy|search|visual-experience) Stage=main" \
+  --grep-invert "$CMS_DELETE_FLOW_GREP"
+
+echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo ">>> Publish rules chain (serial, after workflows)" | tee -a "$REPORT_DIR/cms-sequential.log"
+run_playwright_part "86-publish-rules-chain" -g 'publish rules chain \(serial\)'
+
+unset CMS_SKIP_FLOW_IDS
 
 # Retry failed / timed-out / interrupted URLs from main + chain parts only — before any delete batch.
 # Batched module runs use one Playwright test per module; retry targets flow ids via env from collectRetryFlowTitlesFromJson --exportShell

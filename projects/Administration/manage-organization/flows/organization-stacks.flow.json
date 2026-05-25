@@ -1,0 +1,203 @@
+{
+  "id": "organization-stacks",
+  "project": "Administration",
+  "module": "manage-organization",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/organization/organization-stacks",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/organization/organization-stacks. Any step that fails means the app does not match the documentation; the documentation must be updated. DOM files for organization stacks were empty at time of authoring; selectors derived from naming patterns. Covers three sections: Access Stacks Settings Page, Delete Stack via Organization Owner, Delete Stack via Stack Creator/Owner.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Org Admin icon in left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Stacks tab in org admin (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Stacks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stacks tab in org admin (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Stacks settings page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Name column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Owner column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Owner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email Address column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Email Address",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users count column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Created At column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Created At",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Actions column on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Ellipsis in Stacks Actions column (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Ellipsis in Stacks Actions column (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Delete option in Stacks Actions menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete option in Stacks Actions menu (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Confirm Delete dialog on Stacks page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Confirm Delete button on Stacks page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Settings icon on left navigation panel (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings icon on left navigation panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Stack option in Settings (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stack option in Settings (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Settings page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Stack button on Stack Settings page (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelEquals": "Delete Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Delete Stack button on Stack Settings page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Confirm Delete action on Stack Settings page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Confirm Delete action on Stack Settings page (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

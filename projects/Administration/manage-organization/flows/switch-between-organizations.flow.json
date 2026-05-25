@@ -1,0 +1,52 @@
+{
+  "id": "switch-between-organizations",
+  "project": "Administration",
+  "module": "manage-organization",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/organization/switch-between-organizations",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/organization/switch-between-organizations. Any step that fails means the app does not match the documentation; the documentation must be updated. Covers two sections: Main Process (Profile icon → Switch organization dropdown) and Alternative Method (Organization tab in page header).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Profile icon (doc step)",
+      "timeoutMs": 60000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile icon (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Switch organization dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Switch organization",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Switch organization dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Organization option in Switch organization dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Organization option in Switch organization dropdown (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

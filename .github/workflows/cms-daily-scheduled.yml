@@ -94,9 +94,9 @@ jobs:
   cms-full-batch:
     name: CMS sequential batch (headless)
     runs-on: ubuntu-latest
-    # GitHub-hosted jobs: max wall clock typically 360 minutes on standard accounts; raise only if your plan allows.
-    # Do not shrink to ~30: the sequential CMS pipeline + optional docs-audit wait routinely exceeds 30 minutes.
-    timeout-minutes: 480
+    # GitHub-hosted jobs: hard cap is 6 h (360 min) on ubuntu-latest. Set to 350 to stay within the cap
+    # and get a clean GHA timeout message rather than a silent kill at 360.
+    timeout-minutes: 350
     env:
       CI: "true"
       # ----- CI-friendly behaviour (no macOS open(), bounded wall clock for GHA 6h cap) -----
@@ -242,6 +242,94 @@ jobs:
         run: npm run test:cms:foreground
 
       # Background docs-audit output lives under reports/docs-audit-CMS-<timestamp>/ (see run-docs-audit-background.sh).
+
+      # ---------------------------------------------------------------------
+      # 6b) Partial report generation — runs even when the CMS step is
+      #     cancelled or timed out (hits GitHub's 6h wall-clock cap).
+      #     The bash script writes playwright-parts/*.json after each phase.
+      #     If it was killed before the final merge + report scripts ran,
+      #     this step merges whatever parts exist and generates partial
+      #     artifacts so the email/Slack steps have real data to report.
+      # ---------------------------------------------------------------------
+      - name: Merge partial results and generate reports (on cancel/timeout)
+        if: always()
+        env:
+          REPORT_DIR: ${{ github.workspace }}/reports/gha-cms-${{ github.run_id }}-${{ github.run_attempt }}
+          SKIP_SLACK: "1"
+        run: |
+          set -eo pipefail
+          PARTS_DIR="${REPORT_DIR}/playwright-parts"
+
+          # If the bash script completed normally, url-run-summary.json already exists — nothing to do.
+          if [[ -f "${REPORT_DIR}/url-run-summary.json" ]]; then
+            echo "url-run-summary.json present — normal completion, skipping partial merge."
+            exit 0
+          fi
+
+          echo "::notice::url-run-summary.json absent — job was likely cancelled/timed-out. Generating partial report."
+
+          # Merge all part files written by run_playwright_part into flows-results.json.
+          if compgen -G "${PARTS_DIR}/*.json" > /dev/null 2>&1; then
+            mapfile -t PARTS < <(ls -v "${PARTS_DIR}"/*.json 2>/dev/null)
+            echo "Merging ${#PARTS[@]} partial part(s): ${PARTS[*]##*/}"
+            npx ts-node scripts/mergePlaywrightFlowJsonReports.ts \
+              --out "${REPORT_DIR}/flows-results.json" "${PARTS[@]}" 2>&1 || \
+              echo "::warning::Partial merge script failed — flows-results.json may only reflect last-run batch."
+          else
+            echo "No playwright-parts/*.json found — tests may not have started."
+          fi
+
+          # Generate report artifacts from merged data (idempotent — safe if already present).
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts    --reportDir "${REPORT_DIR}" 2>&1 || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts  --reportDir "${REPORT_DIR}" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts     --reportDir "${REPORT_DIR}" 2>&1 || true
+            # Generate url-run-summary.json (SKIP_SLACK=1 prevents double-posting; Slack GHA step handles it).
+            npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
+          fi
+
+          # Write a human-readable phase summary (executed vs not-reached).
+          ALL_PHASES=(
+            "bootstrap-01-add-an-environment"
+            "bootstrap-02-add-a-language"
+            "bootstrap-03-add-a-custom-language"
+            "bootstrap-04-create-a-branch"
+            "bootstrap-05-create-a-new-stack-part-1"
+            "bootstrap-06-create-content-type"
+            "bootstrap-07-create-a-new-release"
+            "bootstrap-08-create-a-global-field"
+            "bootstrap-09-create-a-global-field-part-2"
+            "bootstrap-10-create-upload-assets"
+            "bootstrap-11-create-a-folder"
+            "bootstrap-12-create-an-entry"
+            "bootstrap-13-add-a-comment"
+            "bootstrap-14-create-and-apply-labels"
+            "10-tier-A-foundational"
+            "20-tier-B-content-structure"
+            "87-roles-chain"
+            "30-tier-C-content"
+            "40-tier-D-advanced"
+            "86-publish-rules-chain"
+            "89-retry-before-delete"
+            "90-delete-batch"
+            "99-trash"
+          )
+          {
+            echo "Job outcome : ${{ steps.cms_run.outcome }}"
+            echo "Terminated  : $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo ""
+            echo "=== Phases with results (playwright-parts/) ==="
+            ls -v "${PARTS_DIR}"/*.json 2>/dev/null | xargs -I{} basename {} .json || echo "  (none)"
+            echo ""
+            echo "=== Phases NOT reached ==="
+            for phase in "${ALL_PHASES[@]}"; do
+              if [[ ! -f "${PARTS_DIR}/${phase}.json" ]]; then
+                echo "  NOT REACHED: ${phase}"
+              fi
+            done
+          } > "${REPORT_DIR}/cancellation-summary.txt" 2>&1 || true
+          echo "--- Cancellation summary ---"
+          cat "${REPORT_DIR}/cancellation-summary.txt" || true
 
       - name: Wait for CMS docs-audit background process (bounded)
         if: always()

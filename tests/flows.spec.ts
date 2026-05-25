@@ -455,6 +455,11 @@ const cmsSequentialModuleOrder = process.env.CMS_SEQUENTIAL_MODULE_ORDER === "1"
 /** CMS sequential batch: run every flow in the module even if one fails (test.step per flow). Off unless "1". */
 const cmsContinueOnFail = process.env.CMS_CONTINUE_ON_FAIL === "1";
 
+/** Flow IDs already executed in the bootstrap phase — skip them inside the batch to avoid re-running. Comma-separated. */
+const cmsSkipFlowIds = new Set<string>(
+  (process.env.CMS_SKIP_FLOW_IDS || "").split(",").map((s) => s.trim()).filter(Boolean)
+);
+
 const MAX_FLOW_SUITE_TIMEOUT_MS = 3_600_000;
 
 /**
@@ -502,6 +507,7 @@ function registerModuleFlowTests(groupFlows: any[], bucketTitle: string): void {
       const stepFailures: unknown[] = [];
       for (const flow of groupFlows) {
         const testName = flow.id || path.basename(flow.source || "unknown-flow");
+        if (cmsSkipFlowIds.has(testName)) continue; // already executed in bootstrap phase
         // Playwright rethrows after a failed test.step; catch so remaining URLs still run (CMS batch).
         try {
           await test.step(testName, async () => {
