@@ -1,0 +1,90 @@
+{
+  "id": "ai-settings",
+  "project": "Administration",
+  "module": "ai-settings",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/administration/ai-settings",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-settings. Covers: App Switcher → Administration → AI Settings top nav → AI Configuration page → Global AI Settings tab → AI Product Controls → Enable All link. Note: The first-time Terms of Service acceptance step is skipped — it only appears once and will not appear in recurring automation. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Top right corner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "AI Settings tab in Administration navigation (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "AI Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "AI Settings tab in Administration navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "AI Configuration page heading (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "AI Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Global AI Settings tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Global AI Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "AI Product Controls section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "AI Product Controls",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Enable All link (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Enable All",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

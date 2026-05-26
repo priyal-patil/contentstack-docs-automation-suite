@@ -121,6 +121,18 @@ jobs:
       # Suppress Slack inside the bash script — a dedicated GHA step (if: always()) handles posting
       # so Slack fires even when the bash script crashes or the job is interrupted.
       SKIP_SLACK: "1"
+      # Cap each module's batch test at 90 minutes (prevents a single stuck module from consuming
+      # the entire 350-min job budget; e.g. content-models has 44 flows × ~1.5 min = ~66 min normal).
+      # Without this cap, the default is 4h per module — one hanging flow blocks the entire tier.
+      CMS_MODULE_BATCH_TIMEOUT_MS: "5400000"
+      # Cap each individual flow inside a batch module at 10 minutes. A single stuck flow can otherwise
+      # block the entire 90-min module budget. Screenshot is captured at the moment of timeout.
+      # 600 000 ms = 10 min per flow.
+      CMS_BATCH_PER_FLOW_TIMEOUT_MS: "600000"
+      # Force all GitHub Actions JavaScript actions (checkout, setup-node, upload-artifact,
+      # action-send-mail) to run on Node.js 24 now instead of waiting for the June 2026 forced migration.
+      # This eliminates the "Node.js 20 will be deprecated" annotation in every run.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
       # ---------------------------------------------------------------------
@@ -135,7 +147,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -474,7 +486,7 @@ jobs:
         run: |
           set -eo pipefail
           if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
-            echo "SLACK_BOT_TOKEN or SLACK_CHANNEL_ID not set — skipping Slack post."
+            echo "::warning::Slack post skipped — SLACK_BOT_TOKEN and/or SLACK_CHANNEL_ID secrets are not configured. Go to: GitHub repo → Settings → Secrets and variables → Actions, and add both secrets. Without them this step always shows green but never posts."
             exit 0
           fi
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then

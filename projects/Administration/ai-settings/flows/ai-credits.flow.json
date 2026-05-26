@@ -1,0 +1,127 @@
+{
+  "id": "ai-credits",
+  "project": "Administration",
+  "module": "ai-settings",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/administration/ai-credits",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-credits. Covers: App Switcher → Administration → AI Settings top nav → AI Credits left nav → Credits Dashboard (Monthly Credit Allocation, Days Until Reset) → Management tab → Hard Limit / Soft Limit options. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Top right corner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "AI Settings tab in Administration navigation (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "AI Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "AI Settings tab in Administration navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "AI Credits left navigation item (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "AI Credits",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "AI Credits left navigation item (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Credits Dashboard tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Monthly Credit Allocation section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Monthly Credit Allocation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Days Until Reset section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Days Until Reset",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Management tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Management",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Management tab (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Hard Limit option (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Hard Limit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Soft Limit option (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Soft Limit",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

@@ -1737,6 +1737,8 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
         const dt = self?.getAttribute?.("data-test-id") || "";
         if (dt === "cms-nav-tasks" || dt === "cs-help-center" || dt === "cs-icon") return true;
         if (self?.closest?.(".command-bar__help--large")) return true;
+        // Administration Org Admin header — profile icon lives in .user-profile / cs-user-profile
+        if (self?.closest?.('[data-test-id="cs-user-profile"], .user-profile, .header__list--chat-widget')) return true;
         return !!self?.closest?.(
           'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], .command-bar, .TopNavbar__content__items__list, .TopNavbar__content__items__list__redirect'
         );
@@ -3390,6 +3392,41 @@ export async function performAction(
     }
 
     case "click": {
+      // App Switcher button (generic — used by all Administration flows): the inner tippy-wrapper can intercept a
+      // normal click, preventing the modal from opening. Use force:true to bypass Tippy and wait for the modal body.
+      if (step.target === "App Switcher button (doc step)") {
+        const tAs = getStepTimeoutMs(step, 60_000);
+        const opener = page.locator('[data-test-id="app-switcher"]').first();
+        await opener.scrollIntoViewIfNeeded().catch(() => {});
+        await expect(opener).toBeVisible({ timeout: Math.min(tAs, 30_000) });
+        await opener.click({ timeout: tAs, force: true });
+        await page.waitForTimeout(400);
+        await page.locator('[data-test-id="app-switcher-body"]').first()
+          .waitFor({ state: "visible", timeout: Math.min(tAs, 30_000) })
+          .catch(() => {});
+        break;
+      }
+
+      // Administration option inside the App Switcher modal (generic — used by all Administration flows):
+      // If the modal closed between the verify and click steps, re-open it before clicking.
+      if (step.target === "Administration option in App Switcher (doc step)") {
+        const tAd = getStepTimeoutMs(step, 60_000);
+        const body = page.locator('[data-test-id="app-switcher-body"]').first();
+        const opener = page.locator('[data-test-id="app-switcher"]').first();
+        const isOpen = await body.isVisible({ timeout: 1_500 }).catch(() => false);
+        if (!isOpen) {
+          await opener.scrollIntoViewIfNeeded().catch(() => {});
+          await opener.click({ timeout: tAd, force: true }).catch(() => {});
+          await page.waitForTimeout(500);
+          await body.waitFor({ state: "visible", timeout: Math.min(tAd, 25_000) }).catch(() => {});
+        }
+        const admin = page.locator('a[data-test-id="app-switcher-orgadmin"]').first();
+        await expect(admin).toBeVisible({ timeout: Math.min(tAd, 20_000) });
+        await admin.scrollIntoViewIfNeeded().catch(() => {});
+        await admin.click({ timeout: tAd, force: true });
+        break;
+      }
+
       // Org dashboard → Launch SPA: must click the product tile only, then wait for hash route (generic comma selector + .first() could click the wrong "Launch" and leave the run on #!/dashboard).
       if (step.target === "Launch dashboard entry (doc step)") {
         const tLaunch = getStepTimeoutMs(step, 120_000);

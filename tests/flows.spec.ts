@@ -493,6 +493,17 @@ const cmsModuleBatchTimeoutMs = (() => {
   return 14_400_000; // 4 hours
 })();
 
+/**
+ * Per-flow timeout inside a CMS batch module. Prevents a single stuck flow from consuming
+ * the full module budget. 0 = no cap (legacy). Override: CMS_BATCH_PER_FLOW_TIMEOUT_MS (ms).
+ * CI default: 600 000 ms (10 min). Screenshot is captured at timeout for report.
+ */
+const cmsBatchPerFlowTimeoutMs = (() => {
+  const raw = process.env.CMS_BATCH_PER_FLOW_TIMEOUT_MS?.trim();
+  if (raw && /^\d+$/.test(raw)) return Math.max(30_000, parseInt(raw, 10));
+  return 0;
+})();
+
 function registerModuleFlowTests(groupFlows: any[], bucketTitle: string): void {
   /** All CMS stages (main, delete, trash, …): one batched test + test.step per URL so failures do not skip the rest of the bucket. */
   const useStepBundle =
@@ -515,7 +526,31 @@ function registerModuleFlowTests(groupFlows: any[], bucketTitle: string): void {
             const context = await browser.newContext({ storageState: "auth.json" });
             const page = await context.newPage();
             try {
-              await executeFlow(page, flow);
+              if (cmsBatchPerFlowTimeoutMs > 0) {
+                const perFlowTimeout = new Promise<never>((_, reject) =>
+                  setTimeout(async () => {
+                    // Capture a screenshot of the current page state at the moment of timeout.
+                    const reportDir = process.env.REPORT_DIR || path.resolve(__dirname, "../reports/latest");
+                    if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir, { recursive: true });
+                    const screenshotFile = path.join(reportDir, `timeout-${testName}-${Date.now()}.png`);
+                    let screenshotNote = "screenshot unavailable";
+                    try {
+                      await page.screenshot({ path: screenshotFile, fullPage: false });
+                      screenshotNote = `screenshot: ${screenshotFile}`;
+                    } catch { /* page may already be closed */ }
+                    reject(new Error(
+                      `Flow "${testName}" timed out after ${cmsBatchPerFlowTimeoutMs / 1000}s` +
+                      ` (URL: ${(flow as any).source || "unknown"}).` +
+                      ` The browser was still on this page when the cap fired — ${screenshotNote}.` +
+                      ` Reason: a step is waiting for a selector that never appeared, or the page is loading too slowly.` +
+                      ` Increase CMS_BATCH_PER_FLOW_TIMEOUT_MS or fix the selector for the stuck step.`
+                    ));
+                  }, cmsBatchPerFlowTimeoutMs)
+                );
+                await Promise.race([executeFlow(page, flow), perFlowTimeout]);
+              } else {
+                await executeFlow(page, flow);
+              }
             } finally {
               await context.close().catch(() => {});
             }

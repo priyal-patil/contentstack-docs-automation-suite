@@ -2,7 +2,7 @@
   "id": "getting-started-with-contentstack-and-ai",
   "project": "CMS",
   "module": "stack",
-  "stage": "main",
+  "stage": "draft",
   "source": "(not yet published — set to official docs URL when content is live)",
   "type": "executable",
   "use": ["login"],
