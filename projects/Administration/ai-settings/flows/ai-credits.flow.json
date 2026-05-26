@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/administration/ai-credits",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-credits. Covers: App Switcher → Administration → AI Settings top nav → AI Credits left nav → Credits Dashboard (Monthly Credit Allocation, Days Until Reset) → Management tab → Hard Limit / Soft Limit options. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-credits. Covers: App Switcher → Administration → AI Settings → AI Credits left nav → Credits Dashboard (Monthly Credit Allocation sub-items: Organization Credit Usage Percentage, Base Allocation, Consumption; Days Until Reset; Monthly Credit Usage sub-items: Day-over-Day Monthly Usage Graph, Credits Consumed per Product, Interactive Hover Details) → Management tab (Hard Limit, Soft Limit). Any step that fails means the app does not match the documentation.",
   "steps": [
     {
       "action": "verify",
@@ -84,10 +84,73 @@
     },
     {
       "action": "verify",
+      "target": "Organization Credit Usage Percentage (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Organization Credit Usage Percentage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Base Allocation label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Base Allocation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Consumption label (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Consumption",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
       "target": "Days Until Reset section (doc step)",
       "timeoutMs": 30000,
       "expected": {
         "labelEquals": "Days Until Reset",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Monthly Credit Usage section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Monthly Credit Usage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Day-over-Day Monthly Usage Graph (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Day-over-Day",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Credits Consumed per Product (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Credits Consumed per Product",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Interactive Hover Details (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Interactive Hover",
         "labelMatch": "contains"
       }
     },

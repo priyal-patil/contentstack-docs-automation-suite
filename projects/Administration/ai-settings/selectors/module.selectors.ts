@@ -55,9 +55,38 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Monthly Credit Allocation section (doc step)":
     '[data-test-id="cs-monthly-credit-allocation"], h3:has-text("Monthly Credit Allocation"), label:has-text("Monthly Credit Allocation"), *:has-text("Monthly Credit Allocation")',
 
+  /** "Organization Credit Usage Percentage" — percentage of base credits consumed (doc step). */
+  "Organization Credit Usage Percentage (doc step)":
+    '[data-test-id="cs-ai-credits-org-usage-pct"], *:has-text("Organization Credit Usage Percentage")',
+
+  /** "Base Allocation" — total credits allocated per month (doc step). */
+  "Base Allocation label (doc step)":
+    '[data-test-id="cs-ai-credits-base-allocation"], *:has-text("Base Allocation")',
+
+  /** "Consumption" — credits utilized beyond base allocation (doc step). */
+  "Consumption label (doc step)":
+    '[data-test-id="cs-ai-credits-consumption"], *:has-text("Consumption")',
+
   /** "Days Until Reset" section on the Credits Dashboard (doc step). */
   "Days Until Reset section (doc step)":
     '[data-test-id="cs-days-until-reset"], *:has-text("Days Until Reset")',
+
+  /** "Monthly Credit Usage" section — lower dashboard section with usage graph (doc step). */
+  "Monthly Credit Usage section (doc step)":
+    '[data-test-id="cs-monthly-credit-usage"], h3:has-text("Monthly Credit Usage"), *:has-text("Monthly Credit Usage")',
+
+  /** "Day-over-Day Monthly Usage Graph" — daily credit utilization chart (doc step). */
+  "Day-over-Day Monthly Usage Graph (doc step)":
+    '[data-test-id="cs-ai-credits-usage-graph"], canvas, *:has-text("Day-over-Day")',
+
+  /** "Credits Consumed per Product" — color-coded graph legend by AI product (doc step). */
+  "Credits Consumed per Product (doc step)":
+    '[data-test-id="cs-ai-credits-per-product"], *:has-text("Credits Consumed per Product"), *:has-text("Credits Consumed")',
+
+  /** "Interactive Hover Details" — hover tooltip on graph data points (doc step).
+   * Verifies the chart container that enables hover interaction is present. */
+  "Interactive Hover Details (doc step)":
+    '[data-test-id="cs-ai-credits-hover-details"], *:has-text("Interactive Hover Details"), *:has-text("Interactive Hover")',
 
   /** "Management" tab on the AI Credits page (doc step).
    * DOM: plain <div> with no role — use :text-is() for exact-text match on the smallest element. */
