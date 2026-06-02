@@ -132,12 +132,12 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
-          echo "Cache miss — downloading Chromium (~167MB). Takes 10-12 min on first run."
-          echo "This populates the cache so ALL future runs skip this step entirely (~1s)."
+          echo "Cache miss — downloading + extracting Chromium (~167MB, ~15 min on slow GHA CDN)."
+          echo "Once done the cache is saved and ALL future runs skip this entirely (~1s)."
           npx playwright install chromium
-          echo "✅ Chromium downloaded and cached."
+          echo "✅ Chromium installed."
 
       # -------------------------------------------------------------------
       # 5) Credentials from secrets
