@@ -69,9 +69,9 @@ on:
     types:
       - cms-daily-7am-ist
 
-  # Daily at 7:00 AM IST → cron 01:30 UTC (`30 1 * * *`) — best-effort backup only; see header note.
-  schedule:
-    - cron: "30 1 * * *"
+  # Daily at 7:00 AM IST → cron 01:30 UTC (`30 1 * * *`) — disabled (backup fallback also off).
+  # schedule:
+  #   - cron: "30 1 * * *"
 
 # Avoid overlapping long CMS runs (do not cancel in-flight).
 # Scoped by repository so fork clones do not collide with upstream queue keys if you copy this file.
@@ -125,10 +125,11 @@ jobs:
       # the entire 350-min job budget; e.g. content-models has 44 flows × ~1.5 min = ~66 min normal).
       # Without this cap, the default is 4h per module — one hanging flow blocks the entire tier.
       CMS_MODULE_BATCH_TIMEOUT_MS: "5400000"
-      # Cap each individual flow inside a batch module at 10 minutes. A single stuck flow can otherwise
-      # block the entire 90-min module budget. Screenshot is captured at the moment of timeout.
-      # 600 000 ms = 10 min per flow.
-      CMS_BATCH_PER_FLOW_TIMEOUT_MS: "600000"
+      # Cap each individual flow inside a batch module at 6 minutes (aligned with PW_FLOW_MAX_MINUTES=6
+      # used by retry/non-batch passes). Reduces worst-case total from ~520 min to ~312 min, keeping
+      # the full 280-flow run within the 350-min GHA budget.
+      # 360 000 ms = 6 min per flow.
+      CMS_BATCH_PER_FLOW_TIMEOUT_MS: "360000"
       # Force all GitHub Actions JavaScript actions (checkout, setup-node, upload-artifact,
       # action-send-mail) to run on Node.js 24 now instead of waiting for the June 2026 forced migration.
       # This eliminates the "Node.js 20 will be deprecated" annotation in every run.
@@ -158,10 +159,25 @@ jobs:
         run: npm ci
 
       # ---------------------------------------------------------------------
-      # 4) Playwright browsers (Chromium is enough for typical headless CMS UI)
+      # 4) Cache Playwright browsers — reused across runs until playwright
+      #    version changes (key = OS + lockfile hash). Saves ~3-4 min/run.
       # ---------------------------------------------------------------------
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies (cached browser)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       # ---------------------------------------------------------------------
       # 5) Credentials — NEVER echo secrets (GitHub masks secret values in logs)

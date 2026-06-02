@@ -107,10 +107,26 @@ jobs:
         run: npm ci
 
       # -------------------------------------------------------------------
-      # 4) Playwright browsers (Chromium only)
+      # 4) Cache Playwright browsers (~/.cache/ms-playwright)
+      #    Cache key = OS + Playwright version → reused on every run until
+      #    playwright version changes. Saves ~3-4 min per run.
       # -------------------------------------------------------------------
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies (cached browser)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       # -------------------------------------------------------------------
       # 5) Credentials from secrets
