@@ -27,6 +27,18 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-add-stack-create-new"], button:has-text("Create New"), [role="button"]:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id*="create-new" i]',
   "Use Prebuilt (doc step)":
     '[data-test-id="cs-add-stack-use-prebuilt"], button:has-text("Use Prebuilt"), [role="button"]:has-text("Use Prebuilt"), [role="menuitem"]:has-text("Use Prebuilt"), [data-test-id*="prebuilt" i]',
+  /** "Create New Stack" modal heading — verifies the modal opened after clicking Create New. */
+  "Create New Stack modal heading (doc step)":
+    '[role="dialog"] *:text-is("Create New Stack"), [data-testid="cs-modal"] *:text-is("Create New Stack"), *:has-text("Create New Stack"):not(button)',
+  /** "Name" label inside the Create New Stack modal (doc step). */
+  "Name label in Create New Stack modal (doc step)":
+    '[role="dialog"] label:has-text("Name"), [role="dialog"] *:text-is("Name"), label:has-text("Name"):not([for*="search"])',
+  /** "Description" label inside the Create New Stack modal (doc step). */
+  "Description label in Create New Stack modal (doc step)":
+    '[role="dialog"] label:has-text("Description"), [role="dialog"] *:text-is("Description"), label:has-text("Description")',
+  /** "Set Master Language" label inside the Create New Stack modal (doc step). */
+  "Set Master Language label (create stack doc step)":
+    'label:has-text("Set Master Language"), *:text-is("Set Master Language"), [data-test-id*="master-language"], *:has-text("Set Master Language"):not(button)',
   "Create (doc step)":
     'button:has-text("Create"), [aria-label^="Create" i]',
   "Stack Color (doc step)":

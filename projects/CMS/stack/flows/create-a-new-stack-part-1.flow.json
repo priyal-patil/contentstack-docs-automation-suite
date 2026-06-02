@@ -11,13 +11,14 @@
   "steps": [
     {
       "action": "click",
-      "target": "Headless CMS"
+      "target": "Headless CMS",
+      "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "+ New Stack (doc step)",
       "expected": {
-        "within": "Top Bar",
+        "within": "Top right corner",
         "withinStrict": false,
         "labelEquals": "New Stack",
         "labelMatch": "contains"
@@ -25,17 +26,65 @@
     },
     {
       "action": "click",
-      "target": "+ New Stack (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Create New (doc step)"
+      "target": "+ New Stack (doc step)",
+      "timeoutMs": 60000
     },
     {
       "action": "verify",
-      "target": "Name (create stack doc step)",
+      "target": "Create New (doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Stack modal heading (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Create New Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Name label in Create New Stack modal (doc step)",
+      "timeoutMs": 15000,
       "expected": {
         "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Description label in Create New Stack modal (doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Set Master Language label (create stack doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Set Master Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Stack Color (doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Stack Color",
         "labelMatch": "contains"
       }
     },
@@ -50,20 +99,23 @@
       "value": "Auto stack description {unique}"
     },
     {
+      "action": "click",
+      "target": "Stack Color swatch (doc step)",
+      "timeoutMs": 15000
+    },
+    {
       "action": "verify",
-      "target": "Stack Color (doc step)",
+      "target": "Create (doc step)",
+      "timeoutMs": 15000,
       "expected": {
-        "labelEquals": "Stack Color",
+        "labelEquals": "Create",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Stack Color swatch (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Create (doc step)"
+      "target": "Create (doc step)",
+      "timeoutMs": 60000
     }
   ]
 }
