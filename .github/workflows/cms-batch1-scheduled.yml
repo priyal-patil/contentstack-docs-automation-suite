@@ -1,0 +1,353 @@
+# =============================================================================
+# CMS Batch 1 — 5:00 AM IST daily (21 create/setup flows, 1 worker)
+# =============================================================================
+#
+# Runs 21 foundational CMS "create" flows sequentially (PW_WORKERS=1) in a
+# fixed order. Each flow is capped at 5 minutes — if it exceeds 5 min it fails
+# immediately with a screenshot captured at the point of failure.
+#
+# Flows (in execution order):
+#   add-an-environment, add-a-language, add-a-custom-language, create-a-branch,
+#   create-a-new-stack-part-1, create-content-type, create-a-new-release,
+#   create-a-global-field, create-a-global-field-part-2, create-upload-assets,
+#   create-a-folder, create-an-entry, add-a-comment, create-and-apply-labels,
+#   set-up-live-preview-for-your-stack, create-a-taxonomy, create-a-term,
+#   create-a-delivery-token, generate-a-management-token,
+#   create-a-webhook, add-workflows-and-stages
+#
+# Schedule: 5:00 AM IST → 23:30 UTC (previous day) — fired by cms-batch1-trigger.yml
+# =============================================================================
+
+name: CMS Batch 1 — daily create flows (5 AM IST, 1 worker)
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_slack:
+        description: "Skip Slack notification"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      skip_report_email:
+        description: "Skip report email"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+  repository_dispatch:
+    types:
+      - cms-batch1-5am-ist
+
+  # Fallback: direct cron in case dispatcher is delayed
+  schedule:
+    - cron: "30 23 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  cms-batch1:
+    name: CMS Batch 1 — 21 create flows (1 worker, 5 min/flow)
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      OPEN_FLOW_REPORT: "false"
+      OPEN_CMS_DASHBOARD: "0"
+      SKIP_OPEN_DASHBOARD: "1"
+      # Single browser — all 21 flows run one-by-one in sequence
+      PW_WORKERS: "1"
+      PW_SLOWMO: "0"
+      # Fail a flow immediately if it takes more than 5 minutes
+      PW_FLOW_MAX_MINUTES: "5"
+      # Screenshot on failure is configured in playwright.config.ts (screenshot: 'only-on-failure')
+      # Continue running remaining flows even if one fails
+      CMS_CONTINUE_ON_FAIL: "1"
+      # Run flows in CMS CRUD sequence within each module
+      CMS_SEQUENTIAL_MODULE_ORDER: "1"
+      # Deterministic report path
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
+      # Suppress Slack inside bash — GHA step handles Slack so it fires even on crash
+      SKIP_SLACK: "1"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+    steps:
+      # -------------------------------------------------------------------
+      # 1) Checkout
+      # -------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------------------------
+      # 2) Node + npm cache
+      # -------------------------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # -------------------------------------------------------------------
+      # 3) Install JS dependencies
+      # -------------------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # -------------------------------------------------------------------
+      # 4) Playwright browsers (Chromium only)
+      # -------------------------------------------------------------------
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # -------------------------------------------------------------------
+      # 5) Credentials from secrets
+      # -------------------------------------------------------------------
+      - name: Write .env for automation
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?secret CS_EMAIL is required}"
+          : "${CS_PASSWORD:?secret CS_PASSWORD is required}"
+          : "${DEFAULT_STACK:?secret DEFAULT_STACK is required}"
+          {
+            echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"
+            echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}"; fi
+            if [[ -n "${SLACK_CHANNEL_ID:-}" ]]; then echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}"; fi
+          } > .env
+          chmod 600 .env
+          echo "✓ .env written"
+
+      # -------------------------------------------------------------------
+      # 6) Record start time
+      # -------------------------------------------------------------------
+      - name: Record batch start time
+        id: batch_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+          echo "CMS Batch 1 started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee "${{ env.REPORT_DIR }}/batch1-run.log"
+
+      # -------------------------------------------------------------------
+      # 7) Run 21 flows sequentially (1 worker, 5 min/flow cap)
+      # -------------------------------------------------------------------
+      - name: Run CMS Batch 1 — 21 create/setup flows
+        id: batch1_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: |
+          set -uo pipefail
+
+          BATCH1_GREP="add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-a-new-stack-part-1|create-content-type|create-a-new-release|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages"
+
+          echo "Starting CMS Batch 1 (PW_WORKERS=1, PW_FLOW_MAX_MINUTES=5)…" | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
+
+          set +e
+          npx playwright test tests/flows.spec.ts \
+            --project=flows \
+            --grep "${BATCH1_GREP}" \
+            2>&1 | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+
+          # Copy Playwright results JSON to report dir for summary generation
+          if [[ -f "${{ env.REPORT_DIR }}/flows-results.json" ]]; then
+            echo "flows-results.json present." | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
+          fi
+
+          echo "Playwright exit code: ${EXIT_CODE}" | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
+          exit ${EXIT_CODE}
+
+      # -------------------------------------------------------------------
+      # 8) Compute total run time and generate reports (always)
+      # -------------------------------------------------------------------
+      - name: Compute run time and generate reports
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.batch_start.outputs.start_epoch }}
+          BATCH_START_ISO: ${{ steps.batch_start.outputs.start_iso }}
+          BATCH1_OUTCOME: ${{ steps.batch1_run.outcome }}
+        run: |
+          set -eo pipefail
+          END_EPOCH="$(date +%s)"
+          ELAPSED_SECS=$(( END_EPOCH - BATCH_START_EPOCH ))
+          ELAPSED_MIN=$(( ELAPSED_SECS / 60 ))
+          ELAPSED_SEC=$(( ELAPSED_SECS % 60 ))
+
+          echo "" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "=============================" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "CMS Batch 1 finished" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "  Started  : ${BATCH_START_ISO}" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "  Finished : $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "  Duration : ${ELAPSED_MIN}m ${ELAPSED_SEC}s" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "  Outcome  : ${BATCH1_OUTCOME}" | tee -a "$REPORT_DIR/batch1-run.log"
+          echo "=============================" | tee -a "$REPORT_DIR/batch1-run.log"
+
+          # Write timing summary for Slack/email
+          cat > "$REPORT_DIR/timing-summary.txt" <<EOF
+          CMS Batch 1 — Duration: ${ELAPSED_MIN}m ${ELAPSED_SEC}s
+          Started:  ${BATCH_START_ISO}
+          Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          Outcome:  ${BATCH1_OUTCOME}
+          Run:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
+          # Generate HTML + Excel reports if flows-results.json exists
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts  --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts     --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/urlRunSummaryAndSlack.ts      --reportDir "$REPORT_DIR" 2>&1 || true
+          else
+            echo "::warning::flows-results.json not found — report generation skipped."
+          fi
+
+      # -------------------------------------------------------------------
+      # 9) Upload artifacts — reports + screenshots of failures
+      # -------------------------------------------------------------------
+      - name: Upload CMS Batch 1 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch1-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch1-playwright-html-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}/html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch1-failure-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # -------------------------------------------------------------------
+      # 10) Report email (optional — configure REPORT_EMAIL_* secrets)
+      # -------------------------------------------------------------------
+      - name: Report email — gate on secrets
+        id: email_gate
+        if: always()
+        env:
+          TO: ${{ secrets.REPORT_EMAIL_TO }}
+          HOST: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          USER: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          PASS: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          FROM: ${{ secrets.REPORT_EMAIL_FROM }}
+          PORT_RAW: ${{ secrets.REPORT_EMAIL_SMTP_PORT }}
+        run: |
+          set -euo pipefail
+          if [[ "${SKIP_REPORT_EMAIL:-}" == "1" ]] || \
+             [[ "${{ github.event_name == 'workflow_dispatch' && inputs.skip_report_email == 'true' }}" == "true" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          PORT="${PORT_RAW:-587}"
+          if [[ -z "${TO:-}" || -z "${HOST:-}" || -z "${USER:-}" || -z "${PASS:-}" || -z "${FROM:-}" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Report email skipped — REPORT_EMAIL_* secrets not fully configured."
+            exit 0
+          fi
+          echo "enabled=true"  >> "$GITHUB_OUTPUT"
+          echo "server_port=${PORT}" >> "$GITHUB_OUTPUT"
+          [[ "${PORT}" == "465" ]] && echo "secure=true" >> "$GITHUB_OUTPUT" || echo "secure=false" >> "$GITHUB_OUTPUT"
+
+      - name: Report email — write body
+        id: email_body
+        if: always() && steps.email_gate.outputs.enabled == 'true'
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          CMS_STEP_OUTCOME: ${{ steps.batch1_run.outcome }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: npx ts-node scripts/gha/writeCmsDailyReportEmailBody.ts "${{ github.workspace }}/cms-batch1-email-body.txt" || true
+
+      - name: Report email — send
+        if: always() && steps.email_gate.outputs.enabled == 'true' && steps.email_body.outcome == 'success'
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          server_port: ${{ steps.email_gate.outputs.server_port }}
+          username: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          password: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          secure: ${{ steps.email_gate.outputs.secure == 'true' }}
+          subject: >-
+            [CMS Batch 1] ${{ steps.batch1_run.outcome }} — ${{ github.repository }} (#${{ github.run_number }})
+          to: ${{ secrets.REPORT_EMAIL_TO }}
+          from: ${{ secrets.REPORT_EMAIL_FROM }}
+          body: file://${{ github.workspace }}/cms-batch1-email-body.txt
+
+      # -------------------------------------------------------------------
+      # 11) Slack summary (always — success OR failure)
+      # -------------------------------------------------------------------
+      - name: Post Slack summary
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.batch1_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -eo pipefail
+          if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
+            echo "::warning::Slack skipped — SLACK_BOT_TOKEN and/or SLACK_CHANNEL_ID not configured."
+            exit 0
+          fi
+
+          # Compute duration for Slack message
+          START="${{ steps.batch_start.outputs.start_epoch }}"
+          END="$(date +%s)"
+          ELAPSED=$(( END - START ))
+          ELAPSED_MIN=$(( ELAPSED / 60 ))
+          ELAPSED_SEC=$(( ELAPSED % 60 ))
+          DURATION="${ELAPSED_MIN}m ${ELAPSED_SEC}s"
+
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            echo "Posting detailed Slack summary via urlRunSummaryAndSlack.ts…"
+            BATCH1_DURATION_LABEL="CMS Batch 1 (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts 2>&1 || \
+              echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
+          else
+            ICON=":white_check_mark:"
+            [[ "${CMS_STEP_OUTCOME:-}" != "success" ]] && ICON=":x:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 1 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 21 create/setup flows | 1 worker | 5 min cap. <${RUN_URL}|Open run>\"}" \
+              | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
+          fi

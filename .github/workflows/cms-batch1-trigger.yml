@@ -1,0 +1,43 @@
+# =============================================================================
+# CMS Batch 1 — 5:00 AM IST reliable dispatcher
+#
+# Fires repository_dispatch: cms-batch1-5am-ist so the main workflow
+# (cms-batch1-scheduled.yml) is triggered reliably at 5:00 AM IST.
+# 5:00 AM IST (UTC+5:30) = 23:30 UTC (previous day)
+# Cron format: minute hour day-of-month month day-of-week
+# =============================================================================
+
+name: CMS Batch 1 — 5:00 AM IST dispatcher
+
+on:
+  schedule:
+    # 23:30 UTC = 5:00 AM IST (Asia/Kolkata, UTC+5:30)
+    - cron: "30 23 * * *"
+  # Allow manual re-fire from Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  dispatch:
+    name: Fire cms-batch1-5am-ist event
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch cms-batch1-5am-ist to CMS Batch 1 workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TRIGGERED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo "Firing repository_dispatch: cms-batch1-5am-ist at ${TRIGGERED_AT}"
+          printf '{"event_type":"cms-batch1-5am-ist","client_payload":{"source":"cms-batch1-trigger.yml","triggered_at":"%s"}}' \
+            "${TRIGGERED_AT}" \
+            | gh api \
+                --method POST \
+                -H "Accept: application/vnd.github+json" \
+                /repos/${{ github.repository }}/dispatches \
+                --input -
+          echo "Dispatch sent. CMS Batch 1 workflow will start shortly."
