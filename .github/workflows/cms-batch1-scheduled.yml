@@ -123,7 +123,7 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 30
+        timeout-minutes: 35
         run: |
           echo "Cache miss — downloading + extracting Chromium."
           echo "GHA CDN throttles to ~25 min total (download + extract). Timeout = 30 min."
