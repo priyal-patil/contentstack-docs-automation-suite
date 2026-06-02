@@ -301,16 +301,6 @@ function buildSlackPayload(summary: {
     ],
   });
 
-  if (failedLines) {
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `*Failed URLs (up to 8)*\n${failedLines}`,
-      },
-    });
-  }
-
   return { text, blocks };
 }
 
