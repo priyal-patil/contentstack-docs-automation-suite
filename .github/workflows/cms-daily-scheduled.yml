@@ -162,6 +162,11 @@ jobs:
       # 4) Cache Playwright browsers — reused across runs until playwright
       #    version changes (key = OS + lockfile hash). Saves ~3-4 min/run.
       # ---------------------------------------------------------------------
+      - name: Install Playwright system dependencies (apt — separated to avoid lock hang)
+        run: |
+          sudo apt-get update -qq
+          npx playwright install-deps chromium
+
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -171,13 +176,9 @@ jobs:
           restore-keys: |
             playwright-chromium-${{ runner.os }}-
 
-      - name: Install Playwright browsers
+      - name: Install Playwright browsers (download only — no --with-deps)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Install Playwright system dependencies (cached browser)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: npx playwright install chromium
 
       # ---------------------------------------------------------------------
       # 5) Credentials — NEVER echo secrets (GitHub masks secret values in logs)
