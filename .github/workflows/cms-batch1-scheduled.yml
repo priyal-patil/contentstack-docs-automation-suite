@@ -111,10 +111,15 @@ jobs:
       #    Cache key = OS + Playwright version → reused on every run until
       #    playwright version changes. Saves ~3-4 min per run.
       # -------------------------------------------------------------------
-      - name: Install Playwright system dependencies (apt — separated to avoid lock hang)
-        run: |
-          sudo apt-get update -qq
-          npx playwright install-deps chromium
+      # -------------------------------------------------------------------
+      # Cache key = Playwright version from package-lock.json.
+      # FIRST RUN: cache miss → downloads ~167MB (~10-12 min on slow GHA CDN).
+      #   The download always completes — do NOT cancel. Cache is saved at end.
+      # SUBSEQUENT RUNS: cache hit → restore in ~1s, skip download entirely.
+      # System deps (apt) are always installed (~15-20s) — they are not cached.
+      # -------------------------------------------------------------------
+      - name: Install Playwright system dependencies (apt only — fast, ~20s)
+        run: npx playwright install-deps chromium
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -125,16 +130,14 @@ jobs:
           restore-keys: |
             playwright-chromium-${{ runner.os }}-
 
-      - name: Install Playwright browsers (download with retry — no --with-deps)
+      - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
-          for attempt in 1 2 3; do
-            echo "Download attempt ${attempt}/3..."
-            npx playwright install chromium && echo "✓ Download succeeded on attempt ${attempt}" && break
-            echo "Attempt ${attempt} failed. Retrying in 10s..."
-            sleep 10
-          done
+          echo "Cache miss — downloading Chromium (~167MB). Takes 10-12 min on first run."
+          echo "This populates the cache so ALL future runs skip this step entirely (~1s)."
+          npx playwright install chromium
+          echo "✅ Chromium downloaded and cached."
 
       # -------------------------------------------------------------------
       # 5) Credentials from secrets
