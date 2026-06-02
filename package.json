@@ -20,6 +20,8 @@
     "test:flows:fast-fail": "FAST_FAIL=1 playwright test tests/flows.spec.ts --project=flows",
     "test:launch:redeploy:headed:fast": "FAST_FAIL=1 PLAYWRIGHT_HEADLESS=0 PW_WORKERS=1 playwright test tests/flows.spec.ts --project=flows --headed -g \"redeploy-automatically-when-content-is-published-on-cms\"",
     "test:cms:sequential-modules": "bash scripts/run-cms-sequential-modules-dashboard.sh",
+    "test:cms:batch1": "bash scripts/run-cms-batch1.sh",
+    "test:cms:batch1:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch1.sh",
     "launch:cms:bg": "bash scripts/run-project-batch-background.sh CMS",
     "launch:launch:bg": "bash scripts/run-project-batch-background.sh Launch",
     "launch:personalize:bg": "bash scripts/run-project-batch-background.sh Personalize",

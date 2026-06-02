@@ -153,31 +153,17 @@ jobs:
       # -------------------------------------------------------------------
       # 7) Run 21 flows sequentially (1 worker, 5 min/flow cap)
       # -------------------------------------------------------------------
-      - name: Run CMS Batch 1 — 21 create/setup flows
+      - name: Run CMS Batch 1 — 21 create/setup flows (exact sequence via script)
         id: batch1_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
         run: |
           set -uo pipefail
-
-          BATCH1_GREP="add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-a-new-stack-part-1|create-content-type|create-a-new-release|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages"
-
-          echo "Starting CMS Batch 1 (PW_WORKERS=1, PW_FLOW_MAX_MINUTES=5)…" | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
-
-          set +e
-          npx playwright test tests/flows.spec.ts \
-            --project=flows \
-            --grep "${BATCH1_GREP}" \
-            2>&1 | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
-          EXIT_CODE=${PIPESTATUS[0]}
-          set -e
-
-          # Copy Playwright results JSON to report dir for summary generation
-          if [[ -f "${{ env.REPORT_DIR }}/flows-results.json" ]]; then
-            echo "flows-results.json present." | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
-          fi
-
-          echo "Playwright exit code: ${EXIT_CODE}" | tee -a "${{ env.REPORT_DIR }}/batch1-run.log"
+          echo "Starting CMS Batch 1 via scripts/run-cms-batch1.sh…"
+          echo "Sequence: create-a-new-stack-part-1 → add-an-environment → … → add-workflows-and-stages"
+          bash scripts/run-cms-batch1.sh
+          EXIT_CODE=$?
+          echo "Batch 1 exit code: ${EXIT_CODE}"
           exit ${EXIT_CODE}
 
       # -------------------------------------------------------------------
