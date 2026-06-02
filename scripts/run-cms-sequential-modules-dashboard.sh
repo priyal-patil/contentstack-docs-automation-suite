@@ -127,12 +127,14 @@ fi
 # Phase 1 — Bootstrap: 14 foundational flows, 1 worker, exact order.
 # These create the base resources every subsequent module depends on.
 # ─────────────────────────────────────────────────────────────────────────────
+# CMS Batch 1 — 21 create/setup flows. Stack created first; all subsequent
+# flows run in the same stack. Executed with PW_WORKERS=1 (sequential).
 CMS_BOOTSTRAP_FLOWS=(
+  "create-a-new-stack-part-1"
   "add-an-environment"
   "add-a-language"
   "add-a-custom-language"
   "create-a-branch"
-  "create-a-new-stack-part-1"
   "create-content-type"
   "create-a-new-release"
   "create-a-global-field"
@@ -142,6 +144,13 @@ CMS_BOOTSTRAP_FLOWS=(
   "create-an-entry"
   "add-a-comment"
   "create-and-apply-labels"
+  "set-up-live-preview-for-your-stack"
+  "create-a-taxonomy"
+  "create-a-term"
+  "create-a-delivery-token"
+  "generate-a-management-token"
+  "create-a-webhook"
+  "add-workflows-and-stages"
 )
 
 # Comma-separated list passed to flows.spec.ts so Phase 2 batch skips these.
@@ -157,7 +166,7 @@ export CMS_SEQUENTIAL_MODULE_ORDER=0
 export CMS_CONTINUE_ON_FAIL=0
 
 echo "" | tee -a "$REPORT_DIR/cms-sequential.log"
-echo "=== Phase 1: Bootstrap (${#CMS_BOOTSTRAP_FLOWS[@]} flows, 1 worker, serial) ===" | tee -a "$REPORT_DIR/cms-sequential.log"
+echo "=== Phase 1: Batch 1 (${#CMS_BOOTSTRAP_FLOWS[@]} flows, PW_WORKERS=1, sequential — stack first) ===" | tee -a "$REPORT_DIR/cms-sequential.log"
 n_boot=0
 for flow_id in "${CMS_BOOTSTRAP_FLOWS[@]}"; do
   n_boot=$((n_boot + 1))
