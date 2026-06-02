@@ -308,6 +308,8 @@ jobs:
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
           CMS_STEP_OUTCOME: ${{ steps.batch1_run.outcome }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          # Override job-level SKIP_SLACK=1 — this step IS the Slack poster.
+          SKIP_SLACK: "0"
         run: |
           set -eo pipefail
           if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
