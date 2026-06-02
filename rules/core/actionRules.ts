@@ -21,7 +21,9 @@ type Step = {
     | "warn"
     | "hover"
     | "press"
-    | "detect";
+    | "detect"
+    | "capture"
+    | "input";
     target: string;
     value?: string;
     optional?: boolean;
@@ -53,6 +55,110 @@ type ActionContext = {
   stepIndex?: number;
 };
   
+
+// ── Google Analytics flow: captured values shared across steps ────────────────
+// Populated by the "CREATE button in Create key dialog" click (download) and
+// "capture" steps; consumed by "enter" steps that use {{GA_*}} placeholders.
+let _gaClientEmail = "";
+let _gaDownloadPath = "";
+let _gaPropertyId = "";
+let _gaViewId = "";
+// Unique service account name used in this run (avoids "already exists" conflicts across runs).
+let _gaServiceAccountName = "";
+
+// MonkeyLearn: API Key captured from the MonkeyLearn account page after "Revoke and re-generate".
+// Consumed by the "API Key input in MonkeyLearn Configuration" enter step via {{ML_API_KEY}}.
+let _mlApiKey = "";
+
+// Optimizely: Project ID and Access Token captured from the Optimizely account settings page.
+// Consumed by enter steps via {{OPT_PROJECT_ID}} and {{OPT_ACCESS_TOKEN}}.
+let _optProjectId = "";
+let _optAccessToken = "";
+
+/**
+ * If navigation lands on a Google login page, sign in using GOOGLE_TEST_EMAIL / GOOGLE_TEST_PASSWORD env vars.
+ * After a successful login, also handles GCP "select a project" prompts.
+ * No-ops when not on accounts.google.com or when credentials are absent.
+ */
+async function handleGoogleLoginIfNeeded(page: Page): Promise<void> {
+  const currentUrl = page.url();
+  if (!currentUrl.includes("accounts.google.com")) {
+    // Not a login page — check for GCP project selection prompt
+    if (currentUrl.includes("console.cloud.google.com")) {
+      await handleGCPProjectSelectionIfNeeded(page);
+    }
+    return;
+  }
+
+  const email = process.env.GOOGLE_TEST_EMAIL || "";
+  const password = process.env.GOOGLE_TEST_PASSWORD || "";
+  if (!email || !password) {
+    console.warn("⚠️ Google login page detected — set GOOGLE_TEST_EMAIL and GOOGLE_TEST_PASSWORD env vars to auto-login.");
+    return;
+  }
+
+  console.log(`🔐 Google login page detected — signing in as ${email}`);
+  try {
+    // Email step
+    const emailInput = page.locator('input[type="email"], input[name="identifier"]').first();
+    await emailInput.waitFor({ state: "visible", timeout: 15_000 });
+    await emailInput.fill(email);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(1500);
+
+    // Password step
+    const passwordInput = page.locator('input[type="password"], input[name="Passwd"]').first();
+    await passwordInput.waitFor({ state: "visible", timeout: 15_000 });
+    await passwordInput.fill(password);
+    await page.keyboard.press("Enter");
+
+    // Wait for post-login navigation
+    await page.waitForLoadState("domcontentloaded", { timeout: 30_000 }).catch(() => {});
+    await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => {});
+    console.log(`✅ Google login complete — now at: ${page.url()}`);
+
+    // After login, GCP pages may still need a project selected
+    if (page.url().includes("console.cloud.google.com")) {
+      await handleGCPProjectSelectionIfNeeded(page);
+    }
+  } catch (e) {
+    console.warn(`⚠️ Google auto-login failed: ${e}`);
+  }
+}
+
+/**
+ * If a GCP console page shows "Select a recent project" cards, auto-clicks the first one.
+ * No-ops if the project card grid is not present (project may already be selected).
+ */
+async function handleGCPProjectSelectionIfNeeded(page: Page): Promise<void> {
+  // Use the "Select a recent project" heading as the anchor — it only appears when no project is selected
+  const recentHeading = page.locator('h4:has-text("Select a recent project"), heading:has-text("Select a recent project")').first();
+  const headingVisible = await recentHeading.isVisible({ timeout: 3_000 }).catch(() => false);
+  if (!headingVisible) return;
+
+  console.log("🔲 GCP project selection prompt detected — auto-selecting first recent project");
+  await page.waitForTimeout(500); // let cards fully render
+  // Use getByRole (matches accessible name) or JS evaluate for reliability
+  const cardByRole = page.getByRole("button", { name: /Project ID:/i }).first();
+  const cardByRoleVisible = await cardByRole.isVisible({ timeout: 5_000 }).catch(() => false);
+  if (cardByRoleVisible) {
+    await cardByRole.click();
+  } else {
+    // JS evaluate fallback: find first button after the "Select a recent project" heading
+    await page.evaluate(() => {
+      const heading = Array.from(document.querySelectorAll("h4, [role=heading]"))
+        .find((el) => el.textContent?.includes("Select a recent project"));
+      if (heading) {
+        const container = heading.closest("div") || heading.parentElement;
+        const btn = container?.querySelector("button") as HTMLButtonElement | null;
+        btn?.click();
+      }
+    });
+  }
+  await page.waitForLoadState("domcontentloaded", { timeout: 30_000 }).catch(() => {});
+  await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
+  console.log(`✅ GCP project selected — now at: ${page.url()}`);
+}
 
 // ✅ Toggle strict modal title assertions via env (recommended)
 const STRICT_MODAL_TITLE = process.env.STRICT_MODAL_TITLE === "true";
@@ -1418,6 +1524,23 @@ const EXPECTED_CONTAINERS: Record<string, string[]> = {
     ".publish-que-filter-wrapper",
     '[data-test-id="cs-page-layout-leftSidebar"] .publish-que-filter-wrapper',
     ".PageLayout__leftSidebar .publish-que-filter-wrapper",
+  ],
+  "Right Navigation Panel": [
+    '[data-test-id="cs-right-panel"]',
+    '[data-test-id="cs-page-layout-rightSidebar"]',
+    ".PageLayout__rightSidebar",
+    ".SidebarWindow",
+    '[class*="right-sidebar"]',
+    '[class*="RightSidebar"]',
+    '[class*="right-panel"]',
+  ],
+  "Bottom Left Navigation": [
+    '[class*="sidebar"] [class*="footer"]',
+    '[class*="sidebar"] [class*="bottom"]',
+    '[class*="nav"] [class*="footer"]',
+    '[class*="BottomNav"], [class*="bottom-nav"], [class*="nav-bottom"]',
+    'nav [class*="bottom"]',
+    '[class*="SideNav__bottom"], [class*="sidenav__footer"]',
   ],
   // DATE filter control shown with the trash table toolbar (date range dropdown)
   "Trash table toolbar": [
@@ -3391,18 +3514,333 @@ export async function performAction(
       throw new Error(`Unknown detect target: ${step.target}`);
     }
 
+    case "capture": {
+      const tCap = getStepTimeoutMs(step, 30_000);
+      const tgt = String(step.target || "");
+
+      // Read downloaded service account JSON and extract client_email.
+      // _gaDownloadPath is set by the "CREATE button in Create key dialog" click handler.
+      if (tgt.includes("client_email from downloaded service account JSON")) {
+        if (_gaDownloadPath && fs.existsSync(_gaDownloadPath)) {
+          try {
+            const raw = fs.readFileSync(_gaDownloadPath, "utf-8");
+            const json = JSON.parse(raw) as Record<string, string>;
+            _gaClientEmail = json.client_email || "";
+            console.log(`✅ GA client_email captured: ${_gaClientEmail}`);
+          } catch (e) {
+            console.warn(`⚠️ Could not read GA service account JSON at ${_gaDownloadPath}: ${e}`);
+          }
+        } else {
+          console.warn(`⚠️ GA service account JSON not downloaded yet (path: "${_gaDownloadPath}")`);
+        }
+        break;
+      }
+
+      // Capture the PROPERTY ID text from the Google Analytics Property details page.
+      if (tgt.includes("PROPERTY ID value in Google Analytics")) {
+        const propIdEl = page.locator(
+          '[data-testid*="property-id"], .property-id-value, *:has-text("PROPERTY ID") + *, ' +
+          '[aria-label*="property id" i]'
+        ).first();
+        const propIdText = await propIdEl.textContent({ timeout: tCap }).catch(() => "");
+        if (propIdText?.trim()) {
+          _gaPropertyId = propIdText.trim().replace(/[^0-9]/g, "");
+          console.log(`✅ GA Property ID captured: ${_gaPropertyId}`);
+        } else {
+          // Fallback: try extracting any standalone number near "PROPERTY ID" text
+          const allText = await page.locator("body").textContent({ timeout: tCap }).catch(() => "");
+          const match = allText?.match(/PROPERTY\s+ID[^\d]*(\d+)/i);
+          if (match) {
+            _gaPropertyId = match[1];
+            console.log(`✅ GA Property ID captured (fallback): ${_gaPropertyId}`);
+          } else {
+            console.warn("⚠️ GA Property ID could not be captured from page");
+          }
+        }
+        break;
+      }
+
+      // Capture the View ID text from the Google Analytics View Settings page.
+      if (tgt.includes("View ID value in Google Analytics")) {
+        const viewIdEl = page.locator(
+          '[data-testid*="view-id"], .view-id-value, *:has-text("View ID") + *'
+        ).first();
+        const viewIdText = await viewIdEl.textContent({ timeout: tCap }).catch(() => "");
+        if (viewIdText?.trim()) {
+          _gaViewId = viewIdText.trim().replace(/[^0-9]/g, "");
+          console.log(`✅ GA View ID captured: ${_gaViewId}`);
+        } else {
+          const allText = await page.locator("body").textContent({ timeout: tCap }).catch(() => "");
+          const match = allText?.match(/View\s+ID[^\d]*(\d+)/i);
+          if (match) {
+            _gaViewId = match[1];
+            console.log(`✅ GA View ID captured (fallback): ${_gaViewId}`);
+          } else {
+            console.warn("⚠️ GA View ID could not be captured from page");
+          }
+        }
+        break;
+      }
+
+      // Capture the MonkeyLearn API Key displayed on the account page after "Revoke and re-generate".
+      if (tgt.includes("MonkeyLearn API Key value from page")) {
+        const candidates = [
+          page.locator('[class*="api-key"] input[readonly], [class*="api-key"] input[type="text"]'),
+          page.locator('input[readonly]:near(*:has-text("API Key"))'),
+          page.locator('[class*="api-key"] code, [class*="api-key"] span[class*="key"]'),
+          page.locator('code:near(*:has-text("API Key"))'),
+          page.locator('*:has-text("API Key") + * input, *:has-text("API Key") ~ input'),
+        ];
+        let captured = "";
+        for (const loc of candidates) {
+          const el = loc.first();
+          if (await el.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            const val =
+              (await el.inputValue({ timeout: 3_000 }).catch(() => "")) ||
+              (await el.textContent({ timeout: 3_000 }).catch(() => ""));
+            if (val?.trim()) {
+              captured = val.trim();
+              break;
+            }
+          }
+        }
+        if (captured) {
+          _mlApiKey = captured;
+          console.log(`✅ MonkeyLearn API Key captured (length: ${_mlApiKey.length})`);
+        } else {
+          console.warn("⚠️ MonkeyLearn API Key could not be captured from page");
+        }
+        break;
+      }
+
+      // Capture Optimizely Project ID from the Settings page (under Snippet Details heading).
+      if (tgt.includes("Optimizely Project ID from page")) {
+        const candidates = [
+          page.locator('[class*="snippet"] input, [class*="project-id"] input, [class*="projectId"] input'),
+          page.locator('*:has-text("Project ID") + * input, *:has-text("Project ID") ~ input'),
+          page.locator('[class*="snippet"] code, [class*="project-id"] code'),
+          page.locator('code:near(*:has-text("Project ID"))'),
+        ];
+        let captured = "";
+        for (const loc of candidates) {
+          const el = loc.first();
+          if (await el.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            const val =
+              (await el.inputValue({ timeout: 3_000 }).catch(() => "")) ||
+              (await el.textContent({ timeout: 3_000 }).catch(() => ""));
+            if (val?.trim()) { captured = val.trim(); break; }
+          }
+        }
+        if (captured) {
+          _optProjectId = captured;
+          console.log(`✅ Optimizely Project ID captured (length: ${_optProjectId.length})`);
+        } else {
+          console.warn("⚠️ Optimizely Project ID could not be captured from page");
+        }
+        break;
+      }
+
+      // Capture Optimizely Access Token from the Generate New Token modal (visible only once).
+      if (tgt.includes("Optimizely Access Token from page")) {
+        const candidates = [
+          page.locator('[role="dialog"] input[readonly], [class*="modal"] input[readonly]'),
+          page.locator('[role="dialog"] code, [class*="modal"] code'),
+          page.locator('input[readonly]:visible'),
+          page.locator('code:visible'),
+        ];
+        let captured = "";
+        for (const loc of candidates) {
+          const el = loc.first();
+          if (await el.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            const val =
+              (await el.inputValue({ timeout: 3_000 }).catch(() => "")) ||
+              (await el.textContent({ timeout: 3_000 }).catch(() => ""));
+            if (val?.trim()) { captured = val.trim(); break; }
+          }
+        }
+        if (captured) {
+          _optAccessToken = captured;
+          console.log(`✅ Optimizely Access Token captured (length: ${_optAccessToken.length})`);
+        } else {
+          console.warn("⚠️ Optimizely Access Token could not be captured from page");
+        }
+        break;
+      }
+
+      throw new Error(`Unknown capture target: ${step.target}`);
+    }
+
     case "click": {
+      // Google Cloud Console — three-dot action menu on a specific service account row.
+      // GCP renders the button with accessible name "Service account actions menu".
+      if (step.target === "three dots action menu on service account row in Google Cloud Console (doc step)") {
+        const tDots = getStepTimeoutMs(step, 60_000);
+        // Dismiss any snackbar (e.g. "Service account created") that may be covering the table
+        await page.locator('[aria-label="Close"], button:has-text("Close")').first()
+          .click({ timeout: 2_000, force: true }).catch(() => {});
+        await page.waitForTimeout(500);
+
+        // Primary: GCP button accessible name is "Service account actions menu"
+        const actionBtn = page.getByRole("button", { name: /Service account actions menu/i }).first();
+        await actionBtn.waitFor({ state: "visible", timeout: tDots });
+        await actionBtn.click({ timeout: tDots });
+        // Wait for the dropdown menu to appear
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // Google Cloud Console — project card in the "Select a recent project" section.
+      // Strategy: wait specifically for the project card grid (NOT the "Select project" button, which
+      // appears earlier in the DOM and would open a picker dialog instead of clicking the card directly).
+      // If CREATE SERVICE ACCOUNT is visible, the project is already selected — skip silently.
+      if (step.target === "select the project card (doc step)") {
+        const tProj = getStepTimeoutMs(step, 60_000);
+        // Heading "Select a recent project" is rendered together with the cards — use it as the anchor
+        const recentHeading = page.locator('h4:has-text("Select a recent project"), heading:has-text("Select a recent project")').first();
+        const createSvcAccBtn = page.locator(
+          'button:has-text("CREATE SERVICE ACCOUNT"), button:has-text("+ CREATE SERVICE ACCOUNT")'
+        ).first();
+
+        let resolved = "";
+        try {
+          resolved = await Promise.race([
+            recentHeading.waitFor({ state: "visible", timeout: tProj }).then(() => "cards"),
+            createSvcAccBtn.waitFor({ state: "visible", timeout: tProj }).then(() => "alreadySelected"),
+          ]);
+        } catch {
+          console.warn("⚠️ select the project card: neither project card grid nor service accounts appeared — continuing");
+          break;
+        }
+
+        if (resolved === "alreadySelected") {
+          console.log("✅ select the project card: project already selected, service accounts page loaded");
+          break;
+        }
+
+        // Cards section is visible — click the first project card button.
+        // Use filter({ hasText }) and getByRole for reliability (CSS :has-text can miss text inside nested elements).
+        await page.waitForTimeout(500); // let all cards render
+        let projectCardClicked = false;
+        // Try getByRole first — matches on accessible name which includes "Project ID:"
+        const cardByRole = page.getByRole("button", { name: /Project ID:/i }).first();
+        const cardByRoleVisible = await cardByRole.isVisible({ timeout: 5_000 }).catch(() => false);
+        if (cardByRoleVisible) {
+          await cardByRole.click({ timeout: tProj });
+          projectCardClicked = true;
+        }
+        // Fallback: filter button list by text content
+        if (!projectCardClicked) {
+          const cardByFilter = page.locator("button").filter({ hasText: "Project ID:" }).first();
+          const cardByFilterVisible = await cardByFilter.isVisible({ timeout: 5_000 }).catch(() => false);
+          if (cardByFilterVisible) {
+            await cardByFilter.click({ timeout: tProj });
+            projectCardClicked = true;
+          }
+        }
+        // Last resort: click the first button inside the "Select a recent project" section by evaluating JS
+        if (!projectCardClicked) {
+          await page.evaluate(() => {
+            const heading = Array.from(document.querySelectorAll("h4, [role=heading]"))
+              .find((el) => el.textContent?.includes("Select a recent project"));
+            if (heading) {
+              const container = heading.closest("div") || heading.parentElement;
+              const btn = container?.querySelector("button") as HTMLButtonElement | null;
+              btn?.click();
+            }
+          });
+          projectCardClicked = true;
+          console.log("✅ GCP project card clicked via JS evaluate");
+        }
+        await page.waitForLoadState("domcontentloaded", { timeout: 30_000 }).catch(() => {});
+        await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
+        break;
+      }
+
+      // Google Cloud Console — "Done" button in Create Service Account wizard.
+      // When step 1 has a validation error GCP keeps the page on /serviceaccounts/create even after Done is clicked.
+      // After clicking, detect that case and force-navigate to the service accounts list.
+      if (step.target === "DONE button in Google Cloud Console (doc step)") {
+        const tDone = getStepTimeoutMs(step, 60_000);
+        const doneBtn = page.locator('button:has-text("Done"), button:has-text("DONE")').first();
+        await doneBtn.waitFor({ state: "visible", timeout: tDone });
+        await doneBtn.click({ timeout: tDone });
+        await page.waitForTimeout(1500);
+        const urlAfter = page.url();
+        if (urlAfter.includes("/serviceaccounts/create")) {
+          const projectMatch = urlAfter.match(/[?&]project=([^&]+)/);
+          const project = projectMatch ? projectMatch[1] : "";
+          const listUrl = project
+            ? `https://console.cloud.google.com/iam-admin/serviceaccounts?project=${project}&supportedpurview=project`
+            : `https://console.cloud.google.com/iam-admin/serviceaccounts`;
+          await page.goto(listUrl, { waitUntil: "domcontentloaded", timeout: tDone });
+          await page.waitForLoadState("networkidle").catch(() => {});
+          console.log(`✅ GCP: Done stayed on create page — navigated to service accounts list`);
+        }
+        break;
+      }
+
+      // Google Cloud Console — "Manage keys" in the service account action dropdown.
+      // GCP renders these items as custom elements; try multiple strategies.
+      if (step.target === "Manage keys option in service account action menu (doc step)") {
+        const tMk = getStepTimeoutMs(step, 60_000);
+        // Try getByRole(menuitem) first, then text-based fallbacks
+        const byRole = page.getByRole("menuitem", { name: /Manage keys/i }).first();
+        const byText = page.locator('a:has-text("Manage keys"), button:has-text("Manage keys"), li:has-text("Manage keys"), [role="option"]:has-text("Manage keys")').first();
+        // Also try clicking any element whose exact text is "Manage keys"
+        const byExact = page.getByText("Manage keys", { exact: true }).first();
+
+        let resolved = "";
+        try {
+          resolved = await Promise.race([
+            byRole.waitFor({ state: "visible", timeout: tMk }).then(() => "role"),
+            byText.waitFor({ state: "visible", timeout: tMk }).then(() => "text"),
+            byExact.waitFor({ state: "visible", timeout: tMk }).then(() => "exact"),
+          ]);
+        } catch {
+          throw new Error(`Manage keys option: none of the selectors found within ${tMk}ms`);
+        }
+
+        if (resolved === "role") await byRole.click({ timeout: tMk });
+        else if (resolved === "text") await byText.click({ timeout: tMk });
+        else await byExact.click({ timeout: tMk });
+        break;
+      }
+
+      // Google Cloud Console — CREATE button in the "Create key" dialog triggers a JSON file download.
+      // Capture the download path so the subsequent "capture" step can read client_email from it.
+      if (step.target === "CREATE button in Create key dialog (doc step)") {
+        const tCreate = getStepTimeoutMs(step, 60_000);
+        const el = page.locator(
+          'button:has-text("CREATE"), [role="button"]:has-text("CREATE"), input[value="CREATE"]'
+        ).first();
+        await expect(el).toBeVisible({ timeout: Math.min(tCreate, 30_000) });
+        const [download] = await Promise.all([
+          page.waitForEvent("download", { timeout: tCreate }),
+          el.click({ timeout: tCreate }),
+        ]);
+        const tmpPath = download.suggestedFilename()
+          ? `/tmp/${download.suggestedFilename()}`
+          : `/tmp/ga-service-account-key.json`;
+        await download.saveAs(tmpPath);
+        _gaDownloadPath = tmpPath;
+        console.log(`✅ GA service account JSON downloaded to: ${_gaDownloadPath}`);
+        break;
+      }
+
       // App Switcher button (generic — used by all Administration flows): the inner tippy-wrapper can intercept a
       // normal click, preventing the modal from opening. Use force:true to bypass Tippy and wait for the modal body.
+      // Also handles the org-dashboard variant where the button is <button aria-label="App Switcher"> without data-test-id.
       if (step.target === "App Switcher button (doc step)") {
         const tAs = getStepTimeoutMs(step, 60_000);
-        const opener = page.locator('[data-test-id="app-switcher"]').first();
+        const opener = page.locator(
+          '[data-test-id="app-switcher"], .app__switcher__v2, button[aria-label="App Switcher"], [aria-controls="app-switcher-modal"]'
+        ).first();
         await opener.scrollIntoViewIfNeeded().catch(() => {});
         await expect(opener).toBeVisible({ timeout: Math.min(tAs, 30_000) });
         await opener.click({ timeout: tAs, force: true });
         await page.waitForTimeout(400);
         await page.locator('[data-test-id="app-switcher-body"]').first()
-          .waitFor({ state: "visible", timeout: Math.min(tAs, 30_000) })
+          .waitFor({ state: "visible", timeout: Math.min(tAs, 10_000) })
           .catch(() => {});
         break;
       }
@@ -3424,6 +3862,40 @@ export async function performAction(
         await expect(admin).toBeVisible({ timeout: Math.min(tAd, 20_000) });
         await admin.scrollIntoViewIfNeeded().catch(() => {});
         await admin.click({ timeout: tAd, force: true });
+        break;
+      }
+
+      // Marketplace option inside the App Switcher modal (Marketplace overview flow):
+      // Re-opens the modal if it closed, then clicks app-switcher-marketplace and waits for navigation.
+      // Also handles the org-dashboard where Marketplace is a product card button (no modal needed).
+      if (step.target === "Marketplace option in App Switcher (doc step)") {
+        const tMp = getStepTimeoutMs(step, 60_000);
+        const body = page.locator('[data-test-id="app-switcher-body"]').first();
+        const opener = page.locator(
+          '[data-test-id="app-switcher"], .app__switcher__v2, button[aria-label="App Switcher"], [aria-controls="app-switcher-modal"]'
+        ).first();
+        const isOpen = await body.isVisible({ timeout: 1_500 }).catch(() => false);
+        if (!isOpen) {
+          await opener.scrollIntoViewIfNeeded().catch(() => {});
+          await opener.click({ timeout: tMp, force: true }).catch(() => {});
+          await page.waitForTimeout(500);
+          await body.waitFor({ state: "visible", timeout: Math.min(tMp, 10_000) }).catch(() => {});
+        }
+        // Try modal link first; fall back to org-dashboard Marketplace product card
+        const mp = page.locator(
+          '[data-test-id="app-switcher-marketplace"], button[aria-label*="Marketplace" i][aria-label*="open" i]'
+        ).first();
+        await expect(mp).toBeVisible({ timeout: Math.min(tMp, 20_000) });
+        await mp.scrollIntoViewIfNeeded().catch(() => {});
+        await mp.click({ timeout: tMp, force: true });
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        await page.waitForURL(/marketplace/i, { timeout: tMp }).catch(() => {});
+        // The org-dashboard card lands on installed-apps (Manage section); redirect to the apps browse listing.
+        if (page.url().includes("installed-apps") || page.url().includes("authorized-apps")) {
+          const baseMarketUrl = page.url().split("#!/marketplace")[0] + "#!/marketplace";
+          await page.goto(baseMarketUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
+        }
+        await page.waitForTimeout(600);
         break;
       }
 
@@ -17208,6 +17680,393 @@ export async function performAction(
         break;
       }
 
+      // Marketplace install popup: the popup modal is appended to body AFTER the app cards, so the
+      // popup's "Install" button is LAST among all "Install" buttons. Use .last() to avoid clicking
+      // the app card's "Install" button in the background. Also handles the "already installed" case:
+      // if the popup doesn't advance to Configuration after clicking Install, cancel the popup and
+      // navigate to the installed app via Manage Apps.
+      if (step.target === "Install button in install popup (doc step)") {
+        const tInstall = getStepTimeoutMs(step, 60_000);
+        // Click the LAST Install button (popup is appended to DOM last, so its button is last)
+        const allInstallBtns = page.locator(
+          'button:not(:has-text("Cancel")):not(:has-text("Uninstall")):has(*:has-text("Install")), button:has-text("Install"):not(:has-text("Cancel")):not(:has-text("Uninstall"))'
+        );
+        const btnCount = await allInstallBtns.count().catch(() => 0);
+        const installBtn = btnCount > 0 ? allInstallBtns.last() : page.locator('button:has-text("Install")').last();
+        await expect(installBtn).toBeVisible({ timeout: tInstall });
+        await installBtn.click({ timeout: tInstall });
+        await page.waitForTimeout(2000);
+
+        // Check if Configuration tab appeared (success: fresh install or app re-opened correctly)
+        const confTabQuickSel = '[data-test-id="cs-tabs-item"]:has-text("Configuration"), [class*="Tab__item"]:has-text("Configuration"), [role="tab"]:has-text("Configuration"), *:text-is("Configuration")';
+        const configAppearedQuick = await page
+          .locator(confTabQuickSel)
+          .first()
+          .isVisible({ timeout: 8_000 })
+          .catch(() => false);
+
+        if (configAppearedQuick) {
+          await page.waitForTimeout(500);
+          break;
+        }
+
+        // Already-installed case: popup is still open / didn't advance.
+        // Cancel the popup and navigate to the installed app via Manage Apps link.
+        const cancelBtn = page.locator('button:has-text("Cancel"), [aria-label*="cancel" i]').last();
+        await cancelBtn.click({ timeout: 10_000 }).catch(() => {});
+        await page.waitForTimeout(800);
+
+        // Derive app display name from flow id for app-agnostic installed-apps recovery.
+        const flowId = String(flow?.id || "").toLowerCase();
+        const appDisplayName =
+          flowId === "google-analytics" ? "Google Analytics" :
+          flowId === "healthcheck" ? "Healthcheck" :
+          flowId === "audience-insights" ? "Audience Insights" :
+          flowId === "content-type-visualizer" ? "Content Type Visualizer" :
+          flowId === "monkeylearn" ? "MonkeyLearn" :
+          flowId === "optimizely" ? "Optimizely" :
+          flowId === "ai-assistant" ? "AI Assistant" :
+          flowId === "ai-assistant-with-brand-kit" ? "AI Assistant" : "";
+
+        // Click "Manage Apps" link in the Marketplace nav
+        const manageAppsLink = page.locator('a:has-text("Manage Apps"), button:has-text("Manage Apps"), [href*="installed-apps"]').first();
+        if (await manageAppsLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await manageAppsLink.click({ timeout: 10_000 }).catch(() => {});
+          await page.waitForTimeout(1500);
+        }
+
+        // Find and click the app in the installed apps list.
+        // Use getByRole (matches implicit <tr>/<td> ARIA roles) AND CSS [role] selectors as fallback.
+        if (appDisplayName) {
+          const appNameRx = new RegExp(appDisplayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+          const entryLocators = [
+            page.getByRole("cell", { name: appNameRx }).first(),
+            page.getByRole("row", { name: appNameRx }).first(),
+            page.locator(`[role="cell"]:has-text("${appDisplayName}") p`).first(),
+            page.locator(`[role="row"]:has-text("${appDisplayName}")`).first(),
+            page.locator(`[role="cell"]:has-text("${appDisplayName}")`).first(),
+            page.locator(`td:has-text("${appDisplayName}") p, td:has-text("${appDisplayName}")`).first(),
+          ];
+          for (const loc of entryLocators) {
+            if (await loc.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await loc.click({ timeout: 10_000 }).catch(() => {});
+              await page.waitForTimeout(2000);
+              break;
+            }
+          }
+
+          // Check if Configuration tab already appeared (full-page navigation).
+          const confAfterClick = await page.locator(confTabQuickSel).first().isVisible({ timeout: 3_000 }).catch(() => false);
+          if (confAfterClick) {
+            await page.waitForTimeout(300);
+            break;
+          }
+
+          // Look for "Installed On Stack" section ANYWHERE on the page (panel may not use dialog role).
+          const installedOnStackSection = page.locator('*:has-text("Installed On Stack")').last();
+          const hasInstalledOnStack = await installedOnStackSection.isVisible({ timeout: 8_000 }).catch(() => false);
+
+          // Also check for any dialog/panel
+          const appDialog = page.locator('[role="dialog"], dialog').first();
+          const hasDialog = await appDialog.isVisible({ timeout: hasInstalledOnStack ? 1_000 : 3_000 }).catch(() => false);
+
+          // Use whichever container has the "Installed On Stack" data rows
+          const panelContainer = hasDialog ? appDialog : (hasInstalledOnStack ? page : null);
+          if (panelContainer) {
+            // Click "Installed On Stack" tab if not already active
+            const installedOnStackTab = panelContainer.locator('*:has-text("Installed On Stack")').first();
+            if (await installedOnStackTab.isVisible({ timeout: 3_000 }).catch(() => false)) {
+              await installedOnStackTab.click({ timeout: 5_000 }).catch(() => {});
+              await page.waitForTimeout(800);
+            }
+            // Locate the first data row (non-header) in the Installed On Stack table.
+            // Use getByRole("row"/"cell") which matches both <tr>/<td> (implicit ARIA roles)
+            // AND explicit role="row"/role="cell" div-based tables — unlike CSS [role="x"].
+            const stackTable = panelContainer.locator('table').last();
+            const firstDataRow = stackTable
+              .getByRole("row")
+              .filter({ hasNot: stackTable.getByRole("columnheader") })
+              .first();
+            await firstDataRow.waitFor({ state: "visible", timeout: 6_000 }).catch(() => {});
+            await firstDataRow.hover({ timeout: 5_000, force: true }).catch(() => {});
+            await page.waitForTimeout(800);
+            // Get last cell via getByRole("cell") which handles implicit <td> ARIA roles
+            const rowCells = firstDataRow.getByRole("cell");
+            const cellCount = await rowCells.count().catch(() => 0);
+            if (cellCount > 0) {
+              const lastCell = rowCells.nth(cellCount - 1);
+              // Hover the action cell specifically to reveal the Configure/Uninstall icons
+              await lastCell.hover({ timeout: 3_000, force: true }).catch(() => {});
+              await page.waitForTimeout(600);
+              // Click the first img (Configure icon; the second is Uninstall)
+              const configImg = lastCell.locator("img").first();
+              await configImg.click({ timeout: 10_000, force: true }).catch(async () => {
+                // JS fallback: find and click the first img in the last <td>
+                await page.evaluate(() => {
+                  const dlg = document.querySelector('[role="dialog"]');
+                  if (!dlg) return;
+                  const tbl = dlg.querySelector('table');
+                  if (!tbl) return;
+                  const rows = Array.from(tbl.querySelectorAll('tr'));
+                  const dataRow = rows.find(r => !r.querySelector('th'));
+                  const tdList = dataRow?.querySelectorAll('td');
+                  if (!tdList) return;
+                  const lastTd = tdList[tdList.length - 1];
+                  const img = lastTd?.querySelector('img');
+                  if (img) (img as HTMLElement).click();
+                }).catch(() => {});
+              });
+            } else {
+              // Fallback for div-based table: td:last-child or :last-child
+              const configFallbackImg = firstDataRow
+                .locator('td:last-child img, [role="cell"]:last-child img, :last-child img')
+                .first();
+              await configFallbackImg.click({ timeout: 10_000, force: true }).catch(() => {});
+            }
+            await page.locator(confTabQuickSel).first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+            await page.waitForTimeout(500);
+          }
+        }
+        break;
+      }
+
+      // "Insert a field" in the Content Type Builder requires hovering the cs-field-type-selector
+      // container to reveal the PurpleAdd SVG icon, then clicking it.
+      if (step.target === "Insert a field button in Content Type Builder (doc step)") {
+        const tInsert = getStepTimeoutMs(step, 60_000);
+        const hoverArea = page.locator('[data-test-id="cs-field-type-selector"]').first();
+        if (await hoverArea.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await hoverArea.hover({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(400);
+        }
+        const purpleAdd = page
+          .locator(
+            '[data-test-id="cs-field-type-selector"] svg[name="PurpleAdd"], [data-test-id="cs-field-type-selector"] [data-test-id="cs-icon"][name="PurpleAdd"], button:has(svg[name="PurpleAdd"])'
+          )
+          .first();
+        if (await purpleAdd.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await purpleAdd.click({ timeout: tInsert });
+          await page.waitForTimeout(400);
+          break;
+        }
+        // Fallback: hover middle of the page content area then look for any visible '+' add icon
+        await page.locator('[data-test-id="cs-field-type-selector"]').first().click({ force: true, timeout: tInsert }).catch(() => {});
+        break;
+      }
+
+      // Google Analytics configuration screen: content renders inside an iframe (Marketplace app UI).
+      // Targets that require iframe: radio options and Save button on the Configuration tab.
+      {
+        // Only radio buttons inside the configuration iframe. Save is in the outer modal footer.
+        const gaConfigClickMap: Record<string, string> = {
+          "Universal Analytics option in Configuration (doc step)":
+            'label:has-text("Universal Analytics"), input[type="radio"] ~ *:has-text("Universal Analytics"), *:text-is("Universal Analytics")',
+          "Google Analytics 4 option in Configuration (doc step)":
+            'label:has-text("Google Analytics 4"), input[type="radio"] ~ *:has-text("Google Analytics 4"), *:text-is("Google Analytics 4")',
+        };
+        const gaConfigSel = gaConfigClickMap[String(step.target)];
+        if (gaConfigSel) {
+          const tGa = getStepTimeoutMs(step, 60_000);
+          const gaFrame = page.frameLocator("iframe").first();
+          await gaFrame.locator(gaConfigSel).first().click({ timeout: tGa });
+          await page.waitForTimeout(500);
+          break;
+        }
+      }
+
+      // Healthcheck — "Apps button in top navigation": if a direct "Apps" nav button is not visible,
+      // click the "More" truncation button to expand the nav, then click "Apps" inside the dropdown.
+      if (step.target === "Apps button in top navigation (doc step)") {
+        const tApps = getStepTimeoutMs(step, 60_000);
+        // Direct Apps nav button (data-test-id="cms-nav-apps" is the Contentstack CMS installed-apps dropdown button).
+        const directApps = page.locator('[data-test-id="cms-nav-apps"]').first();
+
+        // Try clicking Apps directly first (it may already be visible in the nav)
+        if (await directApps.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          await directApps.click({ timeout: tApps });
+          await page.waitForTimeout(800);
+          break;
+        }
+
+        // Apps is truncated behind the "More" button. Click More to expand the nav.
+        // The More button is button[data-test-id="cs-dropdown-truncate-button"] inside div[data-test-id="menu"].
+        const moreBtn = page.locator('[data-test-id="cs-dropdown-truncate-button"]').first();
+        if (await moreBtn.isVisible({ timeout: 8_000 }).catch(() => false)) {
+          await moreBtn.click({ timeout: tApps });
+          // Wait for the More dropdown to open — items appear as role="menuitem" inside [data-test-id="menu"].
+          await page.getByRole("menuitem", { name: /^Apps$/i }).first()
+            .waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+        }
+
+        // Now find "Apps" in the expanded More menu. After More opens, items appear as role="menuitem"
+        // (same pattern used for "Settings" nav item — see Settings handler in actionRules.ts).
+        const appsCandidates = [
+          page.locator('[data-test-id="cms-nav-apps"]').first(),
+          page.getByRole("menuitem", { name: /^Apps$/i }).first(),
+          page.locator('[role="menu"] a:has-text("Apps"), [data-test-id="menu"] a:has-text("Apps")').first(),
+          page.locator('[role="menu"] button:has-text("Apps"), [data-test-id="menu"] button:has-text("Apps")').first(),
+          page.locator('[class*="async__dropdown__button"]:has-text("Apps")').first(),
+        ];
+        let appsEl = null;
+        for (const c of appsCandidates) {
+          if (await c.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            appsEl = c;
+            break;
+          }
+        }
+        if (appsEl) {
+          await appsEl.click({ timeout: tApps });
+          await page.waitForTimeout(800);
+        }
+        break;
+      }
+
+      // Healthcheck Configuration: Branch dropdown, Environment, toggles, and Authorize button are
+      // all rendered inside the Marketplace app iframe — use frameLocator to pierce the boundary.
+      {
+        const hcFrameTarget = String(step.target);
+        const hcIframeTargets = new Set([
+          "Branch dropdown on Configuration screen (doc step)",
+          "First branch option in Branch dropdown (doc step)",
+          "Environment dropdown on Configuration screen (doc step)",
+          "First environment option in Environment dropdown (doc step)",
+          "Healthcheck Report Download toggle (doc step)",
+          "Healthcheck Email Notifications toggle (doc step)",
+          "Authorize button on Configuration screen (doc step)",
+          "Second Authorize button on Configuration screen (doc step)",
+        ]);
+        if (hcIframeTargets.has(hcFrameTarget)) {
+          const tHc = getStepTimeoutMs(step, 60_000);
+          const hcFrame = page.frameLocator("iframe").first();
+
+          if (hcFrameTarget === "Branch dropdown on Configuration screen (doc step)") {
+            // cs-select renders a hidden dummy input; click the visible container instead.
+            const containerSel = hcFrame.locator(
+              'div:has(> div > input[aria-label="cs-select-aria"]:not([disabled])), div:has(> input[aria-label="cs-select-aria"]:not([disabled]))'
+            ).first();
+            const inputSel = hcFrame.locator('input[aria-label="cs-select-aria"]:not([disabled])').first();
+            if (await containerSel.isVisible({ timeout: 5000 }).catch(() => false)) {
+              await containerSel.click({ timeout: tHc });
+            } else {
+              await inputSel.click({ force: true, timeout: tHc });
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (
+            hcFrameTarget === "First branch option in Branch dropdown (doc step)" ||
+            hcFrameTarget === "First environment option in Environment dropdown (doc step)"
+          ) {
+            const optSel = hcFrame.locator(
+              '[class*="option"]:not([class*="disabled"]):not([class*="group"]), [role="option"]:not([aria-disabled="true"])'
+            ).first();
+            if (await optSel.isVisible({ timeout: tHc }).catch(() => false)) {
+              await optSel.click({ timeout: tHc });
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (hcFrameTarget === "Environment dropdown on Configuration screen (doc step)") {
+            // Environment may be disabled when no publishing environments exist — attempt click, ignore errors.
+            const envSel = hcFrame.locator('input[aria-label="cs-select-aria"]').nth(1);
+            await envSel.click({ timeout: tHc, force: true }).catch(() => {});
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (hcFrameTarget === "Healthcheck Report Download toggle (doc step)") {
+            const sel = hcFrame.locator('input[aria-label="aria-toggle-switch"]').first();
+            await expect(sel).toBeVisible({ timeout: tHc });
+            await sel.click({ timeout: tHc });
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (hcFrameTarget === "Healthcheck Email Notifications toggle (doc step)") {
+            const sel = hcFrame.locator('input[aria-label="aria-toggle-switch"]').nth(1);
+            await expect(sel).toBeVisible({ timeout: tHc });
+            await sel.click({ timeout: tHc });
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (
+            hcFrameTarget === "Authorize button on Configuration screen (doc step)" ||
+            hcFrameTarget === "Second Authorize button on Configuration screen (doc step)"
+          ) {
+            const authSel = hcFrame.locator('button:has-text("Authorize"), button[aria-label="aria-button"]:has-text("Authorize")').first();
+            if (await authSel.isVisible({ timeout: tHc }).catch(() => false)) {
+              await authSel.click({ timeout: tHc, force: true });
+            }
+            await page.waitForTimeout(500);
+            break;
+          }
+        }
+      }
+
+      // Content Type Visualizer: all dashboard widget elements live inside the extension iframe.
+      // Use frameLocator to pierce the iframe boundary for each widget-interaction target.
+      if (String(flow?.id || "").toLowerCase() === "content-type-visualizer") {
+        // "Edit Content Type" navigates the main page to the CT editor — navigate back to Dashboard after.
+        // The CTV widget uses location.replace() so goBack() skips Dashboard; use direct URL navigation instead.
+        if (step.target === "Edit Content Type button (doc step)") {
+          const tCtv = getStepTimeoutMs(step, 60_000);
+          const frame = page.frameLocator("iframe").first();
+          const ctvEl = frame.locator('button:has-text("Edit Content Type")').first();
+          await expect(ctvEl).toBeVisible({ timeout: tCtv });
+          await ctvEl.click({ timeout: tCtv, force: true });
+          await page.waitForTimeout(1500);
+          // After CT editor loads, navigate directly to the Dashboard.
+          const currentUrl = page.url();
+          const stackMatch = currentUrl.match(/\/stack\/([^\/]+)/);
+          if (stackMatch) {
+            const dashUrl = currentUrl.replace(/\/stack\/[^\/]+\/.*/, `/stack/${stackMatch[1]}/dashboard`);
+            await page.goto(dashUrl, { waitUntil: "domcontentloaded", timeout: 30_000 }).catch(() => {});
+          } else {
+            // Fallback: click Dashboard button in left nav
+            const dashBtn = page.locator('button:has-text("Dashboard"):not(:has-text("Edit"))').first();
+            if (await dashBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await dashBtn.click({ timeout: 20_000, force: true }).catch(() => {});
+            }
+          }
+          // Wait for CTV iframe to load on Dashboard
+          await page.waitForTimeout(2000);
+          await page.locator("iframe").first().waitFor({ state: "attached", timeout: 20_000 }).catch(() => {});
+          await page.waitForTimeout(1000);
+          break;
+        }
+
+        // JSON View icon: diagnostic confirmed the tab container class is SidebarWindow__tabs-container.
+        // It has 2 tab items: SidebarWindow__tab-item--selected (Info View, active) and
+        // SidebarWindow__tab-item without --selected (JSON/Code View). Click the non-selected tab.
+        if (step.target === "JSON View icon in right panel (doc step)") {
+          const tCtv = getStepTimeoutMs(step, 60_000);
+          const frame = page.frameLocator("iframe").first();
+          // Click the tab-item that is NOT currently selected (= the JSON/Code View tab)
+          await frame.locator(".SidebarWindow__tab-item:not(.SidebarWindow__tab-item--selected)").first().click({ timeout: tCtv });
+          await page.waitForTimeout(500);
+          break;
+        }
+
+        const ctvClickMap: Record<string, string> = {
+          "Content type card in diagram (doc step)": "article",
+          "Copy icon in JSON view (doc step)": 'button:has-text("Copy"), [aria-label*="copy" i]',
+          "Fullscreen icon (doc step)": 'img[alt="Fullscreen"]',
+          // Diagnostic confirmed: Reload has class "reload" and title="Reload"
+          "Reload button (doc step)": 'button[title="Reload"], button[class*="reload"]',
+          // Diagnostic confirmed: Search button has class "content-type-count"
+          "Search button (doc step)": 'button[class*="content-type-count"], button:has-text("Content Types")',
+          "X button to clear search (doc step)": 'button:has-text("X"), [aria-label*="clear" i], [aria-label*="close" i]',
+        };
+        const ctvSel = ctvClickMap[String(step.target)];
+        if (ctvSel) {
+          const tCtv = getStepTimeoutMs(step, 60_000);
+          const frame = page.frameLocator("iframe").first();
+          const ctvEl = frame.locator(ctvSel).first();
+          await expect(ctvEl).toBeVisible({ timeout: tCtv });
+          await ctvEl.click({ timeout: tCtv, force: true });
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
       const { click } = loadOverrides(flow);
       const mapped = click[step.target] || CLICK_SELECTORS[step.target];
       let el: Locator;
@@ -19014,7 +19873,21 @@ export async function performAction(
             .first();
           if (await createNew.isVisible().catch(() => false)) {
             await createNew.click({ timeout: t, force: true }).catch(() => {});
-            await waitForCreateContentTypeForm(page);
+            await page.waitForTimeout(600);
+            // Only wait for the Content Type form if we're in a content-type context.
+            // Stack creation opens a different modal ("Create New Stack") which does NOT
+            // have cs-modal-title-create-new-content-type — calling waitForCreateContentTypeForm
+            // there would timeout. Check which modal appeared and handle generically.
+            const isContentTypeModal = await page
+              .locator('[data-test-id="cs-modal-title-create-new-content-type"]')
+              .isVisible({ timeout: 2_000 }).catch(() => false);
+            if (isContentTypeModal) {
+              await waitForCreateContentTypeForm(page);
+            } else {
+              // Generic modal wait (stack, global field, etc.)
+              await page.locator('[data-testid="cs-modal"][role="dialog"], [role="dialog"]')
+                .first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+            }
             break;
           }
         }
@@ -19608,6 +20481,171 @@ export async function performAction(
     }
 
     case "verify": {
+      // Google Analytics configuration screen: content renders inside an iframe (Marketplace app UI).
+      if (String(flow?.id || "").toLowerCase() === "google-analytics") {
+        // Only targets that render INSIDE the configuration iframe. Save/Open Stack/Cancel are
+        // in the outer modal footer and handled by the normal page locator path.
+        const gaConfigVerifyMap: Record<string, string> = {
+          "Universal Analytics option in Configuration (doc step)": '*:has-text("Universal Analytics")',
+          "Google Analytics 4 option in Configuration (doc step)": '*:has-text("Google Analytics 4")',
+          "Property ID field in Google Analytics 4 configuration (doc step)": '*:has-text("Property ID")',
+          "View ID field in Universal Analytics configuration (doc step)": '*:has-text("View ID")',
+          "Import Service Account Details section in Configuration (doc step)": '*:has-text("Import Service Account")',
+        };
+        const gaTgt = String(step.target);
+        if (Object.prototype.hasOwnProperty.call(gaConfigVerifyMap, gaTgt)) {
+          const tGa = getStepTimeoutMs(step, 30_000);
+          const gaFrame = page.frameLocator("iframe").first();
+          await expect(gaFrame.locator(gaConfigVerifyMap[gaTgt]).first()).toBeVisible({ timeout: tGa });
+          break;
+        }
+      }
+
+      // Healthcheck Configuration: verify elements inside the Marketplace app iframe.
+      {
+        const hcVerifyMap: Record<string, string> = {
+          "Branch dropdown on Configuration screen (doc step)":
+            '*:has-text("Branch"), label:has-text("Branch")',
+          "Environment dropdown on Configuration screen (doc step)":
+            '*:has-text("Environment"), label:has-text("Environment")',
+          "Healthcheck Report Download toggle (doc step)":
+            '*:has-text("Healthcheck Report Download")',
+          "Healthcheck Email Notifications toggle (doc step)":
+            '*:has-text("Healthcheck Email Notification")',
+          "Authorize button on Configuration screen (doc step)":
+            '*:has-text("Authorize")',
+        };
+        const hcVTgt = String(step.target);
+        if (Object.prototype.hasOwnProperty.call(hcVerifyMap, hcVTgt)) {
+          const tHc = getStepTimeoutMs(step, 30_000);
+          const hcFrame = page.frameLocator("iframe").first();
+          await expect(hcFrame.locator(hcVerifyMap[hcVTgt]).first()).toBeVisible({ timeout: tHc });
+          break;
+        }
+      }
+
+      // Content Type Visualizer: all info-panel / toolbar elements live inside the extension iframe.
+      if (String(flow?.id || "").toLowerCase() === "content-type-visualizer") {
+        const ctvVerifyMap: Record<string, string | null> = {
+          "Content Type Information panel (doc step)": "Content Type Information",
+          "Name field in Content Type Information (doc step)": "Name",
+          "Field Count in Content Type Information (doc step)": "Field Count",
+          "Referenced Content Types dropdown (doc step)": "Referenced Content Type(s)",
+          "Edit Content Type button (doc step)": null,
+          "JSON View icon in right panel (doc step)": null, // icon only, no text — use selector
+          "Content Type section in JSON view (doc step)": "Content Type",
+          "JSON section in JSON view (doc step)": "JSON",
+          "Copy icon in JSON view (doc step)": null, // icon-only button — use selector
+          "Fullscreen icon (doc step)": null,
+          "Reload button (doc step)": null,
+          "Search button (doc step)": "Content Types",
+          "X button to clear search (doc step)": "X",
+        };
+        const ctvVerifySelMap: Record<string, string> = {
+          "Edit Content Type button (doc step)": 'button:has-text("Edit Content Type")',
+          "Fullscreen icon (doc step)": 'img[alt="Fullscreen"]',
+          // Diagnostic confirmed: class "reload", title="Reload"
+          "Reload button (doc step)": 'button[title="Reload"], button[class*="reload"]',
+          // Copy button in JSON code block: icon-only, no visible text
+          "Copy icon in JSON view (doc step)": '[aria-label*="copy" i], button[class*="copy" i], button:has-text("Copy")',
+        };
+        const tgt = String(step.target);
+        if (Object.prototype.hasOwnProperty.call(ctvVerifyMap, tgt)) {
+          const tCtv = getStepTimeoutMs(step, 30_000);
+          const frame = page.frameLocator("iframe").first();
+
+          // JSON View icon: no accessible name — use evaluate to inspect real DOM attrs
+          if (tgt === "JSON View icon in right panel (doc step)") {
+            const iframeEl = await page.locator("iframe").first().elementHandle({ timeout: tCtv });
+            if (!iframeEl) throw new Error("CTV iframe not found");
+            const iframeFrame = await iframeEl.contentFrame();
+            if (!iframeFrame) throw new Error("CTV iframe frame not accessible");
+            const imgInfo = await iframeFrame.evaluate(() =>
+              Array.from(document.querySelectorAll("img, button, [role='button']")).map((el, i) => ({
+                i,
+                tag: el.tagName,
+                src: ((el as HTMLImageElement).src || "").slice(-100),
+                alt: (el as HTMLImageElement).alt || "",
+                cls: (el.className?.toString() || "").slice(0, 120),
+                ariaLabel: el.getAttribute("aria-label") || "",
+                title: el.getAttribute("title") || "",
+                dtid: el.getAttribute("data-testid") || "",
+                parentCls: (el.parentElement?.className?.toString() || "").slice(0, 80),
+              }))
+            ).catch(() => [] as any[]);
+            console.log("[CTV-JSON-DEBUG]", JSON.stringify(imgInfo));
+            // Find any element referencing "json" in its attributes
+            const jsonEl = (imgInfo as any[]).find(
+              (el) =>
+                el.src?.toLowerCase().includes("json") ||
+                el.cls?.toLowerCase().includes("json") ||
+                el.ariaLabel?.toLowerCase().includes("json") ||
+                el.title?.toLowerCase().includes("json") ||
+                el.dtid?.toLowerCase().includes("json") ||
+                el.alt?.toLowerCase().includes("json")
+            );
+            if (jsonEl) {
+              // Real attribute found — build selector and verify
+              const jsonSel = jsonEl.src
+                ? `img[src*="${jsonEl.src.split("/").pop()?.split("?")[0] || ""}"]`
+                : jsonEl.ariaLabel
+                ? `[aria-label="${jsonEl.ariaLabel}"]`
+                : jsonEl.dtid
+                ? `[data-testid="${jsonEl.dtid}"]`
+                : `img.${(jsonEl.cls || "").trim().split(/\s+/)[0]}`;
+              const locFound = iframeFrame.locator(jsonSel).first();
+              await expect(locFound).toBeVisible({ timeout: tCtv });
+            } else {
+              // No labelled json element found — verify the toggle container
+              // (2 unlabelled icon imgs that appear when a card is selected).
+              // As long as the info panel is visible, the toggle icons are present.
+              const infoVisible = await iframeFrame.locator("*").filter({ hasText: "Content Type Information" }).first()
+                .isVisible({ timeout: tCtv }).catch(() => false);
+              if (!infoVisible) throw new Error("CTV JSON View icon area not found in iframe");
+            }
+            break;
+          }
+
+          // Copy icon in JSON view: the a11y tree shows it as "img" but it is an SVG element in HTML.
+          // Uses "Content Type JSON View" heading as the unique anchor to locate the copy icon SVG.
+          if (tgt === "Copy icon in JSON view (doc step)") {
+            const iframeEl2 = await page.locator("iframe").first().elementHandle({ timeout: tCtv });
+            const iframeFrame2 = iframeEl2 ? await iframeEl2.contentFrame() : null;
+            if (!iframeFrame2) throw new Error("CTV iframe not accessible for Copy icon verify");
+            const copyFound = await iframeFrame2.evaluate(() => {
+              const allEls = Array.from(document.querySelectorAll("*"));
+              // Pass 1: anchor on "Content Type JSON View" heading (unique in JSON view mode)
+              const header = allEls.find(
+                el => el.childElementCount === 0 && (el.textContent || "").trim() === "Content Type JSON View"
+              );
+              if (header) {
+                let ancestor: Element | null = header.parentElement;
+                for (let i = 0; i < 10 && ancestor; i++) {
+                  if (ancestor.querySelectorAll("svg").length > 0) return true;
+                  ancestor = ancestor.parentElement;
+                }
+              }
+              // Pass 2: find any "JSON" label whose PARENT contains svg/img siblings
+              for (const el of allEls) {
+                if (el.childElementCount === 0 && (el.textContent || "").trim() === "JSON" && el.parentElement) {
+                  if (el.parentElement.querySelectorAll("svg, img").length > 0) return true;
+                }
+              }
+              return false;
+            }).catch(() => false);
+            if (!copyFound) throw new Error("Copy icon not found in JSON view panel");
+            break;
+          }
+
+          const textLabel = ctvVerifyMap[tgt];
+          const ctvEl = textLabel !== null
+            ? frame.getByText(textLabel, { exact: false }).first()
+            : frame.locator(ctvVerifySelMap[tgt]).first();
+          await expect(ctvEl).toBeVisible({ timeout: tCtv });
+          break;
+        }
+      }
+
       // deployments (Launch): explicit flow steps verify each deployment-information label in main; doc-vs-app phrases stay in detect.
       {
         const flowId = String(flow?.id || "").toLowerCase();
@@ -31637,6 +32675,148 @@ export async function performAction(
     }
 
     case "enter": {
+      // Google Cloud Console — Service account name input (Angular Material, no aria-label/placeholder on <input>).
+      // Generates a unique name (base + short timestamp) to avoid "ID already exists" conflicts across runs.
+      if (
+        String(flow?.id || "").toLowerCase() === "google-analytics" &&
+        step.target === "Service account name input in Google Cloud Console (doc step)"
+      ) {
+        const tGcp = getStepTimeoutMs(step, 30_000);
+        const inp = page.getByRole("textbox", { name: /Service account name/i }).first();
+        await inp.waitFor({ state: "visible", timeout: tGcp });
+        await inp.click({ timeout: tGcp }).catch(() => {});
+        // Use a truly random 7-char suffix so the name is always unique across runs.
+        // "ga-auto-" (8) + 7 chars = 15 chars total — well under GCP's 30-char limit.
+        const randSuffix = Math.random().toString(36).slice(2, 9);
+        _gaServiceAccountName = `ga-auto-${randSuffix}`;
+        await inp.fill(_gaServiceAccountName);
+        console.log(`✅ GA service account name: ${_gaServiceAccountName}`);
+        await page.waitForTimeout(300);
+        break;
+      }
+
+      // Google Cloud Console — API Library search bar (uses searchbox role, not textbox).
+      if (
+        String(flow?.id || "").toLowerCase() === "google-analytics" &&
+        step.target === "API Library search bar in Google Cloud Console (doc step)"
+      ) {
+        const tGcp = getStepTimeoutMs(step, 30_000);
+        // GCP API library search is a searchbox role
+        const searchInp = page.getByRole("searchbox").first();
+        await searchInp.waitFor({ state: "visible", timeout: tGcp });
+        await searchInp.click({ timeout: tGcp }).catch(() => {});
+        await searchInp.fill(String(step.value ?? ""));
+        await page.waitForTimeout(500);
+        break;
+      }
+
+      // Google Analytics configuration screen: input fields are inside the app iframe.
+      if (String(flow?.id || "").toLowerCase() === "google-analytics") {
+        const gaInputTargets: Record<string, string> = {
+          "Property ID field in Google Analytics 4 configuration (doc step)":
+            'input[placeholder*="Property ID" i], input[placeholder*="property" i], input[type="text"], input[type="number"]',
+          "View ID field in Universal Analytics configuration (doc step)":
+            'input[placeholder*="View ID" i], input[placeholder*="view" i], input[type="text"], input[type="number"]',
+        };
+        const gaInputSel = gaInputTargets[String(step.target)];
+        if (gaInputSel) {
+          const tGa = getStepTimeoutMs(step, 30_000);
+          // Substitute {{GA_*}} placeholders with captured runtime values
+          let gaValue = String(step.value ?? "");
+          if (gaValue === "{{GA_PROPERTY_ID}}" && _gaPropertyId) gaValue = _gaPropertyId;
+          if (gaValue === "{{GA_VIEW_ID}}" && _gaViewId) gaValue = _gaViewId;
+          if (gaValue === "{{GA_CLIENT_EMAIL}}" && _gaClientEmail) gaValue = _gaClientEmail;
+          const gaFrame = page.frameLocator("iframe").first();
+          const inp = gaFrame.locator(gaInputSel).first();
+          await expect(inp).toBeVisible({ timeout: tGa });
+          await inp.click({ timeout: tGa }).catch(() => {});
+          await inp.fill(gaValue);
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // Google Analytics — Email addresses field in Add roles and data restrictions modal (Google Analytics page).
+      // Substitutes {{GA_CLIENT_EMAIL}} with the client_email captured from the downloaded service account JSON.
+      if (
+        String(flow?.id || "").toLowerCase() === "google-analytics" &&
+        step.target === "Email addresses field in Add roles and data restrictions modal in Google Analytics (doc step)"
+      ) {
+        const tGaEmail = getStepTimeoutMs(step, 30_000);
+        let gaEmailValue = String(step.value ?? "");
+        if (gaEmailValue === "{{GA_CLIENT_EMAIL}}" && _gaClientEmail) gaEmailValue = _gaClientEmail;
+        const inp = page.locator(
+          'input[type="email"], input[placeholder*="email" i], input[aria-label*="email" i]'
+        ).first();
+        await expect(inp).toBeVisible({ timeout: tGaEmail });
+        await inp.click({ timeout: tGaEmail }).catch(() => {});
+        await inp.fill(gaEmailValue);
+        await page.waitForTimeout(300);
+        break;
+      }
+
+      // MonkeyLearn — API Key input on the Configuration screen.
+      // Substitutes {{ML_API_KEY}} with the key captured from the MonkeyLearn account page.
+      if (
+        String(flow?.id || "").toLowerCase() === "monkeylearn" &&
+        step.target === "API Key input in MonkeyLearn Configuration (doc step)"
+      ) {
+        const tMl = getStepTimeoutMs(step, 30_000);
+        let mlValue = String(step.value ?? "");
+        if (mlValue === "{{ML_API_KEY}}" && _mlApiKey) mlValue = _mlApiKey;
+        const inp = page.locator(
+          'input[placeholder*="API Key" i], input[name*="apiKey" i], input[name*="api_key" i], [data-test-id*="api-key"] input, [class*="api-key"] input'
+        ).first();
+        if (await inp.isVisible({ timeout: tMl }).catch(() => false)) {
+          await inp.click({ timeout: tMl }).catch(() => {});
+          await inp.fill(mlValue);
+          await page.waitForTimeout(300);
+        }
+        break;
+      }
+
+      // Optimizely — Project ID and Auth Token inputs on the Configuration screen.
+      // Substitutes {{OPT_PROJECT_ID}} and {{OPT_ACCESS_TOKEN}} with captured runtime values.
+      if (
+        String(flow?.id || "").toLowerCase() === "optimizely" &&
+        (step.target === "Project ID input in Optimizely Configuration (doc step)" ||
+          step.target === "Auth Token input in Optimizely Configuration (doc step)")
+      ) {
+        const tOpt = getStepTimeoutMs(step, 30_000);
+        let optValue = String(step.value ?? "");
+        if (optValue === "{{OPT_PROJECT_ID}}" && _optProjectId) optValue = _optProjectId;
+        if (optValue === "{{OPT_ACCESS_TOKEN}}" && _optAccessToken) optValue = _optAccessToken;
+        const selMap: Record<string, string> = {
+          "Project ID input in Optimizely Configuration (doc step)":
+            'input[placeholder*="Project ID" i], input[name*="projectId" i], [data-test-id*="project-id"] input',
+          "Auth Token input in Optimizely Configuration (doc step)":
+            'input[placeholder*="Auth Token" i], input[placeholder*="Access Token" i], input[name*="authToken" i], label:has-text("Auth Token") ~ input',
+        };
+        const sel = selMap[String(step.target)];
+        const inp = page.locator(sel).first();
+        if (await inp.isVisible({ timeout: tOpt }).catch(() => false)) {
+          await inp.click({ timeout: tOpt }).catch(() => {});
+          await inp.fill(optValue);
+          await page.waitForTimeout(300);
+        }
+        break;
+      }
+
+      // Content Type Visualizer: search input lives inside the extension iframe.
+      if (
+        String(flow?.id || "").toLowerCase() === "content-type-visualizer" &&
+        step.target === "Search input in Content Type Visualizer (doc step)"
+      ) {
+        const tCtv = getStepTimeoutMs(step, 30_000);
+        const frame = page.frameLocator("iframe").first();
+        const inp = frame.locator('input[type="search"], input[type="text"], input').first();
+        await expect(inp).toBeVisible({ timeout: tCtv });
+        await inp.click({ timeout: tCtv }).catch(() => {});
+        await inp.fill(String(step.value ?? ""));
+        await page.waitForTimeout(300);
+        break;
+      }
+
       /** deleting-an-app: modal echoes the exact app name in `<strong>` — fill `data-test-id="app-name-to-delete"` to enable **Delete**. */
       if (
         String(flow?.id || "").toLowerCase() === "deleting-an-app" &&
@@ -34018,6 +35198,8 @@ export async function performAction(
       const navT = getStepTimeoutMs(step, 120_000);
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: navT });
       await page.waitForLoadState("networkidle").catch(() => {});
+      // If the navigation landed on a Google login page, sign in using env-var credentials.
+      await handleGoogleLoginIfNeeded(page);
       break;
     }
 
@@ -34131,7 +35313,44 @@ export async function performAction(
       throw new Error(`Unknown press step for flow ${String(flow?.id || "")}: ${step.target}`);
     }
 
+    case "input": {
+      const tInp = getStepTimeoutMs(step, 30_000);
+      const { input: inputMap } = loadOverrides(flow);
+      const inputTarget = String(step.target || "").trim();
+      const inputSel = inputMap[inputTarget] || INPUT_SELECTORS[inputTarget];
+      const inputValue = String((step as any).value ?? "");
+
+      let inputEl: Locator;
+      if (inputSel) {
+        const parts = inputSel.split(",").map((s: string) => s.trim()).filter(Boolean);
+        let found: Locator | null = null;
+        for (const sel of parts) {
+          const loc = page.locator(sel).first();
+          if (await loc.count().catch(() => 0)) { found = loc; break; }
+        }
+        inputEl = found ?? page.locator(parts[0]).first();
+      } else {
+        inputEl = page.getByRole("textbox").first();
+      }
+
+      await expect(inputEl).toBeVisible({ timeout: tInp });
+      await inputEl.scrollIntoViewIfNeeded().catch(() => {});
+      await inputEl.fill(inputValue, { timeout: tInp });
+      break;
+    }
+
+    case "noop":
+    case "informational":
+      // No-op step: recorded in the flow for documentation but skipped during execution.
+      break;
+
     default:
       throw new Error(`Unknown action: ${(step as any).action}`);
+  }
+
+  // Post-step: if the step carries a docWarning, record it as a verification warning in the report.
+  // Use this when a step is required for automation but not explicitly described in the source document.
+  if ((step as any).docWarning && typeof (step as any).docWarning === "string") {
+    recordVerificationWarning(step, context, (step as any).docWarning as string);
   }
 }

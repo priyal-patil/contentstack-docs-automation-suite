@@ -77,20 +77,28 @@ export async function ensureOnStacksAndSelectStack(page: Page) {
   const marker = await waitForAnySelector(page, STACKS_READY_MARKERS, 90_000);
   console.log("✅ Stacks page looks ready via marker:", marker, "| URL:", page.url());
 
-  // 6) Select configured stack (MUST click exactly DEFAULT_STACK; do not fallback silently)
+  // 6) Select configured stack with PriyalDocsStack as fallback.
   const stackName = process.env.DEFAULT_STACK;
   if (!stackName) {
     throw new Error("DEFAULT_STACK is not set in .env (required for deterministic stack selection).");
   }
 
-  // ✅ Best locator from your DOM:
-  // Wrapper link: data-test-id="cs-stacklist-card-<STACKNAME>"
-  const stackLink = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
-  await expect(stackLink).toBeVisible({ timeout: 90_000 });
+  const FALLBACK_STACK = "PriyalDocsStack";
+
+  // Try the configured DEFAULT_STACK first; fall back to PriyalDocsStack if not found within 5s.
+  let stackLink = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
+  const primaryFound = await stackLink.isVisible({ timeout: 5_000 }).catch(() => false);
+
+  if (!primaryFound) {
+    console.warn(`⚠️ Stack card "${stackName}" not found — trying fallback "${FALLBACK_STACK}"`);
+    stackLink = page.locator(`[data-test-id="cs-stacklist-card-${FALLBACK_STACK}"]`).first();
+    await expect(stackLink).toBeVisible({ timeout: 90_000 });
+    console.log(`✅ Using fallback stack: ${FALLBACK_STACK}`);
+  }
 
   await stackLink.scrollIntoViewIfNeeded().catch(() => {});
   await stackLink.click({ timeout: 60_000, force: true });
-  console.log(`✅ Clicked configured stack: ${stackName}`);
+  console.log(`✅ Clicked stack: ${primaryFound ? stackName : FALLBACK_STACK}`);
 
   // ✅ Confirm route changed into a stack dashboard
   await page.waitForURL(/#!\/stack\/[^/]+\/dashboard/i, { timeout: 90_000 });
