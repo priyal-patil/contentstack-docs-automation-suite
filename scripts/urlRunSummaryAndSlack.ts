@@ -217,6 +217,9 @@ function buildSlackPayload(summary: {
   failedSamples: Array<{ flowId: string; documentUrl: string; error?: string }>;
   cumulativeNote?: string;
   perProjectBreakdown?: string | null;
+  warningFlows?: number;
+  runUrl?: string;
+  duration?: string;
 }): { text: string; blocks: unknown[] } {
   const { counts: c } = summary;
   const failedLines = summary.failedSamples
@@ -224,24 +227,36 @@ function buildSlackPayload(summary: {
     .map((f) => `• *${f.flowId}* — ${f.documentUrl || "no URL in flow meta"}\n  _${(f.error || "").slice(0, 200)}_`)
     .join("\n");
 
+  const runLink = summary.runUrl ? ` <${summary.runUrl}|Open run>` : "";
+  const dur = summary.duration ? ` · ${summary.duration}` : "";
   const cum = summary.cumulativeNote ? ` ${summary.cumulativeNote}` : "";
-  const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${c.total} total (flows).${cum} Report: ${summary.reportDir}`;
+  const warnCount = summary.warningFlows ?? 0;
+  const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
+
+  const icon = c.failed === 0 ? ":white_check_mark:" : ":x:";
+  const header = summary.cumulativeNote ? "Documentation URL run summary (cumulative)" : "CMS Batch 1 — URL run summary";
 
   const blocks: unknown[] = [
     {
       type: "header",
-      text: { type: "plain_text", text: summary.cumulativeNote ? "Documentation URL run summary (cumulative)" : "Documentation URL run summary", emoji: true },
+      text: { type: "plain_text", text: `${icon}  ${header}`, emoji: true },
     },
     {
       type: "section",
       fields: [
-        { type: "mrkdwn", text: `${summary.cumulativeNote ? "*Total (full batch)*" : "*Total (this run)*"}\n${c.total}` },
-        { type: "mrkdwn", text: `*Passed*\n${c.passed}` },
-        { type: "mrkdwn", text: `*Failed*\n${c.failed}` },
-        {
-          type: "mrkdwn",
-          text: `*Skipped · timed out · interrupted · other*\n${c.skipped} · ${c.timedOut} · ${c.interrupted} · ${c.other}`,
-        },
+        { type: "mrkdwn", text: `*Total URLs*\n${c.total}` },
+        { type: "mrkdwn", text: `*Passed ✅*\n${c.passed}` },
+        { type: "mrkdwn", text: `*Failed ❌*\n${c.failed}` },
+        { type: "mrkdwn", text: `*Warnings ⚠️*\n${warnCount}` },
+      ],
+    },
+    {
+      type: "section",
+      fields: [
+        { type: "mrkdwn", text: `*Skipped*\n${c.skipped}` },
+        { type: "mrkdwn", text: `*Timed out*\n${c.timedOut}` },
+        { type: "mrkdwn", text: `*Interrupted*\n${c.interrupted}` },
+        { type: "mrkdwn", text: `*Duration*\n${summary.duration || "—"}` },
       ],
     },
     ...(summary.perProjectBreakdown
@@ -263,23 +278,35 @@ function buildSlackPayload(summary: {
           },
         ]
       : []),
-    {
-      type: "context",
-      elements: [
-        {
-          type: "mrkdwn",
-          text: `Source: \`${summary.flowsFile}\` · Dir: \`${summary.reportDir}\``,
-        },
-      ],
-    },
   ];
+
+  // Report links block
+  const reportLinks: string[] = [];
+  if (summary.runUrl) reportLinks.push(`<${summary.runUrl}|:github: Open GitHub Actions run>`);
+  if (summary.runUrl) reportLinks.push(`<${summary.runUrl}#artifacts|:page_facing_up: Download reports & screenshots>`);
+  if (reportLinks.length > 0) {
+    blocks.push({
+      type: "section",
+      text: { type: "mrkdwn", text: `*Reports*\n${reportLinks.join("  ·  ")}` },
+    });
+  }
+
+  blocks.push({
+    type: "context",
+    elements: [
+      {
+        type: "mrkdwn",
+        text: `Run dir: \`${path.basename(summary.reportDir)}\`  ·  Source: \`${summary.flowsFile}\``,
+      },
+    ],
+  });
 
   if (failedLines) {
     blocks.push({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*First failures (up to 8)*\n${failedLines}`,
+        text: `*Failed URLs (up to 8)*\n${failedLines}`,
       },
     });
   }
@@ -536,6 +563,22 @@ async function main(): Promise<void> {
 
   const perProjectBreakdown = buildPerProjectBreakdownMrkdwn(rows);
 
+  // Read doc-step warnings count from doc-step-warnings.json if present
+  let warningFlows = 0;
+  try {
+    const warningsPath = path.join(reportDir, "doc-step-warnings.json");
+    if (fs.existsSync(warningsPath)) {
+      const warningsData = JSON.parse(fs.readFileSync(warningsPath, "utf-8")) as { warningFlows?: number };
+      warningFlows = warningsData.warningFlows ?? 0;
+    }
+  } catch {
+    // non-fatal: warnings count is optional
+  }
+
+  // GHA run URL from env (set in cms-batch1-scheduled.yml Post Slack step)
+  const runUrl = process.env.RUN_URL || "";
+  const duration = process.env.BATCH1_DURATION_LABEL || process.env.CMS_BATCH1_DURATION || "";
+
   await postSlackChatPostMessage(botToken, channelId, {
     reportDir,
     flowsFile: flowsFileLabel,
@@ -543,6 +586,9 @@ async function main(): Promise<void> {
     failedSamples,
     cumulativeNote,
     perProjectBreakdown,
+    warningFlows,
+    runUrl,
+    duration,
   });
   // eslint-disable-next-line no-console
   console.log("✅ Posted summary to Slack");
