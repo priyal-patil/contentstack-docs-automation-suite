@@ -125,9 +125,16 @@ jobs:
           restore-keys: |
             playwright-chromium-${{ runner.os }}-
 
-      - name: Install Playwright browsers (download only — no --with-deps)
+      - name: Install Playwright browsers (download with retry — no --with-deps)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium
+        timeout-minutes: 10
+        run: |
+          for attempt in 1 2 3; do
+            echo "Download attempt ${attempt}/3..."
+            npx playwright install chromium && echo "✓ Download succeeded on attempt ${attempt}" && break
+            echo "Attempt ${attempt} failed. Retrying in 10s..."
+            sleep 10
+          done
 
       # -------------------------------------------------------------------
       # 5) Credentials from secrets
