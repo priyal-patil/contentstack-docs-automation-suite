@@ -60,10 +60,17 @@ jobs:
   cms-batch1:
     name: CMS Batch 1 — 21 create flows (1 worker, 5 min/flow)
     runs-on: ubuntu-latest
+    # Use official Playwright Docker image — Chromium pre-installed, zero CDN download.
+    # Image version must match @playwright/test version in package-lock.json (1.58.2).
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
     timeout-minutes: 180
     env:
       CI: "true"
       PLAYWRIGHT_HEADLESS: "1"
+      # Browsers are pre-installed in the Docker image — skip any re-download.
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       OPEN_FLOW_REPORT: "false"
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
@@ -81,7 +88,6 @@ jobs:
       REPORT_DIR: ${{ github.workspace }}/reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
       # Suppress Slack inside bash — GHA step handles Slack so it fires even on crash
       SKIP_SLACK: "1"
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
       # -------------------------------------------------------------------
@@ -91,53 +97,21 @@ jobs:
         uses: actions/checkout@v4
 
       # -------------------------------------------------------------------
-      # 2) Node + npm cache
+      # 2) Install JS dependencies (Node.js pre-installed in Docker image)
+      #    npm cache backed by actions/cache for faster installs.
       # -------------------------------------------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
         with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: package-lock.json
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
 
-      # -------------------------------------------------------------------
-      # 3) Install JS dependencies
-      # -------------------------------------------------------------------
       - name: Install dependencies
         run: npm ci
 
-      # -------------------------------------------------------------------
-      # 4) Cache Playwright browsers (~/.cache/ms-playwright)
-      #    Cache key = OS + Playwright version → reused on every run until
-      #    playwright version changes. Saves ~3-4 min per run.
-      # -------------------------------------------------------------------
-      # -------------------------------------------------------------------
-      # Cache key = Playwright version from package-lock.json.
-      # FIRST RUN: cache miss → downloads ~167MB (~10-12 min on slow GHA CDN).
-      #   The download always completes — do NOT cancel. Cache is saved at end.
-      # SUBSEQUENT RUNS: cache hit → restore in ~1s, skip download entirely.
-      # System deps (apt) are always installed (~15-20s) — they are not cached.
-      # -------------------------------------------------------------------
-      - name: Install Playwright system dependencies (apt only — fast, ~20s)
-        run: npx playwright install-deps chromium
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            playwright-chromium-${{ runner.os }}-
-
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 20
-        run: |
-          echo "Cache miss — downloading + extracting Chromium (~167MB, ~15 min on slow GHA CDN)."
-          echo "Once done the cache is saved and ALL future runs skip this entirely (~1s)."
-          npx playwright install chromium
-          echo "✅ Chromium installed."
+      # Browsers are pre-installed in the Docker image. No download needed.
+      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 is set in job env above.
 
       # -------------------------------------------------------------------
       # 5) Credentials from secrets
