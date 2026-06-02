@@ -48,8 +48,11 @@ export PW_WORKERS=1
 export PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES:-5}"
 export PW_SLOWMO="${PW_SLOWMO:-0}"
 export PLAYWRIGHT_HEADLESS="${PLAYWRIGHT_HEADLESS:-1}"
-export CMS_SEQUENTIAL_MODULE_ORDER=1
-export CMS_CONTINUE_ON_FAIL=1
+# IMPORTANT: Must be 0 for individual flow grep to work.
+# With =1, flows.spec.ts batches all flows per module into ONE test titled
+# "Project=CMS Module=X Stage=main" — individual flow IDs are NOT in the title.
+export CMS_SEQUENTIAL_MODULE_ORDER=0
+export CMS_CONTINUE_ON_FAIL=0
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 
 # ── Batch 1 flows in exact execution order ──────────────────────────────────
@@ -104,9 +107,12 @@ for FLOW_ID in "${BATCH1_FLOWS[@]}"; do
   echo "[${IDX}/${TOTAL_FLOWS}] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
 
   set +e
+  # Use "Project=CMS.*<id>$" to:
+  #   1. Only match CMS project flows (not Personalize/Launch/etc with same name)
+  #   2. Anchor with $ so "create-an-entry" doesn't match "create-an-entry-variant"
   npx playwright test tests/flows.spec.ts \
     --project=flows \
-    --grep "^.*${FLOW_ID}.*$" \
+    --grep "Project=CMS.*${FLOW_ID}$" \
     2>&1 | tee -a "$LOG"
   FLOW_EXIT=${PIPESTATUS[0]}
   set -e

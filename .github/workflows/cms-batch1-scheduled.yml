@@ -80,10 +80,9 @@ jobs:
       # Fail a flow immediately if it takes more than 5 minutes
       PW_FLOW_MAX_MINUTES: "5"
       # Screenshot on failure is configured in playwright.config.ts (screenshot: 'only-on-failure')
-      # Continue running remaining flows even if one fails
-      CMS_CONTINUE_ON_FAIL: "1"
-      # Run flows in CMS CRUD sequence within each module
-      CMS_SEQUENTIAL_MODULE_ORDER: "1"
+      # CMS_SEQUENTIAL_MODULE_ORDER and CMS_CONTINUE_ON_FAIL are controlled by
+      # scripts/run-cms-batch1.sh (set to 0 so each flow is an individual test
+      # that can be targeted by --grep "Project=CMS.*<flow-id>$").
       # Deterministic report path
       REPORT_DIR: ${{ github.workspace }}/reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
       # Suppress Slack inside bash — GHA step handles Slack so it fires even on crash
