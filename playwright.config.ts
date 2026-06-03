@@ -13,6 +13,23 @@ const fullyParallel = process.env.PW_FULLY_PARALLEL !== "0";
 const MAX_TEST_TIMEOUT_MS = 3_600_000; // 60 min hard cap (typos / absurd values)
 
 /**
+ * Per-action/element timeout (ms).
+ * Set PW_ACTION_TIMEOUT_MINUTES to cap how long any single element wait or action
+ * can block before failing. Used by CMS Batch 2 (PW_ACTION_TIMEOUT_MINUTES=3).
+ * 0 (default) means Playwright falls back to the test timeout — preserves Batch 1 behaviour.
+ */
+function resolveActionTimeoutMs(): number {
+  const raw = process.env.PW_ACTION_TIMEOUT_MINUTES?.trim();
+  if (raw) {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n > 0) return Math.round(n * 60_000);
+  }
+  return 0; // 0 = use test timeout (Playwright default, no change to existing runs)
+}
+
+const actionTimeoutMs = resolveActionTimeoutMs();
+
+/**
  * Per-test timeout (ms). Default **15 minutes** locally (headed flows often exceed 3m — e.g. Developer Hub wizard);
  * CI defaults to **15 minutes** unless you set PW_FLOW_MAX_MINUTES / PW_TEST_TIMEOUT_MS. Use SHORT_FLOW_LOCAL=1
  * to restore ~3 minute local timeouts when debugging tiny flows.
@@ -95,13 +112,19 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
+        // viewport: null lets the browser use its natural/maximized window size.
+        // --start-maximized maximizes the window in headed mode.
+        viewport: null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
         trace: "on-first-retry",
+        // PW_ACTION_TIMEOUT_MINUTES caps per-element waits (used by CMS Batch 2).
+        // 0 = fall back to test timeout, preserving Batch 1 / local behaviour.
+        ...(actionTimeoutMs > 0 ? { actionTimeout: actionTimeoutMs } : {}),
       },
     },
     {

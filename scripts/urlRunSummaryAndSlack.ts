@@ -567,7 +567,7 @@ async function main(): Promise<void> {
 
   // GHA run URL from env (set in cms-batch1-scheduled.yml Post Slack step)
   const runUrl = process.env.RUN_URL || "";
-  const duration = process.env.BATCH1_DURATION_LABEL || process.env.CMS_BATCH1_DURATION || "";
+  const duration = process.env.CMS_BATCH_DURATION_LABEL || process.env.BATCH1_DURATION_LABEL || process.env.CMS_BATCH1_DURATION || "";
 
   await postSlackChatPostMessage(botToken, channelId, {
     reportDir,
