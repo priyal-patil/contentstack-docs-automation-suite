@@ -40,9 +40,8 @@ on:
     types:
       - cms-batch1-5am-ist
 
-  # Fallback: direct cron in case dispatcher is delayed
-  schedule:
-    - cron: "30 23 * * *"
+  # NOTE: No schedule here — cms-batch1-trigger.yml handles the 5AM IST cron.
+  # Having a schedule here AND in the trigger causes the main workflow to fire TWICE.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.repository }}
