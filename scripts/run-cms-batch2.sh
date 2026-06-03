@@ -77,9 +77,40 @@ CMS_BATCH1_FLOWS=(
   "create-a-webhook"
   "add-workflows-and-stages"
 )
-export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${CMS_BATCH1_FLOWS[@]}" | sed 's/,$//')"
 
-# ── Delete flows to skip (same list as run-cms-sequential-modules-dashboard.sh) ──
+# ── Delete flows to skip — for the 7 Batch 2 modules ─────────────────────────
+# WHY: With CMS_SEQUENTIAL_MODULE_ORDER=1 each module is ONE Playwright test
+# titled "Project=CMS Module=<x> Stage=main". --grep-invert only matches test
+# titles, NOT individual flow IDs inside a module batch — so it cannot filter
+# out delete flows at runtime. CMS_SKIP_FLOW_IDS is the only mechanism that
+# removes individual flows from within a module batch test.
+CMS_DELETE_FLOWS=(
+  # environment
+  "delete-an-environment"
+  # language
+  "delete-a-language"
+  # branches
+  "delete-a-branch"
+  "delete-an-alias"
+  # stack
+  "delete-a-stack"
+  # content-models
+  "delete-content-type"
+  # global-field
+  "delete-a-global-field"
+  # assets
+  "delete-a-folder"
+  "delete-an-asset"
+  "bulk-delete-assets"
+)
+
+# Combine Batch 1 flows + delete flows → single CMS_SKIP_FLOW_IDS list
+ALL_SKIP_FLOWS=("${CMS_BATCH1_FLOWS[@]}" "${CMS_DELETE_FLOWS[@]}")
+export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${ALL_SKIP_FLOWS[@]}" | sed 's/,$//')"
+
+# CMS_DELETE_FLOW_GREP: used only as a belt-and-suspenders safety net at the
+# Playwright --grep-invert level (effective when CMS_SEQUENTIAL_MODULE_ORDER=0).
+# With module batch mode (=1) the real guard is CMS_SKIP_FLOW_IDS above.
 CMS_DELETE_FLOW_GREP='delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment'
 
 # ── Batch 2 flow inventory (for reference only — actual filtering handled by env vars above) ──
