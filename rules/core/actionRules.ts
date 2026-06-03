@@ -19869,15 +19869,19 @@ export async function performAction(
         }
         if (step.target === "Create New (doc step)") {
           const createNew = page
-            .locator('[data-test-id="cs-cb-new-ct-child"], button:has-text("Create New"), [role="menuitem"]:has-text("Create New"), div:has-text("Create New"):visible')
+            .locator('[data-test-id="cs-cb-new-ct-child"], button:has-text("Create New"), [role="button"]:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id="cs-add-stack-create-new"]')
             .first();
-          if (await createNew.isVisible().catch(() => false)) {
+          // Wait up to 10s for the dropdown item to appear — prevents a race condition
+          // where the "+ New Stack" dropdown animation hasn't finished when isVisible()
+          // fires, causing a false-negative fallthrough to the generic handler at the
+          // bottom of the click case which unconditionally calls waitForCreateContentTypeForm.
+          const appeared = await createNew.waitFor({ state: "visible", timeout: 10_000 })
+            .then(() => true).catch(() => false);
+          if (appeared) {
             await createNew.click({ timeout: t, force: true }).catch(() => {});
             await page.waitForTimeout(600);
-            // Only wait for the Content Type form if we're in a content-type context.
-            // Stack creation opens a different modal ("Create New Stack") which does NOT
-            // have cs-modal-title-create-new-content-type — calling waitForCreateContentTypeForm
-            // there would timeout. Check which modal appeared and handle generically.
+            // Stack creation opens "Create New Stack" modal — no cs-modal-title-create-new-content-type.
+            // Check which modal appeared and handle generically rather than calling waitForCreateContentTypeForm.
             const isContentTypeModal = await page
               .locator('[data-test-id="cs-modal-title-create-new-content-type"]')
               .isVisible({ timeout: 2_000 }).catch(() => false);
@@ -20369,9 +20373,20 @@ export async function performAction(
         await page.waitForTimeout(1500);
       }
 
-      // Gate ONLY after the action that actually opens the Create CT modal
+      // Gate ONLY after the action that actually opens the Create CT modal.
+      // Guard: only call waitForCreateContentTypeForm when the content-type title is present.
+      // For stack / global-field / other "Create New" modals, fall back to generic dialog wait
+      // so we don't time out waiting for cs-modal-title-create-new-content-type.
       if (step.target === "Create New" || step.target === "Create New (doc step)") {
-        await waitForCreateContentTypeForm(page);
+        const isCTModal = await page
+          .locator('[data-test-id="cs-modal-title-create-new-content-type"]')
+          .isVisible({ timeout: 2_000 }).catch(() => false);
+        if (isCTModal) {
+          await waitForCreateContentTypeForm(page);
+        } else {
+          await page.locator('[data-testid="cs-modal"][role="dialog"], [role="dialog"]')
+            .first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+        }
       }
 
       // After creating the content type, the builder loads. Prefer URL change; else wait for builder markers.

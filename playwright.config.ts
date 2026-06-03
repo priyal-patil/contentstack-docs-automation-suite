@@ -97,9 +97,10 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
+        viewport: null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
@@ -133,9 +134,10 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
+        viewport: null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox"],
+          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
