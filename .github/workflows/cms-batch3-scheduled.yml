@@ -19,7 +19,7 @@
 #   Phase 8  — Users/Roles : roles, users
 #   Phase 9  — Stack       : leave → transfer → delete (always last)
 #
-# Total: 30 delete flows | 1 worker | sequential
+# Total: 38 flows (30 delete + 8 trash) | variable workers per phase | ~32 min
 #
 # Note: flows with stage=delete (delete-a-branch, delete-content-type,
 #       delete-a-stack, delete-a-role, remove-a-user) are included because
@@ -299,7 +299,7 @@ jobs:
 
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
             echo "Posting detailed Slack summary…"
-            CMS_BATCH_DURATION_LABEL="CMS Batch 3: all delete flows (${DURATION})" \
+            CMS_BATCH_DURATION_LABEL="CMS Batch 3: delete flows + trash restores (${DURATION})" \
               npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || \
               echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
           else
@@ -308,6 +308,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 30 delete flows | 1 worker | sequential | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 38 flows (30 delete + 8 trash) | variable workers per phase | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
