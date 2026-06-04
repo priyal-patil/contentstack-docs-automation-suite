@@ -1,37 +1,27 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 3 — all CMS delete flows + trash restores (sequential, 1 worker)
+# CMS Batch 3 — all CMS delete flows (phase-based parallelism)
 #
-# Runs after Batch 2 (edit/update flows). Executes every delete-related flow
-# in the CMS project in a safe LIFO order, then runs the trash module
-# (restores deleted items so the stack is clean for the next day's run).
+# Runs after Batch 2. Executes every delete-related flow in the CMS project
+# in a safe LIFO order. Each phase runs as a single Playwright invocation;
+# independent phases use multiple workers, order-sensitive phases use 1.
 #
-# WHY sequential (PW_WORKERS=1):
-#   Delete order matters. You cannot delete a content-type before its entries,
-#   or a stack before its environments/tokens/webhooks. Running 1 worker at a
-#   time guarantees the explicit order below is respected.
+# Phase design:
+#   Phase 1 — Content    (10 flows, 5 workers) — all independent
+#   Phase 2 — Taxonomy   ( 2 flows, 1 worker)  — term MUST precede taxonomy
+#   Phase 3 — Structure  ( 2 flows, 2 workers) — independent
+#   Phase 4 — Releases   ( 2 flows, 2 workers) — independent
+#   Phase 5 — Services   ( 6 flows, 3 workers) — mostly independent
+#   Phase 6 — Branches   ( 2 flows, 1 worker)  — alias MUST precede branch
+#   Phase 7 — Env/Lang   ( 2 flows, 2 workers) — independent
+#   Phase 8 — Users      ( 2 flows, 2 workers) — independent
+#   Phase 9 — Stack      ( 3 flows, 1 worker)  — leave → transfer → delete
 #
-# Execution order (safe LIFO — content before structure, structure before stack):
-#   Phase 1 — Content (entries, assets, comments, version names)
-#   Phase 2 — Taxonomy (terms before taxonomies)
-#   Phase 3 — Content structure (global fields, content types)
-#   Phase 4 — Releases
-#   Phase 5 — Tokens, webhooks, workflows
-#   Phase 6 — Branches and aliases
-#   Phase 7 — Environments and languages
-#   Phase 8 — Users and roles
-#   Phase 9 — Stack (leave, transfer, delete) — always last
-#   Phase 10 — Trash (restores) — cleans up deleted items for next run
-#
-# Total: 30 delete flows
-#
-# Note: flows with stage=delete (delete-a-branch, delete-content-type,
-#       delete-a-stack, delete-a-role, remove-a-user) are also included —
-#       grep does NOT filter by Stage=main so all stages are matched.
+# Total: 30 flows | Est. ~30 min (vs ~60 min fully sequential)
 #
 # Usage:
 #   ./scripts/run-cms-batch3.sh
-#   PLAYWRIGHT_HEADLESS=0 ./scripts/run-cms-batch3.sh    (headed)
+#   PLAYWRIGHT_HEADLESS=0 ./scripts/run-cms-batch3.sh
 #   REPORT_DIR=reports/my-batch3 ./scripts/run-cms-batch3.sh
 #   SKIP_SLACK=1 ./scripts/run-cms-batch3.sh
 # =============================================================================
@@ -46,7 +36,6 @@ LOG="$REPORT_DIR/batch3-run.log"
 PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
-export PW_WORKERS=1
 export PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES:-5}"
 export PW_ACTION_TIMEOUT_MINUTES="${PW_ACTION_TIMEOUT_MINUTES:-3}"
 export PW_SLOWMO="${PW_SLOWMO:-0}"
@@ -55,146 +44,143 @@ export CMS_SEQUENTIAL_MODULE_ORDER=0
 export CMS_CONTINUE_ON_FAIL=0
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 
-# ── Delete flow execution order (LIFO — safe dependency order) ───────────────
-# Phase 1: Content — delete entries/assets/comments before structure
-PHASE1_CONTENT=(
-  "edit-or-delete-a-comment"
-  "remove-entry-version-names"
-  "delete-an-entry"
-  "delete-an-entry-part-2"
-  "bulk-delete-entries"
-  "bulk-delete-localized-entry-versions"
-  "delete-a-folder"
-  "delete-an-asset"
-  "bulk-delete-assets"
-  "delete-entries-and-assets-in-bulk"
-)
-
-# Phase 2: Taxonomy — terms before taxonomy
-PHASE2_TAXONOMY=(
-  "delete-a-term"
-  "delete-a-taxonomy"
-)
-
-# Phase 3: Content structure — global fields before content types
-PHASE3_STRUCTURE=(
-  "delete-a-global-field"
-  "delete-content-type"
-)
-
-# Phase 4: Releases
-PHASE4_RELEASES=(
-  "delete-a-release"
-  "remove-entry-asset-from-a-release"
-)
-
-# Phase 5: Tokens, webhooks, workflows
-PHASE5_SERVICES=(
-  "delete-a-delivery-token"
-  "delete-a-management-token"
-  "delete-a-webhook"
-  "revoke-edit-access-for-an-entry"
-  "delete-a-publish-rule"
-  "delete-a-workflow"
-)
-
-# Phase 6: Branches and aliases
-PHASE6_BRANCHES=(
-  "delete-an-alias"
-  "delete-a-branch"
-)
-
-# Phase 7: Environments and languages
-PHASE7_ENV_LANG=(
-  "delete-an-environment"
-  "delete-a-language"
-)
-
-# Phase 8: Users and roles
-PHASE8_USERS=(
-  "delete-a-role"
-  "remove-a-user"
-)
-
-# Phase 9: Stack — always last in delete sequence
-PHASE9_STACK=(
-  "leave-a-stack"
-  "transfer-stack-ownership"
-  "delete-a-stack"
-)
-
-# All flows in execution order
-ALL_FLOWS=(
-  "${PHASE1_CONTENT[@]}"
-  "${PHASE2_TAXONOMY[@]}"
-  "${PHASE3_STRUCTURE[@]}"
-  "${PHASE4_RELEASES[@]}"
-  "${PHASE5_SERVICES[@]}"
-  "${PHASE6_BRANCHES[@]}"
-  "${PHASE7_ENV_LANG[@]}"
-  "${PHASE8_USERS[@]}"
-  "${PHASE9_STACK[@]}"
-)
-
-TOTAL_FLOWS=${#ALL_FLOWS[@]}
-PASS_COUNT=0
-FAIL_COUNT=0
 TOTAL_EXIT=0
-declare -a FLOW_RESULTS=()
+PHASE_NUM=0
+
+# ── run_phase: one playwright invocation, N workers, grep matches any of the flows ──
+run_phase() {
+  local label="$1"
+  local workers="$2"
+  shift 2
+  local flows=("$@")
+  PHASE_NUM=$(( PHASE_NUM + 1 ))
+
+  # Build alternation pattern: (flow1|flow2|...)$
+  local pattern
+  pattern="($(printf '%s|' "${flows[@]}" | sed 's/|$//'))\$"
+
+  local start_t; start_t="$(date +%s)"
+  echo "" | tee -a "$LOG"
+  echo ">>> [Phase ${PHASE_NUM}] ${label} — ${#flows[@]} flows, ${workers} workers" | tee -a "$LOG"
+  for f in "${flows[@]}"; do echo "    + ${f}" | tee -a "$LOG"; done
+
+  set +e
+  PW_WORKERS="$workers" npx playwright test tests/flows.spec.ts \
+    --project=flows \
+    --grep "Project=CMS.*${pattern}" \
+    2>&1 | tee -a "$LOG"
+  local ex=${PIPESTATUS[0]}
+  set -e
+
+  local dur=$(( $(date +%s) - start_t ))
+  local icon; [[ $ex -eq 0 ]] && icon="✅" || icon="❌"
+  echo "    ${icon} Phase ${PHASE_NUM} done — exit=${ex} dur=$(( dur/60 ))m$(( dur%60 ))s" | tee -a "$LOG"
+
+  if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+    cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/phase${PHASE_NUM}-${label}.json" 2>/dev/null || true
+  fi
+  [[ "$ex" -ne 0 ]] && TOTAL_EXIT=1
+  return 0
+}
+
+# ── run_flow: single flow, always 1 worker (strict order within phase) ──────
+run_flow() {
+  local flow_id="$1"
+  local start_t; start_t="$(date +%s)"
+  echo "    ▶ ${flow_id}" | tee -a "$LOG"
+
+  set +e
+  PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
+    --project=flows \
+    --grep "Project=CMS.*${flow_id}\$" \
+    2>&1 | tee -a "$LOG"
+  local ex=${PIPESTATUS[0]}
+  set -e
+
+  local dur=$(( $(date +%s) - start_t ))
+  local icon; [[ $ex -eq 0 ]] && icon="✅" || icon="❌"
+  echo "      ${icon} exit=${ex} dur=$(( dur/60 ))m$(( dur%60 ))s" | tee -a "$LOG"
+
+  if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+    cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${flow_id}.json" 2>/dev/null || true
+  fi
+  [[ "$ex" -ne 0 ]] && TOTAL_EXIT=1
+  return 0
+}
 
 START_EPOCH="$(date +%s)"
 START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 3 — ${TOTAL_FLOWS} delete flows | 1 worker | ${PW_FLOW_MAX_MINUTES} min/flow" | tee -a "$LOG"
-echo "  Phases: content → taxonomy → structure → releases → services" | tee -a "$LOG"
-echo "          → branches → env/lang → users → stack (last)" | tee -a "$LOG"
+echo "  CMS Batch 3 — 30 delete flows, phase-based parallelism" | tee -a "$LOG"
+echo "  Phase 1(5w) → 2(1w) → 3(2w) → 4(2w) → 5(3w)" | tee -a "$LOG"
+echo "  → 6(1w) → 7(2w) → 8(2w) → 9(1w)" | tee -a "$LOG"
+echo "  Est. ~30 min | 3 min element timeout | 5 min/flow cap" | tee -a "$LOG"
 echo "  Started : ${START_ISO}" | tee -a "$LOG"
 echo "  Report  : ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
+
+# ── Phase 1: Content (5 workers — all independent) ───────────────────────────
+run_phase "content" 5 \
+  "edit-or-delete-a-comment" \
+  "remove-entry-version-names" \
+  "delete-an-entry" \
+  "delete-an-entry-part-2" \
+  "bulk-delete-entries" \
+  "bulk-delete-localized-entry-versions" \
+  "delete-a-folder" \
+  "delete-an-asset" \
+  "bulk-delete-assets" \
+  "delete-entries-and-assets-in-bulk"
+
+# ── Phase 2: Taxonomy (1 worker — term MUST precede taxonomy) ────────────────
 echo "" | tee -a "$LOG"
+echo ">>> [Phase 2] taxonomy — 2 flows, 1 worker (term → taxonomy)" | tee -a "$LOG"
+run_flow "delete-a-term"
+run_flow "delete-a-taxonomy"
 
-# ── Run each flow individually in order ──────────────────────────────────────
-IDX=0
-for FLOW_ID in "${ALL_FLOWS[@]}"; do
-  IDX=$(( IDX + 1 ))
-  FLOW_START="$(date +%s)"
-  FLOW_START_ISO="$(date -u +'%H:%M:%SZ')"
+# ── Phase 3: Structure (2 workers — independent) ─────────────────────────────
+run_phase "structure" 2 \
+  "delete-a-global-field" \
+  "delete-content-type"
 
-  echo "[${IDX}/${TOTAL_FLOWS}] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
+# ── Phase 4: Releases (2 workers — independent) ──────────────────────────────
+run_phase "releases" 2 \
+  "delete-a-release" \
+  "remove-entry-asset-from-a-release"
 
-  set +e
-  # Do NOT filter by Stage=main — some delete flows have stage=delete
-  npx playwright test tests/flows.spec.ts \
-    --project=flows \
-    --grep "Project=CMS.*${FLOW_ID}$" \
-    2>&1 | tee -a "$LOG"
-  FLOW_EXIT=${PIPESTATUS[0]}
-  set -e
+# ── Phase 5: Services (3 workers — mostly independent) ───────────────────────
+run_phase "services" 3 \
+  "delete-a-delivery-token" \
+  "delete-a-management-token" \
+  "delete-a-webhook" \
+  "revoke-edit-access-for-an-entry" \
+  "delete-a-publish-rule" \
+  "delete-a-workflow"
 
-  FLOW_END="$(date +%s)"
-  FLOW_ELAPSED=$(( FLOW_END - FLOW_START ))
-  FLOW_MIN=$(( FLOW_ELAPSED / 60 ))
-  FLOW_SEC=$(( FLOW_ELAPSED % 60 ))
+# ── Phase 6: Branches (1 worker — alias MUST precede branch) ─────────────────
+echo "" | tee -a "$LOG"
+echo ">>> [Phase 6] branches — 2 flows, 1 worker (alias → branch)" | tee -a "$LOG"
+run_flow "delete-an-alias"
+run_flow "delete-a-branch"
 
-  if [[ "$FLOW_EXIT" -eq 0 ]]; then
-    STATUS="✅ PASS"
-    PASS_COUNT=$(( PASS_COUNT + 1 ))
-  else
-    STATUS="❌ FAIL"
-    FAIL_COUNT=$(( FAIL_COUNT + 1 ))
-    TOTAL_EXIT=1
-  fi
+# ── Phase 7: Env/Lang (2 workers — independent) ──────────────────────────────
+run_phase "env-lang" 2 \
+  "delete-an-environment" \
+  "delete-a-language"
 
-  FLOW_RESULTS+=("  ${STATUS}  ${FLOW_ID}  (${FLOW_MIN}m ${FLOW_SEC}s)")
-  echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
+# ── Phase 8: Users/Roles (2 workers — independent) ───────────────────────────
+run_phase "users-roles" 2 \
+  "delete-a-role" \
+  "remove-a-user"
 
-  if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
-    cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${FLOW_ID}.json" 2>/dev/null || true
-  fi
-  echo "" | tee -a "$LOG"
-done
+# ── Phase 9: Stack (1 worker — strict: leave → transfer → delete) ────────────
+echo "" | tee -a "$LOG"
+echo ">>> [Phase 9] stack — 3 flows, 1 worker (leave → transfer → delete)" | tee -a "$LOG"
+run_flow "leave-a-stack"
+run_flow "transfer-stack-ownership"
+run_flow "delete-a-stack"
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 END_EPOCH="$(date +%s)"
@@ -202,16 +188,11 @@ TOTAL_ELAPSED=$(( END_EPOCH - START_EPOCH ))
 TOTAL_MIN=$(( TOTAL_ELAPSED / 60 ))
 TOTAL_SEC=$(( TOTAL_ELAPSED % 60 ))
 
+echo "" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
 echo "  CMS Batch 3 — COMPLETE" | tee -a "$LOG"
 echo "  Duration : ${TOTAL_MIN}m ${TOTAL_SEC}s" | tee -a "$LOG"
-echo "  Passed   : ${PASS_COUNT}/${TOTAL_FLOWS}" | tee -a "$LOG"
-echo "  Failed   : ${FAIL_COUNT}/${TOTAL_FLOWS}" | tee -a "$LOG"
-echo "" | tee -a "$LOG"
-echo "  Per-flow results:" | tee -a "$LOG"
-for r in "${FLOW_RESULTS[@]}"; do
-  echo "$r" | tee -a "$LOG"
-done
+echo "  Outcome  : $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
 
 cat > "$REPORT_DIR/timing-summary.txt" <<EOF
@@ -219,7 +200,6 @@ CMS Batch 3 — Duration: ${TOTAL_MIN}m ${TOTAL_SEC}s
 Started:  ${START_ISO}
 Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
 Outcome:  $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')
-Flows:    ${PASS_COUNT} passed, ${FAIL_COUNT} failed of ${TOTAL_FLOWS}
 EOF
 
 # ── Merge parts + generate reports ───────────────────────────────────────────
@@ -236,7 +216,7 @@ fi
 
 # ── Slack ─────────────────────────────────────────────────────────────────────
 if [[ "${SKIP_SLACK:-0}" != "1" ]]; then
-  CMS_BATCH_DURATION_LABEL="CMS Batch 3: all delete flows + trash restores (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
+  CMS_BATCH_DURATION_LABEL="CMS Batch 3: all delete flows (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
     npx ts-node "$ROOT/scripts/urlRunSummaryAndSlack.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
 fi
 
