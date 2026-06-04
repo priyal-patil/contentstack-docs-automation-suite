@@ -6,9 +6,10 @@
 #   → fires whenever Batch 1 finishes (success OR failure — Batch 2 still runs so
 #     edit/update flows can be tested even if some creates partially failed).
 #
-# Modules (15 modules, 16 shared workers):
+# Modules (20 modules, 20 shared workers):
 #   environment, language, branches, stack, content-models, global-field, assets, entries,
-#   json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security
+#   json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search,
+#   security, tokens, webhook, workflows, taxonomy, visual-experience
 #
 # CRUD order within each module:
 #   create/add (if not in Batch 1) → edit/update → move/import/export → misc
@@ -71,7 +72,7 @@ permissions:
 
 jobs:
   cms-batch2:
-    name: CMS Batch 2 — 15 modules (16 workers, CRUD, 5 min/flow, 3 min element)
+    name: CMS Batch 2 — 20 modules (20 workers, CRUD, 5 min/flow, 3 min element)
     runs-on: ubuntu-latest
     # Same Docker image as Batch 1: Chromium pre-installed, zero CDN download.
     container:
@@ -89,12 +90,12 @@ jobs:
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
       PW_SLOWMO: "0"
-      # 16 shared workers across all 165 flows from 15 modules.
+      # 20 shared workers across all 220 flows from 20 modules.
       # When any module finishes its worker immediately picks up the next
       # queued flow from any other module — zero idle time.
-      # Safe on GHA 2-core / 7 GB: 16 × 250 MB headless Chromium = 4.0 GB.
+      # Safe on GHA 2-core / 7 GB: 20 × 250 MB headless Chromium = 5.0 GB.
       # Raise to PW_WORKERS=20 for max speed (5 GB, still within 7 GB limit).
-      PW_WORKERS: "16"
+      PW_WORKERS: "20"
       # Per-FLOW timeout: 5 min per individual flow.
       # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test so
       # this actually applies (no 4-hour CMS_MODULE_BATCH_TIMEOUT_MS override).
@@ -168,9 +169,9 @@ jobs:
           echo "CMS Batch 2 started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee "${{ env.REPORT_DIR }}/batch2-run.log"
 
       # -------------------------------------------------------------------
-      # 5) Run Batch 2 — 15 modules (CRUD order, skip Batch 1 + deletes)
+      # 5) Run Batch 2 — 20 modules (CRUD order, skip Batch 1 + deletes)
       # -------------------------------------------------------------------
-      - name: Run CMS Batch 2 — 15 modules (165 flows, 16 workers)
+      - name: Run CMS Batch 2 — 20 modules (220 flows, 20 workers)
         id: batch2_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -180,7 +181,7 @@ jobs:
           echo "Architecture: 7 parallel subprocesses (one per module)"
           echo "              CMS_SEQUENTIAL_MODULE_ORDER=0, PW_WORKERS=1/module"
           echo "              5 min/flow | 3 min element timeout"
-          echo "              ~165 flows total across 15 modules"
+          echo "              ~220 flows total across 20 modules"
           bash scripts/run-cms-batch2.sh
           EXIT_CODE=$?
           echo "Batch 2 exit code: ${EXIT_CODE}"

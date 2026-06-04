@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 165 flows, 16 shared workers, true idle-browser reuse
+# CMS Batch 2 — 220 flows, 20 shared workers, true idle-browser reuse
 #
 # Architecture:
 #   ONE Playwright invocation with PW_WORKERS=14.
@@ -8,31 +8,36 @@
 #   When any worker finishes a flow it immediately picks up the next queued
 #   flow from any module — no idle browsers, no wasted time.
 #
-# Actual perf (10 workers, 87 flows): 12m 24s → ~1.4 min/flow avg
-# Estimated with 16 workers, 165 flows: ~17 min
+# Actual perf (16 workers, 164 flows): 21m 33s → ~2.1 min/flow avg
+# Estimated with 20 workers, 220 flows: ~23 min
 #
 # Workers vs GHA runner (2 CPU cores, 7 GB RAM, headless Chromium ~250 MB):
-#   16 workers × 250 MB = 4.0 GB — well within 7 GB limit
-#   Raise to PW_WORKERS=20 for maximum speed (5 GB, still safe on GHA).
+#   20 workers × 250 MB = 5.0 GB — well within 7 GB limit
+#   Raise to PW_WORKERS=24 for max speed (6 GB, still safe on GHA).
 #
 # Modules (flows after skipping Batch 1 + deletes):
 #   environment          :  1 flow
 #   language             :  3 flows
 #   branches             :  3 flows
 #   stack                :  7 flows
-#   content-models       : 41 flows  (labels are inside content-models)
+#   content-models       : 41 flows  (labels inside content-models)
 #   global-field         :  9 flows
 #   assets               : 12 flows
 #   entries              : 30 flows
 #   json-rich-text-editor: 11 flows
 #   releases             :  8 flows
-#   users-and-roles      :  5 flows  ← added (delete-a-role/remove-a-user have stage=delete)
-#   live-preview         :  6 flows  ← added (set-up-live-preview in Batch 1 skip)
-#   content-modeling     : 11 flows  ← added
-#   search               : 12 flows  ← added (delete-entries-and-assets-in-bulk already skipped)
-#   security             :  6 flows  ← added
+#   users-and-roles      :  5 flows
+#   live-preview         :  6 flows
+#   content-modeling     : 11 flows
+#   search               : 12 flows
+#   security             :  6 flows
+#   tokens               :  2 flows  ← added
+#   webhook              :  5 flows  ← added
+#   workflows            : 19 flows  ← added (delete-a-publish-rule + revoke-edit-access added to skip)
+#   taxonomy             :  8 flows  ← added
+#   visual-experience    : 21 flows  ← added (no Batch1 or delete skips needed)
 #   ──────────────────────────────────
-#   Total                : 165 flows
+#   Total                : 220 flows
 #
 # Skips (via --grep-invert anchored with $):
 #   Batch 1 flows : create-an-entry, add-a-comment (entries)
@@ -60,9 +65,9 @@ PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
 # ── Workers ──────────────────────────────────────────────────────────────────
-# 16 workers: 4.0 GB RAM, ~17 min for 165 flows at 1.4 min/flow avg.
-# Raise to 20 for maximum speed (5 GB, still safe on GHA 7 GB runner).
-export PW_WORKERS="${PW_WORKERS:-16}"
+# 20 workers: 5.0 GB RAM, ~23 min for 220 flows at 2.1 min/flow avg.
+# Raise to 24 for max speed (6 GB, still safe on GHA 7 GB runner).
+export PW_WORKERS="${PW_WORKERS:-20}"
 
 # ── Per-flow timeouts ────────────────────────────────────────────────────────
 # Each flow is its own Playwright test (CMS_SEQUENTIAL_MODULE_ORDER=0).
@@ -139,7 +144,7 @@ export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${ALL_SKIP_FLOWS[@]}" | sed 's/,$//')"
 # "create-a-global-field" does NOT accidentally match "create-a-global-field-part-2".
 # releases: create-a-new-release (Batch 1), delete-a-release + remove-entry-asset-from-a-release (delete)
 # json-rich-text-editor: no Batch 1 flows, no delete flows — all 11 flows run
-CMS_SKIP_GREP="(create-a-new-stack-part-1|add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-content-type|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages|delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership|remove-entry-asset-from-a-release)$"
+CMS_SKIP_GREP="(create-a-new-stack-part-1|add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-content-type|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages|delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership|remove-entry-asset-from-a-release|delete-a-publish-rule|revoke-edit-access-for-an-entry)$"
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 START_EPOCH="$(date +%s)"
@@ -148,13 +153,14 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
 echo "  CMS Batch 2 — shared worker pool" | tee -a "$LOG"
-echo "  Workers  : ${PW_WORKERS} shared across all 165 flows" | tee -a "$LOG"
+echo "  Workers  : ${PW_WORKERS} shared across all 220 flows" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$LOG"
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
 echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
 echo "             live-preview(6) content-modeling(11) search(12) security(6)" | tee -a "$LOG"
+echo "             tokens(2) webhook(5) workflows(19) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
 echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
-echo "  Est. time: ~$(( 165 / PW_WORKERS * 2 )) min (165 flows ÷ ${PW_WORKERS} workers × 1.4 min avg)" | tee -a "$LOG"
+echo "  Est. time: ~$(( 220 / PW_WORKERS * 2 )) min (220 flows ÷ ${PW_WORKERS} workers × 2.1 min avg)" | tee -a "$LOG"
 echo "  Skipping : Batch 1 flows + delete flows (via --grep-invert)" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"
@@ -164,7 +170,7 @@ echo "" | tee -a "$LOG"
 TOTAL_EXIT=0
 set +e
 npx playwright test tests/flows.spec.ts --project=flows \
-  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets|entries|json-rich-text-editor|releases|users-and-roles|live-preview|content-modeling|search|security) Stage=main" \
+  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets|entries|json-rich-text-editor|releases|users-and-roles|live-preview|content-modeling|search|security|tokens|webhook|workflows|taxonomy|visual-experience) Stage=main" \
   --grep-invert "$CMS_SKIP_GREP" \
   2>&1 | tee -a "$LOG"
 PW_EXIT=${PIPESTATUS[0]}
@@ -207,7 +213,7 @@ fi
 
 # ── Slack ─────────────────────────────────────────────────────────────────────
 if [[ "${SKIP_SLACK:-0}" != "1" ]]; then
-  CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
+  CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security, tokens, webhook, workflows, taxonomy, visual-experience (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
     npx ts-node "$ROOT/scripts/urlRunSummaryAndSlack.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
 fi
 
