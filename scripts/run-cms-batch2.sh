@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 125 flows, 14 shared workers, true idle-browser reuse
+# CMS Batch 2 — 165 flows, 16 shared workers, true idle-browser reuse
 #
 # Architecture:
 #   ONE Playwright invocation with PW_WORKERS=14.
@@ -9,10 +9,10 @@
 #   flow from any module — no idle browsers, no wasted time.
 #
 # Actual perf (10 workers, 87 flows): 12m 24s → ~1.4 min/flow avg
-# Estimated with 14 workers, 106 flows: ~11 min
+# Estimated with 16 workers, 165 flows: ~17 min
 #
 # Workers vs GHA runner (2 CPU cores, 7 GB RAM, headless Chromium ~250 MB):
-#   14 workers × 250 MB = 3.5 GB — well within 7 GB limit
+#   16 workers × 250 MB = 4.0 GB — well within 7 GB limit
 #   Raise to PW_WORKERS=20 for maximum speed (5 GB, still safe on GHA).
 #
 # Modules (flows after skipping Batch 1 + deletes):
@@ -24,10 +24,15 @@
 #   global-field         :  9 flows
 #   assets               : 12 flows
 #   entries              : 30 flows
-#   json-rich-text-editor: 11 flows  ← added
-#   releases             :  8 flows  ← added
+#   json-rich-text-editor: 11 flows
+#   releases             :  8 flows
+#   users-and-roles      :  5 flows  ← added (delete-a-role/remove-a-user have stage=delete)
+#   live-preview         :  6 flows  ← added (set-up-live-preview in Batch 1 skip)
+#   content-modeling     : 11 flows  ← added
+#   search               : 12 flows  ← added (delete-entries-and-assets-in-bulk already skipped)
+#   security             :  6 flows  ← added
 #   ──────────────────────────────────
-#   Total                : 125 flows
+#   Total                : 165 flows
 #
 # Skips (via --grep-invert anchored with $):
 #   Batch 1 flows : create-an-entry, add-a-comment (entries)
@@ -55,9 +60,9 @@ PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
 # ── Workers ──────────────────────────────────────────────────────────────────
-# 14 workers: 3.5 GB RAM, ~11 min for 106 flows at 1.4 min/flow avg.
+# 16 workers: 4.0 GB RAM, ~17 min for 165 flows at 1.4 min/flow avg.
 # Raise to 20 for maximum speed (5 GB, still safe on GHA 7 GB runner).
-export PW_WORKERS="${PW_WORKERS:-14}"
+export PW_WORKERS="${PW_WORKERS:-16}"
 
 # ── Per-flow timeouts ────────────────────────────────────────────────────────
 # Each flow is its own Playwright test (CMS_SEQUENTIAL_MODULE_ORDER=0).
@@ -143,12 +148,13 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
 echo "  CMS Batch 2 — shared worker pool" | tee -a "$LOG"
-echo "  Workers  : ${PW_WORKERS} shared across all 125 flows" | tee -a "$LOG"
+echo "  Workers  : ${PW_WORKERS} shared across all 165 flows" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$LOG"
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
-echo "             json-rich-text-editor(11) releases(8)" | tee -a "$LOG"
+echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
+echo "             live-preview(6) content-modeling(11) search(12) security(6)" | tee -a "$LOG"
 echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
-echo "  Est. time: ~$(( 125 / PW_WORKERS * 2 )) min (125 flows ÷ ${PW_WORKERS} workers × 1.4 min avg)" | tee -a "$LOG"
+echo "  Est. time: ~$(( 165 / PW_WORKERS * 2 )) min (165 flows ÷ ${PW_WORKERS} workers × 1.4 min avg)" | tee -a "$LOG"
 echo "  Skipping : Batch 1 flows + delete flows (via --grep-invert)" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"
@@ -158,7 +164,7 @@ echo "" | tee -a "$LOG"
 TOTAL_EXIT=0
 set +e
 npx playwright test tests/flows.spec.ts --project=flows \
-  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets|entries|json-rich-text-editor|releases) Stage=main" \
+  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets|entries|json-rich-text-editor|releases|users-and-roles|live-preview|content-modeling|search|security) Stage=main" \
   --grep-invert "$CMS_SKIP_GREP" \
   2>&1 | tee -a "$LOG"
 PW_EXIT=${PIPESTATUS[0]}
@@ -201,7 +207,7 @@ fi
 
 # ── Slack ─────────────────────────────────────────────────────────────────────
 if [[ "${SKIP_SLACK:-0}" != "1" ]]; then
-  CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
+  CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
     npx ts-node "$ROOT/scripts/urlRunSummaryAndSlack.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
 fi
 
