@@ -252,17 +252,17 @@ jobs:
             exit 0
           fi
 
-          ELAPSED=$(( $(date +%s) - BATCH_START_EPOCH ))
-          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
-
           # Use Node.js to build and post the Slack message (handles escaping cleanly)
+          # DURATION is computed inside Node from BATCH_START_EPOCH (an exported env var)
           node << 'NODEOF'
-            const fs   = require("fs");
+            const fs    = require("fs");
             const https = require("https");
             const summaryPath = process.env.REPORT_DIR + "/docs-audit-summary.json";
             const outcome  = process.env.AUDIT_OUTCOME || "unknown";
-            const duration = process.env.DURATION || "?";
             const runUrl   = process.env.RUN_URL || "";
+            const startEpoch = parseInt(process.env.BATCH_START_EPOCH || "0", 10);
+            const elapsed = Math.floor(Date.now() / 1000) - startEpoch;
+            const duration = `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`;
             const token    = process.env.SLACK_BOT_TOKEN;
             const channel  = process.env.SLACK_CHANNEL_ID;
 
