@@ -1,0 +1,456 @@
+# =============================================================================
+# CMS Full Run — Batch 1 → Batch 2 → Batch 3 (one workflow, 5:00 AM IST)
+# =============================================================================
+#
+# Single workflow replacing the 3-separate-workflow chain.
+# Three jobs run sequentially via needs: — same scripts, workers, and format
+# as the individual batch workflows.
+#
+# Job chain:
+#   batch1  (21 create flows,    1 worker,  ~15 min, timeout 180 min)
+#     ↓ needs: batch1
+#   batch2  (220 edit flows,    20 workers, ~29 min, timeout 360 min)
+#     ↓ needs: batch2
+#   batch3  (38 delete+trash,  variable,   ~32 min, timeout 180 min)
+#
+# Total estimated: ~76 min
+#
+# Each job:
+#   - Uses the same Docker image (mcr.microsoft.com/playwright:v1.58.0-jammy)
+#   - Calls its own bash script unchanged
+#   - Posts its own Slack message on completion
+#   - Uploads its own artifacts
+#   - Runs even if the previous batch had flow failures (if: always())
+#     so edits run even if some creates failed, deletes run even if some edits failed
+#
+# Trigger: cms-full-trigger.yml fires repository_dispatch: cms-full-5am-ist
+#          at 23:30 UTC (5:00 AM IST) daily.
+# =============================================================================
+
+name: CMS Full Run — Batch 1 → 2 → 3 (5 AM IST daily)
+
+on:
+  repository_dispatch:
+    types:
+      - cms-full-5am-ist
+
+  workflow_dispatch:
+    inputs:
+      skip_slack:
+        description: "Skip Slack notifications"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      skip_report_email:
+        description: "Skip report emails"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  actions: write
+
+# =============================================================================
+# JOB 1 — CMS Batch 1 (21 create flows, 1 worker, sequential)
+# =============================================================================
+jobs:
+  batch1:
+    name: "Batch 1 — 21 create flows (1 worker, ~15 min)"
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
+    timeout-minutes: 180
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      OPEN_CMS_DASHBOARD: "0"
+      SKIP_OPEN_DASHBOARD: "1"
+      PW_WORKERS: "1"
+      PW_SLOWMO: "0"
+      PW_FLOW_MAX_MINUTES: "5"
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
+      SKIP_SLACK: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}" && : "${DEFAULT_STACK:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      - name: Record start time
+        id: batch_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+
+      - name: Run Batch 1 — 21 create flows
+        id: batch1_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: bash scripts/run-cms-batch1.sh
+
+      - name: Generate reports (always)
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.batch_start.outputs.start_epoch }}
+          BATCH_START_ISO: ${{ steps.batch_start.outputs.start_iso }}
+        run: |
+          END=$(date +%s); SECS=$(( END - BATCH_START_EPOCH ))
+          echo "Duration: $(( SECS/60 ))m $(( SECS%60 ))s" | tee -a "$REPORT_DIR/batch1-run.log"
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+          fi
+
+      - name: Upload Batch 1 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch1-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch1-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Post Slack — Batch 1
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.batch1_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SKIP_SLACK: "0"
+        run: |
+          [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]] && exit 0
+          START="${{ steps.batch_start.outputs.start_epoch }}"
+          ELAPSED=$(( $(date +%s) - START ))
+          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            BATCH1_DURATION_LABEL="CMS Batch 1 (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
+          else
+            ICON=":x:"; [[ "${CMS_STEP_OUTCOME}" == "success" ]] && ICON=":white_check_mark:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 1 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 21 create flows | 1 worker. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+          fi
+
+# =============================================================================
+# JOB 2 — CMS Batch 2 (220 edit flows, 20 workers)
+# =============================================================================
+  batch2:
+    name: "Batch 2 — 220 edit flows (20 workers, ~29 min)"
+    needs: batch1
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
+    timeout-minutes: 360
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      OPEN_CMS_DASHBOARD: "0"
+      SKIP_OPEN_DASHBOARD: "1"
+      PW_WORKERS: "20"
+      PW_SLOWMO: "0"
+      PW_FLOW_MAX_MINUTES: "5"
+      PW_ACTION_TIMEOUT_MINUTES: "3"
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-batch2-${{ github.run_id }}-${{ github.run_attempt }}
+      SKIP_SLACK: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}" && : "${DEFAULT_STACK:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      - name: Record start time
+        id: batch_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+
+      - name: Run Batch 2 — 220 edit flows (20 workers)
+        id: batch2_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: bash scripts/run-cms-batch2.sh
+
+      - name: Collect partial results and generate reports (always)
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.batch_start.outputs.start_epoch }}
+        run: |
+          END=$(date +%s); SECS=$(( END - BATCH_START_EPOCH ))
+          echo "Duration: $(( SECS/60 ))m $(( SECS%60 ))s" | tee -a "$REPORT_DIR/batch2-run.log"
+          PARTS_DIR="$REPORT_DIR/playwright-parts"
+          shopt -s nullglob; PART_FILES=("$PARTS_DIR"/module-*.json); shopt -u nullglob
+          if [[ ! -f "$REPORT_DIR/flows-results.json" && "${#PART_FILES[@]}" -gt 0 ]]; then
+            npx ts-node scripts/mergePlaywrightFlowJsonReports.ts \
+              --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 || true
+          fi
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+          fi
+
+      - name: Upload Batch 2 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch2-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch2-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch2-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Post Slack — Batch 2
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.batch2_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SKIP_SLACK: "0"
+        run: |
+          [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]] && exit 0
+          START="${{ steps.batch_start.outputs.start_epoch }}"
+          ELAPSED=$(( $(date +%s) - START ))
+          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security, tokens, webhook, workflows, taxonomy, visual-experience (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
+          else
+            ICON=":x:"; [[ "${CMS_STEP_OUTCOME}" == "success" ]] && ICON=":white_check_mark:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 220 flows | 20 workers | 20 modules. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+          fi
+
+# =============================================================================
+# JOB 3 — CMS Batch 3 (38 delete + trash flows, variable workers)
+# =============================================================================
+  batch3:
+    name: "Batch 3 — 38 delete+trash flows (variable workers, ~32 min)"
+    needs: batch2
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
+    timeout-minutes: 180
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      OPEN_CMS_DASHBOARD: "0"
+      SKIP_OPEN_DASHBOARD: "1"
+      PW_SLOWMO: "0"
+      PW_FLOW_MAX_MINUTES: "5"
+      PW_ACTION_TIMEOUT_MINUTES: "3"
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-batch3-${{ github.run_id }}-${{ github.run_attempt }}
+      SKIP_SLACK: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}" && : "${DEFAULT_STACK:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      - name: Record start time
+        id: batch_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+
+      - name: Run Batch 3 — 38 delete+trash flows (variable workers per phase)
+        id: batch3_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: bash scripts/run-cms-batch3.sh
+
+      - name: Collect results and generate reports (always)
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.batch_start.outputs.start_epoch }}
+        run: |
+          END=$(date +%s); SECS=$(( END - BATCH_START_EPOCH ))
+          echo "Duration: $(( SECS/60 ))m $(( SECS%60 ))s" | tee -a "$REPORT_DIR/batch3-run.log"
+          PARTS_DIR="$REPORT_DIR/playwright-parts"
+          shopt -s nullglob; PART_FILES=("$PARTS_DIR"/*.json); shopt -u nullglob
+          if [[ ! -f "$REPORT_DIR/flows-results.json" && "${#PART_FILES[@]}" -gt 0 ]]; then
+            npx ts-node scripts/mergePlaywrightFlowJsonReports.ts \
+              --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 || true
+          fi
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+          fi
+
+      - name: Upload Batch 3 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch3-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch3-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch3-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Post Slack — Batch 3
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.batch3_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SKIP_SLACK: "0"
+        run: |
+          [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]] && exit 0
+          START="${{ steps.batch_start.outputs.start_epoch }}"
+          ELAPSED=$(( $(date +%s) - START ))
+          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            CMS_BATCH_DURATION_LABEL="CMS Batch 3: delete flows + trash restores (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
+          else
+            ICON=":x:"; [[ "${CMS_STEP_OUTCOME}" == "success" ]] && ICON=":white_check_mark:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 38 flows (30 delete + 8 trash) | variable workers per phase. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+          fi
