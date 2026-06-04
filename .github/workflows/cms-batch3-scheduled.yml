@@ -66,7 +66,7 @@ permissions:
 
 jobs:
   cms-batch3:
-    name: CMS Batch 3 — 30 delete flows (1 worker, sequential, 5 min/flow)
+    name: CMS Batch 3 — 30 delete flows (variable workers per phase, 5 min/flow)
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-jammy
@@ -79,6 +79,16 @@ jobs:
       OPEN_FLOW_REPORT: "false"
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
+      # Workers are set PER PHASE inside run-cms-batch3.sh (not fixed here):
+      #   Phase 1 (content)  : 5 workers — 10 independent flows
+      #   Phase 2 (taxonomy) : 1 worker  — strict order (term → taxonomy)
+      #   Phase 3 (structure): 2 workers — 2 independent flows
+      #   Phase 4 (releases) : 2 workers — 2 independent flows
+      #   Phase 5 (services) : 3 workers — 6 mostly-independent flows
+      #   Phase 6 (branches) : 1 worker  — strict order (alias → branch)
+      #   Phase 7 (env/lang) : 2 workers — 2 independent flows
+      #   Phase 8 (users)    : 2 workers — 2 independent flows
+      #   Phase 9 (stack)    : 1 worker  — strict order (leave → transfer → delete)
       PW_WORKERS: "1"
       PW_SLOWMO: "0"
       PW_FLOW_MAX_MINUTES: "5"
@@ -138,7 +148,7 @@ jobs:
         run: |
           set -uo pipefail
           echo "Starting CMS Batch 3 via scripts/run-cms-batch3.sh…"
-          echo "30 delete flows — sequential (1 worker), LIFO delete order"
+          echo "30 delete flows — variable workers per phase (max 5), LIFO delete order"
           echo "3 min element timeout | 5 min/flow cap"
           bash scripts/run-cms-batch3.sh
           EXIT_CODE=$?
