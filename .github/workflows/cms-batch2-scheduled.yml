@@ -76,7 +76,10 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-jammy
       options: --user root
-    timeout-minutes: 180
+    # 6 hours: content-models alone has 59 flows × 5 min/flow = up to 295 min sequential.
+    # With 7 parallel subprocesses (one per module) wall time ≈ slowest module.
+    # 360 min gives a comfortable buffer even if content-models is fully sequential.
+    timeout-minutes: 360
     env:
       CI: "true"
       PLAYWRIGHT_HEADLESS: "1"
@@ -84,16 +87,13 @@ jobs:
       OPEN_FLOW_REPORT: "false"
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
-      # 7 workers — each module gets one worker and runs its flows in parallel with others.
-      PW_WORKERS: "7"
       PW_SLOWMO: "0"
-      # Per-module test timeout: 60 min (content-models has 30+ flows).
-      PW_FLOW_MAX_MINUTES: "60"
-      # Element/action timeout: if stuck on an element for >3 min, fail the step.
+      # Per-FLOW timeout: 5 min per individual flow test.
+      # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test —
+      # this timeout actually applies (no CMS_MODULE_BATCH_TIMEOUT_MS override).
+      PW_FLOW_MAX_MINUTES: "5"
+      # Element/action timeout: if stuck on any element for >3 min, fail the step.
       PW_ACTION_TIMEOUT_MINUTES: "3"
-      # Batch mode: one Playwright test per module; flows run serially in CRUD order.
-      CMS_SEQUENTIAL_MODULE_ORDER: "1"
-      CMS_CONTINUE_ON_FAIL: "1"
       # Deterministic report path.
       REPORT_DIR: ${{ github.workspace }}/reports/cms-batch2-${{ github.run_id }}-${{ github.run_attempt }}
       # Suppress Slack inside bash — GHA step handles Slack so it fires even on crash.
@@ -170,8 +170,10 @@ jobs:
         run: |
           set -uo pipefail
           echo "Starting CMS Batch 2 via scripts/run-cms-batch2.sh…"
-          echo "7 modules × 1 worker each — all running in parallel"
-          echo "Element timeout: 3 min | Module timeout: 60 min"
+          echo "Architecture: 7 parallel subprocesses (one per module)"
+          echo "              CMS_SEQUENTIAL_MODULE_ORDER=0, PW_WORKERS=1/module"
+          echo "              5 min/flow | 3 min element timeout"
+          echo "              ~93 flows total across all 7 modules"
           bash scripts/run-cms-batch2.sh
           EXIT_CODE=$?
           echo "Batch 2 exit code: ${EXIT_CODE}"
@@ -180,7 +182,7 @@ jobs:
       # -------------------------------------------------------------------
       # 6) Compute total run time and generate reports (always)
       # -------------------------------------------------------------------
-      - name: Compute run time and generate reports
+      - name: Collect partial results and generate reports (always — runs even on cancellation)
         if: always()
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -194,15 +196,15 @@ jobs:
           ELAPSED_MIN=$(( ELAPSED_SECS / 60 ))
           ELAPSED_SEC=$(( ELAPSED_SECS % 60 ))
 
-          echo "" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "=============================" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "CMS Batch 2 finished" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "  Started  : ${BATCH_START_ISO}" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "  Finished : $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "  Duration : ${ELAPSED_MIN}m ${ELAPSED_SEC}s" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "  Outcome  : ${BATCH2_OUTCOME}" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "  Modules  : environment, language, branches, stack, content-models, global-field, assets" | tee -a "$REPORT_DIR/batch2-run.log"
-          echo "=============================" | tee -a "$REPORT_DIR/batch2-run.log"
+          LOG="$REPORT_DIR/batch2-run.log"
+          echo "" | tee -a "$LOG"
+          echo "=============================" | tee -a "$LOG"
+          echo "CMS Batch 2 — ${BATCH2_OUTCOME}" | tee -a "$LOG"
+          echo "  Started  : ${BATCH_START_ISO}" | tee -a "$LOG"
+          echo "  Finished : $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$LOG"
+          echo "  Duration : ${ELAPSED_MIN}m ${ELAPSED_SEC}s" | tee -a "$LOG"
+          echo "  Modules  : environment, language, branches, stack, content-models, global-field, assets" | tee -a "$LOG"
+          echo "=============================" | tee -a "$LOG"
 
           cat > "$REPORT_DIR/timing-summary.txt" <<EOF
           CMS Batch 2 — Duration: ${ELAPSED_MIN}m ${ELAPSED_SEC}s
@@ -213,11 +215,32 @@ jobs:
           Run:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           EOF
 
+          # Merge whatever module part files exist (handles partial/cancelled runs).
+          # Each module subprocess writes its results to playwright-parts/module-<name>.json
+          # as soon as IT finishes — so completed modules are always captured.
+          PARTS_DIR="$REPORT_DIR/playwright-parts"
+          shopt -s nullglob
+          PART_FILES=("$PARTS_DIR"/module-*.json)
+          shopt -u nullglob
+
+          TOTAL_MODULES=7
+          PARTS_COUNT=${#PART_FILES[@]}
+          echo "Module results found: ${PARTS_COUNT}/${TOTAL_MODULES}" | tee -a "$LOG"
+
           if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
-            npx ts-node scripts/generateCmsExcelReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
-            npx ts-node scripts/generateCmsDashboardHtml.ts  --reportDir "$REPORT_DIR" 2>&1 || true
-            npx ts-node scripts/generateUnifiedReport.ts     --reportDir "$REPORT_DIR" 2>&1 || true
-            npx ts-node scripts/urlRunSummaryAndSlack.ts      --reportDir "$REPORT_DIR" 2>&1 || true
+            echo "flows-results.json already present (normal completion)." | tee -a "$LOG"
+          elif [[ "${PARTS_COUNT}" -gt 0 ]]; then
+            echo "Merging ${PARTS_COUNT} partial module result(s) — job was cancelled/timed-out." | tee -a "$LOG"
+            npx ts-node scripts/mergePlaywrightFlowJsonReports.ts \
+              --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+          else
+            echo "::warning::No module results found — all subprocesses were killed before finishing."
+          fi
+
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+            npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
           else
             echo "::warning::flows-results.json not found — report generation skipped."
           fi
