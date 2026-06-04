@@ -6,12 +6,12 @@
 # 5:00 AM IST (UTC+5:30) = 23:30 UTC (previous day)
 # =============================================================================
 
-name: CMS Full Run — 5:00 AM IST dispatcher
+name: CMS Full Run — 3:00 AM IST dispatcher
 
 on:
   schedule:
-    # 23:30 UTC = 5:00 AM IST (Asia/Kolkata, UTC+5:30)
-    - cron: "30 23 * * *"
+    # 21:30 UTC = 3:00 AM IST (Asia/Kolkata, UTC+5:30)
+    - cron: "30 21 * * *"
   workflow_dispatch:
 
 permissions:
