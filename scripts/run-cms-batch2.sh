@@ -1,31 +1,48 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 7 modules, 7 PARALLEL SUBPROCESSES (one per module)
+# CMS Batch 2 — 93 flows, 10 shared workers, true idle-browser reuse
 #
-# Architecture (fixes the 3-hour timeout + idle browser problems):
-#   • Each module runs as its OWN playwright invocation in the background
-#   • Each module: CMS_SEQUENTIAL_MODULE_ORDER=0 (individual flow tests)
-#                  PW_WORKERS=1 (sequential CRUD order within module)
-#   • When a small module finishes (e.g. environment = 1 flow, ~3 min),
-#     its process exits immediately — NO idle browser sitting around
-#   • Each module has its own REPORT_DIR so results never overwrite each other
-#   • Per-flow results are written as each module completes, so even if the
-#     job is cancelled mid-run, completed modules' counts appear in Slack
+# Architecture:
+#   ONE Playwright invocation with PW_WORKERS=10.
+#   All ~93 flows from 7 modules go into a single shared queue.
+#   When any worker finishes a flow (even a fast 1-flow module like
+#   environment) it immediately picks up the next queued flow from any module.
+#   No idle browsers — every worker stays busy until the queue is empty.
 #
-# Per-flow timeout: PW_FLOW_MAX_MINUTES=5 (individual flow cap)
-# Element timeout : PW_ACTION_TIMEOUT_MINUTES=3
+# Estimated wall time: ~93 flows ÷ 10 workers × 2.5 min avg ≈ 24 min
 #
-# Modules:
-#   environment (1 flow) | language (3) | branches (3) | stack (8)
-#   content-models (59) | global-field (7) | assets (12)
-#   Total: ~93 flows
+# Workers vs GHA runner (2 CPU cores, 7 GB RAM, headless Chromium ~250 MB):
+#   10 workers × 250 MB = 2.5 GB — well within 7 GB limit
+#   Headless Chromium is CPU-light; 10 workers on 2 cores is stable.
+#   Bump to PW_WORKERS=14 if you want faster runs (still safe on GHA).
 #
-# Skips: all 21 Batch 1 flows + all delete flows (via CMS_SKIP_FLOW_IDS
-#        inside each module + --grep-invert on individual test titles)
+# Modules (flows after skipping Batch 1 + deletes):
+#   environment    :  1 flow
+#   language       :  3 flows
+#   branches       :  3 flows
+#   stack          :  8 flows
+#   content-models : 59 flows  ← largest; workers shared so no bottleneck
+#   global-field   :  7 flows
+#   assets         : 12 flows
+#   ─────────────────────────
+#   Total          : 93 flows
+#
+# CRUD order note:
+#   With fullyParallel=true and 10 workers, Playwright distributes tests
+#   across workers. Most content-models flows are independent field-type
+#   demos (boolean, date, custom, etc.) and are safe in any order.
+#   The few order-sensitive flows (edit → export → import) are listed first
+#   in flows.spec.ts discovery order and tend to be picked up early.
+#
+# Skips:
+#   CMS_SKIP_FLOW_IDS — read by flows.spec.ts, removes Batch 1 + delete flows
+#                        from the test queue before Playwright starts
+#   --grep-invert      — belt-and-suspenders at the Playwright test-title level
 #
 # Usage:
 #   ./scripts/run-cms-batch2.sh
 #   PLAYWRIGHT_HEADLESS=0 ./scripts/run-cms-batch2.sh
+#   PW_WORKERS=14 ./scripts/run-cms-batch2.sh          (faster, still safe)
 #   REPORT_DIR=reports/my-batch2 ./scripts/run-cms-batch2.sh
 #   SKIP_SLACK=1 ./scripts/run-cms-batch2.sh
 # =============================================================================
@@ -40,20 +57,27 @@ LOG="$REPORT_DIR/batch2-run.log"
 PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
-# ── Per-flow timeout — individual flows, not module batches ──────────────────
-# PW_FLOW_MAX_MINUTES=5 caps each individual flow test.
-# With CMS_SEQUENTIAL_MODULE_ORDER=0 there is no CMS_MODULE_BATCH_TIMEOUT_MS
-# override — so this actually applies.
+# ── Workers ──────────────────────────────────────────────────────────────────
+# Default 10 — safe on GHA 2-core / 7 GB. Raise to 14 for faster runs.
+export PW_WORKERS="${PW_WORKERS:-10}"
+
+# ── Per-flow timeouts ────────────────────────────────────────────────────────
+# Each flow is its own Playwright test (CMS_SEQUENTIAL_MODULE_ORDER=0).
+# PW_FLOW_MAX_MINUTES caps the entire test; PW_ACTION_TIMEOUT_MINUTES caps
+# waiting for any single element/action within a step.
 export PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES:-5}"
 export PW_ACTION_TIMEOUT_MINUTES="${PW_ACTION_TIMEOUT_MINUTES:-3}"
 export PW_SLOWMO="${PW_SLOWMO:-0}"
 export PLAYWRIGHT_HEADLESS="${PLAYWRIGHT_HEADLESS:-1}"
+
+# Individual flow tests — no module-batch overhead, no CMS_MODULE_BATCH_TIMEOUT_MS.
+# PW_FLOW_MAX_MINUTES=5 is the actual timeout that applies per flow.
+export CMS_SEQUENTIAL_MODULE_ORDER=0
+# With individual tests, each flow is its own test — no continuation needed.
+export CMS_CONTINUE_ON_FAIL=0
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 
-# ── Flows to skip — built into each module's environment ─────────────────────
-# CMS_SKIP_FLOW_IDS is read by flows.spec.ts to exclude flow IDs from running.
-# --grep-invert on delete patterns adds a second layer for individual tests.
-
+# ── Flows to skip ─────────────────────────────────────────────────────────────
 CMS_BATCH1_FLOWS=(
   "create-a-new-stack-part-1"
   "add-an-environment"
@@ -94,101 +118,46 @@ CMS_DELETE_FLOWS=(
 )
 
 ALL_SKIP_FLOWS=("${CMS_BATCH1_FLOWS[@]}" "${CMS_DELETE_FLOWS[@]}")
+# Consumed by flows.spec.ts to exclude these flow IDs from the test queue.
 export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${ALL_SKIP_FLOWS[@]}" | sed 's/,$//')"
 
-# Works at individual-test-title level (CMS_SEQUENTIAL_MODULE_ORDER=0)
+# Works at individual-test-title level when CMS_SEQUENTIAL_MODULE_ORDER=0.
 CMS_DELETE_FLOW_GREP='delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership'
 
-# ── Per-module runner ─────────────────────────────────────────────────────────
-# Each module runs in its own subprocess with its own REPORT_DIR.
-# Results are copied to PARTS_DIR as soon as the module finishes.
-# If this process is killed (GHA timeout), only completed modules' parts are lost;
-# the merge step picks up whatever exists in PARTS_DIR.
-run_module() {
-  local module="$1"
-  local MODULE_DIR="$REPORT_DIR/module-${module}"
-  mkdir -p "$MODULE_DIR"
-  local MODULE_LOG="$MODULE_DIR/module.log"
-  local start_t; start_t="$(date +%s)"
-
-  echo "[$(date -u +'%H:%M:%SZ')] ▶ START ${module}" >> "$LOG"
-
-  set +e
-  # Each module subprocess:
-  #   CMS_SEQUENTIAL_MODULE_ORDER=0 → each flow is its own Playwright test
-  #   PW_WORKERS=1                  → flows run sequentially in CRUD order
-  #   CMS_CONTINUE_ON_FAIL=0        → a failing flow doesn't block the next
-  #   REPORT_DIR=MODULE_DIR          → isolated results, no overwrites
-  REPORT_DIR="$MODULE_DIR" \
-    PW_WORKERS=1 \
-    CMS_SEQUENTIAL_MODULE_ORDER=0 \
-    CMS_CONTINUE_ON_FAIL=0 \
-    npx playwright test tests/flows.spec.ts --project=flows \
-      --grep "Project=CMS Module=${module} Stage=main" \
-      --grep-invert "$CMS_DELETE_FLOW_GREP" \
-      > "$MODULE_LOG" 2>&1
-  local ex=$?
-  set -e
-
-  local end_t; end_t="$(date +%s)"
-  local dur=$(( end_t - start_t ))
-  local dur_min=$(( dur / 60 ))
-  local dur_sec=$(( dur % 60 ))
-
-  if [[ -f "$MODULE_DIR/flows-results.json" ]]; then
-    cp "$MODULE_DIR/flows-results.json" "$PARTS_DIR/module-${module}.json"
-    local icon; [[ $ex -eq 0 ]] && icon="✅" || icon="❌"
-    echo "[$(date -u +'%H:%M:%SZ')] ${icon} DONE  ${module} — exit=${ex} dur=${dur_min}m${dur_sec}s" >> "$LOG"
-  else
-    echo "[$(date -u +'%H:%M:%SZ')] ⚠  DONE  ${module} — no flows-results.json, exit=${ex} dur=${dur_min}m${dur_sec}s" >> "$LOG"
-  fi
-
-  return $ex
-}
-
-# ── Launch all 7 modules in parallel ─────────────────────────────────────────
+# ── Run ───────────────────────────────────────────────────────────────────────
 START_EPOCH="$(date +%s)"
 START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 2 — 7 parallel module subprocesses" | tee -a "$LOG"
+echo "  CMS Batch 2 — shared worker pool" | tee -a "$LOG"
+echo "  Workers  : ${PW_WORKERS} shared across all 93 flows" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(8)" | tee -a "$LOG"
 echo "             content-models(59) global-field(7) assets(12)" | tee -a "$LOG"
-echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min element timeout" | tee -a "$LOG"
-echo "  Mode     : CMS_SEQUENTIAL_MODULE_ORDER=0, PW_WORKERS=1/module" | tee -a "$LOG"
-echo "  Skipping : Batch 1 flows + delete flows" | tee -a "$LOG"
+echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
+echo "  Est. time: ~$(( 93 / PW_WORKERS * 3 )) min (93 flows ÷ ${PW_WORKERS} workers × 3 min avg)" | tee -a "$LOG"
+echo "  Skipping : 21 Batch 1 flows + 12 delete flows" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "" >> "$LOG"
+echo "" | tee -a "$LOG"
 
-MODULES=(environment language branches stack content-models global-field assets)
-PIDS=()
-for module in "${MODULES[@]}"; do
-  run_module "$module" &
-  PIDS+=($!)
-  echo "  Launched ${module} (PID $!)" >> "$LOG"
-done
-
-echo "" >> "$LOG"
-echo "All 7 modules running — waiting for completion…" >> "$LOG"
-
-# Collect exit codes from each module subprocess
 TOTAL_EXIT=0
-MODULE_EXITS=()
-for i in "${!PIDS[@]}"; do
-  pid="${PIDS[$i]}"
-  module="${MODULES[$i]}"
-  if wait "$pid"; then
-    MODULE_EXITS+=("${module}=0")
-  else
-    MODULE_EXITS+=("${module}=$?")
-    TOTAL_EXIT=1
-  fi
-done
+set +e
+npx playwright test tests/flows.spec.ts --project=flows \
+  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets) Stage=main" \
+  --grep-invert "$CMS_DELETE_FLOW_GREP" \
+  2>&1 | tee -a "$LOG"
+PW_EXIT=${PIPESTATUS[0]}
+set -e
+[[ "$PW_EXIT" -ne 0 ]] && TOTAL_EXIT=1
 
-# ── Summary ──────────────────────────────────────────────────────────────────
+# Save the result file to parts directory for partial-merge in GHA always-step.
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+  cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/batch2-all-modules.json"
+fi
+
+# ── Summary ───────────────────────────────────────────────────────────────────
 END_EPOCH="$(date +%s)"
 TOTAL_ELAPSED=$(( END_EPOCH - START_EPOCH ))
 TOTAL_MIN=$(( TOTAL_ELAPSED / 60 ))
@@ -196,11 +165,9 @@ TOTAL_SEC=$(( TOTAL_ELAPSED % 60 ))
 
 echo "" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 2 — ALL MODULES COMPLETE" | tee -a "$LOG"
+echo "  CMS Batch 2 — COMPLETE" | tee -a "$LOG"
 echo "  Duration : ${TOTAL_MIN}m ${TOTAL_SEC}s" | tee -a "$LOG"
-for mx in "${MODULE_EXITS[@]}"; do
-  echo "  ${mx}" | tee -a "$LOG"
-done
+echo "  Outcome  : $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
 
 cat > "$REPORT_DIR/timing-summary.txt" <<EOF
@@ -208,24 +175,15 @@ CMS Batch 2 — Duration: ${TOTAL_MIN}m ${TOTAL_SEC}s
 Started:  ${START_ISO}
 Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
 Outcome:  $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')
+Workers:  ${PW_WORKERS}
 Modules:  environment, language, branches, stack, content-models, global-field, assets
 EOF
 
-# ── Merge per-module results + generate reports ───────────────────────────────
-shopt -s nullglob
-PART_FILES=("$PARTS_DIR"/module-*.json)
-shopt -u nullglob
-
-if [[ ${#PART_FILES[@]} -gt 0 ]]; then
-  echo "" | tee -a "$LOG"
-  echo "Merging ${#PART_FILES[@]}/${#MODULES[@]} module result files…" | tee -a "$LOG"
-  npx ts-node "$ROOT/scripts/mergePlaywrightFlowJsonReports.ts" \
-    --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+# ── Reports ───────────────────────────────────────────────────────────────────
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
   npx ts-node "$ROOT/scripts/generateCmsExcelReport.ts"   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateCmsDashboardHtml.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateUnifiedReport.ts"    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
-else
-  echo "WARNING: No module result files found — all subprocesses may have been killed." | tee -a "$LOG"
 fi
 
 # ── Slack ─────────────────────────────────────────────────────────────────────

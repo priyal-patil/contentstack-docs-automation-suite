@@ -88,9 +88,15 @@ jobs:
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
       PW_SLOWMO: "0"
-      # Per-FLOW timeout: 5 min per individual flow test.
-      # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test —
-      # this timeout actually applies (no CMS_MODULE_BATCH_TIMEOUT_MS override).
+      # 10 shared workers across all 93 flows from 7 modules.
+      # When environment (1 flow) finishes its worker immediately picks up
+      # the next queued flow from any module — zero idle time.
+      # Safe on GHA 2-core / 7 GB: 10 × 250 MB headless Chromium = 2.5 GB.
+      # Raise to PW_WORKERS=14 for faster runs if GHA resources allow.
+      PW_WORKERS: "10"
+      # Per-FLOW timeout: 5 min per individual flow.
+      # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test so
+      # this actually applies (no 4-hour CMS_MODULE_BATCH_TIMEOUT_MS override).
       PW_FLOW_MAX_MINUTES: "5"
       # Element/action timeout: if stuck on any element for >3 min, fail the step.
       PW_ACTION_TIMEOUT_MINUTES: "3"
