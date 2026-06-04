@@ -9,7 +9,8 @@ When the user says any of the following, start the matching **background** headl
 
 | User phrase (examples) | Command |
 |------------------------|---------|
-| Run CMS, run cms, CMS batch, Run the CMS sequential module batch | `npm run launch:cms:bg` **or** `bash scripts/run-project-batch-background.sh CMS` |
+| Run CMS, run cms, Run CMS project, Run complete CMS | Run the **3-batch sequence** (see `cms-execution-order.mdc`): `npm run test:cms:batch1` → (wait) → `npm run test:cms:batch2` → (wait) → `npm run test:cms:batch3` |
+| Run CMS headed | Same 3-batch sequence with headed browser: `npm run test:cms:batch1:headed` → `npm run test:cms:batch2:headed` → `npm run test:cms:batch3:headed` |
 | Run Launch, run launch | `npm run launch:launch:bg` **or** `bash scripts/run-project-batch-background.sh Launch` |
 | Run Personalize, run personalize | `npm run launch:personalize:bg` **or** `bash scripts/run-project-batch-background.sh Personalize` |
 | Run Data and Insights (batch name `Data-and-Insights`) | `npm run launch:data-and-insights:bg` **or** `bash scripts/run-project-batch-background.sh Data-and-Insights` |

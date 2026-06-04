@@ -1,88 +1,139 @@
 ---
-description: CMS full-batch module order, serial CRUD per module, retry-before-delete, delete batch, trash, merge; agents and npm test:cms follow scripts/run-cms-sequential-modules-dashboard.sh.
+description: CMS full execution format — Batch 1 (creates, 1 worker) → Batch 2 (edits, 20 workers) → Batch 3 (deletes + trash, phase-based workers). Always follow this 3-batch sequence for any CMS run.
 alwaysApply: true
 ---
 
-# CMS execution order (full batch & sequencing policy)
+# CMS Execution Order — 3-Batch Format
 
-When the user says **Run CMS**, **`npm run test:cms`**, or **`npm run test:cms:headless:report`**, the repo runs **`scripts/run-cms-headless-background.sh`** (returns immediately; work continues under `nohup`), which invokes **`scripts/run-cms-headless-report.sh`** → **`scripts/run-cms-sequential-modules-dashboard.sh`**. Use **`npm run test:cms:foreground`** to run the same pipeline in the foreground. Do not use a single flat `Project=CMS` Playwright grep for full batches unless debugging.
+When the user says **Run CMS**, **Run CMS project**, **Run complete CMS**, or **Run CMS headed**, always follow this exact 3-batch sequence. Never skip a batch or change the order.
 
-## 1. Cross-module sequence (strict, one module at a time)
+---
 
-Run **`Project=CMS Module=<name> Stage=main`** in this order (skip if `projects/CMS/<name>` does not exist):
+## Batch 1 — Create / Setup
+**Script:** `npm run test:cms:batch1` | headed: `npm run test:cms:batch1:headed`
+**Workers:** 1 (fixed sequential — no parallelism)
+**Estimated time:** ~15 min
+**GHA:** `cms-batch1-scheduled.yml` — triggered at 5:00 AM IST daily via `cms-batch1-trigger.yml`
 
-1. `environment`  
-2. `language`  
-3. `branches`  
-4. `stack`  
-5. `content-models`  
-6. `releases`  
-7. `global-field`  
-8. `assets`  
-9. `entries`  
-10. `labels` — only when that folder exists; otherwise skipped automatically  
-11. `json-rich-text-editor`  
-12. `users-and-roles`  
-13. `live-preview`  
-14. **Remaining modules**: `content-modeling`, `search`, `security`, `tokens`, `webhook`, `workflows`, `taxonomy`, `visual-experience`
+Run exactly these 21 flows in this exact order (stack created first, everything else depends on it):
 
-**After the `workflows` module step**, run the **publish rules serial chain** (grep: `publish rules chain \(serial\)`).
+| # | Flow ID | Module |
+|---|---------|--------|
+| 1 | create-a-new-stack-part-1 | stack |
+| 2 | add-an-environment | environment |
+| 3 | add-a-language | language |
+| 4 | add-a-custom-language | language |
+| 5 | create-a-branch | branches |
+| 6 | create-content-type | content-models |
+| 7 | create-a-new-release | releases |
+| 8 | create-a-global-field | global-field |
+| 9 | create-a-global-field-part-2 | global-field |
+| 10 | create-upload-assets | assets |
+| 11 | create-a-folder | assets |
+| 12 | create-an-entry | entries |
+| 13 | add-a-comment | entries |
+| 14 | create-and-apply-labels | content-models |
+| 15 | set-up-live-preview-for-your-stack | live-preview |
+| 16 | create-a-taxonomy | taxonomy |
+| 17 | create-a-term | taxonomy |
+| 18 | create-a-delivery-token | tokens |
+| 19 | generate-a-management-token | tokens |
+| 20 | create-a-webhook | webhook |
+| 21 | add-workflows-and-stages | workflows |
 
-**After the `users-and-roles` module step**, run the **role lifecycle serial chain** (grep: `role lifecycle chain \(serial\)`).
+---
 
-## 2. Within each module — CRUD order
+## Batch 2 — Edit / Update / Export / Import
+**Script:** `npm run test:cms:batch2` | headed: `npm run test:cms:batch2:headed`
+**Workers:** 20 shared pool (all 220 flows in one queue — idle workers pick up next flow instantly)
+**Estimated time:** ~29 min
+**GHA:** `cms-batch2-scheduled.yml` — auto-triggers via `workflow_run` after Batch 1 completes
 
-- Flow JSON is sorted globally in `tests/flows.spec.ts` (`flowOrder`, `crudLifecycleRank`, stable keys).
-- For sequential CMS batches, **`CMS_SEQUENTIAL_MODULE_ORDER=1`** and **`CMS_CONTINUE_ON_FAIL=1`** (set by **`scripts/run-cms-sequential-modules-dashboard.sh`**). Then **every `Project=CMS` bucket** (any **`Stage`**: `main`, `delete`, `trash`, …) uses **one test with `test.step` per flow** so **every URL still runs after a failure** (no per-bucket `describe.serial` fail-fast skip). URLs still run **one after another** in CRUD sort order inside that batch (create/add before edit/update before move/import/export-style ids; **delete-like ids are excluded** from main module runs — see §4). The **delete batch** Playwright pass forces **`PW_WORKERS=1`** so many matching buckets are not contested in parallel.
-- **`CMS_CONTINUE_ON_FAIL`** lets later URLs in the module run after a **hard fail** but **does not suppress** it: each execution error **still fails** its **`test.step`** and the **module batch test** fails when done, **rethrowing** the original error or an **`AggregateError`** when several flows fail; only **doc verification** mismatches stay **warning-only** (non-throwing) per **`core/executor.ts`**.
+**Skips (via `--grep-invert` anchored with `$`):**
+- All 21 Batch 1 flows (already executed)
+- All delete flows
 
-## 3. Retry pass (failed / timedOut / interrupted) — **before delete batch**
+**220 flows across 20 modules (CRUD order within each module):**
 
-- Unless **`SKIP_RETRY=1`**, after **§1** completes (all main modules + both serial chains), scan **`playwright-parts/*.json`** with **`scripts/collectRetryFlowTitlesFromJson.ts --partsDir <dir> --exportShell`**.
-- **`eval`** the printed `export` lines: **`CMS_RETRY_FLOW_IDS`** (comma-separated flow ids from failed `test.step` leaves and non-batched failures), **`CMS_RETRY_PUBLISH_CHAIN`**, **`CMS_RETRY_ROLES_CHAIN`**, and optionally **`PLAYWRIGHT_RETRY_GREP`** for title-based cases. **`--grep` alone cannot retry individual URLs** inside the continue-on-fail module batch (one Playwright test per module).
-- Run **one** Playwright pass; save part as **`89-retry-before-delete.json`**. Use **`CMS_SEQUENTIAL_MODULE_ORDER=0`** for this pass (parallel speed). Pass **`--grep`** only when **`PLAYWRIGHT_RETRY_GREP`** is set.
-- Unset retry env vars after the pass. **Then** run the delete batch (§4). **Do not** run retry after delete or after trash.
+| Module | Flows | Notes |
+|--------|-------|-------|
+| environment | 1 | edit-an-environment |
+| language | 3 | rename, update-fallback, non-localizable |
+| branches | 3 | assign-alias, edit-alias, use-branches-ci-cd |
+| stack | 7 | edit, view, customize×2, dashboard-extensions, import-prebuilt, monitor-audit-log |
+| content-models | 41 | labels are inside content-models; edit, field types, import/export, versioning, etc. |
+| global-field | 9 | edit, add-to-content-type, copy, export, import, within-group/modular/reference |
+| assets | 12 | edit, rename, move, publish, unpublish, bulk ops, generate-url, restore-version |
+| entries | 30 | edit, publish, export, import, localize, copy, bulk ops, comments, taxonomy, etc. |
+| json-rich-text-editor | 11 | formatting, code-blocks, embeds, markdown, slash-commands, videos |
+| releases | 8 | add, edit, clone, deploy, lock, unlock, update-items |
+| users-and-roles | 5 | add-user, assign-role, create-role, custom-roles, update-role |
+| live-preview | 6 | custom-urls, new-tab, multi-channel, window-sizes, environments, real-time |
+| content-modeling | 11 | prebuilt pages (about-us, blog, faqs, hero, product, website pages) |
+| search | 12 | basic, advanced, filters, views, saved-views, shared-views, bulk-publish/unpublish |
+| security | 6 | account-lockout, change-password, MFA, session-management, personal-details |
+| tokens | 2 | edit-delivery-token, edit-management-token |
+| webhook | 5 | edit, enable/disable, export, import, logs |
+| workflows | 19 | about, add-publish-rule, approve-access, change-stage, enable/disable, update, etc. |
+| taxonomy | 8 | edit, add-to-content-type, export, import, move-reorder-term, scenarios |
+| visual-experience | 21 | add-review-comment, audiences, drafts, edit-page, publish, preview, share, etc. |
 
-## 4. Delete flows — one batched pass (after main modules + optional retry)
+---
 
-Run **one** Playwright pass over **all** CMS tests whose titles match **`CMS_DELETE_FLOW_GREP`** in `run-cms-sequential-modules-dashboard.sh` (delete-a-*, bulk-delete-*, `delete-content-type`, `edit-or-delete-a-comment`, etc.).
+## Batch 3 — Delete + Trash
+**Script:** `npm run test:cms:batch3` | headed: `npm run test:cms:batch3:headed`
+**Workers:** variable per phase (see below)
+**Estimated time:** ~32 min
+**GHA:** `cms-batch3-scheduled.yml` — auto-triggers via `workflow_run` after Batch 2 completes
 
-Main module runs use **`--grep-invert`** that pattern so deletes never run during §1.
+**Order:** LIFO — content before structure, structure before stack, stack always last, trash after all deletes.
 
-## 5. Trash — always last (among Playwright flow phases)
+Phases run strictly sequentially (Phase N waits for Phase N-1 to complete). Within each phase, workers are set for optimal parallelism:
 
-After the delete batch, run:
+| Phase | Group | Flows | Workers | Ordering rule |
+|-------|-------|-------|---------|---------------|
+| 1 | Content | 10 | 5 | All independent |
+| 2 | Taxonomy | 2 | 1 | term → taxonomy (strict) |
+| 3 | Structure | 2 | 2 | global-field + content-type independent |
+| 4 | Releases | 2 | 2 | Independent |
+| 5 | Services | 6 | 3 | tokens/webhook/workflows mostly independent |
+| 6 | Branches | 2 | 1 | alias → branch (strict) |
+| 7 | Env/Lang | 2 | 2 | Independent |
+| 8 | Users/Roles | 2 | 2 | Independent |
+| 9 | Stack | 3 | 1 | leave → transfer → delete (strict — always last delete) |
+| 10 | Trash | 8 | 7 | All restores independent |
 
-- **`Project=CMS Module=trash Stage=main`**
+**Total: 38 flows (30 delete + 8 trash)**
 
-## 5b. CMS informational coverage (executable + doc list)
+---
 
-- **`.flow.json` with `"type": "informational"`** and **no steps**: the executor loads **`source`** in the browser (public doc; no login) so the URL runs in the same **module batch order** as other flows in that module.
-- **`flows/CMS/docs.json`** URLs (not backed by a flow file): after trash, **`tests/docs.spec.ts`** runs with **`--grep "Docs Project=CMS"`** (HTTP + title checks). Set **`SKIP_CMS_DOCS_SPEC=1`** to skip.
-- **`data/cms-urls.csv`** is rebuilt at the start of each batch (**`buildCmsUrlsCsv.ts`**: all CMS `*.flow.json` `source` values + **`flows/CMS/docs.json`**). **Background docs-audit** uses **`DOCS_URLS_CSV=data/cms-urls.csv`** so link/image/table audit is **CMS-scoped** (executable + informational URLs together).
+## GHA Daily Chain
+```
+5:00 AM IST
+  └─ cms-batch1-trigger.yml fires repository_dispatch
+       └─ cms-batch1-scheduled.yml (Batch 1, ~15 min)
+            └─ workflow_run: completed → cms-batch2-scheduled.yml (Batch 2, ~29 min)
+                 └─ workflow_run: completed → cms-batch3-scheduled.yml (Batch 3, ~32 min)
+```
 
-## 6. Merge JSON, then docs audit (CMS URLs / broken links), reports, Slack, open dashboard
+## Local Run (manual sequence)
+```bash
+npm run test:cms:batch1        # wait for completion, then:
+npm run test:cms:batch2        # wait for completion, then:
+npm run test:cms:batch3
 
-- **Single merge** of **`playwright-parts/*.json`** → **`flows-results.json`** (includes retry part if present, then delete batch, then trash). *Note:* `docs.spec` and docs-audit write separate artifacts (`docs-results.json`, audit dir); they are not part of this merge.
-- Copy **`flows-results-cms.json`** before docs-audit if that backup step is still used.
-- **Broken-links / docs quality audit for CMS** (part of **Run CMS** by default): unless **`SKIP_DOCS_AUDIT=1`**, docs-audit runs for CMS URLs. **Default:** **`DOCS_AUDIT_BACKGROUND=1`** — start **`run-docs-audit-background.sh`** early with **`DOCS_URLS_CSV=data/cms-urls.csv`** (separate **`AUDIT_REPORT_DIR`**, logs under main **`REPORT_DIR`**); main pipeline skips inline audit so flow reports and bundle finish without waiting on crawl. **`DOCS_AUDIT_BACKGROUND=0`** runs **`tests/docs-audit.spec.ts`** inline after merge with **`DOCS_AUDIT_PROJECT=CMS`** and **`DOCS_URLS_CSV`** defaulting to **`data/cms-urls.csv`** so results land in the same **`REPORT_DIR`** for Excel / dashboards.
-- Generate Excel, `cms-dashboard.html`, shared dashboard, **`report-bundle/`**, unified report, **`urlRunSummaryAndSlack`**.
-- Open **`report-bundle/index.html`** when **`OPEN_CMS_DASHBOARD≠0`** and `open` exists (macOS). **`SKIP_OPEN_DASHBOARD=1`** (e.g. from **`run-project-batch-background.sh`**) forces **`OPEN_CMS_DASHBOARD=0`** so the bundle is not auto-opened.
+# Headed (visible browser):
+npm run test:cms:batch1:headed
+npm run test:cms:batch2:headed
+npm run test:cms:batch3:headed
+```
 
-## 7. Checklist (always follow this order)
+## Stack
+`core/navigation.ts selectStack()` tries `DEFAULT_STACK` (5s probe), falls back to `PriyalDocsStack`.
 
-| Phase | What runs |
-|--------|-----------|
-| A | Main modules §1 — **non-delete** `Stage=main` only, **CRUD order** within module (**`CMS_CONTINUE_ON_FAIL`**: every URL runs; no serial fail-fast skip) |
-| A2 | Publish rules chain (after workflows module) |
-| A3 | Roles chain (after users-and-roles module) |
-| B | **Retry** failed/timedOut/interrupted (`--exportShell` → **`CMS_RETRY_*`** env + optional **`PLAYWRIGHT_RETRY_GREP`**) — optional if `SKIP_RETRY=1` or nothing to retry |
-| C | **Delete** batch (`CMS_DELETE_FLOW_GREP`) |
-| D | **Trash** module |
-| D2 | **`docs.spec`** CMS only (`flows/CMS/docs.json` HTTP checks) unless **`SKIP_CMS_DOCS_SPEC=1`** |
-| E | **Merge** all `playwright-parts/*.json` once |
-| F | **Docs audit** (default: background; use **`DOCS_AUDIT_BACKGROUND=0`** for inline in **`REPORT_DIR`**) + dashboards + bundle + Slack + open bundle — if background, audit may still be running after bundle opens; check **`docs-audit-background.log`** / **`AUDIT_REPORT_DIR`** |
-
-## 8. Changing this policy
-
-Update **`CMS_MAIN_MODULES`**, **`CMS_DELETE_FLOW_GREP`**, and phase order in **`scripts/run-cms-sequential-modules-dashboard.sh`**. Update **`tests/flows.spec.ts`** only if CRUD sort rules change. **Keep this `.mdc` in sync** with the script.
+## Key settings (same for headless and headed)
+- `PW_FLOW_MAX_MINUTES=5` per flow
+- `PW_ACTION_TIMEOUT_MINUTES=3` (element timeout — fail step if stuck >3 min)
+- `PW_SLOWMO=0`
+- Docker image (GHA): `mcr.microsoft.com/playwright:v1.58.0-jammy`
+- `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` (browsers pre-installed in Docker)
