@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 3 — all CMS delete flows (phase-based parallelism)
+# CMS Batch 3 — all CMS delete flows + trash module (phase-based parallelism)
 #
 # Runs after Batch 2. Executes every delete-related flow in the CMS project
-# in a safe LIFO order. Each phase runs as a single Playwright invocation;
-# independent phases use multiple workers, order-sensitive phases use 1.
+# in a safe LIFO order, then runs the trash module (restore flows).
+# Each phase runs as a single Playwright invocation; independent phases use
+# multiple workers, order-sensitive phases use 1.
 #
 # Phase design:
-#   Phase 1 — Content    (10 flows, 5 workers) — all independent
-#   Phase 2 — Taxonomy   ( 2 flows, 1 worker)  — term MUST precede taxonomy
-#   Phase 3 — Structure  ( 2 flows, 2 workers) — independent
-#   Phase 4 — Releases   ( 2 flows, 2 workers) — independent
-#   Phase 5 — Services   ( 6 flows, 3 workers) — mostly independent
-#   Phase 6 — Branches   ( 2 flows, 1 worker)  — alias MUST precede branch
-#   Phase 7 — Env/Lang   ( 2 flows, 2 workers) — independent
-#   Phase 8 — Users      ( 2 flows, 2 workers) — independent
-#   Phase 9 — Stack      ( 3 flows, 1 worker)  — leave → transfer → delete
+#   Phase 1  — Content    (10 flows, 5 workers) — all independent
+#   Phase 2  — Taxonomy   ( 2 flows, 1 worker)  — term MUST precede taxonomy
+#   Phase 3  — Structure  ( 2 flows, 2 workers) — independent
+#   Phase 4  — Releases   ( 2 flows, 2 workers) — independent
+#   Phase 5  — Services   ( 6 flows, 3 workers) — mostly independent
+#   Phase 6  — Branches   ( 2 flows, 1 worker)  — alias MUST precede branch
+#   Phase 7  — Env/Lang   ( 2 flows, 2 workers) — independent
+#   Phase 8  — Users      ( 2 flows, 2 workers) — independent
+#   Phase 9  — Stack      ( 3 flows, 1 worker)  — leave → transfer → delete
+#   Phase 10 — Trash      ( 8 flows, 7 workers) — all independent restores
 #
-# Total: 30 flows | Est. ~30 min (vs ~60 min fully sequential)
+# Total: 38 flows | Est. ~32 min (30 delete + 2 min trash)
 #
 # Usage:
 #   ./scripts/run-cms-batch3.sh
@@ -113,10 +115,10 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 3 — 30 delete flows, phase-based parallelism" | tee -a "$LOG"
+echo "  CMS Batch 3 — 38 flows (30 delete + 8 trash), phase-based parallelism" | tee -a "$LOG"
 echo "  Phase 1(5w) → 2(1w) → 3(2w) → 4(2w) → 5(3w)" | tee -a "$LOG"
-echo "  → 6(1w) → 7(2w) → 8(2w) → 9(1w)" | tee -a "$LOG"
-echo "  Est. ~30 min | 3 min element timeout | 5 min/flow cap" | tee -a "$LOG"
+echo "  → 6(1w) → 7(2w) → 8(2w) → 9(1w) → 10-trash(7w)" | tee -a "$LOG"
+echo "  Est. ~32 min | 3 min element timeout | 5 min/flow cap" | tee -a "$LOG"
 echo "  Started : ${START_ISO}" | tee -a "$LOG"
 echo "  Report  : ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
@@ -182,6 +184,19 @@ run_flow "leave-a-stack"
 run_flow "transfer-stack-ownership"
 run_flow "delete-a-stack"
 
+# ── Phase 10: Trash (7 workers — all restores are independent) ────────────────
+# Runs AFTER all deletes so there are items in the trash to restore.
+# 7 workers for 8 flows — all restore flows are fully independent.
+run_phase "trash" 7 \
+  "about-trash" \
+  "restore-a-deleted-asset" \
+  "restore-a-deleted-asset-folder" \
+  "restore-a-deleted-entry" \
+  "restore-a-deleted-content-type" \
+  "restore-a-deleted-global-field" \
+  "restore-a-deleted-term" \
+  "restore-a-deleted-taxonomy"
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 END_EPOCH="$(date +%s)"
 TOTAL_ELAPSED=$(( END_EPOCH - START_EPOCH ))
@@ -216,7 +231,7 @@ fi
 
 # ── Slack ─────────────────────────────────────────────────────────────────────
 if [[ "${SKIP_SLACK:-0}" != "1" ]]; then
-  CMS_BATCH_DURATION_LABEL="CMS Batch 3: all delete flows (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
+  CMS_BATCH_DURATION_LABEL="CMS Batch 3: delete flows + trash restores (${TOTAL_MIN}m ${TOTAL_SEC}s)" \
     npx ts-node "$ROOT/scripts/urlRunSummaryAndSlack.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
 fi
 
