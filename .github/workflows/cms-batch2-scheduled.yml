@@ -6,8 +6,9 @@
 #   → fires whenever Batch 1 finishes (success OR failure — Batch 2 still runs so
 #     edit/update flows can be tested even if some creates partially failed).
 #
-# Modules (7 workers, one per module, all start simultaneously):
-#   environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases
+# Modules (15 modules, 16 shared workers):
+#   environment, language, branches, stack, content-models, global-field, assets, entries,
+#   json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security
 #
 # CRUD order within each module:
 #   create/add (if not in Batch 1) → edit/update → move/import/export → misc
@@ -217,7 +218,7 @@ jobs:
           Started:  ${BATCH_START_ISO}
           Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
           Outcome:  ${BATCH2_OUTCOME}
-          Modules:  environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases
+          Modules:  environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security
           Run:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           EOF
 
@@ -366,7 +367,7 @@ jobs:
 
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
             echo "Posting detailed Slack summary via urlRunSummaryAndSlack.ts…"
-            CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases (${DURATION})" \
+            CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security (${DURATION})" \
               npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || \
               echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
           else
@@ -375,6 +376,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | Modules: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases | 7 workers | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 15 modules: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security | 16 workers | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
