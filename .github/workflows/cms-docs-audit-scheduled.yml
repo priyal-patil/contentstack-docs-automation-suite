@@ -1,0 +1,310 @@
+# =============================================================================
+# CMS Docs Audit — broken links & images check (runs after CMS Full Run)
+# =============================================================================
+#
+# Triggered by: workflow_run on "CMS Full Run — Batch 1 → 2 → 3 (3 AM IST daily)"
+#   → fires when the full CMS batch completes (~4:20 AM IST).
+#
+# What it checks (503 CMS URLs from data/docs-urls.csv):
+#   • Every link on each page — HTTP 404/410/5xx = broken
+#   • Every image on each page — 404/410/5xx or naturalWidth=0 = broken
+#   • Table structure (header row, body rows, column consistency)
+#   • Old (orange) logo detection
+#
+# Workers: 20 (network-bound, safe on GHA — beyond 20 risks docs server rate limits)
+# Estimated time: ~21 min for 503 URLs
+#
+# Slack message:
+#   Total URLs checked | Broken links (total) | Broken images (total)
+#   Pages with broken links | Pages with broken images
+#   Download broken-links.csv link
+#
+# Artifacts:
+#   cms-broken-links.csv   — source_page, broken_url, anchor_text, status, reason
+#   cms-broken-images.csv  — source_page, image_url, alt_text, status, reason
+#   docs-audit-summary.json — full aggregated results
+# =============================================================================
+
+name: CMS Docs Audit — broken links & images (after CMS Full Run)
+
+on:
+  workflow_run:
+    workflows:
+      - "CMS Full Run — Batch 1 → 2 → 3 (3 AM IST daily)"
+    types:
+      - completed
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  docs-audit-cms:
+    name: CMS Docs Audit — 503 URLs, 20 workers, broken links & images
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
+    timeout-minutes: 60
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      PW_WORKERS: "20"
+      DOCS_AUDIT_PROJECT: "CMS"
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      # -------------------------------------------------------------------
+      # 1) Checkout
+      # -------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------------------------
+      # 2) npm cache + install
+      # -------------------------------------------------------------------
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      # -------------------------------------------------------------------
+      # 3) Write .env (needed for auth.json / storageState)
+      # -------------------------------------------------------------------
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK:-PriyalDocsStack}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      # -------------------------------------------------------------------
+      # 4) Record start time
+      # -------------------------------------------------------------------
+      - name: Record start time
+        id: audit_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+
+      # -------------------------------------------------------------------
+      # 5) Run docs-audit for CMS project (503 URLs, 20 workers)
+      # -------------------------------------------------------------------
+      - name: Run CMS docs audit — 503 URLs, 20 workers
+        id: audit_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: |
+          set -uo pipefail
+          echo "Running docs-audit for CMS project (503 URLs, 20 workers)"
+          echo "Checking: broken links, broken images, table structure, old logo"
+          npx playwright test tests/docs-audit.spec.ts \
+            --project=docs-audit \
+            --grep "Docs Audit" \
+          2>&1
+          EXIT_CODE=$?
+          echo "Docs audit exit code: ${EXIT_CODE}"
+          exit ${EXIT_CODE}
+
+      # -------------------------------------------------------------------
+      # 6) Generate broken-links.csv and broken-images.csv (always)
+      # -------------------------------------------------------------------
+      - name: Generate broken links & images CSVs
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.audit_start.outputs.start_epoch }}
+          AUDIT_OUTCOME: ${{ steps.audit_run.outcome }}
+        run: |
+          set -eo pipefail
+          SUMMARY="$REPORT_DIR/docs-audit-summary.json"
+
+          if [[ ! -f "$SUMMARY" ]]; then
+            echo "::warning::docs-audit-summary.json not found — audit may have been cancelled."
+            exit 0
+          fi
+
+          # Generate broken-links.csv: source_page, broken_url, anchor_text, http_status, reason
+          node -e "
+            const fs = require('fs');
+            const s = JSON.parse(fs.readFileSync('$SUMMARY', 'utf-8'));
+            const rows = ['source_page,broken_url,anchor_text,http_status,reason'];
+            let total = 0;
+            for (const r of (s.results || [])) {
+              for (const b of (r.brokenLinks || [])) {
+                const esc = v => '\"' + String(v || '').replace(/\"/g,'\"\"') + '\"';
+                rows.push([esc(r.docUrl), esc(b.brokenUrl), esc(b.anchorText), esc(b.status ?? 'ERR'), esc(b.reason ?? '')].join(','));
+                total++;
+              }
+            }
+            fs.writeFileSync('$REPORT_DIR/cms-broken-links.csv', rows.join('\n'), 'utf-8');
+            console.log('Broken links CSV: ' + total + ' rows');
+          "
+
+          # Generate broken-images.csv: source_page, image_url, alt_text, http_status, reason
+          node -e "
+            const fs = require('fs');
+            const s = JSON.parse(fs.readFileSync('$SUMMARY', 'utf-8'));
+            const rows = ['source_page,image_url,alt_text,http_status,reason'];
+            let total = 0;
+            for (const r of (s.results || [])) {
+              for (const b of (r.brokenImages || [])) {
+                const esc = v => '\"' + String(v || '').replace(/\"/g,'\"\"') + '\"';
+                rows.push([esc(r.docUrl), esc(b.imageUrl), esc(b.alt), esc(b.status ?? 'ERR'), esc(b.reason ?? '')].join(','));
+                total++;
+              }
+            }
+            fs.writeFileSync('$REPORT_DIR/cms-broken-images.csv', rows.join('\n'), 'utf-8');
+            console.log('Broken images CSV: ' + total + ' rows');
+          "
+
+          # Print summary to log
+          node -e "
+            const s = JSON.parse(require('fs').readFileSync('$SUMMARY','utf-8'));
+            const totalBrokenLinks = (s.results||[]).reduce((n,r)=>n+(r.brokenLinks||[]).length,0);
+            const totalBrokenImages = (s.results||[]).reduce((n,r)=>n+(r.brokenImages||[]).length,0);
+            console.log('=== CMS Docs Audit Summary ===');
+            console.log('Total URLs checked  : ' + s.scannedDocs);
+            console.log('Broken links (total): ' + totalBrokenLinks + ' across ' + s.docsWithBrokenLinks + ' pages');
+            console.log('Broken images (total): ' + totalBrokenImages + ' across ' + s.docsWithBrokenImages + ' pages');
+            console.log('Pages with tables   : ' + s.docsWithTables);
+            console.log('Old logo detected   : ' + s.docsWithOldLogo);
+          "
+
+          END=$(date +%s)
+          ELAPSED=$(( END - BATCH_START_EPOCH ))
+          echo "Duration: $(( ELAPSED/60 ))m $(( ELAPSED%60 ))s | Outcome: ${AUDIT_OUTCOME}"
+
+      # -------------------------------------------------------------------
+      # 7) Upload artifacts
+      # -------------------------------------------------------------------
+      - name: Upload broken links CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-broken-links-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}/cms-broken-links.csv
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload broken images CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-broken-images-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}/cms-broken-images.csv
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload full audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-docs-audit-full-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      # -------------------------------------------------------------------
+      # 8) Post Slack summary
+      # -------------------------------------------------------------------
+      - name: Post Slack summary
+        if: always()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          AUDIT_OUTCOME: ${{ steps.audit_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.audit_start.outputs.start_epoch }}
+        run: |
+          set -eo pipefail
+          if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
+            echo "::warning::Slack skipped — tokens not configured."
+            exit 0
+          fi
+
+          ELAPSED=$(( $(date +%s) - BATCH_START_EPOCH ))
+          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
+
+          # Use Node.js to build and post the Slack message (handles escaping cleanly)
+          node << 'NODEOF'
+            const fs   = require("fs");
+            const https = require("https");
+            const summaryPath = process.env.REPORT_DIR + "/docs-audit-summary.json";
+            const outcome  = process.env.AUDIT_OUTCOME || "unknown";
+            const duration = process.env.DURATION || "?";
+            const runUrl   = process.env.RUN_URL || "";
+            const token    = process.env.SLACK_BOT_TOKEN;
+            const channel  = process.env.SLACK_CHANNEL_ID;
+
+            const icon = outcome === "success" ? ":white_check_mark:" : ":x:";
+            let text;
+
+            if (fs.existsSync(summaryPath)) {
+              const s = JSON.parse(fs.readFileSync(summaryPath, "utf-8"));
+              const totalBrokenLinks  = (s.results || []).reduce((n, r) => n + (r.brokenLinks  || []).length, 0);
+              const totalBrokenImages = (s.results || []).reduce((n, r) => n + (r.brokenImages || []).length, 0);
+              text = [
+                `${icon} *CMS Docs Audit — ${outcome}* | Duration: ${duration}`,
+                `• Total URLs checked   : ${s.scannedDocs}`,
+                `• Broken links (total) : ${totalBrokenLinks} across ${s.docsWithBrokenLinks} pages`,
+                `• Broken images (total): ${totalBrokenImages} across ${s.docsWithBrokenImages} pages`,
+                `• Old logo detected    : ${s.docsWithOldLogo} pages`,
+                `:arrow_down: *Download reports from* <${runUrl}|Open run → Artifacts>`,
+                `   • \`cms-broken-links.csv\`  — source page, broken URL, anchor text, status`,
+                `   • \`cms-broken-images.csv\` — source page, image URL, alt text, status`,
+              ].join("\n");
+            } else {
+              text = `${icon} *CMS Docs Audit — ${outcome}* | Duration: ${duration} | No summary found. <${runUrl}|Open run>`;
+            }
+
+            const body = JSON.stringify({ channel, text });
+            const req = https.request("https://slack.com/api/chat.postMessage", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(body),
+              },
+            }, res => {
+              let data = "";
+              res.on("data", c => data += c);
+              res.on("end", () => {
+                const ok = JSON.parse(data).ok;
+                console.log(ok ? "Slack posted." : "Slack error: " + data);
+                process.exitCode = ok ? 0 : 1;
+              });
+            });
+            req.on("error", e => { console.error("Slack request error:", e.message); process.exitCode = 1; });
+            req.write(body);
+            req.end();
+          NODEOF
