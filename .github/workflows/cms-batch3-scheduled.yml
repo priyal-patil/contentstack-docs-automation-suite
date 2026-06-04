@@ -1,0 +1,302 @@
+# =============================================================================
+# CMS Batch 3 — all CMS delete flows (sequential, 1 worker)
+# =============================================================================
+#
+# Triggered by: workflow_run on "CMS Batch 2 — edit/update flows (after Batch 1, 7 workers)"
+#   → fires whenever Batch 2 finishes (success OR failure).
+#
+# Daily chain:
+#   5:00 AM IST → Batch 1 (creates) → Batch 2 (edits) → Batch 3 (deletes)
+#
+# Delete execution order (LIFO — safe dependency order):
+#   Phase 1  — Content     : entries, assets, comments, version names
+#   Phase 2  — Taxonomy    : terms → taxonomies
+#   Phase 3  — Structure   : global fields → content types
+#   Phase 4  — Releases
+#   Phase 5  — Services    : tokens, webhook, workflows
+#   Phase 6  — Branches    : aliases → branches
+#   Phase 7  — Env/Lang    : environments, languages
+#   Phase 8  — Users/Roles : roles, users
+#   Phase 9  — Stack       : leave → transfer → delete (always last)
+#
+# Total: 30 delete flows | 1 worker | sequential
+#
+# Note: flows with stage=delete (delete-a-branch, delete-content-type,
+#       delete-a-stack, delete-a-role, remove-a-user) are included because
+#       grep does NOT filter by Stage=main.
+#
+# Infrastructure: same Docker image as Batch 1/2.
+# =============================================================================
+
+name: CMS Batch 3 — delete flows (after Batch 2, 1 worker, sequential)
+
+on:
+  workflow_run:
+    workflows:
+      - "CMS Batch 2 — edit/update flows (after Batch 1, 7 workers)"
+    types:
+      - completed
+
+  workflow_dispatch:
+    inputs:
+      skip_slack:
+        description: "Skip Slack notification"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      skip_report_email:
+        description: "Skip report email"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  cms-batch3:
+    name: CMS Batch 3 — 30 delete flows (1 worker, sequential, 5 min/flow)
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      options: --user root
+    timeout-minutes: 180
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      OPEN_CMS_DASHBOARD: "0"
+      SKIP_OPEN_DASHBOARD: "1"
+      PW_WORKERS: "1"
+      PW_SLOWMO: "0"
+      PW_FLOW_MAX_MINUTES: "5"
+      PW_ACTION_TIMEOUT_MINUTES: "3"
+      REPORT_DIR: ${{ github.workspace }}/reports/cms-batch3-${{ github.run_id }}-${{ github.run_attempt }}
+      SKIP_SLACK: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env for automation
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?secret CS_EMAIL is required}"
+          : "${CS_PASSWORD:?secret CS_PASSWORD is required}"
+          : "${DEFAULT_STACK:?secret DEFAULT_STACK is required}"
+          {
+            echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"
+            echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}"; fi
+            if [[ -n "${SLACK_CHANNEL_ID:-}" ]]; then echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}"; fi
+          } > .env
+          chmod 600 .env
+
+      - name: Record batch start time
+        id: batch_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+          echo "CMS Batch 3 started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee "${{ env.REPORT_DIR }}/batch3-run.log"
+
+      - name: Run CMS Batch 3 — 30 delete flows (sequential, LIFO order)
+        id: batch3_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: |
+          set -uo pipefail
+          echo "Starting CMS Batch 3 via scripts/run-cms-batch3.sh…"
+          echo "30 delete flows — sequential (1 worker), LIFO delete order"
+          echo "3 min element timeout | 5 min/flow cap"
+          bash scripts/run-cms-batch3.sh
+          EXIT_CODE=$?
+          echo "Batch 3 exit code: ${EXIT_CODE}"
+          exit ${EXIT_CODE}
+
+      - name: Collect results and generate reports (always)
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.batch_start.outputs.start_epoch }}
+          BATCH_START_ISO: ${{ steps.batch_start.outputs.start_iso }}
+          BATCH3_OUTCOME: ${{ steps.batch3_run.outcome }}
+        run: |
+          set -eo pipefail
+          END_EPOCH="$(date +%s)"
+          ELAPSED_SECS=$(( END_EPOCH - BATCH_START_EPOCH ))
+          ELAPSED_MIN=$(( ELAPSED_SECS / 60 ))
+          ELAPSED_SEC=$(( ELAPSED_SECS % 60 ))
+
+          LOG="$REPORT_DIR/batch3-run.log"
+          echo "" | tee -a "$LOG"
+          echo "=============================" | tee -a "$LOG"
+          echo "CMS Batch 3 — ${BATCH3_OUTCOME}" | tee -a "$LOG"
+          echo "  Started  : ${BATCH_START_ISO}" | tee -a "$LOG"
+          echo "  Finished : $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$LOG"
+          echo "  Duration : ${ELAPSED_MIN}m ${ELAPSED_SEC}s" | tee -a "$LOG"
+          echo "=============================" | tee -a "$LOG"
+
+          PARTS_DIR="$REPORT_DIR/playwright-parts"
+          shopt -s nullglob
+          PART_FILES=("$PARTS_DIR"/*.json)
+          shopt -u nullglob
+
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            echo "flows-results.json present." | tee -a "$LOG"
+          elif [[ "${#PART_FILES[@]}" -gt 0 ]]; then
+            echo "Merging ${#PART_FILES[@]} partial results…" | tee -a "$LOG"
+            npx ts-node scripts/mergePlaywrightFlowJsonReports.ts \
+              --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+          else
+            echo "::warning::No results found — all flows may have been killed."
+          fi
+
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+            npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+            npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+          fi
+
+      - name: Upload CMS Batch 3 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch3-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/cms-batch3-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-batch3-failure-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # -------------------------------------------------------------------
+      # Report email
+      # -------------------------------------------------------------------
+      - name: Report email — gate on secrets
+        id: email_gate
+        if: always()
+        env:
+          TO: ${{ secrets.REPORT_EMAIL_TO }}
+          HOST: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          USER: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          PASS: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          FROM: ${{ secrets.REPORT_EMAIL_FROM }}
+          PORT_RAW: ${{ secrets.REPORT_EMAIL_SMTP_PORT }}
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name == 'workflow_dispatch' && inputs.skip_report_email == 'true' }}" == "true" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          PORT="${PORT_RAW:-587}"
+          if [[ -z "${TO:-}" || -z "${HOST:-}" || -z "${USER:-}" || -z "${PASS:-}" || -z "${FROM:-}" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "enabled=true"  >> "$GITHUB_OUTPUT"
+          echo "server_port=${PORT}" >> "$GITHUB_OUTPUT"
+          [[ "${PORT}" == "465" ]] && echo "secure=true" >> "$GITHUB_OUTPUT" || echo "secure=false" >> "$GITHUB_OUTPUT"
+
+      - name: Report email — write body
+        id: email_body
+        if: always() && steps.email_gate.outputs.enabled == 'true'
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          CMS_STEP_OUTCOME: ${{ steps.batch3_run.outcome }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: npx ts-node scripts/gha/writeCmsDailyReportEmailBody.ts "${{ github.workspace }}/cms-batch3-email-body.txt" || true
+
+      - name: Report email — send
+        if: always() && steps.email_gate.outputs.enabled == 'true' && steps.email_body.outcome == 'success'
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
+          server_port: ${{ steps.email_gate.outputs.server_port }}
+          username: ${{ secrets.REPORT_EMAIL_SMTP_USERNAME }}
+          password: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
+          secure: ${{ steps.email_gate.outputs.secure == 'true' }}
+          subject: >-
+            [CMS Batch 3] ${{ steps.batch3_run.outcome }} — delete flows — ${{ github.repository }} (#${{ github.run_number }})
+          to: ${{ secrets.REPORT_EMAIL_TO }}
+          from: ${{ secrets.REPORT_EMAIL_FROM }}
+          body: file://${{ github.workspace }}/cms-batch3-email-body.txt
+
+      # -------------------------------------------------------------------
+      # Slack summary
+      # -------------------------------------------------------------------
+      - name: Post Slack summary
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CMS_STEP_OUTCOME: ${{ steps.batch3_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SKIP_SLACK: "0"
+        run: |
+          set -eo pipefail
+          if [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]]; then
+            echo "::warning::Slack skipped — tokens not configured."
+            exit 0
+          fi
+
+          START="${{ steps.batch_start.outputs.start_epoch }}"
+          END="$(date +%s)"
+          ELAPSED=$(( END - START ))
+          ELAPSED_MIN=$(( ELAPSED / 60 ))
+          ELAPSED_SEC=$(( ELAPSED % 60 ))
+          DURATION="${ELAPSED_MIN}m ${ELAPSED_SEC}s"
+
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            echo "Posting detailed Slack summary…"
+            CMS_BATCH_DURATION_LABEL="CMS Batch 3: all delete flows (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || \
+              echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
+          else
+            ICON=":white_check_mark:"
+            [[ "${CMS_STEP_OUTCOME:-}" != "success" ]] && ICON=":x:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 30 delete flows | 1 worker | sequential | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
+              | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
+          fi

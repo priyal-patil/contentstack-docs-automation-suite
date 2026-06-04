@@ -24,6 +24,8 @@
     "test:cms:batch1:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch1.sh",
     "test:cms:batch2": "bash scripts/run-cms-batch2.sh",
     "test:cms:batch2:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch2.sh",
+    "test:cms:batch3": "bash scripts/run-cms-batch3.sh",
+    "test:cms:batch3:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch3.sh",
     "launch:cms:bg": "bash scripts/run-project-batch-background.sh CMS",
     "launch:launch:bg": "bash scripts/run-project-batch-background.sh Launch",
     "launch:personalize:bg": "bash scripts/run-project-batch-background.sh Personalize",
