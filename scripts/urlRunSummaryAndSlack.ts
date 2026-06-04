@@ -234,7 +234,21 @@ function buildSlackPayload(summary: {
   const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
 
   const icon = c.failed === 0 ? ":white_check_mark:" : ":x:";
-  const header = summary.cumulativeNote ? "Documentation URL run summary (cumulative)" : "CMS Batch 1 — URL run summary";
+  // CMS_SLACK_TITLE overrides the header (e.g. "CMS Batch 2 — URL run summary").
+  // Falls back to the first segment of CMS_BATCH_DURATION_LABEL (strips the duration part),
+  // then to the legacy default so Batch 1 is unaffected.
+  const defaultTitle = (() => {
+    const label = process.env.CMS_SLACK_TITLE?.trim();
+    if (label) return label;
+    const durLabel = process.env.CMS_BATCH_DURATION_LABEL?.trim();
+    if (durLabel) {
+      // e.g. "CMS Batch 2: environment, ... (12m 24s)" → "CMS Batch 2 — URL run summary"
+      const batchMatch = durLabel.match(/^(CMS\s+Batch\s+\d+)/i);
+      if (batchMatch) return `${batchMatch[1]} — URL run summary`;
+    }
+    return "CMS Batch 1 — URL run summary";
+  })();
+  const header = summary.cumulativeNote ? "Documentation URL run summary (cumulative)" : defaultTitle;
 
   const blocks: unknown[] = [
     {
