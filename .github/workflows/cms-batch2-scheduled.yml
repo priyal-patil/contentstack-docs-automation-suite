@@ -7,7 +7,7 @@
 #     edit/update flows can be tested even if some creates partially failed).
 #
 # Modules (7 workers, one per module, all start simultaneously):
-#   environment, language, branches, stack, content-models, global-field, assets
+#   environment, language, branches, stack, content-models, global-field, assets, entries
 #
 # CRUD order within each module:
 #   create/add (if not in Batch 1) → edit/update → move/import/export → misc
@@ -88,12 +88,12 @@ jobs:
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
       PW_SLOWMO: "0"
-      # 10 shared workers across all 93 flows from 7 modules.
-      # When environment (1 flow) finishes its worker immediately picks up
-      # the next queued flow from any module — zero idle time.
-      # Safe on GHA 2-core / 7 GB: 10 × 250 MB headless Chromium = 2.5 GB.
-      # Raise to PW_WORKERS=14 for faster runs if GHA resources allow.
-      PW_WORKERS: "10"
+      # 14 shared workers across all 106 flows from 8 modules.
+      # When any module finishes its worker immediately picks up the next
+      # queued flow from any other module — zero idle time.
+      # Safe on GHA 2-core / 7 GB: 14 × 250 MB headless Chromium = 3.5 GB.
+      # Raise to PW_WORKERS=20 for max speed (5 GB, still within 7 GB limit).
+      PW_WORKERS: "14"
       # Per-FLOW timeout: 5 min per individual flow.
       # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test so
       # this actually applies (no 4-hour CMS_MODULE_BATCH_TIMEOUT_MS override).
@@ -169,7 +169,7 @@ jobs:
       # -------------------------------------------------------------------
       # 5) Run Batch 2 — 7 modules in parallel (CRUD order, skip Batch 1 + deletes)
       # -------------------------------------------------------------------
-      - name: Run CMS Batch 2 — 7 modules (environment, language, branches, stack, content-models, global-field, assets)
+      - name: Run CMS Batch 2 — 7 modules (environment, language, branches, stack, content-models, global-field, assets, entries)
         id: batch2_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -209,7 +209,7 @@ jobs:
           echo "  Started  : ${BATCH_START_ISO}" | tee -a "$LOG"
           echo "  Finished : $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$LOG"
           echo "  Duration : ${ELAPSED_MIN}m ${ELAPSED_SEC}s" | tee -a "$LOG"
-          echo "  Modules  : environment, language, branches, stack, content-models, global-field, assets" | tee -a "$LOG"
+          echo "  Modules  : environment, language, branches, stack, content-models, global-field, assets, entries" | tee -a "$LOG"
           echo "=============================" | tee -a "$LOG"
 
           cat > "$REPORT_DIR/timing-summary.txt" <<EOF
@@ -217,7 +217,7 @@ jobs:
           Started:  ${BATCH_START_ISO}
           Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
           Outcome:  ${BATCH2_OUTCOME}
-          Modules:  environment, language, branches, stack, content-models, global-field, assets
+          Modules:  environment, language, branches, stack, content-models, global-field, assets, entries
           Run:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           EOF
 
@@ -332,7 +332,7 @@ jobs:
           password: ${{ secrets.REPORT_EMAIL_SMTP_PASSWORD }}
           secure: ${{ steps.email_gate.outputs.secure == 'true' }}
           subject: >-
-            [CMS Batch 2] ${{ steps.batch2_run.outcome }} — environment, language, branches, stack, content-models, global-field, assets — ${{ github.repository }} (#${{ github.run_number }})
+            [CMS Batch 2] ${{ steps.batch2_run.outcome }} — environment, language, branches, stack, content-models, global-field, assets, entries — ${{ github.repository }} (#${{ github.run_number }})
           to: ${{ secrets.REPORT_EMAIL_TO }}
           from: ${{ secrets.REPORT_EMAIL_FROM }}
           body: file://${{ github.workspace }}/cms-batch2-email-body.txt
@@ -366,7 +366,7 @@ jobs:
 
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
             echo "Posting detailed Slack summary via urlRunSummaryAndSlack.ts…"
-            CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets (${DURATION})" \
+            CMS_BATCH_DURATION_LABEL="CMS Batch 2: environment, language, branches, stack, content-models, global-field, assets, entries (${DURATION})" \
               npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || \
               echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
           else
@@ -375,6 +375,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | Modules: environment, language, branches, stack, content-models, global-field, assets | 7 workers | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | Modules: environment, language, branches, stack, content-models, global-field, assets, entries | 7 workers | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
