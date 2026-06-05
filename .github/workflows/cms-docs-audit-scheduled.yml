@@ -50,18 +50,24 @@ permissions:
 
 jobs:
   docs-audit-cms:
-    name: CMS Docs Audit — 503 URLs, 20 workers, broken links & images
+    name: CMS Docs Audit — 503 URLs, 10 workers, broken links & images
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-jammy
       options: --user root
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       CI: "true"
       PLAYWRIGHT_HEADLESS: "1"
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-      PW_WORKERS: "20"
+      # 10 workers: each page loads + checks ~30 links + ~10 images (10 concurrent HTTP each).
+      # 503 URLs × 50s avg / 10 workers ≈ 42 min. Safe — avoids docs server rate limits.
+      # PW_FULLY_PARALLEL=0 ensures the top-level Summary test runs AFTER all per-doc parallel
+      # tests finish writing their JSON files (prevents scannedDocs=0 race condition).
+      PW_WORKERS: "10"
+      PW_FULLY_PARALLEL: "0"
       DOCS_AUDIT_PROJECT: "CMS"
+      DOCS_URLS_CSV: "data/docs-urls.csv"
       REPORT_DIR: ${{ github.workspace }}/reports/cms-docs-audit-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
@@ -118,18 +124,16 @@ jobs:
       # -------------------------------------------------------------------
       # 5) Run docs-audit for CMS project (503 URLs, 20 workers)
       # -------------------------------------------------------------------
-      - name: Run CMS docs audit — 503 URLs, 20 workers
+      - name: Run CMS docs audit — 503 URLs, 10 workers
         id: audit_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
         run: |
           set -uo pipefail
-          echo "Running docs-audit for CMS project (503 URLs, 20 workers)"
-          echo "Checking: broken links, broken images, table structure, old logo"
-          npx playwright test tests/docs-audit.spec.ts \
-            --project=docs-audit \
-            --grep "Docs Audit" \
-          2>&1
+          echo "Running docs-audit for CMS project"
+          echo "503 URLs | 10 workers | checking broken links + broken images"
+          echo "Per-URL: loads page → checks ALL links (HTTP) → checks ALL images (HTTP)"
+          npx playwright test tests/docs-audit.spec.ts --project=docs-audit 2>&1
           EXIT_CODE=$?
           echo "Docs audit exit code: ${EXIT_CODE}"
           exit ${EXIT_CODE}
