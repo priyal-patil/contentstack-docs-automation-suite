@@ -130,13 +130,30 @@ jobs:
           REPORT_DIR: ${{ env.REPORT_DIR }}
         run: |
           set -uo pipefail
-          echo "Running docs-audit for CMS project"
-          echo "503 URLs | 10 workers | checking broken links + broken images"
-          echo "Per-URL: loads page → checks ALL links (HTTP) → checks ALL images (HTTP)"
-          npx playwright test tests/docs-audit.spec.ts --project=docs-audit 2>&1
-          EXIT_CODE=$?
-          echo "Docs audit exit code: ${EXIT_CODE}"
-          exit ${EXIT_CODE}
+          echo "=== Phase 1: Per-doc tests (503 URLs, 10 workers in parallel) ==="
+          echo "Each URL: load page → check ALL links (HTTP 404/5xx) → check ALL images"
+          # Run ONLY the per-doc Audit tests (not the Summary test)
+          # --grep "Audit:" matches "Docs Audit > Audit: <url>" titles
+          npx playwright test tests/docs-audit.spec.ts \
+            --project=docs-audit \
+            --grep "Audit:" \
+            2>&1
+          PHASE1_EXIT=$?
+          echo "Phase 1 exit: ${PHASE1_EXIT}"
+
+          echo ""
+          echo "=== Phase 2: Summary aggregation (1 worker, after ALL per-doc files written) ==="
+          # Run ONLY the Summary test now that all per-doc JSON files are on disk.
+          # PW_WORKERS=1 so summary runs on the same worker process that can see all files.
+          PW_WORKERS=1 npx playwright test tests/docs-audit.spec.ts \
+            --project=docs-audit \
+            --grep "Docs Audit Summary" \
+            2>&1
+          PHASE2_EXIT=$?
+          echo "Phase 2 exit: ${PHASE2_EXIT}"
+
+          # Overall exit: fail if either phase failed
+          [[ $PHASE1_EXIT -ne 0 || $PHASE2_EXIT -ne 0 ]] && exit 1 || exit 0
 
       # -------------------------------------------------------------------
       # 6) Generate broken-links.csv and broken-images.csv (always)

@@ -69,7 +69,7 @@
     "intake:urls": "ts-node tools/intake-urls.ts",
     "test:docs": "playwright test tests/docs.spec.ts",
     "test:docs-audit": "playwright test tests/docs-audit.spec.ts",
-    "test:docs-audit:cms": "DOCS_AUDIT_PROJECT=CMS playwright test tests/docs-audit.spec.ts --project=docs-audit",
+    "test:docs-audit:cms": "DOCS_AUDIT_PROJECT=CMS playwright test tests/docs-audit.spec.ts --project=docs-audit --grep \"Audit:\" && PW_WORKERS=1 DOCS_AUDIT_PROJECT=CMS playwright test tests/docs-audit.spec.ts --project=docs-audit --grep \"Docs Audit Summary\"",
     "test:docs-audit:launch": "DOCS_AUDIT_PROJECT=Launch DOCS_URLS_CSV=data/launch-urls.csv playwright test tests/docs-audit.spec.ts --project=docs-audit",
     "test:docs-audit:personalize": "DOCS_AUDIT_PROJECT=Personalize playwright test tests/docs-audit.spec.ts --project=docs-audit",
     "docs-audit:bg": "bash scripts/run-docs-audit-background.sh",
