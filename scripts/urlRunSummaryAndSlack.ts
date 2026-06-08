@@ -567,13 +567,23 @@ async function main(): Promise<void> {
 
   const perProjectBreakdown = buildPerProjectBreakdownMrkdwn(rows);
 
-  // Read doc-step warnings count from doc-step-warnings.json if present
+  // Count distinct URLs/flows that have at least 1 warning (1 per URL regardless of warning count).
   let warningFlows = 0;
   try {
     const warningsPath = path.join(reportDir, "doc-step-warnings.json");
     if (fs.existsSync(warningsPath)) {
-      const warningsData = JSON.parse(fs.readFileSync(warningsPath, "utf-8")) as { warningFlows?: number };
-      warningFlows = warningsData.warningFlows ?? 0;
+      const warningsData = JSON.parse(fs.readFileSync(warningsPath, "utf-8")) as {
+        warnings?: Array<{ flowId?: string }>;
+        warningFlows?: number;
+      };
+      if (Array.isArray(warningsData.warnings) && warningsData.warnings.length > 0) {
+        // Count unique flowIds — 1 per URL regardless of how many warnings it has.
+        const uniqueFlowIds = new Set(warningsData.warnings.map((w) => w.flowId).filter(Boolean));
+        warningFlows = uniqueFlowIds.size;
+      } else {
+        // Fallback: pre-computed count (older reports).
+        warningFlows = warningsData.warningFlows ?? 0;
+      }
     }
   } catch {
     // non-fatal: warnings count is optional

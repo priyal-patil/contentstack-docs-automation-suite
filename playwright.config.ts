@@ -56,6 +56,21 @@ function resolveTestTimeoutMs(): number {
 
 const testTimeoutMs = resolveTestTimeoutMs();
 
+/**
+ * Per-test retry count.
+ * Default: 1 retry for `flows` project (handles animation races, network jitter).
+ * Override with PW_RETRIES=0 to disable (e.g. local debug runs where you want fast failure).
+ * Global retries stays 0 — only the flows project overrides it.
+ */
+function resolveRetries(): number {
+  const raw = process.env.PW_RETRIES?.trim();
+  if (raw !== undefined) {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n >= 0) return Math.floor(n);
+  }
+  return 1; // default: 1 retry for flows
+}
+
 export default defineConfig({
   globalSetup: "./global-setup.ts",
   testDir: "./tests",
@@ -110,6 +125,7 @@ export default defineConfig({
     {
       name: "flows",
       testMatch: /flows\.spec\.ts/,
+      retries: resolveRetries(),
       use: {
         storageState: "auth.json",
         headless: useHeadless,

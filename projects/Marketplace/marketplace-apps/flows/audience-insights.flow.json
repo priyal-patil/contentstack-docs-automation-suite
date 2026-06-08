@@ -1,0 +1,207 @@
+{
+  "id": "audience-insights",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/audience-insights",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document exactly in order: Install section → Full Page section → Entry Sidebar section. Install steps are click-only (no verify) as the user instructed. The install authorization page (not a modal — full page) uses a cs-select dropdown (input[aria-label='cs-select-aria']) for stack selection. The ToS checkbox step uses warnOnly=true with :not(:checked) selector — skips gracefully when already pre-checked (avoids unchecking it). Post-install navigation fails in the QA env because Audience Insights requires Lytics configuration to appear in the stack navigation.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Installed Apps option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights app in Installed Apps (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Install button in app modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Apps button in top navigation (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc says 'left-hand side primary navigation'. Actual UI: 'Apps' dropdown button in the top navigation bar (data-test-id='cms-nav-apps'). The doc itself notes: 'If you have enabled the App Switcher, the icon will be available at the top under the Apps section.'"
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights app icon in left navigation (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc says 'left-hand side primary navigation'. With App Switcher enabled, the Audience Insights icon is available under the Apps section in the top navigation bar. The doc itself notes: 'If you have enabled the App Switcher, the icon will be available at the top under the Apps section.'",
+      "expected": {
+        "labelEquals": "Audience Insights",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights app icon in left navigation (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc says 'left-hand side primary navigation'. With App Switcher enabled, the Audience Insights icon is available under the Apps section in the top navigation bar."
+    },
+    {
+      "action": "verify",
+      "target": "Opportunity Explorer section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Opportunity Explorer",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Content Map section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Map",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Explorer section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Audience Explorer",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entries page link (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Left navigation",
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries page link (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "First entry row (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Entries listing",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First entry row (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Audience Insights app icon in right panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Right navigation panel",
+        "labelEquals": "Audience Insights",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audience Insights app icon in right panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Analyze button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Analyze",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Analyze button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Topics section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Topics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audience Alignment section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Audience Alignment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Re-analyze button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Re-analyze",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Re-analyze button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

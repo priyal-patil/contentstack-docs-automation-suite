@@ -108,6 +108,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'button:has-text("Add Without References"), [data-test-id*="add-without-references" i]',
   "New Entry (doc step)":
     'button[data-test-id="cs-new-entry-all-entry"]',
+  "+ New Entry (doc step)":
+    'button[data-test-id="cs-new-entry-all-entry"]',
 
   "Select Content Type modal (doc step)":
     '.ReactModal__new-entry, [data-test-id="cs-new-entry-single-proceed"]',
@@ -115,6 +117,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '.ReactModal__new-entry [data-test-id^="cs-table-body-row-"], .ReactModal__new-entry [role="row"]:has([role="cell"])',
   "Create Entry (doc step)":
     '[data-test-id="cs-new-entry-single-proceed"], [role="dialog"] button:has-text("Create"), [role="dialog"] button:has-text("Proceed")',
+  "Proceed (doc step)":
+    '[data-test-id="cs-new-entry-single-proceed"]:not([disabled]), .ReactModal__new-entry button:has-text("Proceed"):not([disabled])',
 
   "Save (doc step)":
     '[data-test-id="cs-entry-save"], button:has-text("Save")',

@@ -1,0 +1,35 @@
+{
+  "id": "about-marketplace",
+  "project": "Marketplace",
+  "module": "overview",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-platform-guides/about-marketplace",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/marketplace-platform-guides/about-marketplace. Doc says: 'On the left-hand side primary navigation, you will find a new icon for Marketplace. Click on the icon to go to the Marketplace.' If these steps fail it means the app does not expose a Marketplace icon in the left-hand side primary navigation — this is a gap between the app and the documentation.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Marketplace icon in left-hand side primary navigation (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Left-hand side primary navigation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace icon in left-hand side primary navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace landing page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

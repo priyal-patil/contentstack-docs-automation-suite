@@ -1,0 +1,1141 @@
+{
+  "id": "ai-assistant-with-brand-kit",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/ai-assistant-with-brand-kit",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the doc in order. Section 1 (Install): standard Marketplace install. Platform Configuration: verifies API Credentials section, verifies and clicks Managed by Contentstack, then verifies and clicks Custom Credentials (verifying Provider Name inside), then clicks back to Managed by Contentstack, then verifies and clicks Enable On-Brand Generative AI toggle, verifies Proceed and clicks it, then Save and Proceed. Advanced Configuration: verifies Create Action, clicks it, enters Custom Name, verifies Icon upload and Include Field data toggle, verifies Add your custom prompt section and enters prompt, verifies Add the custom option section, creates Sub-action (Display Name + Value), verifies Perform action on with Current Field and Other Field options, verifies Entry Field checkbox and When JSON RTE field content is selected checkbox, clicks both, verifies Enable search toggle, clicks Save and Proceed. Section 2 (Use): creates content type with Single Line field, creates entry, exercises AI popup with Brand Kits/Voice Profiles/Knowledge Vault dropdowns, verifies all AI options. All warnOnly since Brand Kit must be enabled.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "App Switcher",
+        "labelMatch": "contains",
+        "within": "Top right corner"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace apps search input (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "AI Assistant"
+    },
+    {
+      "action": "hover",
+      "target": "AI Assistant app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install App button on AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Install App",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install App button on AI Assistant (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Configuration tab in app modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Platform Configuration section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Platform Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Credentials section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "API Credentials",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Managed by Contentstack option in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Managed by Contentstack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Managed by Contentstack option in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Custom Credentials option in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Custom Credentials",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Custom Credentials option in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Provider Name dropdown in AI Assistant Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Provider Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Key input for Custom Credentials in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Model section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "API Model",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Recommended Models option in API Model (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Recommended Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "All Available Models option in API Model (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "All Available Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Managed by Contentstack option in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Enable On-Brand Generative AI toggle (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Enable On-Brand Generative AI",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Enable On-Brand Generative AI toggle (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Platform Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Proceed button in AI Assistant Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Proceed button in AI Assistant Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Advanced Configuration section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Advanced Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Action button in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Create Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Action button in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Custom Name input in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Custom Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Custom Name input in Advanced Configuration (doc step)",
+      "value": "Summarize Content",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Icon upload in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Icon",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Include Field data toggle in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Include Field data",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Include Field data toggle in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add your custom prompt section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add your custom prompt",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Prompt input in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Prompt",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Prompt input in Advanced Configuration (doc step)",
+      "value": "Summarize the following text: {{field_data}}",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add the custom option section (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add the custom option",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Sub-action Prompt button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Create Sub-action Prompt",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create Sub-action Prompt button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Display Name input for sub-action (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Display Name input for sub-action (doc step)",
+      "value": "Shorten by",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Value input for sub-action (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Value",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Value input for sub-action (doc step)",
+      "value": "10%",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Perform action on option in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Perform action on",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Current Field option in Perform action on (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Current Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Other Field option in Perform action on (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Other Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Field checkbox in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entry Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Field checkbox in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "When JSON RTE field content is selected checkbox (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "When JSON RTE field content is selected",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "When JSON RTE field content is selected checkbox (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "When field content is selected checkbox in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "When field content is selected",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Enable search for sub-action toggle (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Enable search for sub-action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Enable search for sub-action toggle (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Proceed button in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Proceed button in Advanced Configuration (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Open Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Content Models",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Create New option in content type dropdown (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Content type name input (doc step)",
+      "value": "AI Assistant Brand Kit Test Content Type",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Single Line Textbox field type option in Content Type Builder (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Single Line Textbox",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox field type option in Content Type Builder (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Close",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "AI Assistant Brand Kit Test Content Type option in new entry type selector (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Title field in entry (doc step)",
+      "value": "AI Assistant Brand Kit test entry",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Single Line Textbox field in entry (doc step)",
+      "value": "This is blog content to be transformed using AI Assistant with Brand Kit",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "AI Assistant icon in Field Modifier location (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "AI Assistant icon in Field Modifier location (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "AI Assistant popup in entry (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kits dropdown in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Brand Kits",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kits dropdown in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profiles dropdown in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Voice Profiles",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profiles dropdown in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Knowledge Vault toggle in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Knowledge Vault",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Knowledge Vault toggle in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt input in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Prompt input in AI Assistant popup (doc step)",
+      "value": "Summarize this content for a blog post",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Rewrite field content option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Rewrite the field content",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Shorten this text option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Shorten this text",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Optimize text for SEO option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Optimize text for SEO",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Optimize text for SEO option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Change tone option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Change tone",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Change tone option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Persuasive option in Change tone (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Persuasive",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Persuasive option in Change tone (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Change length option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Change length",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Change length option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Longer option in Change length (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Longer",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Shorter option in Change length (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Shorter",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Shorter option in Change length (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Rewrite field content option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Accept button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Accept",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Try Again button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Try Again",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Cancel button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Cancel",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Accept button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Brainstorm With AI Assistant option (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Brainstorm With AI Assistant",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Brainstorm With AI Assistant option (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Regenerate button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Regenerate",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit button in AI Assistant popup (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Edit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Outline option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Outline",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Outline option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Summary option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Summary",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Summary option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "SEO Tags option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "SEO Tags",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "SEO Tags option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Blog Posts option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Blog Posts",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Blog Posts option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Headline option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Headline",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Headline option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Persona Tags option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "User Persona Tags",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "User Persona Tags option in AI Assistant (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 1000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    }
+  ]
+}

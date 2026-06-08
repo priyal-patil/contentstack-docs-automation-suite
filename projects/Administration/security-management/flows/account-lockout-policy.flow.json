@@ -1,0 +1,101 @@
+{
+  "id": "account-lockout-policy",
+  "project": "Administration",
+  "module": "security-management",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/account-lockout-policy",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Covers the Unlock Users section of https://www.contentstack.com/docs/developers/security/account-lockout-policy. The lockout policy table and best practices sections are informational with no UI steps. Navigates to Administration > Users via App Switcher, then unlocks a user via the Action column ellipsis menu. Only the individual-unlock path (ellipsis) is automated; bulk-unlock via checkboxes is an alternate path in the same doc step. Requires at least one eligible locked user in the test org — if none exist, the Unlock User option will not appear. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Administration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Administration option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Users tab in Administration navigation (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users tab in Administration navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Action menu button for user row (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action menu button for user row (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Unlock User option in action menu (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Unlock User",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Unlock User option in action menu (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Unlock user confirmation modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Continue or Proceed button in unlock confirmation modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Continue or Proceed button in unlock confirmation modal (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

@@ -1,0 +1,950 @@
+{
+  "id": "optimizely",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/optimizely",
+  "type": "executable",
+  "use": [
+    "login",
+    "orgDashboard"
+  ],
+  "automationNotes": "Steps mirror the doc in order. Section 1 (Retrieve Credentials from Optimizely) navigates to Optimizely \u2014 all external-site steps are warnOnly (skipped until real credentials are available; remove warnOnly once credentials are set). Project ID and Access Token are captured via {{OPT_PROJECT_ID}} and {{OPT_ACCESS_TOKEN}}. Section 2 (Install and Configure) follows the standard Marketplace install pattern with position checks (App Switcher top-right, Content Models left nav, Profile bottom-left). Section 3 (Use) creates 'Optimizely Test Content Type' with two Custom fields (Audience + Variations, including Display Name/Help Text/Instruction Value), creates an entry, exercises audience checkbox selection, then demonstrates BOTH Experiment and Campaign variation paths \u2014 all warnOnly since real Optimizely credentials are required for widget data.",
+  "steps": [
+    {
+      "action": "noop",
+      "target": "https://app.optimizely.com/signin",
+      "note": "Change action to 'navigate' and remove warnOnly from all Section 1 steps once Optimizely credentials are available"
+    },
+    {
+      "action": "noop",
+      "target": "Settings option in Optimizely left navigation (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Settings option in Optimizely left navigation (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Snippet Details heading in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Project ID under Snippet Details in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Optimizely Project ID from page (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Profile option in Optimizely bottom-left navigation (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Profile option in Optimizely bottom-left navigation (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "API Access tab in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "API Access tab in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Generate New Token button in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Generate New Token button in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Generate New Token modal in Optimizely (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Token Name field in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Token Name input in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "User email field in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "User email field in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "First user option in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Create button in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Create button in Generate New Token modal (doc step)"
+    },
+    {
+      "action": "noop",
+      "target": "Optimizely Access Token from page (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "App Switcher",
+        "labelMatch": "contains",
+        "within": "Top right corner"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace apps search input (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "Optimizely"
+    },
+    {
+      "action": "hover",
+      "target": "Optimizely app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install button on Optimizely app (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button on Optimizely app (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Configuration tab in app modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Project ID field in Optimizely Configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Project ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Project ID input in Optimizely Configuration (doc step)",
+      "value": "{{OPT_PROJECT_ID}}",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Auth Token field in Optimizely Configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Auth Token",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Auth Token input in Optimizely Configuration (doc step)",
+      "value": "{{OPT_ACCESS_TOKEN}}",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save In Entry configuration label (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save In Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "All Fields option in Optimizely Configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "All Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Custom Fields option in Optimizely Configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Custom Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "All Fields option in Optimizely Configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Open Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Content Models",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in content type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Use Prebuilt option in content type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Use Prebuilt",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in content type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Content type name input (doc step)",
+      "value": "Optimizely Test Content Type",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Custom field type option in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Custom",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Custom field type option in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Extension/App section in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Select Extension/App",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Extension/App section in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Optimizely Audience option in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Optimizely Audience",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Optimizely Audience option in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Display Name input for custom field (doc step)",
+      "value": "Optimizely Audience Custom Field",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Help Text field for custom field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Help Text",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Instruction Value field for custom field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Instruction Value",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Custom field type option in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Custom",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Custom field type option in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Extension/App section in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Select Extension/App",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Extension/App section in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Optimizely Variations option in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Optimizely Variations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Optimizely Variations option in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Select Extension/App (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Optimizely Test Content Type option in new entry type selector (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Audience(s) button in Optimizely Audience field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Audience(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Audience(s) button in Optimizely Audience field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First audience checkbox in audience selection panel (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Second audience checkbox in audience selection panel (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Audience(s) button in audience selection panel (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Audience(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Audience(s) button in audience selection panel (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variation(s) button in Optimizely Variations field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Variation(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Variation(s) button in Optimizely Variations field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add Variations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Experiment Type dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Experiment Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Experiment Type dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Experiment option in Experiment Type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Experiment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Experiment option in Experiment Type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Experiment List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Experiment List",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Experiment List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First experiment option in Experiment List (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First variation checkbox in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variation(s) button in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Variation(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Variation(s) button in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variation(s) button in Optimizely Variations field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Variation(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Variation(s) button in Optimizely Variations field (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add Variations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Experiment Type dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Experiment Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Experiment Type dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Campaign option in Experiment Type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Campaign",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Campaign option in Experiment Type dropdown (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Campaign List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Campaign List",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Campaign List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First campaign option in Campaign List (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Experiment List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Experiment List",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Experiment List dropdown in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First experiment option in Experiment List (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First variation checkbox in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Variation(s) button in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ Add Variation(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Variation(s) button in Add Variations modal (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 5000,
+      "warnOnly": true
+    }
+  ]
+}

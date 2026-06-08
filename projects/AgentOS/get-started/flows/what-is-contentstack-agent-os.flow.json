@@ -1,0 +1,10 @@
+{
+  "id": "what-is-contentstack-agent-os",
+  "project": "AgentOS",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/what-is-contentstack-agent-os",
+  "type": "informational",
+  "use": [],
+  "steps": []
+}

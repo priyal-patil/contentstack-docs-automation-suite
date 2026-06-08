@@ -1,0 +1,10 @@
+{
+  "id": "agent-os-architecture",
+  "project": "AgentOS",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/agent-os-architecture",
+  "type": "informational",
+  "use": [],
+  "steps": []
+}

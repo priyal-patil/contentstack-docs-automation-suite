@@ -1,0 +1,883 @@
+{
+  "id": "google-analytics",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/google-analytics",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps follow the doc order exactly. Section 1 (Fetch View ID, Property ID and Service Account Details) navigates to Google Cloud Console and Google Analytics — external steps performed on the doc URLs. Credential-dependent steps (entering client_email, entering View ID / Property ID retrieved from credentials) will fail without real Google credentials and are recorded as doc failures. Install section follows standard Marketplace install pattern. Configuration screen: both GA4 (Property ID) and Universal Analytics (View ID) options are verified and demonstrated — GA4 is clicked first, Property ID verified/entered (warnOnly), then Universal Analytics is selected; credential fields are warnOnly because real credentials are required. Save is warnOnly for the same reason. Webhook tab is warnOnly (conditional on app configuration). Dashboard Widget: navigates to stack Dashboard and verifies the GA widget. Day selection options are warnOnly (small cards, requires real credentials). Sidebar Widget: verifies Content Models in left nav, clicks New Content Type button (opens modal) → enters name → clicks Proceed → creates 'GA Test Content Type' with a URL field, saves it, then navigates via Entries top nav → + New Entry → selects 'GA Test Content Type' to create an entry. Widgets button verified before clicking, GA sidebar widget verified after. Doc says 'Marketplace icon in left nav' — automation uses App Switcher (docWarning).",
+  "steps": [
+    {
+      "action": "navigate",
+      "target": "https://console.cloud.google.com/iam-admin/serviceaccounts",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "CREATE PROJECT button in Google Cloud Console (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "CREATE PROJECT"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "SELECT PROJECT button in Google Cloud Console (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "SELECT PROJECT"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Select a project drop-down in Google Cloud Console (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Select a project"
+      }
+    },
+    {
+      "action": "click",
+      "target": "select the project card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "navigate",
+      "target": "https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts?supportedpurview=project",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "select the project card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ CREATE SERVICE ACCOUNT button in Google Cloud Console (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ CREATE SERVICE ACCOUNT"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ CREATE SERVICE ACCOUNT button in Google Cloud Console (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "enter",
+      "target": "Service account name input in Google Cloud Console (doc step)",
+      "value": "ga-automation-service-account"
+    },
+    {
+      "action": "verify",
+      "target": "CREATE AND CONTINUE button in Google Cloud Console (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "CREATE AND CONTINUE"
+      }
+    },
+    {
+      "action": "click",
+      "target": "CREATE AND CONTINUE button in Google Cloud Console (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "DONE button in Google Cloud Console (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "DONE"
+      }
+    },
+    {
+      "action": "click",
+      "target": "DONE button in Google Cloud Console (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "three dots action menu on service account row in Google Cloud Console (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Manage keys option in service account action menu (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Manage keys"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage keys option in service account action menu (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "ADD KEY dropdown in Google Cloud Console (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "ADD KEY"
+      }
+    },
+    {
+      "action": "click",
+      "target": "ADD KEY dropdown in Google Cloud Console (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "Create new key option in ADD KEY dropdown (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Create new key"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create new key option in ADD KEY dropdown (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "JSON key type option in Create key dialog (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "JSON"
+      }
+    },
+    {
+      "action": "click",
+      "target": "JSON key type option in Create key dialog (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "CREATE button in Create key dialog (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "CREATE"
+      }
+    },
+    {
+      "action": "click",
+      "target": "CREATE button in Create key dialog (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "capture",
+      "target": "client_email from downloaded service account JSON (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "navigate",
+      "target": "https://console.cloud.google.com/apis/dashboard",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "+ ENABLE APIS AND SERVICES button in Google Cloud Console (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ ENABLE APIS AND SERVICES"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ ENABLE APIS AND SERVICES button in Google Cloud Console (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "enter",
+      "target": "API Library search bar in Google Cloud Console (doc step)",
+      "value": "Google Analytics Reporting API"
+    },
+    {
+      "action": "verify",
+      "target": "Google Analytics Reporting API result in API Library (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Google Analytics Reporting API"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Google Analytics Reporting API result in API Library (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "ENABLE button for Google Analytics Reporting API (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "ENABLE"
+      }
+    },
+    {
+      "action": "click",
+      "target": "ENABLE button for Google Analytics Reporting API (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "navigate",
+      "target": "https://console.cloud.google.com/apis/library",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "API Library search bar in Google Cloud Console (doc step)",
+      "value": "Google Analytics Data API"
+    },
+    {
+      "action": "verify",
+      "target": "Google Analytics Data API result in API Library (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Google Analytics Data API"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Google Analytics Data API result in API Library (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "ENABLE button for Google Analytics Data API (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "ENABLE"
+      }
+    },
+    {
+      "action": "click",
+      "target": "ENABLE button for Google Analytics Data API (doc step)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "navigate",
+      "target": "https://analytics.google.com/",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Admin"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Account access management under Account Settings in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Account access management"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Account access management under Account Settings in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "plus icon to add users in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add users option in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add users"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add users option in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add roles and data restrictions modal in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add roles and data restrictions"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email addresses field in Add roles and data restrictions modal in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Email addresses"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Email addresses field in Add roles and data restrictions modal in Google Analytics (doc step)",
+      "value": "{{GA_CLIENT_EMAIL}}"
+    },
+    {
+      "action": "verify",
+      "target": "Direct roles and data restrictions section in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Direct roles and data restrictions"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Viewer option under Direct roles and data restrictions in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Viewer"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Viewer option under Direct roles and data restrictions in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Add button in Add roles and data restrictions modal in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Add"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add button in Add roles and data restrictions modal in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "navigate",
+      "target": "https://analytics.google.com/",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Admin"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Property details under Property Settings in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Property details"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Property details under Property Settings in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "PROPERTY ID in top-right corner of Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "PROPERTY ID"
+      }
+    },
+    {
+      "action": "capture",
+      "target": "PROPERTY ID value in Google Analytics (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "navigate",
+      "target": "https://analytics.google.com/",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Admin"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Admin option in Google Analytics left navigation panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "View Settings under View section in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "View Settings"
+      }
+    },
+    {
+      "action": "click",
+      "target": "View Settings under View section in Google Analytics (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "View ID in View Settings in Google Analytics (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "View ID"
+      }
+    },
+    {
+      "action": "capture",
+      "target": "View ID value in Google Analytics (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'In the left-hand side primary navigation, click the Marketplace icon to go to the Marketplace.' — Automation uses the App Switcher as the working entry point."
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "Google Analytics"
+    },
+    {
+      "action": "hover",
+      "target": "Google Analytics app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install button on Google Analytics app (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button on Google Analytics app (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Configuration tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Universal Analytics option in Configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Universal Analytics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Google Analytics 4 option in Configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Google Analytics 4",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Google Analytics 4 option in Configuration (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Property ID field in Google Analytics 4 configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Property ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Property ID field in Google Analytics 4 configuration (doc step)",
+      "value": "{{GA_PROPERTY_ID}}",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Universal Analytics option in Configuration (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "View ID field in Universal Analytics configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "View ID",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "View ID field in Universal Analytics configuration (doc step)",
+      "value": "{{GA_VIEW_ID}}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Import Service Account Details section in Configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Import Service Account Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Open Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Dashboard option in stack (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Dashboard option in stack (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Google Analytics widget in Dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Google Analytics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Day selection options in Dashboard widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Days",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Day selection options in Dashboard widget (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Models",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "New Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in content type dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Content type name input (doc step)",
+      "value": "GA Test Content Type"
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "URL field type option in Content Type Builder (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc says 'create an entry for this content type' without specifying navigation. Automation navigates via Entries in the top nav."
+    },
+    {
+      "action": "click",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "GA Test Content Type option in new entry type selector (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "GA Test Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "GA Test Content Type option in new entry type selector (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Title field in entry (doc step)",
+      "value": "GA Test Entry"
+    },
+    {
+      "action": "enter",
+      "target": "URL field in entry (doc step)",
+      "value": "https://example.com"
+    },
+    {
+      "action": "verify",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Widgets button in entry right nav panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Widgets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Widgets button in entry right nav panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Google Analytics option in Widgets panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Google Analytics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Google Analytics option in Widgets panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "number of days message in Google Analytics sidebar widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "You can select the number of days for which data should be displayed for the specific page."
+      }
+    }
+  ]
+}

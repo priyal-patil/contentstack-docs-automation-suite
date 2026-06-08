@@ -1,0 +1,352 @@
+{
+  "id": "content-type-visualizer",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/content-type-visualizer",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document in order: Install section → Use section (Dashboard). Install steps are click-only per user instruction. Doc says 'Marketplace icon in left nav' — automation uses App Switcher (docWarning). After landing on Marketplace: verify heading, verify+click Apps from left panel, type app name in search, hover card and install. Install popup uses cs-select dropdown. ToS checkbox is warnOnly. After install, doc shows 'Open Stack' — automation uses Stacks left nav icon (docWarning). Dashboard widget renders inside an iframe — actionRules has a special frameLocator handler for all CTV widget targets (card, info panel, JSON view, search, reload, fullscreen). Zoom in/out/recenter are warnOnly (iframe toolbar buttons with no accessible name). Referenced Content Types is warnOnly (optional field).",
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'In the left-hand side primary navigation, click the Marketplace icon to go to the Marketplace.' — Automation uses the App Switcher as the working entry point."
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace heading on apps page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Contentstack Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "Content Type Visualizer"
+    },
+    {
+      "action": "hover",
+      "target": "Content Type Visualizer app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install App button on Content Type Visualizer (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Hover over the Content Type Visualizer app and click the Install button.' — The actual button label in the UI is 'Install', not 'Install App'.",
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install App button on Content Type Visualizer (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Dashboard option in stack (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Dashboard option in stack (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Content Type Visualizer app in Dashboard (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Type Visualizer",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Zoom in icon (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Zoom in icon (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Zoom out icon (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Zoom out icon (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Content type card in diagram (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Content Type Information panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Type Information",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Name field in Content Type Information (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Field Count in Content Type Information (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Field Count",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Referenced Content Types dropdown (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Referenced Content Type(s)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Edit Content Type button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Edit Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Edit Content Type button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Referenced Content Types dropdown (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Content type card in diagram (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "JSON View icon in right panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "JSON View",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "JSON View icon in right panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Content Type section in JSON view (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "JSON section in JSON view (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "JSON",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Copy icon in JSON view (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Copy",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Copy icon in JSON view (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Recenter icon (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Recenter icon (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Fullscreen icon (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Fullscreen icon (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Reload button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Reload",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Reload button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Search button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Search",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Search button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Search input in Content Type Visualizer (doc step)",
+      "value": "content type"
+    },
+    {
+      "action": "verify",
+      "target": "X button to clear search (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "X",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "X button to clear search (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Search button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

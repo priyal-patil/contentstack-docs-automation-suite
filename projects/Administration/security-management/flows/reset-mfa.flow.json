@@ -1,0 +1,136 @@
+{
+  "id": "reset-mfa",
+  "project": "Administration",
+  "module": "security-management",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/multi-factor-authentication",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Covers the Reset MFA section of https://www.contentstack.com/docs/developers/security/multi-factor-authentication. Requires MFA to be pre-enabled on the account. Automates up to the password entry step; QR code scanning, TOTP code entry, and backup-code handling are external and covered with warn actions. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Top right corner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Profile option in dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Profile",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile option in dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Security tab in left navigation panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Left Navigation",
+        "labelEquals": "Security",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Security tab in left navigation panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Multi-Factor Authentication section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Multi-Factor Authentication",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Reset MFA button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Reset MFA",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Reset MFA button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Set Up MFA modal title (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Set Up Multi-Factor Authentication",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Continue button in Set Up MFA modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Current password field for MFA reset (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Current password field for MFA reset (doc step)",
+      "value": "{{CS_PASSWORD}}",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "Continue button after password entry (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "warn",
+      "target": "Scan new QR code or enter secret key (doc step)",
+      "value": "External step: A new QR code is generated. Scan it using your new authenticator app or manually enter the secret key."
+    },
+    {
+      "action": "warn",
+      "target": "Click Next after scanning QR code (doc step)",
+      "value": "External step: Click Next after scanning the QR code with your new device."
+    },
+    {
+      "action": "warn",
+      "target": "Enter new TOTP code and click Verify (doc step)",
+      "value": "External step: Enter the latest 6-digit code from your new authenticator app and click Verify to finalize the update."
+    },
+    {
+      "action": "warn",
+      "target": "Generate backup codes or Skip for Now (doc step)",
+      "value": "External step: After MFA reset, click Generate Backup Codes (recommended) or Skip for Now."
+    },
+    {
+      "action": "warn",
+      "target": "Copy or Download backup codes (doc step)",
+      "value": "External step: Click Copy codes or Download as .txt file to save your backup codes, then click Done."
+    }
+  ]
+}

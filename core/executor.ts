@@ -45,7 +45,7 @@ function uniqueForFlow(flow: any): string {
   return crypto.randomUUID();
 }
 import { runSharedSteps } from "../shared/steps/registry";
-import { buildMissingElementSummary, recordDocStepFailure } from "./docStepFailureReporter";
+import { buildMissingElementSummary, recordDocStepFailure, recordDocStepWarning } from "./docStepFailureReporter";
 import { ensureTrashHasDeletedGlobalFieldIfNeeded } from "./preflightTrashGlobalField";
 import { ensureTrashHasDeletedEntryIfNeeded } from "./preflightTrashEntries";
 import { ensureTrashHasDeletedAssetFolderIfNeeded, ensureTrashHasDeletedFileAssetIfNeeded } from "./preflightTrashAssets";
@@ -323,6 +323,12 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         stepIndex: i,
       });
       if (maybeNextPage) currentPage = maybeNextPage;
+      // Always emit a warning for steps flagged with alwaysWarn (e.g. UI elements not yet documented).
+      if ((step as any).alwaysWarn) {
+        const msg = (step as any).warnMessage || `Step "${step?.target}" is not mentioned in the document — update the doc and remove alwaysWarn when ready.`;
+        recordDocStepWarning(documentUrl, flow.id, i, step as any, msg);
+        console.warn(`⚠️  Always-warn step (passed but flagged): ${step?.action} "${step?.target}" — ${msg}`);
+      }
       // Pause after "Create New Rule" so user can perform FVR steps manually and capture locators (run with PAUSE_AFTER_CREATE_NEW_RULE=true --headed)
       if (process.env.PAUSE_AFTER_CREATE_NEW_RULE === "true" && step.target === "Create New Rule (doc step)") {
         console.log("⏸️  Pausing for manual steps. Use Playwright Inspector to capture locators. When done, press Resume in the Inspector to finish the run (remaining steps will be skipped).");
@@ -333,6 +339,12 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
     } catch (err: any) {
       if (step.optional) {
         console.log(`⏭️  Optional step skipped (not visible): ${step?.action} "${step?.target}"`);
+        continue;
+      }
+      if ((step as any).warnOnly) {
+        const warnMsg = err?.message ?? String(err);
+        recordDocStepWarning(documentUrl, flow.id, i, step as any, `warnOnly: element not found or not visible — ${warnMsg}`);
+        console.warn(`⚠️  Warn-only step (continuing): ${step?.action} "${step?.target}"`);
         continue;
       }
       const message = err?.message ?? String(err);

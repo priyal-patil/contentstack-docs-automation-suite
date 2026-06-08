@@ -1,0 +1,108 @@
+{
+  "id": "change-personal-details",
+  "project": "Administration",
+  "module": "security-management",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/security/change-personal-details",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/security/change-personal-details. Covers: Profile icon → Profile dropdown → Profile section → Profile Image, First Name, Last Name, Company Name fields → Email (read-only) → Save. Env vars CS_FIRST_NAME, CS_LAST_NAME, CS_COMPANY_NAME should match current account values to avoid unintended data changes. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Top right corner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Profile option in dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Profile",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile option in dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "First Name label in Profile section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "First Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "First Name input in Profile section (doc step)",
+      "value": "{{CS_FIRST_NAME}}",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Last Name label in Profile section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Last Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Last Name input in Profile section (doc step)",
+      "value": "{{CS_LAST_NAME}}",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Company Name label in Profile section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Company Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Company Name input in Profile section (doc step)",
+      "value": "{{CS_COMPANY_NAME}}",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Email field in Profile section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Email",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Profile section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Profile section (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

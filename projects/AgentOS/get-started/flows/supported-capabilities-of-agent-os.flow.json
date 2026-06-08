@@ -1,0 +1,10 @@
+{
+  "id": "supported-capabilities-of-agent-os",
+  "project": "AgentOS",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/supported-capabilities-of-agent-os",
+  "type": "informational",
+  "use": [],
+  "steps": []
+}

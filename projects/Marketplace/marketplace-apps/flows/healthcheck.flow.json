@@ -1,0 +1,760 @@
+{
+  "id": "healthcheck",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/healthcheck",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document in order: Install section → Configuration section → Use section. Every doc-named label, button, field, toggle, and tab is verified before being acted on. After UI Locations click, verifies Full Page location and Webhook tab (warnOnly). After clicking Run Healthcheck, tests the cancel flow (Cancel → confirmation Yes, all warnOnly), then re-runs the healthcheck (warnOnly) so the subsequent Overview verify can succeed whether cancel happened or not. Each left-nav section (Security, Content Modeling, Content, Other Configurations) verifies Actions Required, Areas of Opportunities, and Strengths.",
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace apps search input (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "Healthcheck"
+    },
+    {
+      "action": "hover",
+      "target": "Healthcheck app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install button on Healthcheck app (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button on Healthcheck app (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Configuration tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Branch dropdown on Configuration screen (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Branch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Branch dropdown on Configuration screen (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First branch option in Branch dropdown (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Environment dropdown on Configuration screen (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Environment",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Environment dropdown on Configuration screen (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First environment option in Environment dropdown (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Healthcheck Report Download toggle (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Healthcheck Report Download",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Healthcheck Report Download toggle (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Healthcheck Email Notifications toggle (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Healthcheck Email Notifications",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Healthcheck Email Notifications toggle (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button on Configuration screen (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button on Configuration screen (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true,
+      "docWarning": "Doc: 'Click the Authorize button.' — OAuth popup requires manual completion; Authorize may be disabled if branch not selected."
+    },
+    {
+      "action": "click",
+      "target": "Second Authorize button on Configuration screen (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true,
+      "docWarning": "Doc: 'The app displays the organization entities. Scroll down and click the Authorize button again.' — This second Authorize is on the same or inner OAuth page; warnOnly because state after first Authorize is environment-dependent."
+    },
+    {
+      "action": "verify",
+      "target": "Save button on app Configuration screen (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button on app Configuration screen (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true,
+      "docWarning": "Doc: 'Click Save.' — Save is disabled until OAuth Authorize is completed; cannot be automated."
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Full Page UI Location in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Full Page",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Open Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Apps button in top navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Healthcheck app in Apps dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Healthcheck",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Healthcheck app in Apps dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Customize and Run button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Customize and Run",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Customize and Run button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Healthcheck Configuration modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Healthcheck Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Clear All button in Healthcheck Configuration modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Clear All",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Run Healthcheck button in modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Run Healthcheck",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Run Healthcheck button in modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Running Healthcheck modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Running Healthcheck",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Cancel button in Running Healthcheck modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Cancel",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Cancel button in Running Healthcheck modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Yes button to confirm cancel Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Yes",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Yes button to confirm cancel Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Customize and Run button (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Customize and Run",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Customize and Run button (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Run Healthcheck button in modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Run Healthcheck",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Run Healthcheck button in modal (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Healthcheck Overview heading (doc step)",
+      "timeoutMs": 120000,
+      "expected": {
+        "labelEquals": "Overview",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Actions Required section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions Required",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Overall Opportunities section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Overall Opportunities",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Strengths section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Strengths",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Download PDF button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Download PDF",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Run Healthcheck button on overview page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Run Healthcheck",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Security section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Security",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Security section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Actions Required section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions Required",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Areas of Opportunities section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Areas of Opportunities",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Strengths section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Strengths",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "View Details button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "View Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "View Details button in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Export XLSX button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Export XLSX",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Content Modeling section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content Modeling",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content Modeling section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Actions Required section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions Required",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Areas of Opportunities section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Areas of Opportunities",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Strengths section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Strengths",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Export XLSX button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Export XLSX",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Content section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Content",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Content section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Actions Required section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions Required",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Areas of Opportunities section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Areas of Opportunities",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Strengths section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Strengths",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Export XLSX button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Export XLSX",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Other Configurations section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Other Configurations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Other Configurations section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Actions Required section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Actions Required",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Areas of Opportunities section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Areas of Opportunities",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Strengths section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Strengths",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Export XLSX button in Healthcheck (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Export XLSX",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Usage Checks section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Usage Checks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Usage Checks section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Bandwidth Usage section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Bandwidth Usage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Top URLs section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Top URLs",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status Code section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Status Code",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Usage section in Healthcheck (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "API Usage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Logs section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Logs",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Logs section in Healthcheck left nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Info tab in Healthcheck Logs (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Info",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Skipped tab in Healthcheck Logs (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Skipped",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Skipped tab in Healthcheck Logs (doc step)",
+      "timeoutMs": 30000
+    }
+  ]
+}

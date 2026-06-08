@@ -1,0 +1,154 @@
+{
+  "id": "uninstalling-an-app",
+  "project": "Marketplace",
+  "module": "install-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-platform-guides/uninstalling-an-app",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document exactly. App Switcher → Marketplace is automation-added navigation (docWarning logged). Color Picker (Stack App) is used as the target app. The final 'click Uninstall' in the confirmation popup is not executed to preserve test environment state — dialog elements are verified to confirm UI matches the doc.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Open Marketplace, and go to Manage > Installed Apps.' — The doc does not describe using the App Switcher; automation uses App Switcher as the standard Marketplace entry point.",
+      "expected": {
+        "within": "Top navigation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'Open Marketplace, and go to Manage > Installed Apps.' — App Switcher click is automation-added navigation not described in the document."
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Open Marketplace, and go to Manage > Installed Apps.' — The app has 'Manage Apps' as a dropdown in the top navigation bar, not in a left-side navigation panel.",
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Installed Apps option (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Installed Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Installed Apps option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Installed app to uninstall (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'Click the app that you want to uninstall.' — Automation clicks Color Picker (Stack App) from the Installed Apps listing."
+    },
+    {
+      "action": "verify",
+      "target": "Installed On tab in modal (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'Click on the Installed On tab.' — Doc labels this tab 'Installed On' but the app renders it as 'Installed On Stack'. Label mismatch: doc vs. UI.",
+      "expected": {
+        "labelEquals": "Installed On Stack",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Installed On tab in modal (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'Click on the Installed On tab.' — Doc labels this tab 'Installed On' but the app renders it as 'Installed On Stack'. Label mismatch: doc vs. UI."
+    },
+    {
+      "action": "verify",
+      "target": "Stack row in Installed On tab (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Hover on the stack from which you want to uninstall the app. You can see the icons for Uninstall App and Configuration.' — Automation verifies the stack row is present; hover is not a supported automation action. Icons are verified in the next steps.",
+      "expected": {
+        "within": "Installed On tab table",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Uninstall App icon (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Installed On tab row actions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Configuration icon (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Installed On tab row actions",
+        "labelMatch": "contains"
+      }
+    },
+
+    {
+      "action": "verify",
+      "target": "Uninstall confirmation popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Confirmation popup",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "App name input in uninstall popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Confirmation popup",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "input",
+      "target": "App name input in uninstall popup (doc step)",
+      "value": "Color Picker",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Uninstall button in confirmation popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Uninstall",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

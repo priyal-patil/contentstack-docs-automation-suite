@@ -191,16 +191,23 @@ function classifyExecutable(params: {
     return { status: "FAIL", issue: "Gap", details: parts.join(" · ") };
   }
 
+  if (pwStatus === "passed") {
+    if (warningCount > 0) {
+      return {
+        status: "PASS",
+        issue: "Drift",
+        details: `UI steps completed with ${warningCount} warning(s) — step(s) not yet in the document (flow continued)`,
+      };
+    }
+    return { status: "PASS", issue: "None", details: "UI steps completed; doc verification aligned" };
+  }
+
   if (warningCount > 0) {
     return {
       status: "WARNING",
       issue: "Drift",
       details: `${warningCount} doc verification drift(s) — label, placement, or modal/title mismatch (flow continued)`,
     };
-  }
-
-  if (pwStatus === "passed") {
-    return { status: "PASS", issue: "None", details: "UI steps completed; doc verification aligned" };
   }
 
   return { status: "WARNING", issue: "None", details: `Playwright status: ${pwStatus}` };

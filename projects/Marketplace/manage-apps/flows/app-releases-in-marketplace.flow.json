@@ -1,0 +1,170 @@
+{
+  "id": "app-releases-in-marketplace",
+  "project": "Marketplace",
+  "module": "manage-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-platform-guides/app-releases-in-marketplace",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document exactly. App Switcher is used to navigate to Marketplace (docWarning logged — doc says 'Navigate to Contentstack Marketplace'). XTM is used as the target app. Major/Minor/Patch release type steps are warnOnly — the app may have any combination of release types. Install button is verified but not clicked to preserve test environment state.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Navigate to Contentstack Marketplace.' — Automation uses the App Switcher as the standard Marketplace entry point.",
+      "expected": {
+        "within": "Top navigation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'Navigate to Contentstack Marketplace.' — App Switcher click is automation-added navigation not described in the document."
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'Click Manage from the left panel.' — The app renders 'Manage' as 'Manage Apps' in the top navigation bar, not a left panel.",
+      "expected": {
+        "labelEquals": "Manage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Installed Apps option (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Installed Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Installed Apps option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Installed app for releases (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Overview tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Overview",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Screenshots tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Screenshots",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Use Cases tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Use Cases",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Installed On Stack tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Installed On Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Releases tab in app modal (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Releases",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Releases tab in app modal (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Major release type (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Major",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Minor release type (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Minor",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Patch release type (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Patch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Install button in Releases tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button in Releases tab (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

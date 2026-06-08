@@ -26,11 +26,26 @@
 #   PLAYWRIGHT_HEADLESS=0 ./scripts/run-cms-batch3.sh
 #   REPORT_DIR=reports/my-batch3 ./scripts/run-cms-batch3.sh
 #   SKIP_SLACK=1 ./scripts/run-cms-batch3.sh
+#   PW_RETRIES=0 ./scripts/run-cms-batch3.sh               (disable retries for fast local debug)
+#   PW_RETRIES=2 ./scripts/run-cms-batch3.sh               (extra retries for flaky env)
 # =============================================================================
 
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+
+# ── Cleanup: kill any lingering browser/node processes on exit ───────────────
+_CLEANUP_DONE=0
+cleanup() {
+  [[ "$_CLEANUP_DONE" -eq 1 ]] && return
+  _CLEANUP_DONE=1
+  echo "" >&2
+  echo "🧹  Cleaning up browser processes..." >&2
+  pkill -f "chrome-headless-shell" 2>/dev/null || true
+  pkill -f "chrome-headless-shell" 2>/dev/null || true   # second pass for stragglers
+  echo "🧹  Done." >&2
+}
+trap cleanup EXIT INT TERM
 
 TS="$(date +%Y%m%d-%H%M%S)"
 export REPORT_DIR="${REPORT_DIR:-$ROOT/reports/cms-batch3-$TS}"

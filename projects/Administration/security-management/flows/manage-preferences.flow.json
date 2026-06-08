@@ -1,0 +1,120 @@
+{
+  "id": "manage-preferences",
+  "project": "Administration",
+  "module": "security-management",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/administration/manage-preferences",
+  "type": "executable",
+  "use": ["login"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/manage-preferences. Covers: Profile initials → Profile Settings dropdown → Preferences tab → Time Zone section → Save → Set Language section → Save. Note: Timezone and language preferences is a plan-based feature; the Preferences tab may not appear for all accounts. Any step that fails means the app does not match the documentation; the documentation must be updated.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Top right corner",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile icon in top-right corner (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Profile Settings option in dropdown (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Profile Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Profile Settings option in dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Preferences tab in left navigation (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Preferences",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Preferences tab in left navigation (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Time Zone section heading (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Time Zone",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Timezone dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First option in opened dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Time Zone section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Time Zone section (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Set Language section heading (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Set Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Language dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First option in opened dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Language section (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Language section (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

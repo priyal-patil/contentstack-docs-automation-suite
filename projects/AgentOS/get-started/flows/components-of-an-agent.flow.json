@@ -1,0 +1,10 @@
+{
+  "id": "components-of-an-agent",
+  "project": "AgentOS",
+  "module": "get-started",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/components-of-an-agent",
+  "type": "informational",
+  "use": [],
+  "steps": []
+}

@@ -1,0 +1,216 @@
+{
+  "id": "installing-apps",
+  "project": "Marketplace",
+  "module": "install-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-platform-guides/installing-apps",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/developers/marketplace-platform-guides/installing-apps. Navigation: App Switcher → Marketplace (standard for all Marketplace flows; docWarning logged). Doc: 'Go to Discover > Explore > Apps' — if the actual UI shows 'Collections > Apps' instead, the Discover/Explore steps fail = doc-app gap. App detail page: Overview, Screenshots, Use Cases, Installed On tabs; Install App / Request Install button.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc does not mention App Switcher — it begins with 'Go to Discover > Explore > Apps'. App Switcher is the standard automation-added navigation path for all Marketplace flows.",
+      "expected": {
+        "within": "Top navigation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "App Switcher click is automation-added; not described in the doc."
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Discover navigation item (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Discover",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Discover navigation item (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Explore navigation item (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Explore",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Explore navigation item (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps navigation item (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps navigation item (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace app card (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "App listing",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "App Overview tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Overview",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "App Screenshots tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Screenshots",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "App Use Cases tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Use Cases",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "App Installed On tab (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Installed On",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Install App button or Request Install button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install App button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Select stack prompt (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Select stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Install button in stack selection (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button in stack selection (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "App configuration page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Configuration page",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save button on configuration page (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button on configuration page (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Allow access to modules prompt (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Authorization prompt",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Authorize and Install button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Authorize & Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Authorize and Install button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}

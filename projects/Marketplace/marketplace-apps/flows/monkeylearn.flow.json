@@ -1,0 +1,630 @@
+{
+  "id": "monkeylearn",
+  "project": "Marketplace",
+  "module": "marketplace-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-apps/monkeylearn",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the doc in order. Section 1 (Fetch credentials from MonkeyLearn account) navigates to MonkeyLearn — all external-site steps are warnOnly; verifies User Profile section, clicks My Account, verifies API Key section, verifies and clicks Revoke and re-generate. Section 2 (Install) follows the standard Marketplace install pattern; API Key entry and Scope selection are warnOnly (real MonkeyLearn credentials required); every doc-named button is verified before clicking. Section 3 (Use) creates 'ML Test Content Type' with a Multi Line Textbox field, creates an entry, then exercises the MonkeyLearn sidebar widget — Model, Entry Field, and Run steps are warnOnly since real API credentials are required for widget results.",
+  "steps": [
+    {
+      "action": "navigate",
+      "target": "https://app.monkeylearn.com/accounts/login/",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Profile section in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "User Profile",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "My Account option in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "My Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "My Account option in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Key section in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "API Key section in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Revoke and re-generate button in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Revoke and re-generate",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke and re-generate button in MonkeyLearn (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "capture",
+      "target": "MonkeyLearn API Key value from page (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "App Switcher",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apps option in Marketplace left panel (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace apps search input (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Marketplace apps search input (doc step)",
+      "value": "MonkeyLearn"
+    },
+    {
+      "action": "hover",
+      "target": "MonkeyLearn app card (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Install App button on MonkeyLearn (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Install App",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install App button on MonkeyLearn (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Select stack dropdown in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "First stack option in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Terms of Service checkbox in install popup (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Install",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Install button in install popup (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Configuration tab in app modal (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Configuration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in MonkeyLearn Configuration (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in MonkeyLearn Configuration (doc step)",
+      "value": "{{ML_API_KEY}}",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Scope section in MonkeyLearn Configuration (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Scope",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Scope section in MonkeyLearn Configuration (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "All Content Types option in Scope (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "All Content Types",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Specific Content Type option in Scope (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Specific Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "All Content Types option in Scope (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in app configuration (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "UI Locations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "UI Locations tab in app modal (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Webhook tab in app modal (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Webhook",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Open Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Content Models icon in left nav (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Content Type button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in content type dropdown (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "enter",
+      "target": "Content type name input (doc step)",
+      "value": "ML Test Content Type"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save and Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Multi Line Textbox field type option in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Multi Line Textbox",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Multi Line Textbox field type option in Content Type Builder (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in Content Type Builder (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "JSON RTE field type option in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "JSON RTE",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "JSON RTE field type option in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Content Type Builder (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entries option in top nav (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "+ New Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "New Entry button (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "ML Test Content Type option in new entry type selector (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in new content type modal (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Title field in entry (doc step)",
+      "value": "ML Test Entry"
+    },
+    {
+      "action": "enter",
+      "target": "Multi Line Textbox field in entry (doc step)",
+      "value": "MonkeyLearn test content for text analysis",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "JSON RTE field in entry (doc step)",
+      "value": "MonkeyLearn JSON RTE test content",
+      "timeoutMs": 8000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save button in entry (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Widgets button in entry right nav panel (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Widgets",
+        "labelMatch": "contains",
+        "within": "Right Navigation Panel"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Widgets button in entry right nav panel (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Widgets dropdown in Widgets panel (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entry Widgets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Widgets dropdown in Widgets panel (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Apps section in Entry Widgets panel (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "MonkeyLearn option in Entry Widgets (doc step)",
+      "timeoutMs": 8000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "MonkeyLearn",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "MonkeyLearn option in Entry Widgets (doc step)",
+      "timeoutMs": 15000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Model dropdown in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Model",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Model dropdown in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First model option in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Entry Field dropdown in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Entry Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Field dropdown in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First entry field option in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Run button in MonkeyLearn widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Run",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Run button in MonkeyLearn widget (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "MonkeyLearn results in widget (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

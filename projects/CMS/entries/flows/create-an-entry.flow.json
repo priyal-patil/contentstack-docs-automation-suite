@@ -29,7 +29,8 @@
     },
     {
       "action": "click",
-      "target": "Entries (doc step)"
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
     },
     {
       "action": "verify",
@@ -38,6 +39,44 @@
         "labelEquals": "Entries",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "+ New Entry (doc step)",
+      "expected": {
+        "labelEquals": "New Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Content Type row (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn/warnOnly when ready.",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "Proceed (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn/warnOnly when ready.",
+      "timeoutMs": 10000
     },
     {
       "action": "enter",
@@ -58,4 +97,3 @@
     }
   ]
 }
-

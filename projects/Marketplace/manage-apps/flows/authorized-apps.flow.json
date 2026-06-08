@@ -1,0 +1,127 @@
+{
+  "id": "authorized-apps",
+  "project": "Marketplace",
+  "module": "manage-apps",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/developers/marketplace-platform-guides/authorized-apps",
+  "type": "executable",
+  "use": ["login", "orgDashboard"],
+  "automationNotes": "Steps mirror the document exactly. Contentstack Starter is used as the target app — it is explicitly named in the doc.",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc step: 'In the left-hand side primary navigation, click the Marketplace icon.' — The left nav icon does not land on the Marketplace page with the Manage Apps top nav. Automation uses the App Switcher as the working entry point.",
+      "expected": {
+        "within": "Top navigation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher button (doc step)",
+      "timeoutMs": 60000,
+      "docWarning": "Doc step: 'In the left-hand side primary navigation, click the Marketplace icon.' — Automation uses the App Switcher instead as the left nav icon does not reach the same Marketplace page."
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Marketplace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace option in App Switcher (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 30000,
+      "docWarning": "Doc label is 'Manage' but the app renders this as 'Manage Apps'.",
+      "expected": {
+        "labelEquals": "Manage",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Manage option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Authorized Apps option (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Authorized Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Authorized Apps option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Authorized Apps listing (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Authorized Apps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Starter app in Authorized Apps (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "User row in Contentstack Starter (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Authorized users table",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "hover",
+      "target": "User row in Contentstack Starter (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Revoke button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Revoke",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke button (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Revoke All button (doc step)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Revoke All",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Revoke All button (doc step)",
+      "timeoutMs": 60000
+    }
+  ]
+}
