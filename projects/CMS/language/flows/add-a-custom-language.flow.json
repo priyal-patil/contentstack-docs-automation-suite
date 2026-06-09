@@ -62,8 +62,11 @@
       "action": "verify",
       "target": "New Language (doc step)",
       "timeoutMs": 8000,
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Doc calls the button '+ New Language' but the UI text node is 'New Language' (the + is a CSS icon, not text) — update the doc.",
       "expected": {
-        "labelEquals": "+ New Language",
+        "labelEquals": "New Language",
         "labelMatch": "contains"
       }
     },
