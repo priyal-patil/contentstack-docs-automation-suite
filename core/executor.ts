@@ -341,13 +341,22 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         return;
       }
     } catch (err: any) {
+      // alwaysWarn must fire on BOTH pass and fail — check before optional/warnOnly can swallow the error silently
+      if ((step as any).alwaysWarn) {
+        const msg = (step as any).warnMessage || `Step "${step?.target}" is not mentioned in the document — update the doc and remove alwaysWarn when ready.`;
+        recordDocStepWarning(documentUrl, flow.id, i, step as any, msg);
+        console.warn(`⚠️  Always-warn step failed (flagged): ${step?.action} "${step?.target}" — ${msg}`);
+      }
       if (step.optional) {
         console.log(`⏭️  Optional step skipped (not visible): ${step?.action} "${step?.target}"`);
         continue;
       }
       if ((step as any).warnOnly) {
-        const warnMsg = err?.message ?? String(err);
-        recordDocStepWarning(documentUrl, flow.id, i, step as any, `warnOnly: element not found or not visible — ${warnMsg}`);
+        // Skip the generic failure message when alwaysWarn already recorded the preferred warnMessage above
+        if (!(step as any).alwaysWarn) {
+          const warnMsg = err?.message ?? String(err);
+          recordDocStepWarning(documentUrl, flow.id, i, step as any, `warnOnly: element not found or not visible — ${warnMsg}`);
+        }
         console.warn(`⚠️  Warn-only step (continuing): ${step?.action} "${step?.target}"`);
         continue;
       }
