@@ -47,9 +47,10 @@
     {
       "action": "click",
       "target": "Taxonomy New Taxonomy menu Create New (doc step)",
+      "optional": true,
       "warnOnly": true,
       "alwaysWarn": true,
-      "warnMessage": "The '+ New Taxonomy' button now opens a dropdown (Create New / Import) — the doc does not mention this step. Remove warnOnly when doc is updated.",
+      "warnMessage": "UI shows a dropdown (Create New / Import) after clicking '+ New Taxonomy' when taxonomies already exist — this intermediate step is not documented. If the list is empty the modal opens directly and this step is skipped. Update doc when confirmed.",
       "timeoutMs": 5000
     },
     {
