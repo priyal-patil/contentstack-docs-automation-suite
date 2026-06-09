@@ -55,7 +55,7 @@
       "action": "verify",
       "target": "New Language (doc step)",
       "expected": {
-        "labelEquals": "New Language",
+        "labelEquals": "+ New Language",
         "labelMatch": "contains"
       }
     },

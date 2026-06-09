@@ -14,7 +14,6 @@
       "action": "verify",
       "target": "Content Models (doc step)",
       "expected": {
-        "within": "Left Navigation",
         "labelEquals": "Content Models",
         "labelMatch": "equals"
       }

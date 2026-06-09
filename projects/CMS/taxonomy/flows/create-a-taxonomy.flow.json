@@ -45,6 +45,14 @@
     },
     { "action": "click", "target": "New Taxonomy button (doc step)", "timeoutMs": 60000 },
     {
+      "action": "click",
+      "target": "Taxonomy New Taxonomy menu Create New (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "The '+ New Taxonomy' button now opens a dropdown (Create New / Import) — the doc does not mention this step. Remove warnOnly when doc is updated.",
+      "timeoutMs": 5000
+    },
+    {
       "action": "verify",
       "target": "Create New Taxonomy modal title (doc step)",
       "timeoutMs": 60000,
