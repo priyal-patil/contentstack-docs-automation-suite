@@ -92,12 +92,12 @@
     {
       "action": "enter",
       "target": "Name (create stack doc step)",
-      "value": "Auto Stack {unique}"
+      "value": "Auto Stack {unique5}"
     },
     {
       "action": "enter",
       "target": "Description (create stack doc step)",
-      "value": "Auto stack description {unique}"
+      "value": "Auto stack description {unique5}"
     },
     {
       "action": "click",

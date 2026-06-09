@@ -38,8 +38,8 @@
       "target": "Role Name input (doc step)",
       "expected": { "within": "Modal", "labelEquals": "Name", "labelMatch": "contains" }
     },
-    { "action": "enter", "target": "Role Name input (doc step)", "value": "Regional taxonomy role {unique}" },
-    { "action": "enter", "target": "Role Description textarea (doc step)", "value": "Doc regional taxonomy permissions (doc step) {unique}" },
+    { "action": "enter", "target": "Role Name input (doc step)", "value": "Regional taxonomy role {unique5}" },
+    { "action": "enter", "target": "Role Description textarea (doc step)", "value": "Doc regional taxonomy permissions (doc step) {unique5}" },
     {
       "action": "click",
       "target": "All Entries Content Types Taxonomies section expand (doc step)",

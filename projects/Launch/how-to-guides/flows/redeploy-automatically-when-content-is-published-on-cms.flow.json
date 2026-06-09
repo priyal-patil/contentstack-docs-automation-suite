@@ -86,7 +86,7 @@
     {
       "action": "enter",
       "target": "Launch Create Deploy Hook name field (doc step)",
-      "value": "Auto Doc Redeploy Hook {unique}"
+      "value": "Auto Doc Redeploy Hook {unique5}"
     },
     { "action": "click", "target": "Launch Create Deploy Hook modal submit (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Launch redeploy doc store deploy hook URL and copy (doc step)", "timeoutMs": 90000 },
@@ -142,7 +142,7 @@
     {
       "action": "enter",
       "target": "Name input (doc step)",
-      "value": "Doc Launch Redeploy Webhook {unique}"
+      "value": "Doc Launch Redeploy Webhook {unique5}"
     },
     {
       "action": "enter",

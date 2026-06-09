@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "ReactJS Starter App {unique}"
+      "value": "ReactJS Starter App {unique5}"
     },
     {
       "action": "verify",

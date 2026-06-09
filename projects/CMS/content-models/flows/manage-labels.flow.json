@@ -63,7 +63,7 @@
     {
       "action": "enter",
       "target": "Name (new label doc step)",
-      "value": "Auto Label {unique}"
+      "value": "Auto Label {unique5}"
     },
     {
       "action": "verify",
@@ -104,7 +104,7 @@
     {
       "action": "enter",
       "target": "Name (edit label doc step)",
-      "value": "Auto Label Updated {unique}"
+      "value": "Auto Label Updated {unique5}"
     },
     {
       "action": "verify",

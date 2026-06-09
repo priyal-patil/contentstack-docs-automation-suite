@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Astro {unique}"
+      "value": "Astro {unique5}"
     },
     {
       "action": "verify",

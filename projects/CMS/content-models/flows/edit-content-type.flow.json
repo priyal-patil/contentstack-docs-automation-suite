@@ -11,7 +11,7 @@
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
     { "action": "verify", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
     { "action": "click", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
-    { "action": "enter", "target": "Description", "value": "AUTO-{unique}" },
+    { "action": "enter", "target": "Description", "value": "AUTO-{unique5}" },
     { "action": "click", "target": "Update" },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
     { "action": "verify", "target": "Edit", "expected": { "rowContains": "AUTO-" } },

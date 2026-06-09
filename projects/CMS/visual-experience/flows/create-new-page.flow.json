@@ -50,7 +50,7 @@
       "timeoutMs": 90000,
       "optional": true
     },
-    { "action": "enter", "target": "Create new page Title field (doc step)", "value": "Doc new page {unique}" },
+    { "action": "enter", "target": "Create new page Title field (doc step)", "value": "Doc new page {unique5}" },
     { "action": "verify", "target": "Create new page URL input visible (doc step)" },
     { "action": "click", "target": "Create new page Create button (doc step)", "timeoutMs": 90000 },
     { "action": "verify", "target": "Visual editor URL bar (doc step)" },
@@ -73,7 +73,7 @@
       "action": "warn",
       "value": "Doc: Canvas preview updates in real time when you enter content in the right panel."
     },
-    { "action": "enter", "target": "Page component first field input in Form sidebar (doc step)", "value": "Doc content {unique}" },
+    { "action": "enter", "target": "Page component first field input in Form sidebar (doc step)", "value": "Doc content {unique5}" },
     { "action": "verify", "target": "Visual editor canvas workspace (doc step)", "optional": true },
     { "action": "click", "target": "Save changes header button (doc step)", "timeoutMs": 90000 },
     {

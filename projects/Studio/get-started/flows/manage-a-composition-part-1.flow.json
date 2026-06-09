@@ -68,7 +68,7 @@
     {
       "action": "enter",
       "target": "Studio Linked Composition Name field (doc step)",
-      "value": "Doc Linked Composition {unique}"
+      "value": "Doc Linked Composition {unique5}"
     },
     {
       "action": "verify",
@@ -139,7 +139,7 @@
     {
       "action": "enter",
       "target": "Studio Edit Linked Composition Name field (doc step)",
-      "value": "Doc Linked Composition Updated {unique}"
+      "value": "Doc Linked Composition Updated {unique5}"
     },
     {
       "action": "verify",

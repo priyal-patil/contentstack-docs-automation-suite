@@ -95,13 +95,13 @@
     {
       "action": "enter",
       "target": "New role Name field (doc step)",
-      "value": "Scenario 1 Example Role {unique}",
+      "value": "Scenario 1 Example Role {unique5}",
       "timeoutMs": 60000
     },
     {
       "action": "enter",
       "target": "New role Description field (doc step)",
-      "value": "Doc Scenario 1 — all permissions to specific content types ({unique})",
+      "value": "Doc Scenario 1 — all permissions to specific content types ({unique5})",
       "timeoutMs": 60000
     },
     {

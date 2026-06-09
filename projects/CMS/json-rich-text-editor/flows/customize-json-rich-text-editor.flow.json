@@ -13,7 +13,7 @@
       "target": "Create New (doc step)",
       "expected": { "modalTitle": "Create New Content Type" }
     },
-    { "action": "enter", "target": "Name (doc step)", "value": "Shared JSON RTE Doc CT-{unique}" },
+    { "action": "enter", "target": "Name (doc step)", "value": "Shared JSON RTE Doc CT-{unique5}" },
     { "action": "select", "target": "Type (doc step)", "value": "Single" },
     { "action": "click", "target": "Save and proceed (doc step)" },
     { "action": "click", "target": "Insert a field (doc step)" },

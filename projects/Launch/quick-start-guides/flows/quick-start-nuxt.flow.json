@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Nuxt Sample {unique}"
+      "value": "Nuxt Sample {unique5}"
     },
     {
       "action": "verify",

@@ -35,7 +35,7 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "JSON RTE CT-{unique}"
+      "value": "JSON RTE CT-{unique5}"
     },
     {
       "action": "enter",
@@ -93,7 +93,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "JSON RTE Entry {unique}"
+      "value": "JSON RTE Entry {unique5}"
     },
     {
       "action": "enter",

@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Stencil Starter App {unique}"
+      "value": "Stencil Starter App {unique5}"
     },
     {
       "action": "verify",

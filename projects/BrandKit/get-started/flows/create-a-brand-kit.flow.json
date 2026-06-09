@@ -67,12 +67,12 @@
     {
       "action": "enter",
       "target": "Brand Kit Name (doc step)",
-      "value": "AUTO-CBK-{unique}"
+      "value": "AUTO-CBK-{unique5}"
     },
     {
       "action": "enter",
       "target": "Brand Kit Description (doc step)",
-      "value": "AUTO Create Brand Kit doc description {unique}"
+      "value": "AUTO Create Brand Kit doc description {unique5}"
     },
     { "action": "click", "target": "Brand Kit Create modal Select Stack(s) control (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "Brand Kit Create modal pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },

@@ -48,7 +48,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Localized Entry {unique}"
+      "value": "Localized Entry {unique5}"
     },
     {
       "action": "verify",

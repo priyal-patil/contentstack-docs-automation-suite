@@ -67,7 +67,7 @@
     {
       "action": "enter",
       "target": "Create Term Term Name input (doc step)",
-      "value": "Doc term {unique}"
+      "value": "Doc term {unique5}"
     },
     {
       "action": "verify",
@@ -95,7 +95,7 @@
     {
       "action": "enter",
       "target": "Create Term Term Name input (doc step)",
-      "value": "Doc term sibling {unique}"
+      "value": "Doc term sibling {unique5}"
     },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
 
@@ -114,7 +114,7 @@
     {
       "action": "enter",
       "target": "Create Term Term Name input (doc step)",
-      "value": "Doc term child {unique}"
+      "value": "Doc term child {unique5}"
     },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 }
   ]

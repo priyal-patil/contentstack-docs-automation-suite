@@ -58,7 +58,7 @@
     {
       "action": "enter",
       "target": "Comment textbox (doc step)",
-      "value": "Edited automation comment {unique}"
+      "value": "Edited automation comment {unique5}"
     },
     {
       "action": "click",

@@ -152,12 +152,12 @@
     {
       "action": "enter",
       "target": "Voice Profile Name (doc step)",
-      "value": "AUTO-VP-{unique} edited"
+      "value": "AUTO-VP-{unique5} edited"
     },
     {
       "action": "enter",
       "target": "Voice Profile Description (doc step)",
-      "value": "AUTO Voice Profile description edited {unique}"
+      "value": "AUTO Voice Profile description edited {unique5}"
     },
     {
       "action": "click",

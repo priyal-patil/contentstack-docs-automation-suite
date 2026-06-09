@@ -50,7 +50,7 @@
       }
     },
     { "action": "click", "target": "New Folder in Move To modal (doc step)" },
-    { "action": "enter", "target": "Move To new folder name input (doc step)", "value": "BulkMoveFolder-{unique}" },
+    { "action": "enter", "target": "Move To new folder name input (doc step)", "value": "BulkMoveFolder-{unique5}" },
     {
       "action": "verify",
       "target": "Move here button label (doc step)",

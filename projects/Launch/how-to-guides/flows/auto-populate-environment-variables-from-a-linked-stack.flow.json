@@ -64,7 +64,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Auto Launch Linked Stack Env {unique}"
+      "value": "Auto Launch Linked Stack Env {unique5}"
     },
     {
       "action": "verify",

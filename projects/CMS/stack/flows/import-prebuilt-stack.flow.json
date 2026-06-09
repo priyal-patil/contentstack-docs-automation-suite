@@ -55,7 +55,7 @@
     {
       "action": "enter",
       "target": "Stack Name (import doc step)",
-      "value": "Auto Imported Stack {unique}"
+      "value": "Auto Imported Stack {unique5}"
     },
     {
       "action": "verify",

@@ -50,7 +50,7 @@
     {
       "action": "enter",
       "target": "Comment textbox (doc step)",
-      "value": "Automation reply comment {unique}"
+      "value": "Automation reply comment {unique5}"
     },
     {
       "action": "click",

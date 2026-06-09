@@ -33976,6 +33976,10 @@ export async function performAction(
       if (isAddANewUserFlow(flow) && step.target === "Invite User modal Email field (doc step)") {
         const t = getStepTimeoutMs(step);
         const raw = String(step.value ?? process.env.CS_INVITE_TEST_EMAIL ?? "")
+          .split("{unique8}")
+          .join(unique.replace(/-/g, "").slice(0, 8))
+          .split("{unique5}")
+          .join(unique.replace(/-/g, "").slice(0, 5))
           .split("{unique}")
           .join(unique);
         const email = raw.trim();
@@ -34326,12 +34330,15 @@ export async function performAction(
 
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
       const unique8 = unique.replace(/-/g, "").slice(0, 8);
+      const unique5 = unique.replace(/-/g, "").slice(0, 5);
       const unique4 = unique.replace(/-/g, "").slice(0, 4);
       const rawVal = String(step.value ?? "")
         .split("{unique8}")
         .join(unique8)
         .split("{unique25}")
         .join(unique25)
+        .split("{unique5}")
+        .join(unique5)
         .split("{unique4}")
         .join(unique4)
         .split("{unique}")

@@ -53,7 +53,7 @@
       "timeoutMs": 60000,
       "expected": { "labelEquals": "Delivery Protocol", "labelMatch": "contains" }
     },
-    { "action": "enter", "target": "Launch Log Target Name input (doc step)", "value": "Doc LT {unique}" },
+    { "action": "enter", "target": "Launch Log Target Name input (doc step)", "value": "Doc LT {unique5}" },
     { "action": "click", "target": "Launch Log Target Set up modal switch Delivery Protocol to HTTP (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",

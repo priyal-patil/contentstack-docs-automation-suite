@@ -57,7 +57,7 @@
     { "action": "click", "target": "Launch Git Branch Select control (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "Launch import Git Branch menu first option (doc step)", "timeoutMs": 90000 },
 
-    { "action": "enter", "target": "Launch Project Name (doc step)", "value": "Auto Launch Bitbucket {unique}" },
+    { "action": "enter", "target": "Launch Project Name (doc step)", "value": "Auto Launch Bitbucket {unique5}" },
     { "action": "enter", "target": "Launch Environment Name (doc step)", "value": "Default" },
 
     { "action": "click", "target": "Launch Framework Preset Select control (doc step)", "timeoutMs": 90000 },

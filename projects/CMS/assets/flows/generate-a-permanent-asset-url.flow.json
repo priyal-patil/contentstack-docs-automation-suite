@@ -33,7 +33,7 @@
       "expected": { "labelEquals": "Generate permanent URL", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Generate permanent URL (doc step)" },
-    { "action": "enter", "target": "Permanent URL slug input (doc step)", "value": "asset-slug-{unique}" },
+    { "action": "enter", "target": "Permanent URL slug input (doc step)", "value": "asset-slug-{unique5}" },
     { "action": "click", "target": "Save (doc step)" }
   ]
 }

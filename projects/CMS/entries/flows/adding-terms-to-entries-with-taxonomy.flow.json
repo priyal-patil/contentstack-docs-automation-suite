@@ -34,7 +34,7 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "Taxonomy CT-{unique}"
+      "value": "Taxonomy CT-{unique5}"
     },
     {
       "action": "enter",

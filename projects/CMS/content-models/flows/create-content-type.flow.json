@@ -69,8 +69,8 @@
       "target": "Save and proceed (doc step)",
       "expected": { "labelEquals": "Save and proceed", "labelMatch": "equals" }
     },
-    { "action": "enter", "target": "Name (doc step)", "value": "AUTO-{unique}" },
-    { "action": "enter", "target": "Description (doc step)", "value": "AUTO-{unique}" },
+    { "action": "enter", "target": "Name (doc step)", "value": "AUTO-{unique5}" },
+    { "action": "enter", "target": "Description (doc step)", "value": "AUTO-{unique5}" },
     { "action": "select", "target": "Type (doc step)", "value": "Single" },
     { "action": "click", "target": "Save and proceed (doc step)" },
     {

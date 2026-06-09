@@ -68,7 +68,7 @@
     {
       "action": "enter",
       "target": "Base URL (edit doc step)",
-      "value": "https://doc-lp-{unique}.example.com"
+      "value": "https://doc-lp-{unique5}.example.com"
     },
     {
       "action": "click",

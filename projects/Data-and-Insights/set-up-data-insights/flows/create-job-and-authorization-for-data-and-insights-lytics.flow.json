@@ -110,7 +110,7 @@
     {
       "action": "enter",
       "target": "Lytics Job doc: Set job details Label field (doc step)",
-      "value": "AUTO-Lytics-Job-{unique}",
+      "value": "AUTO-Lytics-Job-{unique5}",
       "timeoutMs": 90000
     },
     {
@@ -181,7 +181,7 @@
     {
       "action": "enter",
       "target": "Lytics Job doc: Configure authorization Label field (doc step)",
-      "value": "AUTO-Lytics-Auth-{unique}",
+      "value": "AUTO-Lytics-Auth-{unique5}",
       "timeoutMs": 90000
     },
     {

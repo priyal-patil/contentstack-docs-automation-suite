@@ -47,7 +47,7 @@
     {
       "action": "enter",
       "target": "Name (edit stack doc step)",
-      "value": "Auto Stack Updated {unique}"
+      "value": "Auto Stack Updated {unique5}"
     },
     {
       "action": "verify",
@@ -60,7 +60,7 @@
     {
       "action": "enter",
       "target": "Description (edit stack doc step)",
-      "value": "Auto stack description updated {unique}"
+      "value": "Auto stack description updated {unique5}"
     },
     {
       "action": "verify",

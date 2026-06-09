@@ -43,7 +43,7 @@
     {
       "action": "enter",
       "target": "Studio New Project Name field (doc step)",
-      "value": "Doc Studio Project {unique}"
+      "value": "Doc Studio Project {unique5}"
     },
     {
       "action": "verify",
@@ -54,7 +54,7 @@
     {
       "action": "enter",
       "target": "Studio New Project Description field (doc step)",
-      "value": "Automation description {unique}"
+      "value": "Automation description {unique5}"
     },
     {
       "action": "verify",
@@ -86,7 +86,7 @@
     {
       "action": "enter",
       "target": "Studio New Project Advanced Content Type Name field (doc step)",
-      "value": "Compositions Doc {unique}"
+      "value": "Compositions Doc {unique5}"
     },
     {
       "action": "enter",

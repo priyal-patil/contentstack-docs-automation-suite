@@ -174,12 +174,12 @@
     {
       "action": "enter",
       "target": "Voice Profile Name (doc step)",
-      "value": "AUTO-VP-{unique}"
+      "value": "AUTO-VP-{unique5}"
     },
     {
       "action": "enter",
       "target": "Voice Profile Description (doc step)",
-      "value": "AUTO Voice Profile description {unique}"
+      "value": "AUTO Voice Profile description {unique5}"
     },
     {
       "action": "enter",

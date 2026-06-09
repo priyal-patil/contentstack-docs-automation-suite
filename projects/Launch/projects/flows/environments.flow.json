@@ -63,7 +63,7 @@
     {
       "action": "enter",
       "target": "Launch Create New Environment environment name input (doc step)",
-      "value": "Doc QA Env {unique}"
+      "value": "Doc QA Env {unique5}"
     },
 
     {
@@ -427,7 +427,7 @@
     {
       "action": "enter",
       "target": "Launch environment settings General Environment Name input edit (doc step)",
-      "value": "Doc QA Env {unique} edited"
+      "value": "Doc QA Env {unique5} edited"
     },
     {
       "action": "click",

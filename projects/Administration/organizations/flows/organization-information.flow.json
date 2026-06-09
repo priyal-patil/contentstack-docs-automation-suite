@@ -78,7 +78,7 @@
     {
       "action": "enter",
       "target": "Transfer Ownership email input (doc step)",
-      "value": "docs-qa-transfer-{unique}@example.org",
+      "value": "docs-qa-transfer-{unique5}@example.org",
       "timeoutMs": 60000
     }
   ]

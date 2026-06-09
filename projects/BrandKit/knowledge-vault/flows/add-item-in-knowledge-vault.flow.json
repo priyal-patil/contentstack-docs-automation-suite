@@ -124,7 +124,7 @@
     {
       "action": "enter",
       "target": "Knowledge Vault manual item Name input (doc step)",
-      "value": "AUTO-KV-MANUAL-{unique}"
+      "value": "AUTO-KV-MANUAL-{unique5}"
     },
     {
       "action": "enter",
@@ -217,7 +217,7 @@
     {
       "action": "enter",
       "target": "Knowledge Vault file upload Name input (doc step)",
-      "value": "AUTO-KV-FILE-{unique}"
+      "value": "AUTO-KV-FILE-{unique5}"
     },
     {
       "action": "upload",
@@ -282,7 +282,7 @@
     {
       "action": "enter",
       "target": "Knowledge Vault New Folder modal name input (automation extension)",
-      "value": "AUTO-KV-FOLDER-{unique}"
+      "value": "AUTO-KV-FOLDER-{unique5}"
     },
     {
       "action": "verify",

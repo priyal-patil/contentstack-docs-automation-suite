@@ -117,7 +117,7 @@
     { "action": "hover", "target": "Version option row in visual editor (doc step)", "timeoutMs": 90000, "optional": true },
     { "action": "verify", "target": "Version rename pencil icon in visual editor (doc step)", "optional": true },
     { "action": "click", "target": "Version rename pencil icon in visual editor (doc step)", "timeoutMs": 90000, "optional": true },
-    { "action": "enter", "target": "Version rename input in visual editor (doc step)", "value": "Doc version {unique}", "optional": true },
+    { "action": "enter", "target": "Version rename input in visual editor (doc step)", "value": "Doc version {unique5}", "optional": true },
     { "action": "click", "target": "Version rename Save button in visual editor (doc step)", "timeoutMs": 90000, "optional": true }
   ]
 }

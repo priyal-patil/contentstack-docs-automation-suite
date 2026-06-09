@@ -103,7 +103,7 @@
     {
       "action": "enter",
       "target": "Developer Hub Basic Information description textarea (doc step)",
-      "value": "Marketplace DAM App Boilerplate doc run {unique}",
+      "value": "Marketplace DAM App Boilerplate doc run {unique5}",
       "timeoutMs": 60000
     },
     {

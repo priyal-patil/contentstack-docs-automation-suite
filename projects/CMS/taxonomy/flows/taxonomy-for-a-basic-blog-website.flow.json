@@ -63,8 +63,8 @@
       "target": "Create Taxonomy Description field label (doc step)",
       "expected": { "within": "Modal", "labelEquals": "Description", "labelMatch": "contains" }
     },
-    { "action": "enter", "target": "Create Taxonomy Name input (doc step)", "value": "Blog Posts {unique}" },
-    { "action": "enter", "target": "Create Taxonomy Description textarea (doc step)", "value": "Blog website taxonomy (doc step) {unique}" },
+    { "action": "enter", "target": "Create Taxonomy Name input (doc step)", "value": "Blog Posts {unique5}" },
+    { "action": "enter", "target": "Create Taxonomy Description textarea (doc step)", "value": "Blog website taxonomy (doc step) {unique5}" },
     {
       "action": "verify",
       "target": "Create Taxonomy modal Create Taxonomy button (doc step)",
@@ -92,7 +92,7 @@
       "target": "Create Term Term Name field label (doc step)",
       "expected": { "within": "Modal", "labelEquals": "Term Name", "labelMatch": "contains" }
     },
-    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Artificial Intelligence {unique}" },
+    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Artificial Intelligence {unique5}" },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
@@ -105,7 +105,7 @@
     },
     { "action": "click", "target": "Create a Child Term button on taxonomy details (doc step)", "timeoutMs": 60000 },
 
-    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Data Science {unique}" },
+    { "action": "enter", "target": "Create Term Term Name input (doc step)", "value": "Data Science {unique5}" },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
@@ -125,7 +125,7 @@
       "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Create New (doc step)", "expected": { "modalTitle": "Create New Content Type" } },
-    { "action": "enter", "target": "Name (doc step)", "value": "Blog Posts {unique}" },
+    { "action": "enter", "target": "Name (doc step)", "value": "Blog Posts {unique5}" },
     { "action": "enter", "target": "UID (doc step)", "value": "blog_posts_{unique25}" },
     { "action": "click", "target": "Save and proceed" },
     {

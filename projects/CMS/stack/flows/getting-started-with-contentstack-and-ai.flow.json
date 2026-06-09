@@ -38,12 +38,12 @@
     {
       "action": "enter",
       "target": "Name (create stack doc step)",
-      "value": "My Company Website AI Guide {unique}"
+      "value": "My Company Website AI Guide {unique5}"
     },
     {
       "action": "enter",
       "target": "Description (create stack doc step)",
-      "value": "Stack for Building Websites with Contentstack and AI guide {unique}"
+      "value": "Stack for Building Websites with Contentstack and AI guide {unique5}"
     },
     {
       "action": "verify",
@@ -113,12 +113,12 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "Blog Post AI Guide {unique}"
+      "value": "Blog Post AI Guide {unique5}"
     },
     {
       "action": "enter",
       "target": "Description (doc step)",
-      "value": "Blog Post content type from AI guide {unique}"
+      "value": "Blog Post content type from AI guide {unique5}"
     },
     { "action": "select", "target": "Type (doc step)", "value": "Single" },
     { "action": "click", "target": "Save and proceed (doc step)" },
@@ -269,12 +269,12 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "AI Guide Sample Post {unique}"
+      "value": "AI Guide Sample Post {unique5}"
     },
     {
       "action": "enter",
       "target": "Entry Body Multi Line (doc step)",
-      "value": "Sample body text for the AI guide sample entry. {unique}"
+      "value": "Sample body text for the AI guide sample entry. {unique5}"
     },
     {
       "action": "upload",

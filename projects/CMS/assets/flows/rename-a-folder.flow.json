@@ -48,7 +48,7 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "enter", "target": "Folder name input (doc step)", "value": "RenamedFolder{unique}" },
+    { "action": "enter", "target": "Folder name input (doc step)", "value": "RenamedFolder{unique5}" },
     { "action": "click", "target": "Save (doc step)" }
   ]
 }

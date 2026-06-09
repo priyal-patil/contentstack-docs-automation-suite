@@ -58,12 +58,12 @@
     {
       "action": "enter",
       "target": "Brand Kit Name (doc step)",
-      "value": "AUTO-BK-{unique}"
+      "value": "AUTO-BK-{unique5}"
     },
     {
       "action": "enter",
       "target": "Brand Kit Description (doc step)",
-      "value": "AUTO Brand Kit description {unique}"
+      "value": "AUTO Brand Kit description {unique5}"
     },
     { "action": "click", "target": "Brand Kit Create modal Select Stack(s) control (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "Brand Kit Create modal pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },
@@ -182,12 +182,12 @@
     {
       "action": "enter",
       "target": "Voice Profile Name (doc step)",
-      "value": "AUTO-BK-VP-{unique}"
+      "value": "AUTO-BK-VP-{unique5}"
     },
     {
       "action": "enter",
       "target": "Voice Profile Description (doc step)",
-      "value": "AUTO Voice Profile description {unique}"
+      "value": "AUTO Voice Profile description {unique5}"
     },
     {
       "action": "enter",
@@ -239,12 +239,12 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "AUTO-BK-AICT-{unique}"
+      "value": "AUTO-BK-AICT-{unique5}"
     },
     {
       "action": "enter",
       "target": "Description (doc step)",
-      "value": "AUTO Brand Kit AI Assistant CT {unique}"
+      "value": "AUTO Brand Kit AI Assistant CT {unique5}"
     },
     { "action": "select", "target": "Type (doc step)", "value": "Single" },
     { "action": "click", "target": "Save and proceed (doc step)", "timeoutMs": 120000 },

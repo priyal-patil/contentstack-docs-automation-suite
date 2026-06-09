@@ -58,7 +58,7 @@
       }
     },
     { "action": "enter", "target": "Release Name input (doc step)", "value": "{unique25}" },
-    { "action": "enter", "target": "Release Description input (doc step)", "value": "Created by automation {unique}" },
+    { "action": "enter", "target": "Release Description input (doc step)", "value": "Created by automation {unique5}" },
     {
       "action": "verify",
       "target": "Save button in release modal (doc step)",

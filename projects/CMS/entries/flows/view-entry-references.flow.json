@@ -34,7 +34,7 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "Ref Parent CT-{unique}"
+      "value": "Ref Parent CT-{unique5}"
     },
     {
       "action": "enter",
@@ -60,7 +60,7 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "Ref Child CT-{unique}"
+      "value": "Ref Child CT-{unique5}"
     },
     {
       "action": "enter",
@@ -124,7 +124,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Parent Ref Entry {unique}"
+      "value": "Parent Ref Entry {unique5}"
     },
     {
       "action": "click",
@@ -150,7 +150,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Child Ref Entry {unique}"
+      "value": "Child Ref Entry {unique5}"
     },
     {
       "action": "click",

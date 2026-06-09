@@ -102,7 +102,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Auto Launch Project {unique}"
+      "value": "Auto Launch Project {unique5}"
     },
 
     {

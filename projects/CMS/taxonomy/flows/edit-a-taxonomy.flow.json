@@ -107,12 +107,12 @@
     {
       "action": "enter",
       "target": "Edit Taxonomy Name input (doc step)",
-      "value": "Doc taxonomy edit {unique}"
+      "value": "Doc taxonomy edit {unique5}"
     },
     {
       "action": "enter",
       "target": "Edit Taxonomy Description textarea (doc step)",
-      "value": "Doc taxonomy description edit {unique}"
+      "value": "Doc taxonomy description edit {unique5}"
     },
     {
       "action": "verify",

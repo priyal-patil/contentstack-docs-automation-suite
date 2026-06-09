@@ -38,7 +38,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Edited Entry {unique}"
+      "value": "Edited Entry {unique5}"
     },
     {
       "action": "verify",

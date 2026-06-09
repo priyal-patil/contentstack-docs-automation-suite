@@ -100,13 +100,13 @@
     {
       "action": "enter",
       "target": "Name (copy global field) (doc step)",
-      "value": "APPEND:-{unique}"
+      "value": "APPEND:-{unique5}"
     },
     
     {
       "action": "enter",
       "target": "Description (copy global field) (doc step)",
-      "value": "copy-created-{unique}"
+      "value": "copy-created-{unique5}"
     },
     {
       "action": "verify",

@@ -58,12 +58,12 @@
     {
       "action": "enter",
       "target": "Environment Name (doc step)",
-      "value": "env-{unique}"
+      "value": "env-{unique5}"
     },
     {
       "action": "enter",
       "target": "Base URL (doc step)",
-      "value": "https://example-{unique}.com"
+      "value": "https://example-{unique5}.com"
     },
     {
       "action": "click",

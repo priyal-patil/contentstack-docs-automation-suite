@@ -50,12 +50,12 @@
     {
       "action": "enter",
       "target": "Project Name (doc step)",
-      "value": "agentos-project-{unique}"
+      "value": "agentos-project-{unique5}"
     },
     {
       "action": "enter",
       "target": "Description (doc step)",
-      "value": "agentos-description-{unique}"
+      "value": "agentos-description-{unique5}"
     },
     {
       "action": "enter",

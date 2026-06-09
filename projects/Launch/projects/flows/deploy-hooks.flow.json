@@ -97,7 +97,7 @@
     {
       "action": "enter",
       "target": "Launch Create Deploy Hook name field (doc step)",
-      "value": "Auto Doc Deploy Hook {unique}"
+      "value": "Auto Doc Deploy Hook {unique5}"
     },
     { "action": "click", "target": "Launch Create Deploy Hook modal submit (doc step)", "timeoutMs": 60000 }
 

@@ -26,12 +26,12 @@
     {
       "action": "enter",
       "target": "Name",
-      "value": "AUTO-{unique}"
+      "value": "AUTO-{unique5}"
     },
     {
       "action": "enter",
       "target": "Description",
-      "value": "AUTO-{unique}"
+      "value": "AUTO-{unique5}"
     },
     {
       "action": "select",

@@ -20,7 +20,7 @@
     { "action": "click", "target": "New Entry (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "First content type row New Entry modal (doc step)" },
     { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)", "timeoutMs": 120000 },
-    { "action": "enter", "target": "Entry Title (doc step)", "value": "Assets doc entry {unique}" },
+    { "action": "enter", "target": "Entry Title (doc step)", "value": "Assets doc entry {unique5}" },
     { "action": "click", "target": "JSON RTE entry editor focus (doc step)" },
     { "action": "verify", "target": "JSON RTE Asset toolbar icon visible (doc step)" },
     { "action": "click", "target": "JSON RTE Asset toolbar open dropdown (doc step)" },

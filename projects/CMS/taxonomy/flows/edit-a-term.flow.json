@@ -56,7 +56,7 @@
     {
       "action": "enter",
       "target": "Edit Term Term Name input (doc step)",
-      "value": "Doc term edited {unique}"
+      "value": "Doc term edited {unique5}"
     },
     {
       "action": "verify",

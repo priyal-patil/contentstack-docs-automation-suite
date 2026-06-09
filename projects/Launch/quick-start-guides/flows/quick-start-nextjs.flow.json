@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "NextJS Starter {unique}"
+      "value": "NextJS Starter {unique5}"
     },
     {
       "action": "verify",

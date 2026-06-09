@@ -92,7 +92,7 @@
     {
       "action": "enter",
       "target": "Launch Create Custom Domain Domain Name input (doc step)",
-      "value": "doc-auto-{unique}.example.com"
+      "value": "doc-auto-{unique5}.example.com"
     },
     {
       "action": "verify",

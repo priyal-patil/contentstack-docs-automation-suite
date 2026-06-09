@@ -103,12 +103,12 @@
     {
       "action": "enter",
       "target": "Create Taxonomy Name input (doc step)",
-      "value": "Doc taxonomy {unique}"
+      "value": "Doc taxonomy {unique5}"
     },
     {
       "action": "enter",
       "target": "Create Taxonomy Description textarea (doc step)",
-      "value": "Doc taxonomy description {unique}"
+      "value": "Doc taxonomy description {unique5}"
     },
 
     {

@@ -122,13 +122,13 @@
     {
       "action": "enter",
       "target": "New role Name field (doc step)",
-      "value": "Doc QA Role {unique}",
+      "value": "Doc QA Role {unique5}",
       "timeoutMs": 60000
     },
     {
       "action": "enter",
       "target": "New role Description field (doc step)",
-      "value": "Doc automation custom role ({unique})",
+      "value": "Doc automation custom role ({unique5})",
       "timeoutMs": 60000
     },
     {

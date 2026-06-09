@@ -13,6 +13,10 @@
     {
       "action": "verify",
       "target": "Content Models (doc step)",
+      "within": "Left Navigation",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Doc says Content Models is in the Left Navigation but it is in the top nav — update the doc.",
       "expected": {
         "labelEquals": "Content Models",
         "labelMatch": "equals"
@@ -80,7 +84,7 @@
     {
       "action": "enter",
       "target": "Name field (doc step)",
-      "value": "AUTO-label-{unique}"
+      "value": "AUTO-label-{unique5}"
     },
     {
       "action": "click",

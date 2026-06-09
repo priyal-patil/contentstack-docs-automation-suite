@@ -65,7 +65,7 @@
     {
       "action": "enter",
       "target": "Developer Hub Webhooks URL to Notify input (doc step)",
-      "value": "https://example.com/webhook-{unique}",
+      "value": "https://example.com/webhook-{unique5}",
       "timeoutMs": 90000
     },
     {

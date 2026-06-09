@@ -59,7 +59,7 @@
     {
       "action": "enter",
       "target": "Recipient Email (doc step)",
-      "value": "owner+{unique}@example.com"
+      "value": "owner+{unique5}@example.com"
     },
     {
       "action": "verify",

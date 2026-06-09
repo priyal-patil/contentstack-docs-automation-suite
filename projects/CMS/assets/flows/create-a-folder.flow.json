@@ -67,7 +67,7 @@
     {
       "action": "enter",
       "target": "Folder name input (doc step)",
-      "value": "AutoFolder{unique}"
+      "value": "AutoFolder{unique5}"
     },
     {
       "action": "verify",

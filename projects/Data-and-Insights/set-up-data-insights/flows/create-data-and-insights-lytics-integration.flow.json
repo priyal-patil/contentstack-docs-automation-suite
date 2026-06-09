@@ -161,13 +161,13 @@
     {
       "action": "enter",
       "target": "DAL Lytics doc: Title field (doc step)",
-      "value": "AUTO-DAL-{unique}",
+      "value": "AUTO-DAL-{unique5}",
       "timeoutMs": 60000
     },
     {
       "action": "enter",
       "target": "DAL Lytics doc: Domain field (doc step)",
-      "value": "https://www.example-{unique}.test/",
+      "value": "https://www.example-{unique5}.test/",
       "timeoutMs": 60000
     },
     {

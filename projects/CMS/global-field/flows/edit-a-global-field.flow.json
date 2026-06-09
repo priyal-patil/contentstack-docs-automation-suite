@@ -99,12 +99,12 @@
     {
       "action": "enter",
       "target": "Name (edit global field) (doc step)",
-      "value": "APPEND:-updated-{unique}"
+      "value": "APPEND:-updated-{unique5}"
     },
     {
       "action": "enter",
       "target": "Description (edit global field) (doc step)",
-      "value": "APPEND: updated-{unique}"
+      "value": "APPEND: updated-{unique5}"
     },
     {
       "action": "click",

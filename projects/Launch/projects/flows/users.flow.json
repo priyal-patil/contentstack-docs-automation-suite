@@ -60,12 +60,12 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "enter", "target": "Launch Invite User modal email field (doc step)", "value": "doc-launch-users-{unique}@example.com" },
+    { "action": "enter", "target": "Launch Invite User modal email field (doc step)", "value": "doc-launch-users-{unique5}@example.com" },
     { "action": "enter", "target": "Launch Invite User modal Roles field (doc step)", "value": "Admin" },
     {
       "action": "enter",
       "target": "Launch Invite User modal Message field (doc step)",
-      "value": "Doc automation optional invite message {unique}"
+      "value": "Doc automation optional invite message {unique5}"
     },
     {
       "action": "verify",

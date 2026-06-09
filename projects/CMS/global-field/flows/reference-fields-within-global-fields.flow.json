@@ -29,7 +29,7 @@
     {
       "action": "enter",
       "target": "Name",
-      "value": "Author Details-{unique}"
+      "value": "Author Details-{unique5}"
     },
     {
       "action": "click",
@@ -105,7 +105,7 @@
     {
       "action": "enter",
       "target": "Global Field Name (doc step)",
-      "value": "Blog Post-{unique}"
+      "value": "Blog Post-{unique5}"
     },
     {
       "action": "click",
@@ -197,7 +197,7 @@
     {
       "action": "enter",
       "target": "Name",
-      "value": "Blogs-{unique}"
+      "value": "Blogs-{unique5}"
     },
     {
       "action": "click",

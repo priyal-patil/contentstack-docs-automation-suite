@@ -97,7 +97,7 @@
     {
       "action": "enter",
       "target": "Developer Hub Basic Information description textarea (doc step)",
-      "value": "Marketplace Ecommerce App Boilerplate doc run {unique}",
+      "value": "Marketplace Ecommerce App Boilerplate doc run {unique5}",
       "timeoutMs": 60000
     },
     { "action": "click", "target": "Developer Hub Basic Information Save button (doc step)", "timeoutMs": 90000 },

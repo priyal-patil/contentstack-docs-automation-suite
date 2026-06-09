@@ -42,7 +42,7 @@
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Comment Ready Entry {unique}"
+      "value": "Comment Ready Entry {unique5}"
     },
     {
       "action": "click",

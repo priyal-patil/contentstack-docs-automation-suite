@@ -103,7 +103,7 @@
     {
       "action": "enter",
       "target": "Invite User modal Email field (doc step)",
-      "value": "docs-qa-test-invite-{unique}@example.org",
+      "value": "qa-{unique5}@example.org",
       "timeoutMs": 60000
     },
     {
@@ -115,7 +115,7 @@
     {
       "action": "enter",
       "target": "Invite User modal Message field (doc step)",
-      "value": "Doc automation optional invite message ({unique})",
+      "value": "Doc automation optional invite message ({unique5})",
       "timeoutMs": 60000
     },
     {

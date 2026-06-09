@@ -38,12 +38,12 @@
     {
       "action": "enter",
       "target": "Name (create stack doc step)",
-      "value": "My Website {unique}"
+      "value": "My Website {unique5}"
     },
     {
       "action": "enter",
       "target": "Description (create stack doc step)",
-      "value": "Content for my website {unique}"
+      "value": "Content for my website {unique5}"
     },
     {
       "action": "verify",
@@ -121,7 +121,7 @@
     {
       "action": "enter",
       "target": "Description (doc step)",
-      "value": "Organizational details {unique}"
+      "value": "Organizational details {unique5}"
     },
     { "action": "select", "target": "Type (doc step)", "value": "Single" },
     { "action": "click", "target": "Save and proceed (doc step)" },

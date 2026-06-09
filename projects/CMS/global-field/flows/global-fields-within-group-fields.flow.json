@@ -35,7 +35,7 @@
     {
       "action": "enter",
       "target": "Global Field Name (doc step)",
-      "value": "SEO Metadata-{unique}"
+      "value": "SEO Metadata-{unique5}"
     },
     {
       "action": "click",
@@ -107,7 +107,7 @@
     {
       "action": "enter",
       "target": "Name",
-      "value": "SEO Optimized Page-{unique}"
+      "value": "SEO Optimized Page-{unique5}"
     },
     {
       "action": "enter",

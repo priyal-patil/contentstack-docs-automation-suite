@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "VueJS Starter {unique}"
+      "value": "VueJS Starter {unique5}"
     },
     {
       "action": "verify",

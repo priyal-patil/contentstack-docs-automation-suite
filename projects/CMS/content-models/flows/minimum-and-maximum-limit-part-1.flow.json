@@ -11,7 +11,7 @@
     {"action": "verify", "target": "Content Types"},
     {"action": "click", "target": "New Content Type"},
     {"action": "click", "target": "Create New", "expected": {"modalTitle": "Create New Content Type"}},
-    {"action": "enter", "target": "Name", "value": "MinMax-Demo-{unique}"},
+    {"action": "enter", "target": "Name", "value": "MinMax-Demo-{unique5}"},
     {"action": "enter", "target": "Description", "value": "Min/Max limits demo"},
     {"action": "click", "target": "Single (Type)"},
     {"action": "click", "target": "Save and proceed"},

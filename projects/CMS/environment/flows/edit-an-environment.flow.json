@@ -61,12 +61,12 @@
     {
       "action": "enter",
       "target": "Environment Name (edit doc step)",
-      "value": "env-edit-{unique}"
+      "value": "env-edit-{unique5}"
     },
     {
       "action": "enter",
       "target": "Base URL (edit doc step)",
-      "value": "https://edited-{unique}.example.com"
+      "value": "https://edited-{unique5}.example.com"
     },
     {
       "action": "click",

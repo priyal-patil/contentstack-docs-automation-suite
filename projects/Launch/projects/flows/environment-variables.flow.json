@@ -71,12 +71,12 @@
     {
       "action": "enter",
       "target": "Launch environment settings env variables key input (doc step)",
-      "value": "DOC_STACK_KEY_{unique}"
+      "value": "DOC_STACK_KEY_{unique5}"
     },
     {
       "action": "enter",
       "target": "Launch environment settings env variables value input (doc step)",
-      "value": "doc_env_secret_{unique}"
+      "value": "doc_env_secret_{unique5}"
     },
     {
       "action": "verify",

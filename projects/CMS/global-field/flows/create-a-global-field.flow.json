@@ -85,7 +85,7 @@
     {
       "action": "enter",
       "target": "Global Field Name (doc step)",
-      "value": "Address-{unique}"
+      "value": "Address-{unique5}"
     },
     {
       "action": "verify",

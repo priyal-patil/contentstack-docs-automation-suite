@@ -60,7 +60,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Auto Launch File Upload {unique}"
+      "value": "Auto Launch File Upload {unique5}"
     },
     {
       "action": "verify",

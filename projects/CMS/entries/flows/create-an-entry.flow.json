@@ -61,9 +61,8 @@
     {
       "action": "verify",
       "target": "Proceed (doc step)",
-      "warnOnly": true,
       "alwaysWarn": true,
-      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn/warnOnly when ready.",
+      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn when ready.",
       "expected": {
         "labelEquals": "Proceed",
         "labelMatch": "contains"
@@ -73,15 +72,14 @@
     {
       "action": "click",
       "target": "Proceed (doc step)",
-      "warnOnly": true,
       "alwaysWarn": true,
-      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn/warnOnly when ready.",
+      "warnMessage": "Proceed button is not mentioned in the document — update the doc and remove alwaysWarn when ready.",
       "timeoutMs": 30000
     },
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Auto Entry {unique}"
+      "value": "Auto Entry {unique5}"
     },
     {
       "action": "verify",

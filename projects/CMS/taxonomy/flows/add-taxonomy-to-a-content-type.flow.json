@@ -32,7 +32,7 @@
     },
 
 
-    { "action": "enter", "target": "Name (doc step)", "value": "Doc Taxonomy CT {unique}" },
+    { "action": "enter", "target": "Name (doc step)", "value": "Doc Taxonomy CT {unique5}" },
     { "action": "enter", "target": "UID (doc step)", "value": "doc_tax_ct_{unique25}" },
     { "action": "click", "target": "Save and proceed" },
     {

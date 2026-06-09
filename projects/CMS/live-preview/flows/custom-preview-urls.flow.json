@@ -66,13 +66,13 @@
     {
       "action": "enter",
       "target": "Custom preview first base URL alias input (doc step)",
-      "value": "doc-alias-{unique}",
+      "value": "doc-alias-{unique5}",
       "timeoutMs": 90000
     },
     {
       "action": "enter",
       "target": "Custom preview first base URL pattern input (doc step)",
-      "value": "https://doc-cp-{unique}.example.com",
+      "value": "https://doc-cp-{unique5}.example.com",
       "timeoutMs": 90000
     },
     {
@@ -95,7 +95,7 @@
     {
       "action": "enter",
       "target": "URL path name input (doc step)",
-      "value": "doc-preview-route-{unique}",
+      "value": "doc-preview-route-{unique5}",
       "timeoutMs": 30000
     },
     {

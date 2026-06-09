@@ -34,7 +34,7 @@
     {
       "action": "enter",
       "target": "Global Field Name (doc step)",
-      "value": "SEO Settings-{unique}"
+      "value": "SEO Settings-{unique5}"
     },
     {
       "action": "enter",
@@ -77,7 +77,7 @@
     {
       "action": "enter",
       "target": "Name (doc step)",
-      "value": "Entry Tabs CT-{unique}"
+      "value": "Entry Tabs CT-{unique5}"
     },
     {
       "action": "enter",
@@ -161,7 +161,7 @@
     {
       "action": "enter",
       "target": "SEO Title (tab field) (doc step)",
-      "value": "SEO Title updated {unique}"
+      "value": "SEO Title updated {unique5}"
     },
     {
       "action": "click",

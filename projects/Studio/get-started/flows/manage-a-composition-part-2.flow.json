@@ -68,7 +68,7 @@
     {
       "action": "enter",
       "target": "Studio Freeform Composition Name field (doc step)",
-      "value": "Doc Freeform Composition {unique}"
+      "value": "Doc Freeform Composition {unique5}"
     },
     {
       "action": "verify",
@@ -131,7 +131,7 @@
     {
       "action": "enter",
       "target": "Studio Edit Freeform Composition Name field (doc step)",
-      "value": "Doc Freeform Composition Updated {unique}"
+      "value": "Doc Freeform Composition Updated {unique5}"
     },
     {
       "action": "verify",

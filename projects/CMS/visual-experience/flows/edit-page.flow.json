@@ -75,7 +75,7 @@
     {
       "action": "enter",
       "target": "Page component first field input in Form sidebar (doc step)",
-      "value": "Doc edit page {unique}"
+      "value": "Doc edit page {unique5}"
     },
     { "action": "click", "target": "Save changes header button (doc step)", "timeoutMs": 90000 },
     {

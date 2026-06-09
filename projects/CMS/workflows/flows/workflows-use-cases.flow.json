@@ -67,7 +67,7 @@
     {
       "action": "enter",
       "target": "Workflow name input (doc step)",
-      "value": "Doc workflows use case WF {unique}",
+      "value": "Doc workflows use case WF {unique5}",
       "timeoutMs": 60000
     },
     {

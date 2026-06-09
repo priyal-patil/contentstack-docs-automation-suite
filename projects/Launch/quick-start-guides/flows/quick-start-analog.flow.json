@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Launch Project Name (doc step)",
-      "value": "Analog Starter App {unique}"
+      "value": "Analog Starter App {unique5}"
     },
     {
       "action": "verify",

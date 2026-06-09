@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/content-managers/brand-kit/invite-collaborators",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Doc: Invite Collaborators — Brand Kit → kit card → Settings → Collaborators → Invite Collaborator → email (+ optional message) → Invite. Cleanup: row ⋯ → Remove → confirm Remove. Email: step.value on email enter, or BRAND_KIT_COLLABORATOR_INVITE_EMAIL / CS_INVITE_TEST_EMAIL, else doc-bk-collab-{unique}@example.com. Card row: expected.rowContains AUTO-CBK- or BRAND_KIT_INVITE_COLLABORATORS_CARD_HINT.",
+  "automationNotes": "Doc: Invite Collaborators — Brand Kit → kit card → Settings → Collaborators → Invite Collaborator → email (+ optional message) → Invite. Cleanup: row ⋯ → Remove → confirm Remove. Email: step.value on email enter, or BRAND_KIT_COLLABORATOR_INVITE_EMAIL / CS_INVITE_TEST_EMAIL, else doc-bk-collab-{unique5}@example.com. Card row: expected.rowContains AUTO-CBK- or BRAND_KIT_INVITE_COLLABORATORS_CARD_HINT.",
   "steps": [
     {
       "action": "verify",

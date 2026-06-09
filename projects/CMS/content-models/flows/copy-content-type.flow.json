@@ -11,8 +11,8 @@
     { "action": "verify", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-" } },
     { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-" } },
     { "action": "verify", "target": "Copy", "expected": { "within": "Modal" } },
-    { "action": "enter", "target": "Name", "value": "AUTO-{unique}", "expected": { "within": "Modal" } },
-    { "action": "enter", "target": "Description", "value": "AUTO-{unique}", "expected": { "within": "Modal" } },
+    { "action": "enter", "target": "Name", "value": "AUTO-{unique5}", "expected": { "within": "Modal" } },
+    { "action": "enter", "target": "Description", "value": "AUTO-{unique5}", "expected": { "within": "Modal" } },
     { "action": "click", "target": "Copy", "expected": { "within": "Modal" } },
     { "action": "verify", "target": "Save" }
   ]

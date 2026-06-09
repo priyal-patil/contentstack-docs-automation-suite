@@ -68,7 +68,7 @@
     {
       "action": "enter",
       "target": "Email input on Invite User page (doc step)",
-      "value": "docs-qa-test-invite-{unique}@example.org",
+      "value": "qa-{unique5}@example.org",
       "timeoutMs": 60000
     },
     {
