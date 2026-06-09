@@ -126,7 +126,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
 export const INPUT_SELECTORS: Record<string, string> = {
   "Entry Title (doc step)":
-    '[data-test-id="cs-title-input"] input, input[name="title"], input[placeholder*="title" i], [aria-label*="title" i]',
+    '[data-test-id="cs-title-input"] input, input[name="title"], input[placeholder*="title" i], input[aria-label*="title" i]',
   "Add to Release modal title (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Add to Release"), h3:has-text("Add to Release")',
   "Add to Release table Name header (doc step)":
