@@ -80,7 +80,7 @@ jobs:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'repository_dispatch'
     # Same Docker image as Batch 1: Chromium pre-installed, zero CDN download.
     container:
-      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
     # 6 hours: content-models alone has 59 flows × 5 min/flow = up to 295 min sequential.
     # With 7 parallel subprocesses (one per module) wall time ≈ slowest module.

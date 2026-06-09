@@ -16,7 +16,7 @@
 # Total estimated: ~76 min
 #
 # Each job:
-#   - Uses the same Docker image (mcr.microsoft.com/playwright:v1.58.0-jammy)
+#   - Uses the same Docker image (mcr.microsoft.com/playwright:v1.58.0-noble)
 #   - Calls its own bash script unchanged
 #   - Posts its own Slack message on completion
 #   - Uploads its own artifacts
@@ -69,7 +69,7 @@ jobs:
     name: "Batch 1 — 21 create flows (1 worker, ~15 min)"
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
     timeout-minutes: 180
     env:
@@ -197,7 +197,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
     timeout-minutes: 360
     env:
@@ -331,7 +331,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.58.0-jammy
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
     timeout-minutes: 180
     env:
