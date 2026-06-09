@@ -11,15 +11,18 @@
   "steps": [
     {
       "action": "click",
-      "target": "Headless CMS"
+      "target": "Headless CMS",
+      "timeoutMs": 30000
     },
     {
       "action": "click",
-      "target": "Any Stack Card (doc step)"
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 30000
     },
     {
       "action": "verify",
       "target": "Settings (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "within": "Left Navigation",
         "withinStrict": false,
@@ -29,11 +32,13 @@
     },
     {
       "action": "click",
-      "target": "Settings (doc step)"
+      "target": "Settings (doc step)",
+      "timeoutMs": 15000
     },
     {
       "action": "verify",
       "target": "Languages (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Languages",
         "labelMatch": "contains"
@@ -41,11 +46,13 @@
     },
     {
       "action": "click",
-      "target": "Languages (doc step)"
+      "target": "Languages (doc step)",
+      "timeoutMs": 15000
     },
     {
       "action": "verify",
       "target": "Languages page (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Languages",
         "labelMatch": "contains"
@@ -54,6 +61,7 @@
     {
       "action": "verify",
       "target": "New Language (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "+ New Language",
         "labelMatch": "contains"
@@ -61,11 +69,13 @@
     },
     {
       "action": "click",
-      "target": "New Language (doc step)"
+      "target": "New Language (doc step)",
+      "timeoutMs": 15000
     },
     {
       "action": "verify",
       "target": "Add Language modal (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "within": "Modal",
         "withinStrict": false,
@@ -76,6 +86,7 @@
     {
       "action": "verify",
       "target": "Add Supported Language option (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Add Supported Language",
         "labelMatch": "contains"
@@ -84,6 +95,7 @@
     {
       "action": "verify",
       "target": "Create Custom Language option (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Create Custom Language",
         "labelMatch": "contains"
@@ -91,11 +103,13 @@
     },
     {
       "action": "click",
-      "target": "Create Custom Language option (doc step)"
+      "target": "Create Custom Language option (doc step)",
+      "timeoutMs": 15000
     },
     {
       "action": "verify",
       "target": "Language Name label (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Language Name",
         "labelMatch": "contains"
@@ -104,11 +118,13 @@
     {
       "action": "enter",
       "target": "Language Name (doc step)",
-      "value": "Bel-{unique}"
+      "timeoutMs": 10000,
+      "value": "English - United Kingdom"
     },
     {
       "action": "verify",
       "target": "Language Code label (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Language Code",
         "labelMatch": "contains"
@@ -117,11 +133,13 @@
     {
       "action": "enter",
       "target": "Language Code (doc step)",
-      "value": "BE-NE-auto-01"
+      "timeoutMs": 10000,
+      "value": "en-gb"
     },
     {
       "action": "verify",
       "target": "Select Fallback Language label (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Select Fallback Language",
         "labelMatch": "contains"
@@ -129,21 +147,25 @@
     },
     {
       "action": "click",
-      "target": "Select Fallback Language dropdown (doc step)"
+      "target": "Select Fallback Language dropdown (doc step)",
+      "timeoutMs": 15000
     },
     {
       "action": "enter",
       "target": "Select Fallback Language dropdown (doc step)",
-      "value": "English - United States"
+      "timeoutMs": 10000,
+      "value": "United States"
     },
     {
       "action": "click",
       "target": "English - United States option (doc step)",
+      "timeoutMs": 10000,
       "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Add Language submit (doc step)",
+      "timeoutMs": 8000,
       "expected": {
         "labelEquals": "Add",
         "labelMatch": "contains"
@@ -152,6 +174,7 @@
     {
       "action": "click",
       "target": "Add Language submit (doc step)",
+      "timeoutMs": 15000,
       "warnOnly": true
     }
   ]
