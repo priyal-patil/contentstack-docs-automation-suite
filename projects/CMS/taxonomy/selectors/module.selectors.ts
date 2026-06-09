@@ -33,9 +33,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** Select first root term in tree so Term Details shows actions (after focus was on another term). */
   "Taxonomy terms list first root term open details (doc step)":
     '.terms-sortable-area div[role="treeitem"]:first-child .term-node, .taxonomy-edit-content [role="treeitem"]:first-child .term-node',
-  /** create-term.html — create-a-term doc step 5. Modal save vs inline Term Details split CTA (data-test-id cs-button). */
+  /** create-term.html — create-a-term doc step 5. Modal-only: .ReactModal__taxonomy [data-test-id="save-button"].
+   * Do NOT include inline .terms-split-cta selectors here — they match the background disabled inline panel
+   * button (pointer-events:none via terms-dropdown-button-disabled) when the modal is open on top,
+   * causing .first() to resolve to the non-actionable inline button and timeout for 90s. */
   "Create Term modal Save button (doc step)":
-    '.ReactModal__taxonomy [data-test-id="save-button"], .ReactModal__Content__footer [data-test-id="save-button"], .terms-details-section .terms-split-cta button.Button--primary:has-text("Save"), .terms-edit-form .terms-split-cta button.Button--primary:has-text("Save")',
+    '.ReactModal__taxonomy [data-test-id="save-button"], .ReactModal__Content__footer [data-test-id="save-button"]',
   /** taxonomy-details left term tree — create-a-term doc (sibling / child). */
   "Taxonomy terms list first term vertical ellipsis (doc step)":
     '.terms-sortable-area [role="treeitem"] button[data-test-id="cs-group-more-actions-icon"], .terms-sortable-area div[role="treeitem"] button[data-test-id="cs-group-more-actions-icon"], .terms-sortable-section button.three-dots-vertical-icon, #terms-search-trucation-id button.three-dots-vertical-icon',
