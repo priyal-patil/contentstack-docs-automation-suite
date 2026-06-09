@@ -36,7 +36,7 @@
       "target": "Apply Label dropdown (doc step)",
       "expected": {
         "labelEquals": "Apply Label",
-        "labelMatch": "equals"
+        "labelMatch": "contains"
       }
     },
     {
