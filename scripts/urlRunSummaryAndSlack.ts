@@ -205,7 +205,7 @@ function buildPerProjectBreakdownMrkdwn(rows: FlowRow[]): string | null {
 
   const lines = keys.map((p) => {
     const a = by.get(p)!;
-    return `• *${p}:* ${a.passed} passed · ${a.failed} failed · ${a.total} total (skipped ${a.skipped}, timedOut ${a.timedOut})`;
+    return `• *${p}:* ${a.passed} passed · ${a.failed + a.timedOut} failed · ${a.total} total (skipped ${a.skipped}, timedOut ${a.timedOut})`;
   });
   return lines.join("\n");
 }
@@ -231,9 +231,10 @@ function buildSlackPayload(summary: {
   const dur = summary.duration ? ` · ${summary.duration}` : "";
   const cum = summary.cumulativeNote ? ` ${summary.cumulativeNote}` : "";
   const warnCount = summary.warningFlows ?? 0;
-  const text = `Doc automation: ${c.passed} passed, ${c.failed} failed, ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
+  const totalFailed = c.failed + c.timedOut;
+  const text = `Doc automation: ${c.passed} passed, ${totalFailed} failed (incl. ${c.timedOut} timed out), ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
 
-  const icon = c.failed === 0 ? ":white_check_mark:" : ":x:";
+  const icon = totalFailed === 0 ? ":white_check_mark:" : ":x:";
   // CMS_SLACK_TITLE overrides the header (e.g. "CMS Batch 2 — URL run summary").
   // Falls back to the first segment of CMS_BATCH_DURATION_LABEL (strips the duration part),
   // then to the legacy default so Batch 1 is unaffected.
@@ -260,7 +261,7 @@ function buildSlackPayload(summary: {
       fields: [
         { type: "mrkdwn", text: `*Total URLs*\n${c.total}` },
         { type: "mrkdwn", text: `*Passed ✅*\n${c.passed}` },
-        { type: "mrkdwn", text: `*Failed ❌*\n${c.failed}` },
+        { type: "mrkdwn", text: `*Failed ❌*\n${totalFailed}${c.timedOut > 0 ? ` _(incl. ${c.timedOut} timed out)_` : ""}` },
         { type: "mrkdwn", text: `*Warnings ⚠️*\n${warnCount}` },
       ],
     },
@@ -268,8 +269,8 @@ function buildSlackPayload(summary: {
       type: "section",
       fields: [
         { type: "mrkdwn", text: `*Skipped*\n${c.skipped}` },
-        { type: "mrkdwn", text: `*Timed out*\n${c.timedOut}` },
         { type: "mrkdwn", text: `*Interrupted*\n${c.interrupted}` },
+        { type: "mrkdwn", text: `*Other*\n${c.other}` },
         { type: "mrkdwn", text: `*Duration*\n${summary.duration || "—"}` },
       ],
     },

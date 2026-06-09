@@ -129,12 +129,12 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
-        // viewport: null lets the browser use its natural/maximized window size.
-        // --start-maximized maximizes the window in headed mode.
-        viewport: null,
+        // Fixed 1920×1080 viewport for both headed and headless — ensures nav bar
+        // behaves consistently (no "More" overflow on wide screens, same layout in GHA).
+        viewport: { width: 1920, height: 1080 },
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
+          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized", "--window-size=1920,1080"],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
