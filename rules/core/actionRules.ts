@@ -32574,6 +32574,17 @@ export async function performAction(
         }
         if (oauthPick) el = oauthPick;
       }
+      // Delivery token form: "Create Preview Token" toggle is at the bottom of a fixed-height scrollable
+      // container. Playwright's visibility check clips by overflow parents — the element has non-zero DOM
+      // layout but appears outside the visible clip rect. scrollIntoViewIfNeeded() reveals it first.
+      if (
+        step.target === "Create Preview Token toggle (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "create-a-delivery-token"
+      ) {
+        await el.waitFor({ state: "attached", timeout: getStepTimeoutMs(step) }).catch(() => {});
+        await el.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+        await page.waitForTimeout(300);
+      }
       await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
 
       if (step.expected?.within) {
