@@ -6,10 +6,19 @@
   "source": "https://www.contentstack.com/docs/developers/global-field/create-a-global-field",
   "type": "executable",
   "use": [
-    "login",
-    "selectStack"
+    "login"
   ],
   "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Content Models (doc step)",
@@ -77,6 +86,14 @@
       }
     },
     {
+      "action": "verify",
+      "target": "Select Global Field (doc step)",
+      "expected": {
+        "labelEquals": "Select Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
       "target": "Select Global Field (doc step)"
     },
@@ -92,20 +109,28 @@
       "target": "Any Global Field row (doc step)"
     },
     {
-      "action": "click",
-      "target": "Proceed (Select Global Fields) (doc step)"
-    },
-    {
       "action": "verify",
-      "target": "Save and Close (doc step)",
+      "target": "Proceed (Select Global Fields) (doc step)",
       "expected": {
-        "labelEquals": "Save and Close",
+        "labelEquals": "Proceed",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Save and Close (doc step)"
+      "target": "Proceed (Select Global Fields) (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
     }
   ]
 }

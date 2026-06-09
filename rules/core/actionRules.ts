@@ -3667,6 +3667,55 @@ export async function performAction(
         break;
       }
 
+      // Capture Stack API Key from Delivery Token create/edit page.
+      if (tgt.includes("Stack API Key value (delivery token doc step)")) {
+        const el = page
+          .locator('[data-test-id="cs-delivery-token-stackAPI-input"] input')
+          .first();
+        const val = await el.inputValue({ timeout: tCap }).catch(() => "");
+        if (val?.trim()) {
+          saveCapturedDocValue("stackAPIKey", val.trim(), context);
+          console.log(`✅ Stack API Key captured (length: ${val.trim().length})`);
+        } else {
+          console.warn("⚠️ Stack API Key could not be captured from Delivery Token page");
+        }
+        break;
+      }
+
+      // Capture Delivery Token value after Generate Token.
+      if (tgt.includes("Delivery Token value (delivery token doc step)")) {
+        const el = page
+          .locator(
+            '[data-test-id="cs-delivery-token-info-input"] input, input[name="deliveryToken"], input[aria-label="deliveryToken"]'
+          )
+          .first();
+        const val = await el.inputValue({ timeout: tCap }).catch(() => "");
+        if (val?.trim()) {
+          saveCapturedDocValue("deliveryToken", val.trim(), context);
+          console.log(`✅ Delivery Token captured (length: ${val.trim().length})`);
+        } else {
+          console.warn("⚠️ Delivery Token could not be captured — token may not yet be generated");
+        }
+        break;
+      }
+
+      // Capture Preview Token value after Generate Token.
+      if (tgt.includes("Preview Token value (delivery token doc step)")) {
+        const el = page
+          .locator(
+            '[data-test-id="preview-token__edit-token"] input[aria-label="previewToken"], input[name="previewToken"], [data-test-id*="preview-token" i] input'
+          )
+          .first();
+        const val = await el.inputValue({ timeout: tCap }).catch(() => "");
+        if (val?.trim()) {
+          saveCapturedDocValue("previewToken", val.trim(), context);
+          console.log(`✅ Preview Token captured (length: ${val.trim().length})`);
+        } else {
+          console.warn("⚠️ Preview Token could not be captured — token may not yet be generated");
+        }
+        break;
+      }
+
       throw new Error(`Unknown capture target: ${step.target}`);
     }
 
@@ -11205,6 +11254,21 @@ export async function performAction(
         await ensureManageLabelDeleteMode(page, flow, unique, getStepTimeoutMs(step));
       }
 
+      if (step.target === "+ New Label option (doc step)") {
+        // The "New Label" button sits below the scrollable options list in React Select.
+        // Scroll the menu to the bottom so the button is in the viewport, then click.
+        const menu = page.locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__menu, .Select__menu').first();
+        await menu.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+        await menu.evaluate((el) => (el as HTMLElement).scrollTo({ top: (el as HTMLElement).scrollHeight })).catch(() => {});
+        await page.waitForTimeout(300);
+        const newLabelBtn = page.locator('button').filter({ hasText: /^New Label$/ }).first();
+        const fallback = page.locator('button:has-text("New Label")').last();
+        const btn = (await newLabelBtn.isVisible({ timeout: 2_000 }).catch(() => false)) ? newLabelBtn : fallback;
+        await btn.scrollIntoViewIfNeeded().catch(() => {});
+        await btn.click({ force: true, timeout: getStepTimeoutMs(step) });
+        return;
+      }
+
       if (step.target === "Global Field actions menu (doc step)") {
         const firstRow = page.locator('[role="row"]').filter({ hasText: /SEO|Section|Social Share/i }).first();
         if (await firstRow.isVisible().catch(() => false)) {
@@ -13371,13 +13435,17 @@ export async function performAction(
           break;
         }
         if (step.target === "Default Preview Environment dropdown (doc step)") {
-          const lpSection = page
-            .locator('.general-settings-section-wrapper:has(h2.general-settings-section-title:has-text("Live Preview"))')
+          // data-test-id="cs-select" may not exist in current app version; use React Select class + aria fallbacks.
+          const envSelect = page
+            .locator(
+              '[data-test-id="cs-field"]:has-text("Default Preview Environment") .Select__control,' +
+              ' div:has(> div.Select__value-container):has(input[aria-label="cs-select-aria"]),' +
+              ' input[aria-label="cs-select-aria"]'
+            )
             .first();
-          const envSelect = lpSection.locator('[data-test-id="cs-select"]').first();
           await expect(envSelect).toBeVisible({ timeout: t });
           await envSelect.click({ timeout: t, force: true });
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(500);
           break;
         }
         if (step.target === "First Default Preview Environment option (doc step)") {
@@ -13390,14 +13458,20 @@ export async function performAction(
           break;
         }
         if (step.target === "Live Preview Display Setup Status toggle (doc step)") {
-          const wrap = page
-            .locator('.general-settings-section-wrapper:has(h2.general-settings-section-title:has-text("Live Preview"))')
+          // data-test-id="cs-toggle-switch" and .toggle-switch may not exist; use aria-label fallback.
+          // Use .first() — two "Display Setup Status" toggles exist (Live Preview + Visual Editor).
+          const toggleSwitch = page
+            .locator(
+              '[data-test-id="cs-toggle-switch"]:has-text("Display Setup Status") .toggle-switch,' +
+              ' label:has(input[aria-label="aria-toggle-switch"]):has-text("Display Setup Status"),' +
+              ' div:has(input[aria-label="aria-toggle-switch"]):has-text("Display Setup Status")'
+            )
             .first();
-          const toggleInput = wrap
-            .locator('[data-test-id="cs-toggle-switch"]:has-text("Display Setup Status") input[type="checkbox"]')
-            .first();
-          const toggleSwitch = wrap
-            .locator('[data-test-id="cs-toggle-switch"]:has-text("Display Setup Status") .toggle-switch')
+          const toggleInput = page
+            .locator(
+              '[data-test-id="cs-toggle-switch"]:has-text("Display Setup Status") input[type="checkbox"],' +
+              ' div:has-text("Display Setup Status") input[aria-label="aria-toggle-switch"]'
+            )
             .first();
           await expect(toggleSwitch).toBeVisible({ timeout: t });
           if (!(await toggleInput.isChecked().catch(() => false))) {
@@ -19669,6 +19743,12 @@ export async function performAction(
           }
           if (await byTextInMenu.isVisible().catch(() => false)) {
             await byTextInMenu.click({ timeout: t });
+            break;
+          }
+          // Portal-based React-Select dropdown (e.g. Create New Branch source branch)
+          const portalOpt = page.locator(`.Portal__option, div[id*="-option-"]`).filter({ hasText: new RegExp(`^${label}$`, "i") }).first();
+          if (await portalOpt.isVisible().catch(() => false)) {
+            await portalOpt.click({ timeout: t });
             break;
           }
           // Entry option: fallback to "Entries" (plural) for module dropdown
@@ -32623,7 +32703,23 @@ export async function performAction(
         }
       } else if (step.expected?.labelEquals) {
         try {
-          await assertLabelMatch(el, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
+          const _lm = (step.expected.labelMatch as string);
+          const _mode: "exact" | "contains" = _lm === "equals" || _lm === "exact" ? "exact" : "contains";
+          if (_mode === "exact") {
+            const raw = await extractElementLabel(el);
+            const actual = normalizeLabelText(raw);
+            const want = normalizeLabelText(step.expected.labelEquals);
+            // Strip trailing parenthetical UI decorations e.g. "(required)", "(optional)" before comparing
+            const stripped = normalizeLabelText(String(raw || "").replace(/\s*\([^)]*\)\s*$/, "").trim());
+            const ok = actual === want || stripped === want;
+            if (!ok) {
+              const msg = `Label/field-name verification mismatch for "${step.target}": doc "${step.expected.labelEquals}" vs accessible/UI "${raw}".`;
+              if (STRICT_DOC_VERIFICATION) throw new Error(msg);
+              recordVerificationWarning(step, context, msg);
+            }
+          } else {
+            await assertLabelMatch(el, step.expected.labelEquals, _mode);
+          }
         } catch (err: any) {
           const msg = `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`;
           if (STRICT_DOC_VERIFICATION) throw new Error(msg);
@@ -34193,11 +34289,14 @@ export async function performAction(
 
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
       const unique8 = unique.replace(/-/g, "").slice(0, 8);
+      const unique4 = unique.replace(/-/g, "").slice(0, 4);
       const rawVal = String(step.value ?? "")
         .split("{unique8}")
         .join(unique8)
         .split("{unique25}")
         .join(unique25)
+        .split("{unique4}")
+        .join(unique4)
         .split("{unique}")
         .join(unique);
       const appendPrefix = "APPEND:";
@@ -34782,6 +34881,18 @@ export async function performAction(
           await desc.fill(val);
           break;
         }
+      }
+
+      // Release Name input — use pressSequentially so React onChange fires and enables Create button.
+      if (step.target === "Release Name input (doc step)") {
+        const t = getStepTimeoutMs(step, 30_000);
+        const inp = page.locator('[data-test-id="cs-release-name-input"] input, input[aria-label="release_name"], input[name="release_name"]').first();
+        await expect(inp).toBeVisible({ timeout: t });
+        await inp.click({ timeout: t }).catch(() => {});
+        await inp.selectText({ timeout: 5_000 }).catch(() => inp.evaluate((el) => ((el as HTMLInputElement).select?.(), undefined)).catch(() => {}));
+        await inp.pressSequentially(val, { delay: 20 });
+        await page.waitForTimeout(300);
+        break;
       }
 
       // Selector maps (optional) – prefer flow-level input from loadOverrides, then global

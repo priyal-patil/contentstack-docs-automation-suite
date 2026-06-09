@@ -12,6 +12,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-empty-create-new-release"], button[data-test-id="cs-button"]:has-text("New Release"), button:has-text("New Release"), button:has-text("+ New Release")',
   "Create button in release modal (doc step)":
     '[data-test-id="cs-release-create"], button:has-text("Create")',
+  "Save button in release modal (doc step)":
+    '[data-test-id="cs-release-create"], button:has-text("Save")',
   "First release in left nav (doc step)":
     '.ReleaseLeftContent [data-test-id="cs-list-row"], .ReleaseLeftContent .ListRow',
   "Edit release icon (doc step)":

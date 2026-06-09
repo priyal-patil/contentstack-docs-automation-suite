@@ -26,6 +26,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
 export const INPUT_SELECTORS: Record<string, string> = {
   "Create Asset Folder modal title (doc step)":
     '[data-test-id="cs-modal-title-create-asset-folder"], h3:has-text("Create Asset Folder")',
+  "Folder Name label (doc step)":
+    '[data-test-id="cs-create-folder-text-input"] label, label:has-text("Name"), .cs-form-field:has-text("Name") label',
+  "Create button in modal (doc step)":
+    '[data-test-id="cs-asset-create-folder"], button[data-test-id="cs-button"]:has-text("Create"), button:has-text("Create")',
+  "+ New Asset button (doc step)":
+    'button[data-test-id="cs-add-asset"], button[aria-label="Upload Asset"], button:has-text("+ New Asset"), button:has-text("New Asset")',
   "Folder name input (doc step)":
     '[data-test-id="cs-create-folder-text-input"] input[name="name"], input[name="name"][placeholder*="folder" i], input[placeholder*="Enter folder name" i]',
   "Asset file input (doc step)":

@@ -96,7 +96,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Base URL field label (edit modal) (doc step)":
     '[data-test-id="cs-environments-edit-url-input"] label, .ReactModal__Content label.FieldLabel:has-text("Base URL"), [role="dialog"] label:has-text("Base URL")',
   "Live Preview Display Setup Status label (doc step)":
-    '.general-settings-section-wrapper:has(h2.general-settings-section-title:has-text("Live Preview")) [data-test-id="cs-toggle-switch"]:has-text("Display Setup Status")',
+    '.Label--color--secondary:has-text("Display Setup Status"), span:has-text("Display Setup Status"), [data-test-id="cs-toggle-switch"]:has-text("Display Setup Status")',
   "Live Preview page title (doc step)":
     '[data-test-id="cs-page-title"]:has-text("Live Preview"), .page-header-title:has-text("Live Preview")',
   "Enable Live Preview label (doc step)":

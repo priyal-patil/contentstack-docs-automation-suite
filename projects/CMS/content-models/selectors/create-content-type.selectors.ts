@@ -20,6 +20,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Save and Close (doc step)": '[data-test-id="cs-ct-save-close"], button:has-text("Save and Close")',
   "Properties cog (doc step)":
     'button:has(svg[name="Sliders"]), [role="button"]:has(svg[name="Sliders"]), [data-test-id="cs-ct-title-option-properties"]',
+  "Create New Content Type Unique ID field label (doc step)":
+    '[data-testid="cs-modal"] div:has(input[name="uid"]) > div:first-child, [data-test-id="cs-ct-create-modal-ct-uid-input"], [role="dialog"] div:has(input[name="uid"]) > div:first-child',
   "Create New Content Type modal (doc step)":
     '[role="dialog"]:has-text("Create New Content Type"), [data-test-id="cs-modal-title"]:has-text("Create New Content Type"), [data-testid="cs-modal"][role="dialog"]',
   "Single (Type doc step)":

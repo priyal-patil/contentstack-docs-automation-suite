@@ -12,17 +12,81 @@
   "steps": [
     {
       "action": "verify",
-      "target": "Content Models",
+      "target": "Content Models (doc step)",
       "expected": {
         "within": "Left Navigation",
-        "withinStrict": true,
         "labelEquals": "Content Models",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     {
       "action": "click",
-      "target": "Content Models"
+      "target": "Content Models (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First Content Type row (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Apply Label dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Apply Label",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Apply Label dropdown (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "+ New Label option (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Name field label (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Nest Label Under field label (doc step)",
+      "expected": {
+        "labelEquals": "Nest Label Under",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create button (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create and Apply button (doc step)",
+      "expected": {
+        "labelEquals": "Create & Apply",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Name field (doc step)",
+      "value": "AUTO-label-{unique}"
+    },
+    {
+      "action": "click",
+      "target": "Create and Apply button (doc step)",
+      "timeoutMs": 60000
     }
   ]
 }

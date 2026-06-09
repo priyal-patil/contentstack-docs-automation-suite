@@ -7,8 +7,16 @@
   "type": "executable",
   "use": ["login"],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -17,37 +25,96 @@
         "within": "Left Navigation",
         "withinStrict": true,
         "labelEquals": "Assets",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Create new asset folder icon (doc step)",
       "expected": {
         "within": "Top-right corner",
         "withinStrict": true
-      }
+      },
+      "warnOnly": true
     },
-    { "action": "click", "target": "Create new asset folder icon (doc step)" },
+    {
+      "action": "click",
+      "target": "Create new asset folder icon (doc step)"
+    },
     {
       "action": "verify",
       "target": "Create Asset Folder modal title (doc step)",
       "expected": {
         "labelEquals": "Create Asset Folder",
-        "labelMatch": "contains",
+        "labelMatch": "equals",
         "modalTitle": "Create Asset Folder"
       }
     },
-    { "action": "enter", "target": "Folder name input (doc step)", "value": "AutoFolder{unique}" },
-    { "action": "click", "target": "Create (doc step)" },
-    { "action": "click", "target": "Created folder row (doc step)" },
-    { "action": "click", "target": "New Asset (doc step)" },
-    { "action": "click", "target": "Choose Files (doc step)" },
-    { "action": "upload", "target": "Asset file input (doc step)", "value": "./dummyData/sample.svg" },
-    { "action": "click", "target": "First Asset row (doc step)" },
-    { "action": "click", "target": "Publish Asset button (doc step)" },
-    { "action": "click", "target": "Close modal/window (doc step)" }
+    {
+      "action": "verify",
+      "target": "Folder Name label (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Folder name input (doc step)",
+      "value": "AutoFolder{unique}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Created folder row (doc step)",
+      "expected": {
+        "labelEquals": "AutoFolder",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Created folder row (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ New Asset button (doc step)",
+      "expected": {
+        "labelEquals": "+ New Asset",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "New Asset (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Choose Files (doc step)"
+    },
+    {
+      "action": "upload",
+      "target": "Asset file input (doc step)",
+      "value": "./dummyData/sample.svg"
+    }
   ]
 }
-

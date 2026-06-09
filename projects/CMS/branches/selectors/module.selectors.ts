@@ -18,9 +18,17 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Create New Branch modal (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Create New Branch"), .create-new-branch-title, .ReactModal__add-lang-branch',
   "main option in source dropdown (doc step)":
-    '[role="listbox"] [role="option"]:has-text("main"), [role="option"]:has-text("main"), .Portal__menu [role="option"]:has-text("main"), .Select__menu div:has-text("main")',
+    '.Portal__option:has-text("main"), div[id*="-option-"]:has-text("main"), [role="option"]:has-text("main"), .Select__menu div:has-text("main")',
+  "First source branch option (doc step)":
+    '[role="listbox"] [role="option"]:visible, [role="option"]:visible, .Portal__menu [role="option"]:visible',
+  "Cancel button in Create New Branch modal (doc step)":
+    '[data-test-id="cs-branches-new-branch-cancel-cta"], button:has-text("Cancel")',
   "Create button in Create New Branch modal (doc step)":
     '[data-test-id="cs-branches-new-branch-save-cta"], button:has-text("Save"), button:has-text("Create")',
+  "Branch ID help text (doc step)":
+    '[data-test-id="cs-branches-new-branch-id-help-text"]',
+  "Source Branch help text (doc step)":
+    '[data-test-id="cs-branches-new-branch-source-help-text"]',
   "Source branch dropdown (doc step)":
     '[data-test-id="cs-branches-new-branch-source-select"] .Portal__control, [data-test-id="cs-branches-new-branch-source-select"]',
   "Assign New Alias modal (doc step)":

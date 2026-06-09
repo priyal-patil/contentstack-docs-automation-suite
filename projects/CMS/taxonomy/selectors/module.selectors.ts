@@ -18,14 +18,14 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** taxonomy-listing.html — open an existing taxonomy (create-a-term doc step 2). Use the row div only: parent <a> matches first in DOM order and is often visibility-hidden. */
   "Taxonomy listing first taxonomy row open edit (doc step)":
     '[data-test-id="cs-table-body-row-0"][role="row"]:not(.Table__empty__row)',
-  /** taxonomy-details-page.html — create-a-term doc step 3. Header CTA after terms exist; empty-state “New Term” when none. */
+  /** taxonomy-details-page.html — create-a-term doc step 3. Header CTA after terms exist; empty-state "New Term" when none. */
   "Add Term button on taxonomy details (doc step)":
     '.taxonomy-title-section [data-test-id="add-term-button"], .taxonomy-title-right [data-test-id="add-term-button"], button:has-text("New Term"), [data-test-id="add-term-button"], button.Button--primary:has-text("Add Term"), button:has-text("Add Term")',
   /** taxonomy-details Term Details panel — second root term when header Add Term is not shown (live UI). */
   "Term details Create a Sibling Term button (doc step)":
     '.terms-details-section button:has-text("Create a Sibling Term"), .terms-details-section-terms-selected button:has-text("Create a Sibling Term"), .terms-edit-section button:has-text("Create a Sibling Term")',
   /**
-   * create-a-sibling-term.html — caret next to primary “Create a Sibling Term” opens menu with “Create a Child Term”.
+   * create-a-sibling-term.html — caret next to primary "Create a Sibling Term" opens menu with "Create a Child Term".
    * Live taxonomy details uses this split instead of a standalone child CTA.
    * Full selector list: ./automation.locators.ts → TERM_DETAILS_SPLIT_CTA_CARET
    */
@@ -39,12 +39,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** taxonomy-details left term tree — create-a-term doc (sibling / child). */
   "Taxonomy terms list first term vertical ellipsis (doc step)":
     '.terms-sortable-area [role="treeitem"] button[data-test-id="cs-group-more-actions-icon"], .terms-sortable-area div[role="treeitem"] button[data-test-id="cs-group-more-actions-icon"], .terms-sortable-section button.three-dots-vertical-icon, #terms-search-trucation-id button.three-dots-vertical-icon',
-  /** create-sibling-term-menu.html — doc “Create Sibling”. */
+  /** create-sibling-term-menu.html — doc "Create Sibling". */
   "Term vertical menu Create a Sibling Term (doc step)":
-    'li[data-test-id="cs-dropdown-elements"][title="Create a Sibling Term"], li.Dropdown__menu__list__item:has-text("Create a Sibling Term")',
-  /** create-sibling-term-menu.html — doc “Create Child”. */
+    'li[data-test-id="cs-dropdown-elements"][title="Create a Sibling Term"], li.Dropdown__menu__list__item:has-text("Create a Sibling Term"), li:has(p:has-text("Create Sibling Term")), li:has-text("Create Sibling Term")',
+  /** create-sibling-term-menu.html — doc "Create Child". */
   "Term vertical menu Create a Child Term (doc step)":
-    'li[data-test-id="cs-dropdown-elements"][title="Create a Child Term"], li.Dropdown__menu__list__item:has-text("Create a Child Term")',
+    'li[data-test-id="cs-dropdown-elements"][title="Create a Child Term"], li.Dropdown__menu__list__item:has-text("Create a Child Term"), li:has(p:has-text("Create Child Term")), li:has-text("Create Child Term")',
   /** taxonomy term row menu — edit-a-term doc step 3 (Actions column → Edit). */
   "Term vertical menu Edit (doc step)":
     '[data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Edit"), li[data-test-id="cs-dropdown-elements"][title="Edit"]',
@@ -77,7 +77,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** new-taxonomy-menu.html — import-a-taxonomy doc step 2. */
   "Taxonomy New Taxonomy menu Import (doc step)":
     '[data-test-id="cs-dropdown-elements"][title="Import"], li.Dropdown__menu__list__item[title="Import"]',
-  /** new-taxonomy-menu.html — split “+ New Taxonomy” → open create modal (Create New). */
+  /** new-taxonomy-menu.html — split "+ New Taxonomy" → open create modal (Create New). */
   "Taxonomy New Taxonomy menu Create New (doc step)":
     '[data-test-id="cs-dropdown-elements"][title="Create New"], li.Dropdown__menu__list__item[title="Create New"], li.Dropdown__menu__list__item:has-text("Create New")',
   /** import-taxonomy.html — import-a-taxonomy doc step 5. */
@@ -122,7 +122,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
-  /** taxonomy-header.html — doc “Create New Taxonomy” button (import-a-taxonomy doc step 2); verify only — UI may show “New Taxonomy”. */
+  /** taxonomy-header.html — doc "Create New Taxonomy" button (import-a-taxonomy doc step 2); verify only — UI may show "New Taxonomy". */
   "Create New Taxonomy split button (doc step)":
     '.create-taxonomy-split-cta button.Button--primary:has-text("New Taxonomy")',
   /** taxonomy-listing.html */
@@ -130,10 +130,10 @@ export const INPUT_SELECTORS: Record<string, string> = {
   /** create-term.html — modal titles only (portal); do not mix with Term Details or .first() hits wrong node. */
   "Create Term modal title (doc step)":
     '.ReactModal__taxonomy [data-test-id="cs-modal-title-create-term"], .ReactModal__taxonomy h3[data-test-id="cs-modal-title-create-term"], .ReactModal__taxonomy [data-test-id="cs-modal-title-create-sibling-term"], .ReactModal__taxonomy h3[data-test-id="cs-modal-title-create-sibling-term"]',
-  /** create-term.html — doc “Name” for the term (UI: Term Name). */
+  /** create-term.html — doc "Name" for the term (UI: Term Name). */
   "Create Term Term Name field label (doc step)":
     '[data-test-id="cs-modal-description"] label[for="term-name"], label[for="term-name"][data-test-id="cs-field-label"], .terms-edit-form label[for="name"], .terms-details-section label[for="name"]',
-  /** create-term.html — doc “Unique ID” (UI: Term UID). */
+  /** create-term.html — doc "Unique ID" (UI: Term UID). */
   "Create Term Term UID field label (doc step)":
     '[data-test-id="cs-modal-description"] label[for="term-uid"], label[for="term-uid"][data-test-id="cs-field-label"], .terms-edit-form label[for="uid"], .terms-details-section label[for="uid"].taxonomy-edit-uid, .terms-details-section label[for="uid"]',
   "Create Term Term Name input (doc step)":
@@ -157,7 +157,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '.terms-edit-form [data-test-id="cs-instruction-text"], .terms-details-section [data-test-id="cs-instruction-text"]',
   "Edit Term Term Name input (doc step)":
     '.terms-edit-form input[name="name"], .terms-details-section input[name="name"]',
-  /** create-new-taxonomy.html — doc “Create New Taxonomy” modal; UI title casing may differ. */
+  /** create-new-taxonomy.html — doc "Create New Taxonomy" modal; UI title casing may differ. */
   "Create New Taxonomy modal title (doc step)":
     '[data-test-id="cs-modal-title-create-new-taxonomy"], h3[data-test-id="cs-modal-title-create-new-taxonomy"], [data-testid="taxonomy-create-modal"] h3, .ReactModal__taxonomy:has(input[name="taxonomy-create-modal-name"]) .ReactModal__Content__header h3, .ReactModal__taxonomy .ReactModal__Content__header h3',
   "Create Taxonomy Name field label (doc step)":
@@ -171,7 +171,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Create Taxonomy Name input (doc step)": 'input[name="taxonomy-create-modal-name"]',
   "Create Taxonomy UID input (doc step)": 'input[name="taxonomy-create-modal-uid"]',
   "Create Taxonomy Description textarea (doc step)": 'textarea[name="taxonomy-create-modal-description"]',
-  /** edit-taxonomy.html — doc “Edit Taxonomy” modal. */
+  /** edit-taxonomy.html — doc "Edit Taxonomy" modal. */
   "Edit Taxonomy modal title (doc step)":
     '[data-test-id="cs-modal-title-edit-taxonomy"], h3[data-test-id="cs-modal-title-edit-taxonomy"]',
   "Edit Taxonomy Name field label (doc step)":

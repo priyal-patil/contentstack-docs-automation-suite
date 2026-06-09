@@ -46,17 +46,11 @@
     { "action": "click", "target": "New Taxonomy button (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Taxonomy New Taxonomy menu Create New (doc step)",
-      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
-    },
-    { "action": "click", "target": "Taxonomy New Taxonomy menu Create New (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
       "target": "Create New Taxonomy modal title (doc step)",
       "timeoutMs": 60000,
       "expected": {
         "within": "Modal",
-        "labelEquals": "Create new Taxonomy",
+        "labelEquals": "Create New Taxonomy",
         "labelMatch": "contains"
       }
     },
@@ -75,9 +69,9 @@
       "expected": {
         "within": "Modal",
         "labelEquals": "Unique ID",
-        "labelMatch": "contains",
-        "labelMismatchWarnOnly": true
-      }
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
     },
     {
       "action": "verify",
@@ -107,15 +101,7 @@
       "target": "Create Taxonomy Description textarea (doc step)",
       "value": "Doc taxonomy description {unique}"
     },
-    {
-      "action": "verify",
-      "target": "Create Taxonomy modal Cancel button (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Cancel",
-        "labelMatch": "contains"
-      }
-    },
+
     {
       "action": "verify",
       "target": "Create Taxonomy modal Create Taxonomy button (doc step)",

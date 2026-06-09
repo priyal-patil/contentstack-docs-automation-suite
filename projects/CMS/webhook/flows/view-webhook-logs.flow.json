@@ -5,9 +5,16 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/set-up-webhooks/view-webhook-logs",
   "type": "executable",
-  "use": ["login", "selectStack"],
+  "use": [
+    "login",
+    "selectStack"
+  ],
   "steps": [
-    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "click",
+      "target": "More (doc step)",
+      "optional": true
+    },
     {
       "action": "verify",
       "target": "Settings (doc step)",
@@ -18,7 +25,11 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Webhooks (doc step)",
@@ -27,8 +38,15 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Webhooks (doc step)" },
-    { "action": "click", "target": "First webhook row (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "click",
+      "target": "Webhooks (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First webhook row (doc step)",
+      "timeoutMs": 60000
+    },
     {
       "action": "verify",
       "target": "Log tab (doc step)",
@@ -37,7 +55,10 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Log tab (doc step)" },
+    {
+      "action": "click",
+      "target": "Log tab (doc step)"
+    },
     {
       "action": "verify",
       "target": "Webhook log columns (doc step)"

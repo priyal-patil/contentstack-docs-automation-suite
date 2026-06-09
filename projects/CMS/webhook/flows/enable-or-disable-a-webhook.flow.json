@@ -5,9 +5,16 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/set-up-webhooks/enable-or-disable-a-webhook",
   "type": "executable",
-  "use": ["login", "selectStack"],
+  "use": [
+    "login",
+    "selectStack"
+  ],
   "steps": [
-    { "action": "click", "target": "More (doc step)" },
+    {
+      "action": "click",
+      "target": "More (doc step)",
+      "optional": true
+    },
     {
       "action": "verify",
       "target": "Settings (doc step)",
@@ -18,7 +25,11 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Webhooks (doc step)",
@@ -27,8 +38,15 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Webhooks (doc step)" },
-    { "action": "click", "target": "First webhook row (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "click",
+      "target": "Webhooks (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First webhook row (doc step)",
+      "timeoutMs": 60000
+    },
     {
       "action": "verify",
       "target": "Enable Webhook toggle (doc step)",
@@ -36,7 +54,10 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Enable Webhook toggle (doc step)" },
+    {
+      "action": "click",
+      "target": "Enable Webhook toggle (doc step)"
+    },
     {
       "action": "verify",
       "target": "Save button (doc step)",
@@ -45,9 +66,23 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Save button (doc step)" },
-    { "action": "click", "target": "Webhooks (doc step)", "timeoutMs": 15000 },
-    { "action": "click", "target": "Vertical ellipsis in Actions column (doc step)", "timeoutMs": 15000 },
-    { "action": "click", "target": "Enable or Disable option in webhook menu (doc step)" }
+    {
+      "action": "click",
+      "target": "Save button (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Webhooks (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "click",
+      "target": "Vertical ellipsis in Actions column (doc step)",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "click",
+      "target": "Enable or Disable option in webhook menu (doc step)"
+    }
   ]
 }

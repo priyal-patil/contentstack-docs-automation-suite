@@ -7,7 +7,6 @@
   "type": "executable",
   "use": ["login", "selectStack"],
   "steps": [
-    { "action": "click", "target": "More (doc step)" },
     {
       "action": "verify",
       "target": "Settings (doc step)",
@@ -18,16 +17,43 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Branches in settings left nav (doc step)" },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Branches in settings left nav (doc step)",
+      "expected": {
+        "labelEquals": "Branches",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Branches in settings left nav (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Branches page header (doc step)",
+      "expected": {
+        "labelEquals": "Branches",
+        "labelMatch": "contains"
+      }
+    },
     {
       "action": "verify",
       "target": "+ New Branch button (doc step)",
       "expected": {
+        "labelEquals": "New Branch",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "+ New Branch button (doc step)" },
+    {
+      "action": "click",
+      "target": "+ New Branch button (doc step)"
+    },
     {
       "action": "verify",
       "target": "Create New Branch modal (doc step)",
@@ -54,7 +80,7 @@
     {
       "action": "enter",
       "target": "Branch ID input (doc step)",
-      "value": "automation_test_branch"
+      "value": "staguni1{unique4}"
     },
     {
       "action": "click",
@@ -62,13 +88,14 @@
     },
     {
       "action": "click",
-      "target": "main option in source dropdown (doc step)"
+      "target": "main option in source dropdown (doc step)",
+      "timeoutMs": 10000
     },
     {
       "action": "verify",
       "target": "Create button in Create New Branch modal (doc step)",
       "expected": {
-        "labelEquals": "Create",
+        "labelEquals": "Save",
         "labelMatch": "contains"
       }
     },

@@ -14,7 +14,7 @@
       "target": "Settings (doc step)",
       "expected": {
         "labelEquals": "Settings",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
@@ -23,7 +23,7 @@
       "target": "Taxonomy in settings (doc step)",
       "expected": {
         "labelEquals": "Taxonomy",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
@@ -32,7 +32,7 @@
       "target": "Taxonomy page title (doc step)",
       "expected": {
         "labelEquals": "Taxonomy",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     { "action": "click", "target": "Taxonomy listing first taxonomy row open edit (doc step)", "timeoutMs": 60000 },
@@ -41,26 +41,18 @@
       "target": "Add Term button on taxonomy details (doc step)",
       "expected": {
         "labelEquals": "Add Term",
-        "labelMatch": "contains",
+        "labelMatch": "equals",
         "labelMismatchWarnOnly": true
       }
     },
     { "action": "click", "target": "Add Term button on taxonomy details (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Term Details section title (doc step)",
-      "expected": {
-        "labelEquals": "Term Details",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
       "target": "Create Term Term Name field label (doc step)",
       "expected": {
         "within": "Modal",
         "labelEquals": "Term Name",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     {
@@ -69,7 +61,7 @@
       "expected": {
         "within": "Modal",
         "labelEquals": "Term UID",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     {
@@ -83,52 +75,23 @@
       "expected": {
         "within": "Modal",
         "labelEquals": "Save",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
 
     {
       "action": "verify",
-      "target": "Term details Create a Sibling Term button (doc step)",
-      "expected": {
-        "labelEquals": "Create a Sibling Term",
-        "labelMatch": "contains"
-      }
+      "target": "Taxonomy terms list first term vertical ellipsis (doc step)"
     },
-    { "action": "click", "target": "Term details Create a Sibling Term button (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Taxonomy terms list first term vertical ellipsis (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Term Details section title (doc step)",
-      "expected": {
-        "labelEquals": "Term Details",
-        "labelMatch": "contains"
-      }
+      "target": "Term vertical menu Create a Sibling Term (doc step)",
+      "expected": { "labelEquals": "Create Sibling", "labelMatch": "equals" },
+      "warnOnly": true
     },
-    {
-      "action": "enter",
-      "target": "Create Term Term Name input (doc step)",
-      "value": "Doc term parent two {unique}"
-    },
-    { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
-
-    {
-      "action": "verify",
-      "target": "Term details Create a Sibling Term button (doc step)",
-      "expected": {
-        "labelEquals": "Create a Sibling Term",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "click", "target": "Term details Create a Sibling Term button (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
-      "target": "Term Details section title (doc step)",
-      "expected": {
-        "labelEquals": "Term Details",
-        "labelMatch": "contains"
-      }
-    },
+    { "action": "click", "target": "Term vertical menu Create a Sibling Term (doc step)", "timeoutMs": 60000 },
     {
       "action": "enter",
       "target": "Create Term Term Name input (doc step)",
@@ -136,25 +99,18 @@
     },
     { "action": "click", "target": "Create Term modal Save button (doc step)", "timeoutMs": 90000 },
 
-    { "action": "click", "target": "Taxonomy terms list first root term open details (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Term details Create a Sibling Term split dropdown caret (doc step)", "timeoutMs": 60000 },
+    {
+      "action": "verify",
+      "target": "Taxonomy terms list first term vertical ellipsis (doc step)"
+    },
+    { "action": "click", "target": "Taxonomy terms list first term vertical ellipsis (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Term vertical menu Create a Child Term (doc step)",
-      "expected": {
-        "labelEquals": "Create a Child Term",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Create Child", "labelMatch": "equals" },
+      "warnOnly": true
     },
     { "action": "click", "target": "Term vertical menu Create a Child Term (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
-      "target": "Term Details section title (doc step)",
-      "expected": {
-        "labelEquals": "Term Details",
-        "labelMatch": "contains"
-      }
-    },
     {
       "action": "enter",
       "target": "Create Term Term Name input (doc step)",

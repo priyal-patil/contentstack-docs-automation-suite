@@ -38,10 +38,14 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-delivery-tokens-action-delete"], [data-test-id="cs-vertical-action-tooltip"] li:has-text("Delete")',
   "Delete delivery token confirm button (doc step)":
     '[data-test-id="cs-delivery-tokens-delete-modal-delete"], button:has-text("Delete")',
+  "Branches dropdown (delivery token doc step)":
+    '.no-full-field .Portal__control, .no-full-field .Select__control, [data-test-id="cs-delivery-token-scope"] ~ * .Portal__control, [data-test-id="cs-delivery-token-scope"] ~ * .Select__control',
+  "First branch option in scope (delivery token doc step)":
+    '.Portal__option:visible, [role="option"]:visible, .Select__menu-list [class*="option"]:visible, li:has(input[type="checkbox"]):visible',
   "First publishing environment radio (delivery token doc step)":
     '[data-test-id^="cs-delivery-token-env-name-"] input[type="radio"], [data-test-id^="cs-delivery-token-env-name-"]',
   "Create Preview Token toggle (doc step)":
-    '[data-test-id="cs-toggle-switch"] input[type="checkbox"], [data-test-id="cs-toggle-switch"] .toggle-switch',
+    '[data-test-id="cs-toggle-switch"]:has-text("Create Preview Token"), [data-test-id="cs-toggle-switch"]',
   "Read permission checkbox (doc step)":
     '[data-test-id="cs-management-token-permission-read"], [data-test-id="cs-management-token-permission-read"] input[type="checkbox"]',
   "Write permission checkbox (doc step)":
@@ -129,6 +133,8 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-delivery-token-description"], label:has-text("Description")',
   "Delivery token Scope label (doc step)":
     '[data-test-id="cs-delivery-token-scope"], label:has-text("Scope")',
+  "Branches label in scope (doc step)":
+    '[data-test-id="cs-delivery-token-branches"], label:has-text("Branches"), .scope-branches label:has-text("Branches")',
   "Publishing Environments label (doc step)":
     '[data-test-id="cs-delivery-token-env"], label:has-text("Publishing Environments")',
   "Stack API Key (delivery token page doc step)":
@@ -139,6 +145,8 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-delivery-token-preview-token"], label:has-text("Preview Token")',
   "Create Preview Token label (doc step)":
     '[data-test-id="cs-toggle-switch"] .Label--color--primary, [data-test-id="cs-toggle-switch"]:has-text("Create Preview Token")',
+  "Create Preview Token toggle (doc step)":
+    '[data-test-id="cs-toggle-switch"]:has-text("Create Preview Token"), [data-test-id="cs-toggle-switch"] .Label--color--primary',
   "Delivery Token value in edit page (doc step)":
     '[data-test-id="cs-delivery-token-info-input"] input, input[name="deliveryToken"], input[aria-label="deliveryToken"]',
   "Preview Token value in edit page (doc step)":

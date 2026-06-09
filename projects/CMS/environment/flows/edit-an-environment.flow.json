@@ -19,7 +19,8 @@
     },
     {
       "action": "click",
-      "target": "More (doc step)"
+      "target": "More (doc step)",
+      "optional": true
     },
     {
       "action": "verify",

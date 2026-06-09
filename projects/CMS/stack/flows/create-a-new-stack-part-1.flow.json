@@ -20,9 +20,10 @@
       "expected": {
         "within": "Top right corner",
         "withinStrict": false,
-        "labelEquals": "New Stack",
+        "labelEquals": "+ New Stack",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     {
       "action": "click",

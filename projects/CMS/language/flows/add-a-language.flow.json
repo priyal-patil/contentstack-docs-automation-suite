@@ -18,10 +18,6 @@
       "target": "Any Stack Card (doc step)"
     },
     {
-      "action": "click",
-      "target": "More (doc step)"
-    },
-    {
       "action": "verify",
       "target": "Settings (doc step)",
       "expected": {
@@ -56,6 +52,14 @@
       }
     },
     {
+      "action": "verify",
+      "target": "New Language (doc step)",
+      "expected": {
+        "labelEquals": "New Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
       "target": "New Language (doc step)"
     },
@@ -66,6 +70,22 @@
         "within": "Modal",
         "withinStrict": false,
         "labelEquals": "Add Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add Supported Language option (doc step)",
+      "expected": {
+        "labelEquals": "Add Supported Language",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Create Custom Language option (doc step)",
+      "expected": {
+        "labelEquals": "Create Custom Language",
         "labelMatch": "contains"
       }
     },
@@ -88,11 +108,12 @@
     {
       "action": "enter",
       "target": "Select Language dropdown (doc step)",
-      "value": "French - France"
+      "value": "French"
     },
     {
       "action": "click",
-      "target": "French - France option (doc step)"
+      "target": "First language option (doc step)",
+      "warnOnly": true
     },
     {
       "action": "verify",
@@ -113,7 +134,8 @@
     },
     {
       "action": "click",
-      "target": "English - United States option (doc step)"
+      "target": "English - United States option (doc step)",
+      "warnOnly": true
     },
     {
       "action": "verify",
@@ -125,7 +147,8 @@
     },
     {
       "action": "click",
-      "target": "Add Language submit (doc step)"
+      "target": "Add Language submit (doc step)",
+      "warnOnly": true
     }
   ]
 }

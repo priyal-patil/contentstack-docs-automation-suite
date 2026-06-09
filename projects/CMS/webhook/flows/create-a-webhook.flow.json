@@ -5,9 +5,11 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/set-up-webhooks/create-a-webhook",
   "type": "executable",
-  "use": ["login", "selectStack"],
+  "use": [
+    "login",
+    "selectStack"
+  ],
   "steps": [
-    { "action": "click", "target": "More (doc step)" },
     {
       "action": "verify",
       "target": "Settings (doc step)",
@@ -15,35 +17,52 @@
         "within": "Left Navigation",
         "withinStrict": true,
         "labelEquals": "Settings",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Webhooks in settings left nav (doc step)",
       "expected": {
         "withinStrict": true,
         "labelEquals": "Webhooks",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Webhooks in settings left nav (doc step)" },
+    {
+      "action": "click",
+      "target": "Webhooks in settings left nav (doc step)"
+    },
     {
       "action": "verify",
       "target": "+ New Webhook button (doc step)",
       "expected": {
-        "labelMatch": "contains"
-      }
+        "labelEquals": "+ New Webhook",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
     },
-    { "action": "click", "target": "+ New Webhook button (doc step)" },
+    {
+      "action": "click",
+      "target": "+ New Webhook button (doc step)"
+    },
     {
       "action": "verify",
       "target": "Name label (doc step)",
       "expected": {
         "labelEquals": "Name",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
+    },
+    {
+      "action": "enter",
+      "target": "Name input (doc step)",
+      "value": "Automation Test Webhook"
     },
     {
       "action": "verify",
@@ -54,70 +73,26 @@
       }
     },
     {
+      "action": "enter",
+      "target": "URL to Notify input (doc step)",
+      "value": "https://example.com/webhook"
+    },
+    {
+      "action": "verify",
+      "target": "Authentication Method label (doc step)",
+      "expected": {
+        "labelEquals": "Authentication Method",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
       "action": "verify",
       "target": "HTTP Basic Auth Username label (doc step)",
       "expected": {
         "labelEquals": "HTTP Basic Auth Username",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
-    },
-    {
-      "action": "verify",
-      "target": "HTTP Basic Auth Password label (doc step)",
-      "expected": {
-        "labelEquals": "HTTP Basic Auth Password",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Custom Headers label (doc step)",
-      "expected": {
-        "labelEquals": "Custom Headers",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Email Addresses to Notify label (doc step)",
-      "expected": {
-        "labelEquals": "Email Addresses to Notify",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Trigger Conditions label (doc step)",
-      "expected": {
-        "labelEquals": "Trigger Conditions",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Send Concise Payload label (doc step)",
-      "expected": {
-        "labelEquals": "Send Concise Payload",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Enable Webhook label (doc step)",
-      "expected": {
-        "labelEquals": "Enable Webhook",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "enter",
-      "target": "Name input (doc step)",
-      "value": "Automation Test Webhook"
-    },
-    {
-      "action": "enter",
-      "target": "URL to Notify input (doc step)",
-      "value": "https://example.com/webhook"
     },
     {
       "action": "enter",
@@ -125,9 +100,122 @@
       "value": "automation_user"
     },
     {
+      "action": "verify",
+      "target": "HTTP Basic Auth Password label (doc step)",
+      "expected": {
+        "labelEquals": "HTTP Basic Auth Password",
+        "labelMatch": "equals"
+      }
+    },
+    {
       "action": "enter",
       "target": "HTTP Basic Auth Password input (doc step)",
       "value": "automation_pass"
+    },
+    {
+      "action": "verify",
+      "target": "Bearer Token option label (doc step)",
+      "expected": {
+        "labelEquals": "Bearer Token",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "None option label (doc step)",
+      "expected": {
+        "labelEquals": "None",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "OAuth 2.0 Access Token URL label (doc step)",
+      "expected": {
+        "labelEquals": "Access Token URL",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "OAuth 2.0 Client ID label (doc step)",
+      "expected": {
+        "labelEquals": "Client ID",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "OAuth 2.0 Client Secret label (doc step)",
+      "expected": {
+        "labelEquals": "Client Secret",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "OAuth 2.0 Request Query Parameters label (doc step)",
+      "expected": {
+        "labelEquals": "Request Query Parameter(s)",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Custom Headers label (doc step)",
+      "expected": {
+        "labelEquals": "Custom Headers",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Email Addresses to Notify label (doc step)",
+      "expected": {
+        "labelEquals": "Email Addresses to Notify",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Stack-level Scope label (doc step)",
+      "expected": {
+        "labelEquals": "Stack-level Scope",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Branch-level Scope label (doc step)",
+      "expected": {
+        "labelEquals": "Branch-level Scope",
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Trigger Conditions label (doc step)",
+      "expected": {
+        "labelEquals": "Trigger Conditions",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Trigger Condition Scope dropdown (doc step)",
+      "optional": true
+    },
+    {
+      "action": "click",
+      "target": "Any option (doc step)",
+      "optional": true
     },
     {
       "action": "click",
@@ -135,7 +223,7 @@
     },
     {
       "action": "click",
-      "target": "Entry option (doc step)"
+      "target": "Branch option (doc step)"
     },
     {
       "action": "click",
@@ -143,11 +231,39 @@
     },
     {
       "action": "click",
-      "target": "Entries Create option (doc step)"
+      "target": "Create option (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Event Status dropdown (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Initiated option (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Send Concise Payload label (doc step)",
+      "expected": {
+        "labelEquals": "Send Concise Payload",
+        "labelMatch": "equals"
+      }
     },
     {
       "action": "click",
       "target": "Send Concise Payload toggle (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Enable Webhook label (doc step)",
+      "expected": {
+        "labelEquals": "Enable Webhook",
+        "labelMatch": "equals"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Enable Webhook toggle (doc step)"
     },
     {
       "action": "click",

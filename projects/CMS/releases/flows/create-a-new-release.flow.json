@@ -20,7 +20,17 @@
       }
     },
     { "action": "click", "target": "Releases (doc step)", "timeoutMs": 90000 },
-    { "action": "verify", "target": "Releases list (doc step)" },
+  
+    {
+      "action": "verify",
+      "target": "New Release button (doc step)",
+      "expected": {
+        "within": "top-left of page",
+        "labelEquals": "+ New Release",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
     { "action": "click", "target": "New Release button (doc step)" },
     {
       "action": "verify",
@@ -49,7 +59,15 @@
     },
     { "action": "enter", "target": "Release Name input (doc step)", "value": "{unique25}" },
     { "action": "enter", "target": "Release Description input (doc step)", "value": "Created by automation {unique}" },
-    { "action": "click", "target": "Create button in release modal (doc step)" },
+    {
+      "action": "verify",
+      "target": "Save button in release modal (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
+    },
+    { "action": "click", "target": "Save button in release modal (doc step)" },
     { "action": "verify", "target": "Releases list (doc step)" }
   ]
 }

@@ -11,11 +11,13 @@
   "steps": [
     {
       "action": "click",
-      "target": "Headless CMS"
+      "target": "Headless CMS",
+      "timeoutMs": 90000
     },
     {
       "action": "click",
-      "target": "Any Stack Card (doc step)"
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
     },
     {
       "action": "verify",
@@ -54,6 +56,14 @@
       }
     },
     {
+      "action": "verify",
+      "target": "+ New Global Field (doc step)",
+      "expected": {
+        "labelEquals": "New Global Field",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
       "target": "+ New Global Field (doc step)"
     },
@@ -61,9 +71,14 @@
       "action": "verify",
       "target": "Create New Global Field modal (doc step)",
       "expected": {
-        "within": "Modal",
-        "withinStrict": false,
-        "labelEquals": "Create New Global Field",
+        "modalTitle": "Create New Global Field"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Global Field Name (doc step)",
+      "expected": {
+        "labelEquals": "Name",
         "labelMatch": "contains"
       }
     },
@@ -73,9 +88,25 @@
       "value": "Address-{unique}"
     },
     {
+      "action": "verify",
+      "target": "Description (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Description (doc step)",
       "value": "Address global field"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -88,6 +119,14 @@
     {
       "action": "click",
       "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Display Name (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -107,6 +146,14 @@
       "target": "Single Line Textbox (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Display Name (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Display Name (doc step)",
       "value": "Apartment Name"
@@ -122,6 +169,14 @@
     {
       "action": "click",
       "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Display Name (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -141,6 +196,14 @@
       "target": "Single Line Textbox (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Display Name (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Display Name (doc step)",
       "value": "City"
@@ -158,9 +221,21 @@
       "target": "Number (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Display Name (doc step)",
+      "expected": {
+        "labelEquals": "Display Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Display Name (doc step)",
       "value": "Postal Code"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
     },
     {
       "action": "verify",

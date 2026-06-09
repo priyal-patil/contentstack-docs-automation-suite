@@ -63,6 +63,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-language-create-edit-select-language"]',
   "French - France option (doc step)":
     '[role="option"]:has-text("French - France"):visible, div[id*="-option-"]:has-text("French - France"):visible',
+  "First language option (doc step)":
+    '[role="option"]:visible, div[id*="-option-"]:visible',
   "Select Fallback Language label (doc step)":
     '[data-test-id="cs-lang-field-custom-fallback-locale"], label[for="fallback_locale"]',
   "Select Fallback Language dropdown (doc step)":

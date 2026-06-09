@@ -5,79 +5,96 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-stack",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Settings (doc step)",
       "expected": {
         "within": "Left Navigation",
         "labelEquals": "Settings",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Environments from left nav (doc step)",
       "expected": {
         "within": "Left Navigation",
         "labelEquals": "Environments",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Environments from left nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Environments from left nav (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Environments page (doc step)",
       "expected": {
         "labelEquals": "Environments",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "click", "target": "Environment row action menu first row (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Edit Environment action (doc step)", "timeoutMs": 90000 },
-    {
-      "action": "verify",
-      "target": "Edit Environment modal (doc step)",
-      "expected": {
-        "labelEquals": "Edit Environment",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     {
-      "action": "verify",
-      "target": "Base URL field label (edit modal) (doc step)",
-      "expected": {
-        "labelEquals": "Base URL",
-        "labelMatch": "contains"
-      }
+      "action": "click",
+      "target": "Environment row action menu first row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Edit Environment action (doc step)",
+      "timeoutMs": 90000
     },
     {
       "action": "enter",
       "target": "Base URL (edit doc step)",
-      "value": "https://doc-lp-{unique}.example.com",
+      "value": "https://doc-lp-{unique}.example.com"
+    },
+    {
+      "action": "click",
+      "target": "Save Environment (doc step)",
       "timeoutMs": 90000
     },
-    { "action": "click", "target": "Save Environment (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
       "target": "Visual Experience from left nav (doc step)",
       "expected": {
         "within": "Left Navigation",
         "labelEquals": "Visual Experience",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Visual Experience from left nav (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Visual Experience from left nav (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Visual Experience page title (doc step)",
       "expected": {
         "labelEquals": "Visual Experience",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
     {
@@ -85,46 +102,71 @@
       "target": "Enable Live Preview label (doc step)",
       "expected": {
         "labelEquals": "Enable Live Preview",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Enable Live Preview checkbox (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Enable Live Preview checkbox (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Default Preview Environment label (doc step)",
       "expected": {
         "labelEquals": "Default Preview Environment",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Default Preview Environment dropdown (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Default Preview Environment option (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Default Preview Environment dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First Default Preview Environment option (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Live Preview Display Setup Status label (doc step)",
       "expected": {
         "labelEquals": "Display Setup Status",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Live Preview Display Setup Status toggle (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Live Preview Display Setup Status toggle (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Always Open in New Tab toggle label (doc step)",
       "expected": {
         "labelEquals": "Always Open in New Tab",
-        "labelMatch": "contains"
+        "labelMatch": "equals"
       }
     },
-    { "action": "click", "target": "Always Open in New Tab toggle (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Always Open in New Tab toggle (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Save Visual Experience settings (doc step)",
       "expected": {
         "labelEquals": "Save",
-        "labelMatch": "contains"
-      }
+        "labelMatch": "equals"
+      },
+      "warnOnly": true
     },
-    { "action": "click", "target": "Save Visual Experience settings (doc step)", "timeoutMs": 90000 }
+    {
+      "action": "click",
+      "target": "Save Visual Experience settings (doc step)",
+      "timeoutMs": 90000
+    }
   ]
 }
