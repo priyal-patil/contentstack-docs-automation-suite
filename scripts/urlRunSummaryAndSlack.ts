@@ -254,7 +254,7 @@ function buildSlackPayload(summary: {
   const blocks: unknown[] = [
     {
       type: "header",
-      text: { type: "plain_text", text: `${icon}  ${header}`, emoji: true },
+      text: { type: "plain_text", text: header, emoji: true },
     },
     {
       type: "section",
