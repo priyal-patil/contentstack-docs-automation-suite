@@ -35,8 +35,8 @@
       "expected": {
         "within": "Modal",
         "withinStrict": false,
-        "labelEquals": "New project",
-        "labelMatch": "exact"
+        "labelEquals": "Create New Project",
+        "labelMatch": "equals"
       }
     },
     {

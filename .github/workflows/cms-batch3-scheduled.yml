@@ -68,6 +68,8 @@ jobs:
   cms-batch3:
     name: CMS Batch 3 — 38 flows — 30 delete + 8 trash (variable workers per phase, 5 min/flow)
     runs-on: ubuntu-latest
+    # Only auto-chain from the nightly scheduler (repository_dispatch). Skip on manual runs.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'repository_dispatch'
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-jammy
       options: --user root

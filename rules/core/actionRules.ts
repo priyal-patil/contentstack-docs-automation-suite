@@ -20071,6 +20071,43 @@ export async function performAction(
             break;
           }
         }
+
+        // Generic top-nav "More" fallback: when any nav item is hidden behind the truncation
+        // button (viewport too narrow), click "More" to expand the top nav and retry the target.
+        if (String(step.target || "").includes("(doc step)")) {
+          const moreSel =
+            click["More (doc step)"] ||
+            '[data-test-id="cs-dropdown-truncate-button"], button:has-text("More"), [aria-label="More"]';
+          const moreBtn = page.locator(moreSel).first();
+          if (await moreBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            await moreBtn.click({ timeout: t, force: true }).catch(() => {});
+            await page.waitForTimeout(400);
+            // Re-check the original resolved element first
+            if (await el.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await el.click({ timeout: t, force: true });
+              break;
+            }
+            // Fallback: find by text in the expanded More dropdown
+            const labelText = String(step.target || "").replace(/\s*\(doc step\)\s*/i, "").trim();
+            if (labelText) {
+              const menuItem = page.getByRole("menuitem", { name: new RegExp(labelText, "i") }).first();
+              if (await menuItem.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                await menuItem.click({ timeout: t, force: true });
+                break;
+              }
+              const menuLink = page
+                .locator(
+                  `[data-test-id="menu"] a:has-text("${labelText}"), [role="menu"] a:has-text("${labelText}"), [data-test-id="menu"] button:has-text("${labelText}")`
+                )
+                .first();
+              if (await menuLink.isVisible({ timeout: 2_000 }).catch(() => false)) {
+                await menuLink.click({ timeout: t, force: true });
+                break;
+              }
+            }
+          }
+        }
+
         throw err;
       }
 

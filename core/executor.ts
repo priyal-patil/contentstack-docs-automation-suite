@@ -180,6 +180,10 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
     return;
   }
 
+  // Maximize browser window for each flow — ensures consistent 1920×1080 layout
+  // in headed mode and matches the GHA viewport so nav items never overflow into "More".
+  await page.setViewportSize({ width: 1920, height: 1080 }).catch(() => {});
+
   // Shared steps (project-agnostic). Default: login + selectStack.
   if (!skipShared) {
     await runSharedSteps(page, flow?.use);

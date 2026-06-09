@@ -375,7 +375,7 @@ test.afterAll(() => {
     generatedAt: new Date().toISOString(),
     description:
       "Document verification warnings (position/label/modal/name mismatch). Flow continues to end; use these warnings to improve docs/UI alignment.",
-    warningFlows: warnings.length,
+    warningFlows: new Set(warnings.map((w) => w.flowId).filter(Boolean)).size,
     warnings: warnings.map((w) => ({
       documentUrl: w.documentUrl,
       flowId: w.flowId,
