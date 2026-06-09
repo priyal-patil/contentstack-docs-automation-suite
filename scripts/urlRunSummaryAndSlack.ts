@@ -155,9 +155,9 @@ function buildSummaryHtml(payload: {
     <div class="cards">
       <div class="card total"><div class="n">${c.total}</div><div class="lbl">Total URLs (flows) run</div></div>
       <div class="card passed"><div class="n">${c.passed}</div><div class="lbl">Passed</div></div>
-      <div class="card failed"><div class="n">${c.failed}</div><div class="lbl">Failed</div></div>
+      <div class="card failed"><div class="n">${c.failed}</div><div class="lbl">Failed (incl. timed out)</div></div>
       <div class="card"><div class="n">${c.skipped}</div><div class="lbl">Skipped</div></div>
-      <div class="card"><div class="n">${c.timedOut}</div><div class="lbl">Timed out</div></div>
+      <div class="card"><div class="n">0</div><div class="lbl">Timed out</div></div>
       <div class="card"><div class="n">${c.interrupted}</div><div class="lbl">Interrupted</div></div>
       <div class="card"><div class="n">${c.other}</div><div class="lbl">Other</div></div>
     </div>
@@ -187,7 +187,7 @@ function buildPerProjectBreakdownMrkdwn(rows: FlowRow[]): string | null {
     if (s === "passed") a.passed++;
     else if (s === "failed") a.failed++;
     else if (s === "skipped") a.skipped++;
-    else if (s === "timedOut") a.timedOut++;
+    else if (s === "timedOut") { a.failed++; a.timedOut++; } // timedOut folds into failed
     else if (s === "interrupted") a.interrupted++;
     else a.other++;
   }
@@ -205,7 +205,8 @@ function buildPerProjectBreakdownMrkdwn(rows: FlowRow[]): string | null {
 
   const lines = keys.map((p) => {
     const a = by.get(p)!;
-    return `• *${p}:* ${a.passed} passed · ${a.failed + a.timedOut} failed · ${a.total} total (skipped ${a.skipped}, timedOut ${a.timedOut})`;
+    const timedOutNote = a.timedOut > 0 ? `, incl. ${a.timedOut} timed out` : "";
+    return `• *${p}:* ${a.passed} passed · ${a.failed} failed${timedOutNote} · ${a.total} total (skipped ${a.skipped})`;
   });
   return lines.join("\n");
 }
@@ -218,6 +219,7 @@ function buildSlackPayload(summary: {
   cumulativeNote?: string;
   perProjectBreakdown?: string | null;
   warningFlows?: number;
+  timedOutOriginal?: number;
   runUrl?: string;
   duration?: string;
 }): { text: string; blocks: unknown[] } {
@@ -231,8 +233,11 @@ function buildSlackPayload(summary: {
   const dur = summary.duration ? ` · ${summary.duration}` : "";
   const cum = summary.cumulativeNote ? ` ${summary.cumulativeNote}` : "";
   const warnCount = summary.warningFlows ?? 0;
-  const totalFailed = c.failed + c.timedOut;
-  const text = `Doc automation: ${c.passed} passed, ${totalFailed} failed (incl. ${c.timedOut} timed out), ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
+  const timedOutOrig = summary.timedOutOriginal ?? 0;
+  // timedOut is already folded into failed at counting time; c.failed is the total
+  const totalFailed = c.failed;
+  const timedOutNote = timedOutOrig > 0 ? ` (incl. ${timedOutOrig} timed out)` : "";
+  const text = `Doc automation: ${c.passed} passed, ${totalFailed} failed${timedOutNote}, ${warnCount} warnings, ${c.total} total (flows).${cum}${dur}${runLink}`;
 
   const icon = totalFailed === 0 ? ":white_check_mark:" : ":x:";
   // CMS_SLACK_TITLE overrides the header (e.g. "CMS Batch 2 — URL run summary").
@@ -261,7 +266,7 @@ function buildSlackPayload(summary: {
       fields: [
         { type: "mrkdwn", text: `*Total URLs*\n${c.total}` },
         { type: "mrkdwn", text: `*Passed ✅*\n${c.passed}` },
-        { type: "mrkdwn", text: `*Failed ❌*\n${totalFailed}${c.timedOut > 0 ? ` _(incl. ${c.timedOut} timed out)_` : ""}` },
+        { type: "mrkdwn", text: `*Failed ❌*\n${totalFailed}${timedOutOrig > 0 ? ` _(incl. ${timedOutOrig} timed out)_` : ""}` },
         { type: "mrkdwn", text: `*Warnings ⚠️*\n${warnCount}` },
       ],
     },
@@ -269,8 +274,8 @@ function buildSlackPayload(summary: {
       type: "section",
       fields: [
         { type: "mrkdwn", text: `*Skipped*\n${c.skipped}` },
+        { type: "mrkdwn", text: `*Timed out*\n0` },
         { type: "mrkdwn", text: `*Interrupted*\n${c.interrupted}` },
-        { type: "mrkdwn", text: `*Other*\n${c.other}` },
         { type: "mrkdwn", text: `*Duration*\n${summary.duration || "—"}` },
       ],
     },
@@ -476,7 +481,7 @@ async function main(): Promise<void> {
   let passed = 0;
   let failed = 0;
   let skipped = 0;
-  let timedOut = 0;
+  let timedOutActual = 0; // track separately for the "(incl. X timed out)" note
   let interrupted = 0;
   let other = 0;
 
@@ -484,14 +489,15 @@ async function main(): Promise<void> {
     const s = r.status;
     if (s === "passed") passed++;
     else if (s === "failed") failed++;
+    else if (s === "timedOut") { failed++; timedOutActual++; } // fold into failed; timed out = 0 in display
     else if (s === "skipped") skipped++;
-    else if (s === "timedOut") timedOut++;
     else if (s === "interrupted") interrupted++;
     else other++;
   }
 
   const total = rows.length;
-  const counts = { total, passed, failed, skipped, timedOut, interrupted, other };
+  // timedOut is always 0 in counts — timed-out flows are counted as failed above
+  const counts = { total, passed, failed, skipped, timedOut: 0, interrupted, other };
 
   const generatedAt = new Date().toISOString();
   const jsonOut = {
@@ -602,6 +608,7 @@ async function main(): Promise<void> {
     cumulativeNote,
     perProjectBreakdown,
     warningFlows,
+    timedOutOriginal: timedOutActual,
     runUrl,
     duration,
   });
