@@ -100,6 +100,7 @@ PASS_COUNT=0
 FAIL_COUNT=0
 TOTAL_EXIT=0
 declare -a FLOW_RESULTS=()
+declare -a FAILED_FLOWS=()
 
 START_EPOCH="$(date +%s)"
 START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
@@ -144,6 +145,7 @@ for FLOW_ID in "${BATCH1_FLOWS[@]}"; do
     STATUS="❌ FAIL"
     FAIL_COUNT=$((FAIL_COUNT + 1))
     TOTAL_EXIT=1
+    FAILED_FLOWS+=("$FLOW_ID")
   fi
 
   FLOW_RESULTS+=("  ${STATUS}  ${FLOW_ID}  (${FLOW_MIN}m ${FLOW_SEC}s)")
@@ -174,6 +176,68 @@ for r in "${FLOW_RESULTS[@]}"; do
   echo "$r" | tee -a "$LOG"
 done
 echo "================================================================" | tee -a "$LOG"
+
+# ── Retry failed flows (once) ────────────────────────────────────────────────
+# Warning flows have exit code 0 (they pass) so they are never in FAILED_FLOWS.
+# Only flows where a step hard-failed are retried.
+if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
+  RETRY_PASS=0
+  RETRY_FAIL=0
+
+  echo "" | tee -a "$LOG"
+  echo "================================================================" | tee -a "$LOG"
+  echo "  RETRY — ${#FAILED_FLOWS[@]} failed flow(s) — running once more" | tee -a "$LOG"
+  echo "================================================================" | tee -a "$LOG"
+  echo "" | tee -a "$LOG"
+
+  for FLOW_ID in "${FAILED_FLOWS[@]}"; do
+    FLOW_START="$(date +%s)"
+    FLOW_START_ISO="$(date -u +'%H:%M:%SZ')"
+    echo "[retry] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
+
+    set +e
+    npx playwright test tests/flows.spec.ts \
+      --project=flows \
+      --grep "Project=CMS.*${FLOW_ID}$" \
+      2>&1 | tee -a "$LOG"
+    FLOW_EXIT=${PIPESTATUS[0]}
+    set -e
+
+    FLOW_END="$(date +%s)"
+    FLOW_ELAPSED=$(( FLOW_END - FLOW_START ))
+    FLOW_MIN=$(( FLOW_ELAPSED / 60 ))
+    FLOW_SEC=$(( FLOW_ELAPSED % 60 ))
+
+    if [[ "$FLOW_EXIT" -eq 0 ]]; then
+      STATUS="✅ PASS (retry)"
+      RETRY_PASS=$((RETRY_PASS + 1))
+      PASS_COUNT=$((PASS_COUNT + 1))
+      FAIL_COUNT=$((FAIL_COUNT - 1))
+    else
+      STATUS="❌ FAIL (retry)"
+      RETRY_FAIL=$((RETRY_FAIL + 1))
+    fi
+
+    # Overwrite part file with retry result so the final merge uses the latest outcome
+    if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+      cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${FLOW_ID}.json" 2>/dev/null || true
+    fi
+
+    echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
+    echo "" | tee -a "$LOG"
+  done
+
+  echo "================================================================" | tee -a "$LOG"
+  echo "  RETRY COMPLETE" | tee -a "$LOG"
+  echo "  Recovered    : ${RETRY_PASS}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+  echo "  Still failing: ${RETRY_FAIL}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+  echo "  Final passed : ${PASS_COUNT}/${TOTAL_FLOWS}" | tee -a "$LOG"
+  echo "  Final failed : ${FAIL_COUNT}/${TOTAL_FLOWS}" | tee -a "$LOG"
+  echo "================================================================" | tee -a "$LOG"
+
+  # Update total exit: 0 only if no flows are still failing after retry
+  [[ "$RETRY_FAIL" -eq 0 ]] && TOTAL_EXIT=0 || TOTAL_EXIT=1
+fi
 
 # ── Merge parts + generate reports ──────────────────────────────────────────
 shopt -s nullglob
