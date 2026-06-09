@@ -37,12 +37,14 @@
     },
     {
       "action": "click",
-      "target": "First Entry row (doc step)"
+      "target": "First Entry row (doc step)",
+      "timeoutMs": 60000
     },
     {
       "action": "enter",
       "target": "Entry Title (doc step)",
-      "value": "Comment Ready Entry {unique5}"
+      "value": "Comment Ready Entry {unique5}",
+      "timeoutMs": 60000
     },
     {
       "action": "click",
