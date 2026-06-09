@@ -151,9 +151,12 @@ for FLOW_ID in "${BATCH1_FLOWS[@]}"; do
   FLOW_RESULTS+=("  ${STATUS}  ${FLOW_ID}  (${FLOW_MIN}m ${FLOW_SEC}s)")
   echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
 
-  # Copy per-flow Playwright results
+  # Copy per-flow Playwright results and warnings
   if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${FLOW_ID}.json" 2>/dev/null || true
+  fi
+  if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+    cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-warnings.json" 2>/dev/null || true
   fi
 
   echo "" | tee -a "$LOG"
@@ -218,9 +221,12 @@ if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
       RETRY_FAIL=$((RETRY_FAIL + 1))
     fi
 
-    # Overwrite part file with retry result so the final merge uses the latest outcome
+    # Overwrite part files with retry result so the final merge uses the latest outcome
     if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
       cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${FLOW_ID}.json" 2>/dev/null || true
+    fi
+    if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+      cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-warnings.json" 2>/dev/null || true
     fi
 
     echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
@@ -242,10 +248,42 @@ fi
 # ── Merge parts + generate reports ──────────────────────────────────────────
 shopt -s nullglob
 PART_FILES=("$PARTS_DIR"/*.json)
+WARNING_PARTS=("$PARTS_DIR"/*-warnings.json)
 shopt -u nullglob
+
+# Merge per-flow warning parts into a single doc-step-warnings.json so the
+# Slack summary counts warnings from ALL flows, not just the last one to run.
+if [[ ${#WARNING_PARTS[@]} -gt 0 ]]; then
+  node -e "
+    const fs = require('fs');
+    const parts = process.argv.slice(1);
+    const all = [];
+    for (const p of parts) {
+      try {
+        const d = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        if (Array.isArray(d.warnings)) all.push(...d.warnings);
+      } catch {}
+    }
+    const uniqueFlows = new Set(all.map(w => w.flowId).filter(Boolean)).size;
+    fs.writeFileSync(
+      '${REPORT_DIR}/doc-step-warnings.json',
+      JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
+    );
+    console.log('Merged ' + parts.length + ' warning parts → ' + all.length + ' warnings across ' + uniqueFlows + ' flows.');
+  " "${WARNING_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
+fi
+
 if [[ ${#PART_FILES[@]} -gt 0 ]]; then
-  npx ts-node "$ROOT/scripts/mergePlaywrightFlowJsonReports.ts" \
-    --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+  # Exclude the *-warnings.json parts from the flows-results merge
+  FLOWS_PART_FILES=()
+  for f in "${PART_FILES[@]}"; do
+    [[ "$f" == *-warnings.json ]] && continue
+    FLOWS_PART_FILES+=("$f")
+  done
+  if [[ ${#FLOWS_PART_FILES[@]} -gt 0 ]]; then
+    npx ts-node "$ROOT/scripts/mergePlaywrightFlowJsonReports.ts" \
+      --out "$REPORT_DIR/flows-results.json" "${FLOWS_PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+  fi
   npx ts-node "$ROOT/scripts/generateCmsExcelReport.ts"   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateCmsDashboardHtml.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateUnifiedReport.ts"    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
