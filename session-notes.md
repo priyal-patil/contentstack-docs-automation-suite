@@ -1,6 +1,6 @@
 # Session Notes — Batch 1 GHA CI Fix (June 2026)
 
-_Last updated: 2026-06-09_
+_Last updated: 2026-06-10_
 
 ---
 
@@ -11,57 +11,116 @@ Batch 1 = 21 create flows, 1 worker, `PW_FLOW_MAX_MINUTES=5` (5-min per-test tim
 
 ---
 
-## Fixes Applied This Session
+## Fixes Applied (Session 1 — 2026-06-09)
 
 ### 1. `create-an-entry` — Timeout too short on CT picker Proceed button
 
-**What failed:** `verify "Save"` at actionRules.ts:22240 — the entries list was visible instead of the entry editor. Both attempt 1 and retry show the plain entries list in screenshots at failure time.
+**What failed:** `verify "Save"` — entries list visible instead of entry editor.
 
-**Root cause:** After `+ New Entry` opens the content type picker modal, clicking the first CT row needs time for the Proceed button to become enabled (selector `:not([disabled])`). The old 10 s timeout on `verify/click "Proceed"` (both `warnOnly`) was too short for GHA. When Proceed's warnOnly timer expired, the flow continued without the entry editor ever opening. The title input was never found; somehow the test still reached `verify "Save"` which then failed on the entries list.
+**Root cause:** Old 10 s `warnOnly` timeout on Proceed. When it expired the flow continued without the entry editor opening.
 
-The `enter "Entry Title"` action uses `.fill()` only (confirmed actionRules.ts:34953) — no Enter key pressed — so it does NOT cause navigation away from the entry editor.
-
-**Fix applied (`projects/CMS/entries/flows/create-an-entry.flow.json`):**
-| Step | Old timeout | New timeout |
-|------|-------------|-------------|
+**Fix (`create-an-entry.flow.json`):**
+| Step | Old | New |
+|------|-----|-----|
 | `click "First Content Type row"` | 15 s | 30 s |
-| `verify "Proceed"` (warnOnly) | 10 s | 30 s |
-| `click "Proceed"` (warnOnly) | 10 s | 30 s |
-| `verify "Save"` | none (30 s default) | 60 s |
-| `click "Save"` | none (30 s default) | 30 s |
+| `verify "Proceed"` | 10 s (warnOnly) | 30 s |
+| `click "Proceed"` | 10 s (warnOnly) | 30 s |
+| `verify "Save"` | 30 s default | 60 s |
+| `click "Save"` | 30 s default | 30 s |
 
 ---
 
 ### 2. `add-a-custom-language` — 23 steps exceeding 5-min test timeout
 
-**What failed:** Test hard-timed-out at 5 minutes (Batch 1 cap). The fallback language dropdown (click → type "English - United States" → click option) was the slowest block. Also, language code `BE-NE-auto-01` is not a valid RFC 5646 locale — Contentstack real-time validation rejects it, causing the Add button to stay disabled.
+**Root cause:** 23 steps × 30 s default = up to 690 s. Language code `BE-NE-auto-01` also failed RFC 5646 validation, keeping Add button disabled.
 
-**Root cause:** 23 steps × 30 s default timeout = up to 690 s worst case. No explicit `timeoutMs` on any step meant every step used the full 30 s fallback.
-
-**Fix applied (`projects/CMS/language/flows/add-a-custom-language.flow.json`):**
-- Added explicit `timeoutMs` per step: 8 s for verify / 10 s for enter / 15 s for click / 30 s for navigation
-- Total estimated time: ~270 s (under the 300 s cap)
-- Fallback language filter text shortened: `"English - United States"` → `"United States"` (less typing)
-- Language data changed to valid RFC 5646 pair: name = `"English - United Kingdom"`, code = `"en-gb"`
-- `warnOnly` + `timeoutMs: 10000` on the English dropdown option click
+**Fix:**
+- Explicit `timeoutMs` per step: 8 s verify / 10 s enter / 15 s click / 30 s navigation → ~270 s total
+- Language changed to valid RFC 5646 pair: name = `"English - United Kingdom"`, code = `"en-gb"`
+- Fallback filter text shortened to `"United States"` (less typing)
+- `warnOnly` on English dropdown option click
 
 ---
 
-## `create-an-entry-variant` — Environment prerequisite issue (not a code fix)
+## Fixes Applied (Session 2 — 2026-06-09/10)
 
-**What failed:**
-- Attempt 1: `verify "[Base Entry]"` (step 6, 90 s) — entry editor opened but no `[Base Entry]` variant scope dropdown visible
-- Retry: `click "First Entry row"` (step 5, 120 s) — entries list rows not found
+### 3. `create-a-delivery-token` — Toggle below fold in scrollable panel
 
-**Root cause:** PriyalDocsStack (DEFAULT_STACK from `.env`) does not have any variant groups linked to a content type. The `[Base Entry]` dropdown only appears in the entry editor when variant groups are linked. This is an environment/configuration gap, not a code bug.
+**What failed:** `verify "Create Preview Token toggle"` with "element(s) not found" after 30 s.
 
-**Required action:** In the Contentstack UI, link a variant group to at least one content type in PriyalDocsStack.
+**Root cause:** Playwright's `toBeVisible()` clips element visibility by overflow parent rect. The toggle was inside a fixed-height scrollable delivery-token form, so it was in the DOM but clipped — Playwright reported it as not visible.
+
+**Fix (commit `6845eeb` then generalized in `d225a04`):** Added `scrollIntoViewIfNeeded()` before every `toBeVisible()` in the generic verify case (line 32582, `actionRules.ts`):
+
+```typescript
+// No-op when element is already in viewport; fixes below-fold elements
+// in fixed-height scrollable panels across ALL flows universally.
+await el.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
+```
+
+**Why catch is needed:** Locators with `:not([disabled])` (e.g. Proceed button) don't match until the button is enabled — `scrollIntoViewIfNeeded` would time out on the disabled state. The catch lets it silently fail; `toBeVisible` then polls the full step timeout on its own.
+
+---
+
+### 4. `create-and-apply-labels` — React Select dropdown not opening
+
+**What failed:** "Apply Label dropdown" click not opening the dropdown.
+
+**Root cause:** The click selector hit the outer wrapper `[data-test-id="cs-save-content-page-add-label-select"]`. React Select only opens when `mousedown` fires on `.Select__control` — the wrapper alone is unreliable. The dead fallback `[aria-label="Apply Label"]` also never matched (actual aria-label on the inner input is `"cs-select-aria"`).
+
+**Fix (`create-and-apply-labels.selectors.ts`, `create-and-apply-labels.flow.json`):**
+- `CLICK_SELECTORS`: prefer `.Select__control` inside the wrapper test-id
+- `INPUT_SELECTORS`: new entry for verify — uses wrapper + `.Select__placeholder` for visibility check
+- Flow JSON: `labelMatch: "equals"` → `"contains"` to tolerate SVG caret characters in text content
+- Commit: `0e934d4`
+
+---
+
+### 5. `create-an-entry` — CT picker sort button matched entry title selector (race condition)
+
+**What failed:** `verify "Save"` — entries list shown. `enter "Entry Title"` appeared to pass even though the entry editor never loaded.
+
+**Root cause:** The INPUT_SELECTORS for `"Entry Title (doc step)"` ended with `[aria-label*="title" i]` (no `input` scope). The CT picker column sort button has `aria-label="Title"`. On GHA (slow runner), the Proceed navigation starts asynchronously but takes 1–3 s to complete. During that window the CT picker DOM is still live, so `expect(inputEl).toBeVisible()` matched the sort button immediately (0 ms wait). `isFillable` returned false (it's a `<button>`) → code clicked the sort button + `keyboard.type(title)` + `keyboard.press("Enter")` — all silently swallowed. Step 11 "passed" without touching the entry editor.
+
+**Why it passes locally:** Fast local machine completes the Proceed navigation in ~200 ms. By the time step 11 evaluates the locator, the CT picker DOM is already gone. The race window doesn't exist locally.
+
+**Fix (`projects/CMS/entries/selectors/module.selectors.ts`):**
+```typescript
+// Before (matched <button aria-label="Title"> in CT picker):
+'[data-test-id="cs-title-input"] input, input[name="title"], input[placeholder*="title" i], [aria-label*="title" i]'
+
+// After (only matches <input> elements):
+'[data-test-id="cs-title-input"] input, input[name="title"], input[placeholder*="title" i], input[aria-label*="title" i]'
+```
+Commit: `5e1d3df`
+
+---
+
+### 6. Warning count in Slack — only last flow's warnings reported
+
+**What failed:** Slack Batch summary showed 0 or 1 warning flows regardless of how many flows actually produced warnings.
+
+**Root cause:** Each of the 21 flows runs as a separate `npx playwright test` process. Each process's `afterAll()` hook writes `doc-step-warnings.json` to `$REPORT_DIR`, **overwriting** the previous flow's file. By the end of the batch, only the last flow's warnings remained. `urlRunSummaryAndSlack.ts` read that stale file and reported the wrong count.
+
+**Fix (`scripts/run-cms-batch1.sh`, commit `cbe8d3e`):**
+1. After each flow (and each retry), copy `doc-step-warnings.json` → `PARTS_DIR/{id}-warnings.json`
+2. After all 21 flows + retries complete, merge all `*-warnings.json` parts with an inline Node script into a single `doc-step-warnings.json` covering the full batch
+3. Filter `*-warnings.json` files out of the `flows-results` merge pass so `mergePlaywrightFlowJsonReports.ts` doesn't receive them
+
+---
+
+## `create-an-entry-variant` — Environment prerequisite (not a code fix)
+
+**Root cause:** PriyalDocsStack has no variant groups linked to a content type. `[Base Entry]` dropdown only appears when a variant group is linked.
+
+**Required action (ops):** In the Contentstack UI, link a variant group to at least one content type in PriyalDocsStack.
 
 ---
 
 ## `create-a-global-field-part-2` — Monitor next run
 
-Part 2 depends on Part 1. Part 1 was failing due to viewport (1280 px, fixed to 1920×1080 in a previous session). Monitor next GHA run to confirm Part 2 passes.
+Part 2 depends on Part 1. Part 1 viewport was fixed (1920×1080) in a previous session. Monitor the next GHA run to confirm Part 2 passes.
 
 ---
 
@@ -71,7 +130,7 @@ Part 2 depends on Part 1. Part 1 was failing due to viewport (1280 px, fixed to 
 
 1. `loadOverrides(flow)` loads selectors in priority order: shared → project → module → flow
 2. `resolveTarget(page, target, flow)` → finds `click[target]` in overrides → `page.locator(mapped).first()`; otherwise falls back to `getByRole` / `getByText`
-3. Generic click handler (lines 18144–18152): if `step.nth` is defined, uses `page.locator(mapped).nth(step.nth)` directly; otherwise calls `resolveTarget`
+3. `INPUT_SELECTORS` take precedence over `CLICK_SELECTORS` in the verify path — verify `el` is built as: `clickMapped ? locator(clickMapped) : inputMapped ? locator(inputMapped) : resolveTarget()`
 
 ### Timeout chain
 
@@ -81,14 +140,24 @@ step.timeoutMs → getStepTimeoutMs(step, 30_000) → fastFailCap() → Playwrig
 
 - No `timeoutMs` = 30 s default per step
 - `FAST_FAIL_STEP_TIMEOUT_MS` env caps all steps when set
-- Batch 1: `PW_FLOW_MAX_MINUTES=5` = 300 s **total test** timeout (sum of all steps must fit)
+- Batch 1: `PW_FLOW_MAX_MINUTES=5` = 300 s **total test** timeout
+- Generic verify path (line 32582): `scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {})` adds up to 5 s overhead before the step timeout — effective window = 5 + `timeoutMs`
 
-### How `enter` action fills inputs (actionRules.ts:34935–35007)
+### `alwaysWarn` vs `warnOnly`
 
-For a step with an `INPUT_SELECTORS` match:
-1. Locates via mapped selector (e.g. `[data-test-id="cs-title-input"] input`)
-2. Calls `inputEl.fill(val)` — no Enter key pressed
-3. Exception: `"Version name input"` presses Enter after fill; non-fillable (div-based) elements press Enter after `keyboard.type()`
+| Flag | Effect |
+|------|--------|
+| `alwaysWarn: true` | Logs a warning even when the step **passes** (doc/UI mismatch flagging) |
+| `warnOnly: true` | If the step **fails**, records a warning instead of throwing — flow continues |
+| Both | Logs warning on pass AND treats failure as non-fatal |
+
+### React Select click pattern
+
+React Select opens its dropdown on `mousedown` fired at `.Select__control`, not the outer wrapper div. Always target `.Select__control` as the primary click selector:
+```typescript
+'[data-test-id="<wrapper-test-id>"] .Select__control, [data-test-id="<wrapper-test-id>"]'
+```
+For verify/visibility checks, use the wrapper (not `.Select__control`) — it covers the full component.
 
 ### CT picker modal key selectors (CMS/entries/selectors/module.selectors.ts)
 
@@ -100,7 +169,14 @@ For a step with an `INPUT_SELECTORS` match:
   '[data-test-id="cs-new-entry-single-proceed"]:not([disabled]), .ReactModal__new-entry button:has-text("Proceed"):not([disabled])'
 ```
 
-Proceed selector uses `:not([disabled])` — only matches when the CT row has been selected (row click enables it). On slow GHA networking, this can take > 10 s.
+**IMPORTANT:** The CT picker has a column sort button with `aria-label="Title"`. Any `[aria-label*="title" i]` selector MUST be scoped to `input[aria-label*="title" i]` — otherwise it matches the button during the async navigation window after Proceed click.
+
+### Warning accumulation (scripts/run-cms-batch1.sh)
+
+Each flow run overwrites `doc-step-warnings.json`. Correct pattern:
+1. Per-flow: `cp doc-step-warnings.json PARTS_DIR/{id}-warnings.json`
+2. Post-batch: merge all `*-warnings.json` parts with `node -e` inline script → final `doc-step-warnings.json`
+3. `urlRunSummaryAndSlack.ts` reads the merged file → correct count across all 21 flows
 
 ### Batch execution format
 
@@ -111,15 +187,46 @@ Proceed selector uses `:not([disabled])` — only matches when the CT row has be
 | Batch 3 | 38 deletes/trash | phase-based | 15 min/test |
 
 GHA: auto-chains via `workflow_run` at 5 AM IST. Local: `npm run test:cms:batch1/2/3`.
+Manual GHA trigger: `gh workflow run cms-batch1-scheduled.yml --repo priyal-patil/docs-contentstack-ai-automation --ref main`
+
+---
+
+## Current State (as of 2026-06-10)
+
+| Flow | Status | Commits |
+|------|--------|---------|
+| `create-a-new-stack-part-1` | Unknown (not touched this session) | — |
+| `add-an-environment` | Unknown | — |
+| `add-a-language` | Unknown | — |
+| `add-a-custom-language` | Fixed | `242cd58`, `46d9900` |
+| `create-a-branch` | Unknown | — |
+| `create-content-type` | Unknown | — |
+| `create-a-new-release` | Unknown | — |
+| `create-a-global-field` | Unknown | — |
+| `create-a-global-field-part-2` | Monitor | — |
+| `create-upload-assets` | Unknown | — |
+| `create-a-folder` | Unknown | — |
+| `create-an-entry` | Fixed | `46d9900`, `5e1d3df` |
+| `add-a-comment` | Fixed | `3c297a5` |
+| `create-and-apply-labels` | Fixed | `0e934d4` |
+| `set-up-live-preview-for-your-stack` | Unknown | — |
+| `create-a-taxonomy` | Fixed | `b3c35dd` |
+| `create-a-term` | Fixed | `5c45cb7` |
+| `create-a-delivery-token` | Fixed | `6845eeb`, `d225a04` |
+| `generate-a-management-token` | Unknown | — |
+| `create-a-webhook` | Unknown | — |
+| `add-workflows-and-stages` | Unknown | — |
+
+**GHA run in progress:** https://github.com/priyal-patil/docs-contentstack-ai-automation/actions/runs/27226866150
 
 ---
 
 ## Next Steps
 
-1. **Push and validate** — push current commits, trigger Batch 1 GHA run, confirm `create-an-entry` and `add-a-custom-language` now pass
+1. **Review Batch 1 GHA run 27226866150** — check which of the 7 previously unknown flows pass/fail; fix any new failures found
 2. **Fix `create-an-entry-variant`** — link a variant group to a content type in PriyalDocsStack (ops task, not code)
-3. **Monitor `create-a-global-field-part-2`** — confirm it passes after Part 1 viewport fix
-4. **If `create-an-entry` still fails** — add a `waitForURL` or `waitForSelector` for the entry editor DOM after clicking Proceed, before the title entry step, to guarantee the editor has loaded
+3. **Monitor `create-a-global-field-part-2`** — should pass now that Part 1 viewport is fixed
+4. **Bulk-replace `{unique}` → `{unique5}`** across remaining 113 flow files (see Unique ID Length Fix notes below)
 5. **Continue remaining URL flows** per user's direction
 
 ---
@@ -161,7 +268,7 @@ The codebase in `rules/core/actionRules.ts` already supports length-capped varia
 
 Replaced `docs-qa-test-invite-` (20 chars) with `qa-` (3 chars). Keeps the address recognisable as a QA test without eating into the unique suffix budget.
 
-## Changes Made This Session
+## Changes Made
 
 ### Flow files updated (invite-user flows — 3 files)
 
@@ -188,13 +295,13 @@ Administration, AgentOS, BrandKit, CMS (assets, content-models, entries, environ
 
 ## Next Steps
 
-1. **Bulk-replace remaining flow files** — replace `{unique}` → `{unique5}` in all 113 pending flow JSON files. Safe to do with a `perl` one-liner scoped to the bare `{unique}` pattern (not `{unique8}` / `{unique4}` etc.):
+1. **Bulk-replace remaining flow files** — replace `{unique}` → `{unique5}` in all 113 pending flow JSON files:
    ```bash
    find projects/ -name "*.flow.json" | xargs perl -i -pe \
      's/\{unique\}(?![0-9])/\{unique5\}/g'
    ```
 
-2. **Audit `actionRules.ts` specific handlers** — any handler with its own `.split("{unique}").join(unique)` that fires for a target in the updated flow files needs a `{unique5}` line prepended. The generic handler already covers targets without a specific handler. Search:
+2. **Audit `actionRules.ts` specific handlers** — any handler with its own `.split("{unique}").join(unique)` needs a `{unique5}` line prepended:
    ```bash
    grep -n 'split("{unique}")' rules/core/actionRules.ts | grep -v unique5
    ```
