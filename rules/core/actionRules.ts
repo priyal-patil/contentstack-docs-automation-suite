@@ -11270,18 +11270,11 @@ export async function performAction(
       }
 
       if (step.target === "+ New Label option (doc step)") {
-        // Wait for the React Select menu to be open (it's a portal appended to body).
-        // Scope ALL element lookups inside the menu — never search the whole page, as
-        // page-wide button:has-text("New Label") can match unrelated elements and navigate.
+        // "+ New Label" is a span[role="button"] with data-test-id="cs-save-content-page-add-new-label"
+        // inside .Select__add-option — NOT a <button> and NOT inside .Select__menu-list.
         const t = getStepTimeoutMs(step, 60_000);
-        const menu = page.locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__menu, .Select__menu-list').first();
-        await menu.waitFor({ state: "visible", timeout: t });
-        // Scroll the menu container to the bottom so the "+ New Label" footer button is in view.
-        await menu.evaluate((el) => (el as HTMLElement).scrollTo({ top: (el as HTMLElement).scrollHeight })).catch(() => {});
-        await page.waitForTimeout(300);
-        // "+ New Label" is rendered as a button inside the open menu only — scoped to menu.
-        const btn = menu.locator('button:has-text("New Label"), [class*="Select__option"]:has-text("New Label")').last();
-        await btn.waitFor({ state: "visible", timeout: 10_000 });
+        const btn = page.locator('[data-test-id="cs-save-content-page-add-new-label"]');
+        await btn.waitFor({ state: "visible", timeout: t });
         await btn.click({ force: true, timeout: t });
         return;
       }
