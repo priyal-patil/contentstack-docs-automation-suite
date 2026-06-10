@@ -32574,12 +32574,17 @@ export async function performAction(
         }
         if (oauthPick) el = oauthPick;
       }
-      // Scroll element into view before checking visibility. This is a no-op when the element is
-      // already in the viewport ("if needed"). When elements are below the fold inside fixed-height
-      // scrollable panels, Playwright's visibility check clips by overflow parents and reports
-      // not-visible even though the element is attached. Scrolling first ensures the check works
-      // consistently across all flows, not just specific ones.
-      await el.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+      // Scroll element into view before checking visibility — needed for elements below the fold
+      // inside fixed-height scrollable panels where Playwright clips by overflow parents.
+      // Skip for elements inside React Modals: scrollIntoView triggers window scroll events that
+      // close Contentstack modals via their backdrop scroll listener (observed: create-a-term
+      // Save button verify closed the modal, causing a false 30s timeout failure after d225a04).
+      const isInsideModal = await el.evaluate(
+        (node) => !!(node as Element).closest('.ReactModal__Content, [role="dialog"]')
+      ).catch(() => false);
+      if (!isInsideModal) {
+        await el.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+      }
       await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
 
       if (step.expected?.within) {
