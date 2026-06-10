@@ -20639,14 +20639,9 @@ export async function performAction(
           .locator('[data-test-id="cs-toggle-switch"]:has-text("Create Preview Token"), [data-test-id="cs-toggle-switch"]')
           .first();
         await toggle.waitFor({ state: "attached", timeout: t }).catch(() => {});
-        await toggle.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
-        await page.waitForTimeout(600);
-        // If still not visible (headless clipping), scroll the closest overflow parent manually.
-        const isVisible = await toggle.isVisible().catch(() => false);
-        if (!isVisible) {
-          await toggle.evaluate((el) => el.scrollIntoView({ block: "nearest", behavior: "instant" })).catch(() => {});
-          await page.waitForTimeout(400);
-        }
+        // Scroll the toggle into view using element-scoped evaluate so only the nearest scrollable
+        // ancestor (PageLayout__body__container) scrolls — avoids window scroll events that close modals.
+        await toggle.evaluate((el) => el.scrollIntoView({ block: "nearest", behavior: "instant" })).catch(() => {});
         await expect(toggle).toBeVisible({ timeout: t });
         break;
       }
