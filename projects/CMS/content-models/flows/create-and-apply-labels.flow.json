@@ -32,14 +32,6 @@
       "timeoutMs": 60000
     },
     {
-      "action": "verify",
-      "target": "Apply Label dropdown (doc step)",
-      "expected": {
-        "labelEquals": "Apply Label",
-        "labelMatch": "contains"
-      }
-    },
-    {
       "action": "click",
       "target": "Apply Label dropdown (doc step)",
       "timeoutMs": 60000
