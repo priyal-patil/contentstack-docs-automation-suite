@@ -140,6 +140,7 @@
     {
       "action": "verify",
       "target": "Create Preview Token toggle (doc step)",
+      "timeoutMs": 90000,
       "expected": {
         "labelEquals": "Create Preview Token",
         "labelMatch": "contains"

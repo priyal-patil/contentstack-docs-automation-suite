@@ -9,7 +9,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Releases (doc step)":
     'a[href*="/#!/stack/"][href*="/releases"], [data-test-id="cms-nav-releases"], button[data-test-id="cms-nav-releases"], button:has-text("Releases"), a[href*="/releases/list"], a[href*="/releases"]',
   "New Release button (doc step)":
-    '[data-test-id="cs-empty-create-new-release"], button[data-test-id="cs-button"]:has-text("New Release"), button:has-text("New Release"), button:has-text("+ New Release")',
+    '[data-test-id="cs-create-new-release"], [data-test-id="cs-empty-create-new-release"], button:has-text("New Release"), button:has-text("+ New Release")',
   "Create button in release modal (doc step)":
     '[data-test-id="cs-release-create"], button:has-text("Create")',
   "Save button in release modal (doc step)":

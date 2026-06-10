@@ -13,7 +13,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Apply Label dropdown (doc step)":
     '[data-test-id="cs-save-content-page-add-label-select"] .Select__control, [data-test-id="cs-save-content-page-add-label-select"]',
   "+ New Label option (doc step)":
-    'button:has-text("New Label"), [role="option"]:has-text("New Label"), li:has-text("New Label")',
+    '[role="option"]:has-text("New Label"), [class*="Select__option"]:has-text("New Label"), li:has-text("New Label")',
   "Create button (doc step)":
     'button:has-text("Create"):not(:has-text("Apply")), [data-test-id="cs-button"]:has-text("Create"):not(:has-text("Apply"))',
   "Create and Apply button (doc step)":
