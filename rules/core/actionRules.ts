@@ -11270,20 +11270,19 @@ export async function performAction(
       }
 
       if (step.target === "+ New Label option (doc step)") {
-        // The "New Label" button sits below the scrollable options list in React Select.
-        // Scroll the menu element itself to the bottom — do NOT use scrollIntoViewIfNeeded()
-        // here because Playwright scrolls ALL ancestors including the window, which fires a
-        // window scroll event that closes the Contentstack content type editor page.
-        const menu = page.locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__menu, .Select__menu').first();
-        await menu.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+        // Wait for the React Select menu to be open (it's a portal appended to body).
+        // Scope ALL element lookups inside the menu — never search the whole page, as
+        // page-wide button:has-text("New Label") can match unrelated elements and navigate.
+        const t = getStepTimeoutMs(step, 60_000);
+        const menu = page.locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__menu, .Select__menu-list').first();
+        await menu.waitFor({ state: "visible", timeout: t });
+        // Scroll the menu container to the bottom so the "+ New Label" footer button is in view.
         await menu.evaluate((el) => (el as HTMLElement).scrollTo({ top: (el as HTMLElement).scrollHeight })).catch(() => {});
         await page.waitForTimeout(300);
-        const newLabelBtn = page.locator('button').filter({ hasText: /^New Label$/ }).first();
-        const fallback = page.locator('button:has-text("New Label")').last();
-        const btn = (await newLabelBtn.isVisible({ timeout: 2_000 }).catch(() => false)) ? newLabelBtn : fallback;
-        // Use evaluate-based scroll (scrolls only within the menu, not the window).
-        await btn.evaluate((el) => el.scrollIntoView({ block: "nearest", behavior: "instant" })).catch(() => {});
-        await btn.click({ force: true, timeout: getStepTimeoutMs(step) });
+        // "+ New Label" is rendered as a button inside the open menu only — scoped to menu.
+        const btn = menu.locator('button:has-text("New Label"), [class*="Select__option"]:has-text("New Label")').last();
+        await btn.waitFor({ state: "visible", timeout: 10_000 });
+        await btn.click({ force: true, timeout: t });
         return;
       }
 
