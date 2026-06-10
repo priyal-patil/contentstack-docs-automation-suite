@@ -11254,9 +11254,26 @@ export async function performAction(
         await ensureManageLabelDeleteMode(page, flow, unique, getStepTimeoutMs(step));
       }
 
+      if (step.target === "Apply Label dropdown (doc step)") {
+        // The dropdown is identified by data-test-id and always has a .Select__control child.
+        // The displayed value can be any label name (or "Apply Label" placeholder when no label
+        // is applied) — do NOT match by text. Click .Select__control directly to open the menu.
+        // Avoid scrollIntoViewIfNeeded here — the control is in the content type toolbar and is
+        // always visible; a window scroll would close the editor.
+        const t = getStepTimeoutMs(step, 60_000);
+        const control = page
+          .locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__control')
+          .first();
+        await expect(control).toBeVisible({ timeout: t });
+        await control.click({ force: true, timeout: t });
+        break;
+      }
+
       if (step.target === "+ New Label option (doc step)") {
         // The "New Label" button sits below the scrollable options list in React Select.
-        // Scroll the menu to the bottom so the button is in the viewport, then click.
+        // Scroll the menu element itself to the bottom — do NOT use scrollIntoViewIfNeeded()
+        // here because Playwright scrolls ALL ancestors including the window, which fires a
+        // window scroll event that closes the Contentstack content type editor page.
         const menu = page.locator('[data-test-id="cs-save-content-page-add-label-select"] .Select__menu, .Select__menu').first();
         await menu.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
         await menu.evaluate((el) => (el as HTMLElement).scrollTo({ top: (el as HTMLElement).scrollHeight })).catch(() => {});
@@ -11264,7 +11281,8 @@ export async function performAction(
         const newLabelBtn = page.locator('button').filter({ hasText: /^New Label$/ }).first();
         const fallback = page.locator('button:has-text("New Label")').last();
         const btn = (await newLabelBtn.isVisible({ timeout: 2_000 }).catch(() => false)) ? newLabelBtn : fallback;
-        await btn.scrollIntoViewIfNeeded().catch(() => {});
+        // Use evaluate-based scroll (scrolls only within the menu, not the window).
+        await btn.evaluate((el) => el.scrollIntoView({ block: "nearest", behavior: "instant" })).catch(() => {});
         await btn.click({ force: true, timeout: getStepTimeoutMs(step) });
         return;
       }
