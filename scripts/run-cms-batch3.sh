@@ -306,8 +306,10 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     } catch(e) {}
   " 2>/dev/null)"
 
-  mapfile -t FAILED_FLOWS <<< "$FAILED_FLOWS_STR"
-  FAILED_FLOWS=( $(printf '%s\n' "${FAILED_FLOWS[@]}" | grep -v '^[[:space:]]*$' || true) )
+  FAILED_FLOWS=()
+  while IFS= read -r _line; do
+    [[ -n "${_line// }" ]] && FAILED_FLOWS+=("$_line")
+  done <<< "$FAILED_FLOWS_STR"
 
   if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
     RETRY_PASS=0
