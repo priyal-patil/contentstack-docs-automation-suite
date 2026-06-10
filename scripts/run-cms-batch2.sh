@@ -197,6 +197,133 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
   cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/batch2-all-modules.json"
 fi
 
+# Save warnings from the main run before any retry overwrites them.
+if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+  cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/batch2-base-warnings.json" 2>/dev/null || true
+fi
+
+# ── Retry failed flows (once) ────────────────────────────────────────────────
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+  FAILED_FLOWS_STR="$(node -e "
+    const fs = require('fs');
+    try {
+      const j = JSON.parse(fs.readFileSync('$REPORT_DIR/flows-results.json', 'utf-8'));
+      const failed = new Set();
+      function walk(suite) {
+        for (const spec of (suite.specs || [])) {
+          for (const t of (spec.tests || [])) {
+            const results = t.results || [];
+            const last = results[results.length - 1];
+            if (!last || last.status === 'passed' || last.status === 'skipped') continue;
+            const parts = String(spec.title || '').trim().split(/\s+/).filter(Boolean);
+            if (parts.length) failed.add(parts[parts.length - 1]);
+          }
+        }
+        for (const child of (suite.suites || [])) walk(child);
+      }
+      for (const s of (j.suites || [])) walk(s);
+      console.log([...failed].join('\n'));
+    } catch(e) {}
+  " 2>/dev/null)"
+
+  mapfile -t FAILED_FLOWS <<< "$FAILED_FLOWS_STR"
+  FAILED_FLOWS=( $(printf '%s\n' "${FAILED_FLOWS[@]}" | grep -v '^[[:space:]]*$' || true) )
+
+  if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
+    RETRY_PASS=0
+    RETRY_FAIL=0
+
+    echo "" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+    echo "  RETRY — ${#FAILED_FLOWS[@]} failed flow(s) — running once more" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+    echo "" | tee -a "$LOG"
+
+    RETRY_FILES=()
+    for FLOW_ID in "${FAILED_FLOWS[@]}"; do
+      [[ -z "${FLOW_ID// }" ]] && continue
+      FLOW_START="$(date +%s)"
+      echo "[retry] ▶  ${FLOW_ID}" | tee -a "$LOG"
+
+      set +e
+      PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
+        --project=flows \
+        --grep "Project=CMS.*${FLOW_ID}$" \
+        2>&1 | tee -a "$LOG"
+      FLOW_EXIT=${PIPESTATUS[0]}
+      set -e
+
+      FLOW_ELAPSED=$(( $(date +%s) - FLOW_START ))
+      FLOW_MIN=$(( FLOW_ELAPSED / 60 ))
+      FLOW_SEC=$(( FLOW_ELAPSED % 60 ))
+
+      if [[ "$FLOW_EXIT" -eq 0 ]]; then
+        STATUS="✅ PASS (retry)"
+        RETRY_PASS=$((RETRY_PASS + 1))
+      else
+        STATUS="❌ FAIL (retry)"
+        RETRY_FAIL=$((RETRY_FAIL + 1))
+      fi
+
+      RETRY_OUT="$PARTS_DIR/${FLOW_ID}-retry.json"
+      if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+        cp "$REPORT_DIR/flows-results.json" "$RETRY_OUT" 2>/dev/null || true
+        RETRY_FILES+=("$RETRY_OUT")
+      fi
+      if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+        cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-retry-warnings.json" 2>/dev/null || true
+      fi
+
+      echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
+      echo "" | tee -a "$LOG"
+    done
+
+    echo "================================================================" | tee -a "$LOG"
+    echo "  RETRY COMPLETE" | tee -a "$LOG"
+    echo "  Recovered    : ${RETRY_PASS}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+    echo "  Still failing: ${RETRY_FAIL}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+
+    # Patch the original batch result with retry outcomes and restore flows-results.json.
+    if [[ ${#RETRY_FILES[@]} -gt 0 && -f "$PARTS_DIR/batch2-all-modules.json" ]]; then
+      npx ts-node "$ROOT/scripts/applyFlowRetries.ts" \
+        --base "$PARTS_DIR/batch2-all-modules.json" "${RETRY_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+      cp "$PARTS_DIR/batch2-all-modules.json" "$REPORT_DIR/flows-results.json" 2>/dev/null || true
+    fi
+
+    # Merge warnings: base run + each retried flow's warnings (retry result overrides by flowId+stepIndex key).
+    shopt -s nullglob
+    WARN_PARTS=("$PARTS_DIR/batch2-base-warnings.json" "$PARTS_DIR"/*-retry-warnings.json)
+    shopt -u nullglob
+    if [[ ${#WARN_PARTS[@]} -gt 0 ]]; then
+      node -e "
+        const fs = require('fs');
+        const parts = process.argv.slice(1);
+        // Index by flowId|stepIndex so retry entries replace base entries for the same step.
+        const byKey = new Map();
+        for (const p of parts) {
+          try {
+            const d = JSON.parse(fs.readFileSync(p, 'utf-8'));
+            if (!Array.isArray(d.warnings)) continue;
+            for (const w of d.warnings) {
+              byKey.set((w.flowId || '') + '|' + (w.stepIndex ?? w.stepNumber ?? ''), w);
+            }
+          } catch {}
+        }
+        const all = [...byKey.values()];
+        const uniqueFlows = new Set(all.map(w => w.flowId).filter(Boolean)).size;
+        fs.writeFileSync(
+          '${REPORT_DIR}/doc-step-warnings.json',
+          JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
+        );
+        console.log('Merged warnings → ' + all.length + ' entries across ' + uniqueFlows + ' flows.');
+      " "${WARN_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
+    fi
+
+    [[ "$RETRY_FAIL" -eq 0 ]] && TOTAL_EXIT=0 || TOTAL_EXIT=1
+  fi
+fi
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 END_EPOCH="$(date +%s)"
 TOTAL_ELAPSED=$(( END_EPOCH - START_EPOCH ))

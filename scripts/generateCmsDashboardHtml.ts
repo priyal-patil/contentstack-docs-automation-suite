@@ -148,6 +148,7 @@ function main() {
   const passed = rows.filter((r) => r.status === "passed").length;
   const failed = rows.filter((r) => r.status === "failed" || r.status === "timedOut").length;
   const withWarnOnly = rows.filter((r) => r.status === "passed" && r.wc > 0).length;
+  const docsWithWarnings = new Set(warnings.map((w) => w.flowId).filter(Boolean)).size;
 
   const durWall = meta?.durationSeconds != null ? `${meta.durationSeconds}s` : "— (see run-meta.json after batch script)";
 
@@ -201,7 +202,7 @@ function main() {
       <div class="card ok"><div class="num">${passed}</div><div class="lbl">Passed</div></div>
       <div class="card bad"><div class="num">${failed}</div><div class="lbl">Failed</div></div>
       <div class="card warn"><div class="num">${withWarnOnly}</div><div class="lbl">Passed w/ doc warnings</div></div>
-      <div class="card"><div class="num">${warnings.length}</div><div class="lbl">Doc-step warning rows</div></div>
+      <div class="card warn"><div class="num">${docsWithWarnings}</div><div class="lbl">Docs with warnings</div></div>
       <div class="card"><div class="num">${failures.length}</div><div class="lbl">Doc-step failure rows</div></div>
     </div>
 

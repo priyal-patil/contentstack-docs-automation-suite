@@ -96,6 +96,9 @@ run_phase() {
   if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/phase${PHASE_NUM}-${label}.json" 2>/dev/null || true
   fi
+  if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+    cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/phase${PHASE_NUM}-${label}-warnings.json" 2>/dev/null || true
+  fi
   [[ "$ex" -ne 0 ]] && TOTAL_EXIT=1
   return 0
 }
@@ -120,6 +123,9 @@ run_flow() {
 
   if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/${flow_id}.json" 2>/dev/null || true
+  fi
+  if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+    cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${flow_id}-warnings.json" 2>/dev/null || true
   fi
   [[ "$ex" -ne 0 ]] && TOTAL_EXIT=1
   return 0
@@ -232,13 +238,172 @@ Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
 Outcome:  $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')
 EOF
 
-# ── Merge parts + generate reports ───────────────────────────────────────────
+# ── Merge parts + generate initial reports ───────────────────────────────────
 shopt -s nullglob
 PART_FILES=("$PARTS_DIR"/*.json)
+# Exclude warning part files from the flows-results merge.
+FLOWS_PART_FILES=()
+for f in "${PART_FILES[@]}"; do
+  [[ "$f" == *-warnings.json ]] && continue
+  FLOWS_PART_FILES+=("$f")
+done
 shopt -u nullglob
-if [[ ${#PART_FILES[@]} -gt 0 ]]; then
+
+if [[ ${#FLOWS_PART_FILES[@]} -gt 0 ]]; then
   npx ts-node "$ROOT/scripts/mergePlaywrightFlowJsonReports.ts" \
-    --out "$REPORT_DIR/flows-results.json" "${PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+    --out "$REPORT_DIR/flows-results.json" "${FLOWS_PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+fi
+
+# ── Merge per-phase warnings into a single doc-step-warnings.json ─────────────
+shopt -s nullglob
+WARN_PARTS=("$PARTS_DIR"/*-warnings.json)
+shopt -u nullglob
+if [[ ${#WARN_PARTS[@]} -gt 0 ]]; then
+  node -e "
+    const fs = require('fs');
+    const parts = process.argv.slice(1);
+    const byKey = new Map();
+    for (const p of parts) {
+      try {
+        const d = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        if (!Array.isArray(d.warnings)) continue;
+        for (const w of d.warnings) {
+          byKey.set((w.flowId || '') + '|' + (w.stepIndex ?? w.stepNumber ?? ''), w);
+        }
+      } catch {}
+    }
+    const all = [...byKey.values()];
+    const uniqueFlows = new Set(all.map(w => w.flowId).filter(Boolean)).size;
+    fs.writeFileSync(
+      '${REPORT_DIR}/doc-step-warnings.json',
+      JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
+    );
+    console.log('Merged ' + parts.length + ' warning parts → ' + all.length + ' warnings across ' + uniqueFlows + ' flows.');
+  " "${WARN_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
+fi
+
+# ── Retry failed flows (once) ────────────────────────────────────────────────
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+  FAILED_FLOWS_STR="$(node -e "
+    const fs = require('fs');
+    try {
+      const j = JSON.parse(fs.readFileSync('$REPORT_DIR/flows-results.json', 'utf-8'));
+      const failed = new Set();
+      function walk(suite) {
+        for (const spec of (suite.specs || [])) {
+          for (const t of (spec.tests || [])) {
+            const results = t.results || [];
+            const last = results[results.length - 1];
+            if (!last || last.status === 'passed' || last.status === 'skipped') continue;
+            const parts = String(spec.title || '').trim().split(/\s+/).filter(Boolean);
+            if (parts.length) failed.add(parts[parts.length - 1]);
+          }
+        }
+        for (const child of (suite.suites || [])) walk(child);
+      }
+      for (const s of (j.suites || [])) walk(s);
+      console.log([...failed].join('\n'));
+    } catch(e) {}
+  " 2>/dev/null)"
+
+  mapfile -t FAILED_FLOWS <<< "$FAILED_FLOWS_STR"
+  FAILED_FLOWS=( $(printf '%s\n' "${FAILED_FLOWS[@]}" | grep -v '^[[:space:]]*$' || true) )
+
+  if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
+    RETRY_PASS=0
+    RETRY_FAIL=0
+
+    echo "" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+    echo "  RETRY — ${#FAILED_FLOWS[@]} failed flow(s) — running once more" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+    echo "" | tee -a "$LOG"
+
+    RETRY_FILES=()
+    for FLOW_ID in "${FAILED_FLOWS[@]}"; do
+      [[ -z "${FLOW_ID// }" ]] && continue
+      FLOW_START="$(date +%s)"
+      echo "[retry] ▶  ${FLOW_ID}" | tee -a "$LOG"
+
+      set +e
+      PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
+        --project=flows \
+        --grep "Project=CMS.*${FLOW_ID}$" \
+        2>&1 | tee -a "$LOG"
+      FLOW_EXIT=${PIPESTATUS[0]}
+      set -e
+
+      FLOW_ELAPSED=$(( $(date +%s) - FLOW_START ))
+      FLOW_MIN=$(( FLOW_ELAPSED / 60 ))
+      FLOW_SEC=$(( FLOW_ELAPSED % 60 ))
+
+      if [[ "$FLOW_EXIT" -eq 0 ]]; then
+        STATUS="✅ PASS (retry)"
+        RETRY_PASS=$((RETRY_PASS + 1))
+      else
+        STATUS="❌ FAIL (retry)"
+        RETRY_FAIL=$((RETRY_FAIL + 1))
+      fi
+
+      RETRY_OUT="$PARTS_DIR/${FLOW_ID}-retry.json"
+      if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+        cp "$REPORT_DIR/flows-results.json" "$RETRY_OUT" 2>/dev/null || true
+        RETRY_FILES+=("$RETRY_OUT")
+      fi
+      if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+        cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-retry-warnings.json" 2>/dev/null || true
+      fi
+
+      echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
+      echo "" | tee -a "$LOG"
+    done
+
+    echo "================================================================" | tee -a "$LOG"
+    echo "  RETRY COMPLETE" | tee -a "$LOG"
+    echo "  Recovered    : ${RETRY_PASS}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+    echo "  Still failing: ${RETRY_FAIL}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
+    echo "================================================================" | tee -a "$LOG"
+
+    # Patch merged flows-results.json with retry outcomes.
+    if [[ ${#RETRY_FILES[@]} -gt 0 ]]; then
+      npx ts-node "$ROOT/scripts/applyFlowRetries.ts" \
+        --base "$REPORT_DIR/flows-results.json" "${RETRY_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+    fi
+
+    # Re-merge warnings to include retry flow warnings.
+    shopt -s nullglob
+    ALL_WARN_PARTS=("$PARTS_DIR"/*-warnings.json "$PARTS_DIR"/*-retry-warnings.json)
+    shopt -u nullglob
+    if [[ ${#ALL_WARN_PARTS[@]} -gt 0 ]]; then
+      node -e "
+        const fs = require('fs');
+        const parts = process.argv.slice(1);
+        const byKey = new Map();
+        for (const p of parts) {
+          try {
+            const d = JSON.parse(fs.readFileSync(p, 'utf-8'));
+            if (!Array.isArray(d.warnings)) continue;
+            for (const w of d.warnings) {
+              byKey.set((w.flowId || '') + '|' + (w.stepIndex ?? w.stepNumber ?? ''), w);
+            }
+          } catch {}
+        }
+        const all = [...byKey.values()];
+        const uniqueFlows = new Set(all.map(w => w.flowId).filter(Boolean)).size;
+        fs.writeFileSync(
+          '${REPORT_DIR}/doc-step-warnings.json',
+          JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
+        );
+        console.log('Re-merged warnings after retry → ' + all.length + ' entries across ' + uniqueFlows + ' flows.');
+      " "${ALL_WARN_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
+    fi
+
+    [[ "$RETRY_FAIL" -eq 0 ]] && TOTAL_EXIT=0 || TOTAL_EXIT=1
+  fi
+fi
+
+# ── Reports ───────────────────────────────────────────────────────────────────
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
   npx ts-node "$ROOT/scripts/generateCmsExcelReport.ts"   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateCmsDashboardHtml.ts" --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
   npx ts-node "$ROOT/scripts/generateUnifiedReport.ts"    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
