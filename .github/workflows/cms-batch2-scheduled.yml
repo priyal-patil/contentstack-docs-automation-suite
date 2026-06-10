@@ -94,12 +94,14 @@ jobs:
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
       PW_SLOWMO: "0"
-      # 20 shared workers across all 220 flows from 20 modules.
-      # When any module finishes its worker immediately picks up the next
-      # queued flow from any other module — zero idle time.
-      # Safe on GHA 2-core / 7 GB: 20 × 250 MB headless Chromium = 5.0 GB.
-      # Raise to PW_WORKERS=20 for max speed (5 GB, still within 7 GB limit).
-      PW_WORKERS: "20"
+      # 8 shared workers across all 220 flows from 20 modules.
+      # When any worker finishes its flow it immediately picks up the next
+      # queued flow from any module — zero idle time.
+      # GHA ubuntu-latest: 2 vCPU / 7 GB RAM.
+      # Headless Chromium on the Contentstack app uses ~500 MB each in practice.
+      # 8 × 500 MB = 4 GB + OS 1 GB + Node 0.5 GB ≈ 5.5 GB — safe headroom.
+      # At 8 workers: 217 flows × ~2 min avg ÷ 8 ≈ 54 min (well within 180 min limit).
+      PW_WORKERS: "8"
       # Per-FLOW timeout: 5 min per individual flow.
       # CMS_SEQUENTIAL_MODULE_ORDER=0 means each flow is its own test so
       # this actually applies (no 4-hour CMS_MODULE_BATCH_TIMEOUT_MS override).
