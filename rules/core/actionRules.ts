@@ -20613,6 +20613,21 @@ export async function performAction(
     }
 
     case "verify": {
+      // Delivery token form: "Create Preview Token toggle" sits below the Publishing Environments
+      // radios inside a fixed-height scrollable panel — wait for it to attach, scroll it into
+      // view, then assert visibility.
+      if (step.target === "Create Preview Token toggle (doc step)") {
+        const t = getStepTimeoutMs(step, 30_000);
+        const toggle = page
+          .locator('[data-test-id="cs-toggle-switch"]:has-text("Create Preview Token"), [data-test-id="cs-toggle-switch"]')
+          .first();
+        await toggle.waitFor({ state: "attached", timeout: t }).catch(() => {});
+        await toggle.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+        await page.waitForTimeout(300);
+        await expect(toggle).toBeVisible({ timeout: t });
+        break;
+      }
+
       // Google Analytics configuration screen: content renders inside an iframe (Marketplace app UI).
       if (String(flow?.id || "").toLowerCase() === "google-analytics") {
         // Only targets that render INSIDE the configuration iframe. Save/Open Stack/Cancel are
@@ -32576,13 +32591,13 @@ export async function performAction(
       }
       // Scroll element into view before checking visibility — needed for elements below the fold
       // inside fixed-height scrollable panels where Playwright clips by overflow parents.
-      // Skip for elements inside React Modals: scrollIntoView triggers window scroll events that
-      // close Contentstack modals via their backdrop scroll listener (observed: create-a-term
-      // Save button verify closed the modal, causing a false 30s timeout failure after d225a04).
-      const isInsideModal = await el.evaluate(
-        (node) => !!(node as Element).closest('.ReactModal__Content, [role="dialog"]')
-      ).catch(() => false);
-      if (!isInsideModal) {
+      // Skip when ANY ReactModal is open: scrollIntoView dispatches window scroll events that
+      // close Contentstack modals via their backdrop scroll listener. Checking the page-level modal
+      // state (rather than element ancestry) is more reliable — element.evaluate() can return false
+      // for elements inside modals due to React Portal timing or re-renders (observed: create-a-term
+      // and create-a-new-release modal steps closed due to scroll triggered during verify).
+      const anyModalOpen = await page.locator('.ReactModal__Content').first().isVisible().catch(() => false);
+      if (!anyModalOpen) {
         await el.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
       }
       await expect(el).toBeVisible({ timeout: getStepTimeoutMs(step) });
@@ -34938,14 +34953,36 @@ export async function performAction(
         }
       }
 
-      // Release Name input — use pressSequentially so React onChange fires and enables Create button.
+      // Release Name input — set value via evaluate() so no Playwright scroll occurs.
+      // Playwright's fill/click/pressSequentially all internally call scrollIntoView which fires
+      // a window scroll event that closes the Contentstack ReactModal.
       if (step.target === "Release Name input (doc step)") {
         const t = getStepTimeoutMs(step, 30_000);
         const inp = page.locator('[data-test-id="cs-release-name-input"] input, input[aria-label="release_name"], input[name="release_name"]').first();
         await expect(inp).toBeVisible({ timeout: t });
-        await inp.click({ timeout: t }).catch(() => {});
-        await inp.selectText({ timeout: 5_000 }).catch(() => inp.evaluate((el) => ((el as HTMLInputElement).select?.(), undefined)).catch(() => {}));
-        await inp.pressSequentially(val, { delay: 20 });
+        await inp.evaluate((el, v) => {
+          const input = el as HTMLInputElement;
+          input.focus({ preventScroll: true });
+          const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+          setter?.call(input, v);
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }, val);
+        await page.waitForTimeout(300);
+        break;
+      }
+
+      // Release Description input — same scroll-safe approach as Release Name above.
+      if (step.target === "Release Description input (doc step)") {
+        const t = getStepTimeoutMs(step, 30_000);
+        const ta = page.locator('[data-test-id="cs-release-description-input"] textarea, textarea[name="release_description"], textarea[aria-label="release_description"]').first();
+        await expect(ta).toBeVisible({ timeout: t });
+        await ta.evaluate((el, v) => {
+          const textarea = el as HTMLTextAreaElement;
+          const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+          setter?.call(textarea, v);
+          textarea.dispatchEvent(new Event('input', { bubbles: true }));
+          textarea.dispatchEvent(new Event('change', { bubbles: true }));
+        }, val);
         await page.waitForTimeout(300);
         break;
       }
