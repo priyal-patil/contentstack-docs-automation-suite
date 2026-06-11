@@ -97,6 +97,7 @@
       "action": "verify",
       "target": "Save button in Assign New Alias modal (doc step)",
       "expected": {
+        "labelEquals": "Save",
         "labelMatch": "contains"
       }
     },
