@@ -122,11 +122,16 @@ for FLOW_ID in "${BATCH1_FLOWS[@]}"; do
 
   echo "[${IDX}/${TOTAL_FLOWS}] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
 
+  # create-a-delivery-token has 29 steps (3 navigations + form + toggle + captures).
+  # The 5-min global cap is too tight; give it 10 min so step 20 (toggle verify) has headroom.
+  FLOW_TIMEOUT_MINUTES="${PW_FLOW_MAX_MINUTES}"
+  [[ "${FLOW_ID}" == "create-a-delivery-token" ]] && FLOW_TIMEOUT_MINUTES=10
+
   set +e
   # Use "Project=CMS.*<id>$" to:
   #   1. Only match CMS project flows (not Personalize/Launch/etc with same name)
   #   2. Anchor with $ so "create-an-entry" doesn't match "create-an-entry-variant"
-  npx playwright test tests/flows.spec.ts \
+  PW_FLOW_MAX_MINUTES="${FLOW_TIMEOUT_MINUTES}" npx playwright test tests/flows.spec.ts \
     --project=flows \
     --grep "Project=CMS.*${FLOW_ID}$" \
     2>&1 | tee -a "$LOG"
@@ -198,8 +203,11 @@ if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
     FLOW_START_ISO="$(date -u +'%H:%M:%SZ')"
     echo "[retry] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
 
+    FLOW_TIMEOUT_MINUTES="${PW_FLOW_MAX_MINUTES}"
+    [[ "${FLOW_ID}" == "create-a-delivery-token" ]] && FLOW_TIMEOUT_MINUTES=10
+
     set +e
-    npx playwright test tests/flows.spec.ts \
+    PW_FLOW_MAX_MINUTES="${FLOW_TIMEOUT_MINUTES}" npx playwright test tests/flows.spec.ts \
       --project=flows \
       --grep "Project=CMS.*${FLOW_ID}$" \
       2>&1 | tee -a "$LOG"

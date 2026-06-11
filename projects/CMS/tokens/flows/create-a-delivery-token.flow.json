@@ -12,12 +12,12 @@
     {
       "action": "click",
       "target": "Headless CMS",
-      "timeoutMs": 90000
+      "timeoutMs": 30000
     },
     {
       "action": "click",
       "target": "Any Stack Card (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 30000
     },
     {
       "action": "verify",
@@ -32,7 +32,7 @@
     {
       "action": "click",
       "target": "Settings (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 30000
     },
     {
       "action": "verify",
