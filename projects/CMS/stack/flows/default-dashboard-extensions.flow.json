@@ -35,9 +35,49 @@
     },
     {
       "action": "verify",
+      "target": "Title column in Recently Modified Entries (doc step)",
+      "expected": {
+        "within": "Recently Modified Entries (doc step)",
+        "withinStrict": false,
+        "labelEquals": "title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Modified At column in Recently Modified Entries (doc step)",
+      "expected": {
+        "within": "Recently Modified Entries (doc step)",
+        "withinStrict": false,
+        "labelEquals": "modified at",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
       "target": "Recently Modified Assets (doc step)",
       "expected": {
         "labelEquals": "Recently Modified Assets",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Title column in Recently Modified Assets (doc step)",
+      "expected": {
+        "within": "Recently Modified Assets (doc step)",
+        "withinStrict": false,
+        "labelEquals": "title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Modified At column in Recently Modified Assets (doc step)",
+      "expected": {
+        "within": "Recently Modified Assets (doc step)",
+        "withinStrict": false,
+        "labelEquals": "modified at",
         "labelMatch": "contains"
       }
     }

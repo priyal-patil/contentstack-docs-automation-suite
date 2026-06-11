@@ -15,6 +15,14 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-dashboard-edit-enable"], [data-test-id="cs-dashboard-edit"], button[aria-label="Edit Dashboard"], button:has-text("Edit Dashboard")',
   "Add Widgets modal (doc step)":
     '[data-test-id="cs-modal-title-add-widgets"], h3:has-text("Add Widgets")',
+  "Recently Modified Entries card in Add Widgets modal (doc step)":
+    'div.ReactModal__widget__items:has([data-test-id="cs-recently_modified_entries"]), div.ReactModal__widget__items:has-text("Recently Modified Entries")',
+  "+ Add To Dashboard button for Recently Modified Entries (doc step)":
+    'button#recently_modified_entries[data-test-id="cs-dashboard-add-card"], button[id="recently_modified_entries"][aria-label="Add To Dashboard"]',
+  "Recently Modified Assets card in Add Widgets modal (doc step)":
+    'div.ReactModal__widget__items:has([data-test-id="cs-recently_modified_assets"]), div.ReactModal__widget__items:has-text("Recently Modified Assets")',
+  "+ Add To Dashboard button for Recently Modified Assets (doc step)":
+    'button#recently_modified_assets[data-test-id="cs-dashboard-add-card"], button[id="recently_modified_assets"][aria-label="Add To Dashboard"]',
   "New Dashboard Extension (doc step)":
     '[data-test-id="cs-empty-dashboard-add-extension"], button[aria-label="Create New Dashboard Extension"], button:has-text("New Dashboard Extension")',
   "Browse Marketplace (doc step)":

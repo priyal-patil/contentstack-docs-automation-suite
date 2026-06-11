@@ -12034,36 +12034,27 @@ export async function performAction(
           );
         }
 
-        // Always reopen New Stack menu to make sure Use Prebuilt is actionable.
+        // Open the New Stack dropdown only if Use Prebuilt is not already visible.
+        // Clicking the button when the dropdown is already open would close it.
         const newStackSel =
           overridesClick["+ New Stack (doc step)"] ||
           'button:has-text("+ New Stack"), button:has-text("New Stack"), [aria-label*="New Stack" i]';
         const newStackBtn = page.locator(newStackSel).first();
-        if (await newStackBtn.isVisible().catch(() => false)) {
+        if (!(await prebuiltOption.isVisible().catch(() => false)) && await newStackBtn.isVisible().catch(() => false)) {
           await newStackBtn.click({ timeout: 8_000, force: true }).catch(() => {});
           await page.waitForTimeout(300);
         }
 
         if (await prebuiltOption.isVisible().catch(() => false)) {
-          for (let attempt = 1; attempt <= 3; attempt++) {
-            await prebuiltOption.click({ timeout: t, force: true }).catch(() => {});
-            await page.waitForTimeout(500);
-
-            const importReady = await page
-              .locator(
-                'button[data-test-id="starters-gatsby-starter-import"], [data-test-id^="starters-"][data-test-id$="-import"], [data-test-id^="starters-"]:not([data-test-id$="-import"])'
-              )
-              .first()
-              .isVisible()
-              .catch(() => false);
-            const authVisible = await page
-              .locator('.OAuth_Consent_Card, #InstallationCardContent, .Auth__Card--content')
-              .first()
-              .isVisible()
-              .catch(() => false);
-            const prebuiltVisible = await prebuiltModal.isVisible().catch(() => false);
-            if (importReady || authVisible || prebuiltVisible) break;
-          }
+          await prebuiltOption.scrollIntoViewIfNeeded().catch(() => {});
+          await page.waitForTimeout(200);
+          await prebuiltOption.click({ timeout: t, force: true });
+          // Wait for the Add Stack modal to appear (marketplace takes time to load).
+          await page
+            .locator('[data-test-id="cs-modal-title-add-stack"], [role="dialog"]:has-text("Add Stack")')
+            .first()
+            .waitFor({ state: 'visible', timeout: 20_000 })
+            .catch(() => {});
           break;
         }
 

@@ -32,25 +32,45 @@
       "target": "+ New Stack (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Use Prebuilt (doc step)",
+      "expected": {
+        "labelEquals": "Use Prebuilt",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
       "target": "Use Prebuilt (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Add Stack modal (doc step)",
+      "expected": {
+        "labelEquals": "Add Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "hover",
+      "target": "First prebuilt stack card (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Import button on prebuilt stack card (doc step)",
+      "expected": {
+        "labelEquals": "Import",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
-      "target": "Import (doc step)"
+      "target": "Import button on prebuilt stack card (doc step)"
     },
     {
       "action": "click",
       "target": "Read More until Authorize visible (doc step)",
       "optional": true
-    },
-    {
-      "action": "verify",
-      "target": "Stack Name (import doc step)",
-      "expected": {
-        "labelEquals": "Stack Name",
-        "labelMatch": "contains"
-      }
     },
     {
       "action": "enter",

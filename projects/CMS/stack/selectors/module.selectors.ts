@@ -27,6 +27,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-add-stack-create-new"], button:has-text("Create New"), [role="button"]:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id*="create-new" i]',
   "Use Prebuilt (doc step)":
     '[data-test-id="cs-add-stack-use-prebuilt"], button:has-text("Use Prebuilt"), [role="button"]:has-text("Use Prebuilt"), [role="menuitem"]:has-text("Use Prebuilt"), [data-test-id*="prebuilt" i]',
+  "Add Stack modal (doc step)":
+    '[data-test-id="cs-modal-title-add-stack"]',
+  "First prebuilt stack card (doc step)":
+    '.StarterCard.usePrebuiltV2, [data-test-id^="starters-kickstart-"]:not([data-test-id$="-import"])',
+  "Import button on prebuilt stack card (doc step)":
+    'button[data-test-id$="-import"]:not([data-test-id*="sample"]), button.Button--primary:has-text("Import"):not(:has-text("Import Sample"))',
   /** "Create New Stack" modal heading — verifies the modal opened after clicking Create New. */
   "Create New Stack modal heading (doc step)":
     '[role="dialog"] *:text-is("Create New Stack"), [data-testid="cs-modal"] *:text-is("Create New Stack"), *:has-text("Create New Stack"):not(button)',
@@ -82,8 +88,22 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-modal-title-add-widgets"]',
   "First widget card in Add Widgets modal (doc step)":
     '.DashboardWidget--container',
+  "First widget card on Dashboard (doc step)":
+    '.fielditem[data-rbd-draggable-id]',
   "+ Add To Dashboard button (doc step)":
     '[data-test-id="cs-dashboard-add-card"]',
+  "Search widget card in Add Widgets modal (doc step)":
+    '.ReactModal__widget__items:has([data-test-id="cs-search"])',
+  "+ Add To Dashboard button for Search (doc step)":
+    'button[id="search"][data-test-id="cs-dashboard-add-card"]',
+  "Recently Modified Entries card in Add Widgets modal (doc step)":
+    '.ReactModal__widget__items:has([data-test-id="cs-recently_modified_entries"])',
+  "+ Add To Dashboard button for Recently Modified Entries (doc step)":
+    'button[id="recently_modified_entries"][data-test-id="cs-dashboard-add-card"]',
+  "Recently Modified Assets card in Add Widgets modal (doc step)":
+    '.ReactModal__widget__items:has([data-test-id="cs-recently_modified_assets"])',
+  "+ Add To Dashboard button for Recently Modified Assets (doc step)":
+    'button[id="recently_modified_assets"][data-test-id="cs-dashboard-add-card"]',
   "+ New Dashboard Extension (doc step)":
     '[data-test-id="cs-dashboard-add-extension"]',
   "Close Add Widgets modal (doc step)":
@@ -96,8 +116,16 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-dashboard-edit-disable"]',
   "Recently Modified Entries (doc step)":
     '[role="heading"]:has-text("Recently Modified Entries"), h1:has-text("Recently Modified Entries"), h2:has-text("Recently Modified Entries"), h3:has-text("Recently Modified Entries")',
+  "Title column in Recently Modified Entries (doc step)":
+    'button[aria-label="title" i], button:has-text("title")',
+  "Modified At column in Recently Modified Entries (doc step)":
+    'button[aria-label="modified at" i], button:has-text("modified at")',
   "Recently Modified Assets (doc step)":
     '[role="heading"]:has-text("Recently Modified Assets"), h1:has-text("Recently Modified Assets"), h2:has-text("Recently Modified Assets"), h3:has-text("Recently Modified Assets")',
+  "Title column in Recently Modified Assets (doc step)":
+    'button[aria-label="title" i], button:has-text("title")',
+  "Modified At column in Recently Modified Assets (doc step)":
+    'button[aria-label="modified at" i], button:has-text("modified at")',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {

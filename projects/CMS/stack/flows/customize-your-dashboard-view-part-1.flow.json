@@ -50,11 +50,11 @@
     },
     {
       "action": "hover",
-      "target": "First widget card in Add Widgets modal (doc step)"
+      "target": "Search widget card in Add Widgets modal (doc step)"
     },
     {
       "action": "verify",
-      "target": "+ Add To Dashboard button (doc step)",
+      "target": "+ Add To Dashboard button for Search (doc step)",
       "expected": {
         "labelEquals": "Add To Dashboard",
         "labelMatch": "contains"
@@ -62,7 +62,39 @@
     },
     {
       "action": "click",
-      "target": "+ Add To Dashboard button (doc step)"
+      "target": "+ Add To Dashboard button for Search (doc step)"
+    },
+    {
+      "action": "hover",
+      "target": "Recently Modified Entries card in Add Widgets modal (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ Add To Dashboard button for Recently Modified Entries (doc step)",
+      "expected": {
+        "labelEquals": "Add To Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add To Dashboard button for Recently Modified Entries (doc step)"
+    },
+    {
+      "action": "hover",
+      "target": "Recently Modified Assets card in Add Widgets modal (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ Add To Dashboard button for Recently Modified Assets (doc step)",
+      "expected": {
+        "labelEquals": "Add To Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add To Dashboard button for Recently Modified Assets (doc step)"
     },
     {
       "action": "verify",

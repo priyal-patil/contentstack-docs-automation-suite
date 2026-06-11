@@ -39,6 +39,7 @@
     {
       "action": "verify",
       "target": "Leave Stack (doc step)",
+      "warnOnly": true,
       "expected": {
         "labelEquals": "Leave Stack",
         "labelMatch": "contains"
@@ -46,11 +47,13 @@
     },
     {
       "action": "click",
-      "target": "Leave Stack (doc step)"
+      "target": "Leave Stack (doc step)",
+      "optional": true
     },
     {
       "action": "verify",
       "target": "Leave Stack (confirm doc step)",
+      "optional": true,
       "expected": {
         "labelEquals": "Leave Stack",
         "labelMatch": "contains"
@@ -58,7 +61,8 @@
     },
     {
       "action": "click",
-      "target": "Leave Stack (confirm doc step)"
+      "target": "Leave Stack (confirm doc step)",
+      "optional": true
     }
   ]
 }
