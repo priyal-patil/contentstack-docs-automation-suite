@@ -78,6 +78,22 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'button:has-text("+ Dashboard Extension"), button:has-text("Dashboard Extension")',
   "Done (doc step)":
     '[data-test-id="cs-dashboard-edit-disable"], button:has-text("Done"), [aria-label="Done"]',
+  "Add Widgets modal (doc step)":
+    '[data-test-id="cs-modal-title-add-widgets"]',
+  "First widget card in Add Widgets modal (doc step)":
+    '.DashboardWidget--container',
+  "+ Add To Dashboard button (doc step)":
+    '[data-test-id="cs-dashboard-add-card"]',
+  "+ New Dashboard Extension (doc step)":
+    '[data-test-id="cs-dashboard-add-extension"]',
+  "Close Add Widgets modal (doc step)":
+    '[data-test-id="cs-dashboard-widget-modal-close"]',
+  "Edit Dashboard icon (doc step)":
+    '[data-test-id="cs-dashboard-edit-enable"], [data-test-id="cs-dashboard-edit"], button:has-text("Edit Dashboard"), [aria-label*="Edit Dashboard" i]',
+  "Remove widget icon (doc step)":
+    '[data-test-id="cs-dashboard-remove-widget"]',
+  "Done button (doc step)":
+    '[data-test-id="cs-dashboard-edit-disable"]',
   "Recently Modified Entries (doc step)":
     '[role="heading"]:has-text("Recently Modified Entries"), h1:has-text("Recently Modified Entries"), h2:has-text("Recently Modified Entries"), h3:has-text("Recently Modified Entries")',
   "Recently Modified Assets (doc step)":

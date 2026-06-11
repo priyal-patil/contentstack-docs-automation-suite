@@ -49,36 +49,56 @@
       }
     },
     {
+      "action": "hover",
+      "target": "First widget card in Add Widgets modal (doc step)"
+    },
+    {
       "action": "verify",
-      "target": "New Dashboard Extension (doc step)",
+      "target": "+ Add To Dashboard button (doc step)",
+      "expected": {
+        "labelEquals": "Add To Dashboard",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add To Dashboard button (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "+ New Dashboard Extension (doc step)",
       "expected": {
         "labelEquals": "New Dashboard Extension",
         "labelMatch": "contains"
       }
     },
     {
+      "action": "click",
+      "target": "Close Add Widgets modal (doc step)"
+    },
+    {
       "action": "verify",
-      "target": "Browse Marketplace (doc step)",
+      "target": "Edit Dashboard icon (doc step)",
       "expected": {
-        "labelEquals": "Browse Marketplace",
+        "labelEquals": "Edit Dashboard",
         "labelMatch": "contains"
       }
     },
     {
       "action": "click",
-      "target": "Close icon"
+      "target": "Edit Dashboard icon (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Done button (doc step)",
+      "expected": {
+        "labelEquals": "Done",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
-      "target": "Edit Dashboard (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Click X"
-    },
-    {
-      "action": "click",
-      "target": "Done (doc step)"
+      "target": "Done button (doc step)"
     }
   ]
 }
