@@ -32,9 +32,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Source branch dropdown (doc step)":
     '[data-test-id="cs-branches-new-branch-source-select"] .Portal__control, [data-test-id="cs-branches-new-branch-source-select"]',
   "Assign New Alias modal (doc step)":
-    '[data-test-id="cs-edit-branch-alias-title"]:has-text("Assign New Alias"), .create-new-alias-title:has-text("Assign New Alias"), .ReactModal__alias',
+    '[data-test-id="cs-edit-branch-alias-title"]:has-text("Assign New Alias"), .create-new-alias-title:has-text("Assign New Alias"), h2:has-text("Assign New Alias"), [role="dialog"] h2:has-text("Assign New Alias")',
   "Save button in Assign New Alias modal (doc step)":
-    '[data-test-id="cs-settings-branches-edit-alias-name-create-branch-save-cta"], .ReactModal__alias button:has-text("Save")',
+    '[data-test-id="cs-settings-branches-edit-alias-name-create-branch-save-cta"]',
   "Target Branch dropdown (doc step)":
     '[data-test-id="cs-branches-new-branch-source-select"] .Portal__control, [data-test-id="cs-branches-new-branch-source-select"]',
   "main option in target branch dropdown (doc step)":
