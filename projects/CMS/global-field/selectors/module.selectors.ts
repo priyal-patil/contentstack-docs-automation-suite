@@ -24,7 +24,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Global Fields (doc step)":
     '[data-test-id="cs-page-layout-leftSidebar"] [data-test-id="cs-gf-button"], [data-test-id="cs-gf-button"]',
   "Global Fields page (doc step)":
-    '[data-test-id="cs-page-layout-contentBody"] .globalField-contentlist, [data-test-id="cs-page-title"]:has-text("Global Fields"), .PageTitle:has-text("Global Fields"), .contmoduleList.globalField-contentlist, [data-test-id="cs-page-layout-contentBody"] [title="Import Global Field"]',
+    '[data-test-id="cs-page-title"]:has-text("Global Fields"), .PageTitle:has-text("Global Fields"), [data-test-id="cs-page-layout-contentBody"] .globalField-contentlist, .contmoduleList.globalField-contentlist, [data-test-id="cs-page-layout-contentBody"] [title="Import Global Field"]',
   "Content Types (doc step)":
     'button:has-text("New Content Type"), button[aria-label="Create New Content Type"]',
   "Content Types tab (doc step)":

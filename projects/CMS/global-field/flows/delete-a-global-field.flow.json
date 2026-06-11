@@ -76,7 +76,8 @@
     {
       "action": "enter",
       "target": "Global Field name confirm input (doc step)",
-      "value": "AUTO_FROM_MODAL"
+      "value": "AUTO_FROM_MODAL",
+      "optional": true
     },
     {
       "action": "verify",

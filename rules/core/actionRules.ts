@@ -11522,6 +11522,7 @@ export async function performAction(
           .first();
         if (await contentTypesTab.isVisible().catch(() => false)) {
           await contentTypesTab.click({ timeout: 5_000, force: true }).catch(() => {});
+          await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 10_000 }).catch(() => {});
           const rowAfterTab = page.locator('[data-test-id^="cs-table-body-row-"]').first();
           if (await rowAfterTab.isVisible().catch(() => false)) {
             await rowAfterTab.click({ timeout: getStepTimeoutMs(step), force: true });
@@ -11559,13 +11560,21 @@ export async function performAction(
         }
         const namedGroupRow = page
           .locator('[data-test-id^="field-move-item"], .ContentTypeField')
-          .filter({ has: page.locator('h3:has-text("SEO Content")') })
+          .filter({ has: page.locator('h3:has-text("SEO Content"), h3:has-text("Banner")') })
           .first();
         const emptyGroupRow = page
           .locator('[data-test-id^="field-move-item"], .ContentTypeField')
           .filter({ hasText: "Group cannot be empty" })
           .first();
-        const groupRow = (await namedGroupRow.isVisible().catch(() => false)) ? namedGroupRow : emptyGroupRow;
+        const genericGroupRow = page
+          .locator('[data-test-id^="field-move-item"], .ContentTypeField')
+          .filter({ has: page.locator('.empty-field.field-type-selector-default') })
+          .first();
+        const groupRow = (await namedGroupRow.isVisible().catch(() => false))
+          ? namedGroupRow
+          : (await emptyGroupRow.isVisible().catch(() => false))
+            ? emptyGroupRow
+            : genericGroupRow;
         if (!(await groupRow.isVisible().catch(() => false))) {
           throw new Error('Could not locate Group row to insert sub-field.');
         }
@@ -11984,6 +11993,27 @@ export async function performAction(
                             ? (overridesClick["Website Homepage card (doc step)"] || '[data-test-id="content-models-website-homepage-card"]')
                             : (overridesClick["About Us Page (doc step)"] || overridesClick["About Us Page card (doc step)"] || '[data-test-id="content-models-about-us-page-card"]');
         await page.locator(cardSel).first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+        break;
+      }
+
+      if (step.target === "Global Fields (doc step)") {
+        // cs-gf-button is a <label> wrapping a hidden radio input at the bottom of the left sidebar.
+        // Scroll into view, click the label, wait briefly, then force-click the radio input directly
+        // (Playwright force click dispatches full pointer+mouse events that React listens to).
+        const gfBtn = page.locator('[data-test-id="cs-gf-button"]').first();
+        await gfBtn.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+        await page.waitForTimeout(300);
+        await gfBtn.click({ timeout: 10_000 }).catch(() => {});
+        const gfPageSel = '[data-test-id="cs-page-layout-contentBody"] .globalField-contentlist, [data-test-id="cs-page-title"]:has-text("Global Fields")';
+        const switched = await page.locator(gfPageSel).first().waitFor({ state: 'visible', timeout: 3_000 }).then(() => true).catch(() => false);
+        if (!switched) {
+          // Force-click the hidden radio input to dispatch full pointer events.
+          await page.locator('[data-test-id="cs-gf-button"] input[type="radio"]').click({ force: true, timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(300);
+          await page.locator(gfPageSel).first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
+        }
+        // Wait for the Global Fields list/button to fully render before next step.
+        await page.locator('[data-test-id="cs-cb-new-gf"], [data-test-id="cs-page-layout-contentBody"] .globalField-contentlist').first().waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
         break;
       }
 

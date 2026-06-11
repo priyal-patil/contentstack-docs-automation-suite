@@ -28,7 +28,6 @@
       "action": "verify",
       "target": "Global Fields (doc step)",
       "expected": {
-        "withinStrict": false,
         "labelEquals": "Global Fields",
         "labelMatch": "contains"
       }
@@ -51,7 +50,11 @@
     },
     {
       "action": "verify",
-      "target": "Create New Global Field modal (doc step)"
+      "target": "Create New Global Field modal (doc step)",
+      "expected": {
+        "labelEquals": "Create New Global Field",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -209,7 +212,13 @@
     },
     {
       "action": "verify",
-      "target": "Any Global Field row (doc step)"
+      "target": "Any Global Field row (doc step)",
+      "expected": {
+        "within": "Modal",
+        "withinStrict": false,
+        "labelEquals": "Banner",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",

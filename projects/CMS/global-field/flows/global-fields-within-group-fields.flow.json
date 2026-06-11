@@ -25,8 +25,24 @@
       "target": "Content Models (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Global Fields (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "click",
       "target": "Global Fields (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Global Fields page (doc step)",
+      "expected": {
+        "labelEquals": "Global Fields",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
