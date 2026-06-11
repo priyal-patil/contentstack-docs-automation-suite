@@ -36,12 +36,18 @@ on:
         type: choice
         options: ["false", "true"]
 
+  schedule:
+    # 23:30 UTC = 5:00 AM IST (Asia/Kolkata, UTC+5:30)
+    # schedule trigger (unlike repository_dispatch) fires workflow_run events,
+    # which is required for Batch 2 and Batch 3 to auto-chain after Batch 1.
+    - cron: "30 23 * * *"
+
   repository_dispatch:
     types:
       - cms-batch1-5am-ist
-
-  # NOTE: No schedule here — cms-batch1-trigger.yml handles the 5AM IST cron.
-  # Having a schedule here AND in the trigger causes the main workflow to fire TWICE.
+  # NOTE: repository_dispatch is kept for backwards-compat but does NOT chain Batch 2/3
+  # because GitHub does not fire workflow_run events for repository_dispatch-triggered runs.
+  # The schedule trigger above is the correct nightly trigger for the full chain.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.repository }}

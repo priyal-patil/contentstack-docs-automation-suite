@@ -10,10 +10,10 @@
 name: CMS Batch 1 — 5:00 AM IST dispatcher
 
 on:
-  schedule:
-    # 23:30 UTC = 5:00 AM IST (Asia/Kolkata, UTC+5:30)
-    - cron: "30 23 * * *"
-  # Allow manual re-fire from Actions tab
+  # Schedule removed — cms-batch1-scheduled.yml now carries the cron directly so that
+  # GitHub fires workflow_run events (required for Batch 2/3 to auto-chain).
+  # This dispatcher is kept ONLY for manually triggering the full nightly chain
+  # via the Actions tab (workflow_dispatch below).
   workflow_dispatch:
 
 permissions:
