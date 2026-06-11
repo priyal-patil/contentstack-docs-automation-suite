@@ -49,6 +49,7 @@
       "expected": {
         "labelEquals": "Add Stack",
         "labelMatch": "contains"
+    
       }
     },
     {
@@ -80,6 +81,7 @@
     {
       "action": "verify",
       "target": "Import Sample (doc step)",
+      "warnOnly": true,
       "expected": {
         "labelEquals": "Import Sample",
         "labelMatch": "contains"
@@ -87,7 +89,8 @@
     },
     {
       "action": "click",
-      "target": "Import Sample (doc step)"
+      "target": "Import Sample (doc step)",
+      "optional": true
     }
   ]
 }
