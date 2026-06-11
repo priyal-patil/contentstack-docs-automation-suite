@@ -11988,81 +11988,15 @@ export async function performAction(
       }
 
       if (step.target === "Use Prebuilt (doc step)" && flow?.id === "import-prebuilt-stack") {
-        const { click: overridesClick } = loadOverrides(flow);
-        const t = getStepTimeoutMs(step);
-        if (!/#!\/stacks\b/i.test(page.url())) {
-          try {
-            const u = new URL(page.url());
-            await page.goto(`${u.origin}/#!/stacks`, { waitUntil: "domcontentloaded", timeout: t });
-            await page.waitForTimeout(400);
-          } catch {
-            // ignore and continue with selectors
-          }
-        }
-        const prebuiltOptionSel = [
-          overridesClick["Use Prebuilt (doc step)"],
-          'div[data-test-id="cs-add-stack-use-prebuilt"]',
-          '[data-test-id="cs-add-stack-use-prebuilt"]',
-          '[role="menuitem"]:has-text("Use Prebuilt")',
-          'button:has-text("Use Prebuilt")',
-          'li:has-text("Use Prebuilt")',
-        ]
-          .filter(Boolean)
-          .join(", ");
-        const prebuiltOption = page.locator(prebuiltOptionSel).first();
-        const prebuiltModal = page
-          .locator(
-            '[data-test-id*="add-stack" i], [data-test-id*="starters-" i], [role="dialog"]:has-text("Add Stack"), [role="dialog"]:has-text("Import")'
-          )
-          .first();
-
-        // If already in Add Stack/Prebuilt view, this step is effectively complete.
-        if (await prebuiltModal.isVisible().catch(() => false)) {
-          break;
-        }
-
-        // Strict doc-step mode: do not auto-click undocumented auth controls.
-        // If auth appears, fail and surface as missing doc step.
-        const authOverlay = page
-          .locator(
-            '.OAuth_Consent_Card, #InstallationCardContent, .Auth__Card--content, [role="dialog"]:has-text("wants to access")'
-          )
-          .first();
-        if (await authOverlay.isVisible().catch(() => false)) {
-          throw new Error(
-            'Authorization dialog appeared during "Use Prebuilt (doc step)", but authorization actions are not present in flow JSON. Add explicit doc steps for this gate.'
-          );
-        }
-
-        // Open the New Stack dropdown only if Use Prebuilt is not already visible.
-        // Clicking the button when the dropdown is already open would close it.
-        const newStackSel =
-          overridesClick["+ New Stack (doc step)"] ||
-          'button:has-text("+ New Stack"), button:has-text("New Stack"), [aria-label*="New Stack" i]';
-        const newStackBtn = page.locator(newStackSel).first();
-        if (!(await prebuiltOption.isVisible().catch(() => false)) && await newStackBtn.isVisible().catch(() => false)) {
-          await newStackBtn.click({ timeout: 8_000, force: true }).catch(() => {});
-          await page.waitForTimeout(300);
-        }
-
-        if (await prebuiltOption.isVisible().catch(() => false)) {
-          await prebuiltOption.scrollIntoViewIfNeeded().catch(() => {});
-          await page.waitForTimeout(200);
-          await prebuiltOption.click({ timeout: t, force: true });
-          // Wait for the Add Stack modal to appear (marketplace takes time to load).
-          await page
-            .locator('[data-test-id="cs-modal-title-add-stack"], [role="dialog"]:has-text("Add Stack")')
-            .first()
-            .waitFor({ state: 'visible', timeout: 20_000 })
-            .catch(() => {});
-          break;
-        }
-
-        // Fallback: if modal/cards are visible after opening New Stack, proceed.
-        await prebuiltModal.waitFor({ state: "visible", timeout: 8_000 }).catch(() => {});
-        if (await prebuiltModal.isVisible().catch(() => false)) {
-          break;
-        }
+        // Single direct click on the Use Prebuilt option (already visible from prior + New Stack click).
+        await page.click('[data-test-id="cs-add-stack-use-prebuilt"]');
+        // Wait for the Add Stack modal to appear (marketplace fetch takes time).
+        await page
+          .locator('[data-test-id="cs-modal-title-add-stack"]')
+          .first()
+          .waitFor({ state: 'visible', timeout: 20_000 })
+          .catch(() => {});
+        break;
       }
 
       // Import Prebuilt Content Models: hover on card to reveal Import, then click. Authorize is optional (first time only).
