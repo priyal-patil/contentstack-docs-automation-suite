@@ -80,7 +80,9 @@ export function expandPlaywrightSpecToFlowResults(spec: {
   }>;
 }): ExpandedFlowResult[] {
   const t = spec.tests?.[0];
-  const r = t?.results?.[0];
+  // Use the LAST result (final attempt) so retried flows that eventually pass
+  // are counted as "passed" — matching what the HTML/Excel report shows.
+  const r = t?.results?.[t.results.length - 1];
   if (!r) return [];
 
   const fromSteps: ExpandedFlowResult[] = [];
