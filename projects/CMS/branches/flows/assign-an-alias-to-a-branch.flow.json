@@ -83,7 +83,7 @@
     {
       "action": "enter",
       "target": "Alias ID input (doc step)",
-      "value": "automation_test_alias"
+      "value": "alias{unique4}"
     },
     {
       "action": "click",
