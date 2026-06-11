@@ -184,6 +184,20 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
   // in headed mode and matches the GHA viewport so nav items never overflow into "More".
   await page.setViewportSize({ width: 1920, height: 1080 }).catch(() => {});
 
+  // Auto-dismiss "Save changes" modal (triggered when navigating away from unsaved builder pages).
+  // Clicks the "Save" button so unsaved work is preserved and navigation can proceed.
+  await page.addLocatorHandler(
+    page.getByRole("dialog").filter({ hasText: /save changes/i }),
+    async (dialog) => {
+      const saveBtn = dialog.locator('button:has-text("Save"):not(:has-text("Don\'t Save")):not(:has-text("Save and Close"))').first();
+      if (await saveBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await saveBtn.click({ timeout: 5_000, force: true }).catch(() => {});
+        await page.waitForTimeout(500);
+      }
+    },
+    { noWaitAfter: true }
+  ).catch(() => {});
+
   // Shared steps (project-agnostic). Default: login + selectStack.
   if (!skipShared) {
     await runSharedSteps(page, flow?.use);
@@ -372,6 +386,25 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         const absShot = path.join(shotDir, fileName);
         if (await captureFailureScreenshotBestEffort(currentPage, absShot)) {
           screenshotRelativePath = path.join("flow-screenshots", fileName).split(path.sep).join("/");
+        }
+        // Save DOM snapshot for debugging element location on failure
+        try {
+          const domFileName = `${safeFlow}-step-${i + 1}.html`;
+          const absDom = path.join(shotDir, domFileName);
+          const domContent = await currentPage.content().catch(() => "");
+          if (domContent) {
+            fs.writeFileSync(absDom, domContent, "utf8");
+            // Try to locate the failing target in the saved DOM for diagnostics
+            const targetLabel = step?.target ? String(step.target) : "";
+            if (targetLabel) {
+              const targetInDom = domContent.includes(targetLabel);
+              console.log(
+                `🔍 DOM saved: ${domFileName} — target "${targetLabel}" ${targetInDom ? "FOUND" : "NOT FOUND"} in DOM`
+              );
+            }
+          }
+        } catch {
+          // DOM save is best-effort
         }
       } catch {
         // screenshot is best-effort

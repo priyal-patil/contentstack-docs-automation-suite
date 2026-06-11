@@ -9000,6 +9000,41 @@ export async function performAction(
         break;
       }
 
+      // General handler: "Save and Close (doc step)" for ALL flows — clicks the button,
+      // waits for navigation away from any builder URL, and dismisses any "Save changes" modal.
+      if (step.target === "Save and Close (doc step)") {
+        const t = getStepTimeoutMs(step);
+        const { click } = loadOverrides(flow);
+        const mapped = click[step.target] || CLICK_SELECTORS[step.target];
+        const el = page.locator(mapped).first();
+        await expect(el).toBeVisible({ timeout: t });
+        await el.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+
+        // Dismiss any "Save changes" confirmation modal that appears (has Cancel / Don't Save / Save buttons)
+        // Selectors cover both cs-cb-unsaved-save (builder warning) and generic "Save" button in dialog
+        const saveChangesModal = page.getByRole("dialog").filter({ hasText: /save changes|unsaved changes/i });
+        const unsavedSave = page.locator(
+          '[data-test-id="cs-cb-unsaved-save"], [role="dialog"] button:has-text("Save"):not(:has-text("Save and Close")):not(:has-text("Don\'t Save"))'
+        ).first();
+        if (await saveChangesModal.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+          if (await unsavedSave.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await unsavedSave.click({ timeout: t, force: true });
+            await page.waitForTimeout(500);
+          }
+          await saveChangesModal.first().waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
+        }
+
+        // Wait for navigation away from builder pages (ct-builder or gf-builder)
+        await page.waitForFunction(
+          () => !window.location.href.includes("-builder"),
+          null,
+          { timeout: Math.min(t, 30_000) }
+        ).catch(() => {});
+        await page.waitForTimeout(300);
+        break;
+      }
+
       // customize-json-rich-text-editor — Embed Object(s) + reference CT (embed-entries-or-assets doc; ct-advanced-page.html embed_object).
       // Without this, Choose Entry shows 0 content types for the Shared JSON RTE Doc CT.
       if (String(flow?.id || "").toLowerCase() === "customize-json-rich-text-editor" && step.target === "JSON RTE Embed Objects toggle (doc step)") {
@@ -11697,32 +11732,42 @@ export async function performAction(
           break;
         }
 
-        const blockScope = page
-          .locator('[class*="ModularBlocks"]')
-          .filter({ has: page.locator('[data-test-id="cs-field-type-selector"]') })
-          .last();
-        const fallbackScope = page.locator('div[id="PageLayout__body"]').first();
-        const scope = (await blockScope.isVisible().catch(() => false)) ? blockScope : fallbackScope;
+        // DOM: .empty-field [data-test-id="cs-field-type-selector"] inside a block container
+        // Block containers: data-test-id="cs-{BlockName}-block" (not "-block-options")
+        // The .empty-field is only visible while the block is hovered; must hover, then immediately click.
 
-        await scope.scrollIntoViewIfNeeded().catch(() => {});
-        await scope.hover({ timeout: 5_000 }).catch(() => {});
-        await page.waitForTimeout(200);
-
-        const plusInScope = scope
-          .locator(
-            "[data-test-id='cs-field-type-selector'] .FieldTypeSelector__action-sign:visible, [data-test-id='cs-field-type-selector'] svg[name='PurpleAdd']:visible"
-          )
+        // Find the last block container that has an empty-field inside it
+        const blockWithEmpty = page
+          .locator('[data-test-id$="-block"]:not([data-test-id$="-block-options"])')
+          .filter({ has: page.locator('.empty-field [data-test-id="cs-field-type-selector"]') })
           .last();
-        const plusGlobal = page
-          .locator(
-            "[class*='ModularBlocks'] [data-test-id='cs-field-type-selector'] .FieldTypeSelector__action-sign:visible, [class*='ModularBlocks'] [data-test-id='cs-field-type-selector'] svg[name='PurpleAdd']:visible"
-          )
-          .last();
-        const plus = (await plusInScope.isVisible().catch(() => false)) ? plusInScope : plusGlobal;
 
-        await expect(plus).toBeVisible({ timeout: 8_000 });
-        await plus.hover({ timeout: 2_000 }).catch(() => {});
-        await plus.click({ timeout: getStepTimeoutMs(step), force: true });
+        // Fallback: last block container regardless
+        const blockFallback = page
+          .locator('[data-test-id$="-block"]:not([data-test-id$="-block-options"])')
+          .last();
+
+        const blockContainer = (await blockWithEmpty.isVisible().catch(() => false))
+          ? blockWithEmpty
+          : blockFallback;
+
+        await blockContainer.scrollIntoViewIfNeeded().catch(() => {});
+
+        // Hover on the cs-field-type-selector inside the block — dispatches mouseenter so React
+        // removes the "hide" class from FieldTypeSelector__action-bar, revealing the "+" sign.
+        const fieldTypeSelector = blockContainer
+          .locator('[data-test-id="cs-field-type-selector"]')
+          .last();
+        await fieldTypeSelector.scrollIntoViewIfNeeded().catch(() => {});
+        await fieldTypeSelector.hover({ timeout: 5_000, force: true }).catch(() => {});
+        await page.waitForTimeout(300);
+
+        const actionSign = fieldTypeSelector
+          .locator('.FieldTypeSelector__action-sign, svg[name="PurpleAdd"]')
+          .last();
+
+        await expect(actionSign).toBeVisible({ timeout: 8_000 });
+        await actionSign.click({ timeout: getStepTimeoutMs(step), force: true });
         await page.locator("div.FieldTypeSelector__field-tile").first().waitFor({ state: "visible", timeout: 8_000 });
         break;
       }
@@ -11997,23 +12042,60 @@ export async function performAction(
       }
 
       if (step.target === "Global Fields (doc step)") {
-        // cs-gf-button is a <label> wrapping a hidden radio input at the bottom of the left sidebar.
-        // Scroll into view, click the label, wait briefly, then force-click the radio input directly
-        // (Playwright force click dispatches full pointer+mouse events that React listens to).
-        const gfBtn = page.locator('[data-test-id="cs-gf-button"]').first();
-        await gfBtn.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
-        await page.waitForTimeout(300);
-        await gfBtn.click({ timeout: 10_000 }).catch(() => {});
+        // cs-gf-button is a <label> wrapping a hidden radio input at the BOTTOM of the left sidebar.
+        // Strategy: wait for sidebar to fully render (content-models page loaded), then click.
+        // If already on Global Fields list → just wait for readiness.
         const gfPageSel = '[data-test-id="cs-page-layout-contentBody"] .globalField-contentlist, [data-test-id="cs-page-title"]:has-text("Global Fields")';
-        const switched = await page.locator(gfPageSel).first().waitFor({ state: 'visible', timeout: 3_000 }).then(() => true).catch(() => false);
-        if (!switched) {
-          // Force-click the hidden radio input to dispatch full pointer events.
-          await page.locator('[data-test-id="cs-gf-button"] input[type="radio"]').click({ force: true, timeout: 5_000 }).catch(() => {});
-          await page.waitForTimeout(300);
-          await page.locator(gfPageSel).first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
+        const gfListReady = '[data-test-id="cs-cb-new-gf"], [data-test-id="cs-page-layout-contentBody"] .globalField-contentlist';
+
+        // If already on Global Fields, skip clicking
+        const alreadyOnGF = await page.locator(gfListReady).first().isVisible().catch(() => false);
+        if (!alreadyOnGF) {
+          // Wait for left sidebar to be ready (cs-gf-button must be present in DOM)
+          await page.locator('[data-test-id="cs-gf-button"]').first().waitFor({ state: 'attached', timeout: 10_000 }).catch(() => {});
+
+          for (let attempt = 0; attempt < 3; attempt++) {
+            // Scroll the left sidebar to the bottom so cs-gf-button is in viewport
+            await page.evaluate(() => {
+              const sidebar = document.querySelector('.content-list-sidebar, [data-test-id="cs-page-layout-leftSidebar"]');
+              if (sidebar) sidebar.scrollTop = sidebar.scrollHeight;
+            }).catch(() => {});
+            await page.waitForTimeout(300);
+
+            const gfBtn = page.locator('[data-test-id="cs-gf-button"]').first();
+            const gfRadio = page.locator('[data-test-id="cs-gf-button"] input[type="radio"]').first();
+
+            await gfBtn.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+            await page.waitForTimeout(300);
+
+            // Try clicking the label text span — most reliable for React radio groups
+            const gfLabel = page.locator('[data-test-id="cs-gf-button"] .Radio__label').first();
+            const clickable = (await gfLabel.isVisible().catch(() => false)) ? gfLabel : gfBtn;
+            await clickable.click({ timeout: 5_000, force: true }).catch(async () => {
+              await gfRadio.click({ force: true, timeout: 5_000 }).catch(() => {});
+            });
+            await page.waitForTimeout(500);
+
+            const switched = await page.locator(gfPageSel).first().waitFor({ state: 'visible', timeout: 6_000 }).then(() => true).catch(() => false);
+            if (switched) break;
+
+            // If click didn't work, try forcing via JavaScript dispatchEvent
+            if (attempt === 1) {
+              await page.evaluate(() => {
+                const radio = document.querySelector('[data-test-id="cs-gf-button"] input[type="radio"]') as HTMLInputElement | null;
+                if (radio) {
+                  radio.checked = true;
+                  radio.dispatchEvent(new Event('change', { bubbles: true }));
+                  radio.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                }
+              }).catch(() => {});
+              await page.waitForTimeout(500);
+            }
+          }
         }
+
         // Wait for the Global Fields list/button to fully render before next step.
-        await page.locator('[data-test-id="cs-cb-new-gf"], [data-test-id="cs-page-layout-contentBody"] .globalField-contentlist').first().waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
+        await page.locator(gfListReady).first().waitFor({ state: 'visible', timeout: 20_000 });
         break;
       }
 

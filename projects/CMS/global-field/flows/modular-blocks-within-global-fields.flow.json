@@ -51,7 +51,11 @@
     },
     {
       "action": "verify",
-      "target": "Create New Global Field modal (doc step)"
+      "target": "Create New Global Field modal (doc step)",
+      "expected": {
+        "labelEquals": "Create New Global Field",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",

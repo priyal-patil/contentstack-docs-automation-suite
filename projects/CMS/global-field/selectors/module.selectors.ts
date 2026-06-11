@@ -155,7 +155,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Save (doc step)":
     '[data-test-id="cs-gf-save"], button:has-text("Save")',
   "Save and Close (doc step)":
-    '[data-test-id="cs-gf-save-close"], button:has-text("Save and Close")',
+    '[data-test-id="cs-gf-save-close"], [data-test-id="cs-ct-save-close"], button:has-text("Save and Close")',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {

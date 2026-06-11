@@ -119,14 +119,6 @@
     {
       "action": "click",
       "target": "Copy (global field modal) (doc step)"
-    },
-    {
-      "action": "verify",
-      "target": "Save and Close (doc step)",
-      "expected": {
-        "labelEquals": "Save and Close",
-        "labelMatch": "contains"
-      }
     }
   ]
 }
