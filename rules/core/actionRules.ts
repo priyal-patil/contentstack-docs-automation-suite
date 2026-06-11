@@ -3720,6 +3720,42 @@ export async function performAction(
     }
 
     case "click": {
+      // AgentOS error-notification — ensure the "Enable error notification" toggle is ON before proceeding.
+      // The toggle state is unknown (may have been left ON by a previous run). Check the checkbox and only
+      // click if it is currently unchecked, so we always leave it in the enabled (ON) state.
+      if (step.target === "Email Notifications toggle (doc step)") {
+        const t = getStepTimeoutMs(step, 30_000);
+        const checkbox = page.locator('input[type="checkbox"][name="notification"]');
+        await checkbox.waitFor({ state: "attached", timeout: t });
+        const isChecked = await checkbox.isChecked().catch(() => false);
+        if (!isChecked) {
+          await page.locator('[data-test-id="cs-toggle-switch"] label.toggle-switch').click({ timeout: t });
+          await page.waitForTimeout(500);
+        }
+        break;
+      }
+
+      // AgentOS — "Go back to Projects" navigates to the projects landing page directly.
+      if (step.target === "Go back to Projects (doc step)") {
+        const t = getStepTimeoutMs(step, 30_000);
+        await page.goto("https://app.contentstack.com/#!/automations/projects");
+        await page.waitForLoadState("networkidle", { timeout: t }).catch(() => {});
+        break;
+      }
+
+      // AgentOS — Create Project button inside the Create New Project modal.
+      // After clicking, wait for the modal to disappear before proceeding so the
+      // next step (verify Project card) doesn't run while the API call is in flight.
+      if (step.target === "Create Project button (doc step)") {
+        const t = getStepTimeoutMs(step, 90_000);
+        const btn = page.locator('button[data-test-id="createProject"]').first();
+        await btn.waitFor({ state: "visible", timeout: t });
+        await btn.click({ timeout: t });
+        await page.locator('[data-test-id="cs-modal-title-create-new-project"]')
+          .waitFor({ state: "hidden", timeout: t }).catch(() => {});
+        break;
+      }
+
       // Google Cloud Console — three-dot action menu on a specific service account row.
       // GCP renders the button with accessible name "Service account actions menu".
       if (step.target === "three dots action menu on service account row in Google Cloud Console (doc step)") {

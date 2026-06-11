@@ -574,7 +574,11 @@ async function main(): Promise<void> {
 
   const perProjectBreakdown = buildPerProjectBreakdownMrkdwn(rows);
 
-  // Count distinct URLs/flows that have at least 1 warning (1 per URL regardless of warning count).
+  // Count distinct URLs/flows that have at least 1 warning but did NOT fail or time out.
+  // A URL that has warnings AND a hard failure is counted only in Failed, not in Warnings.
+  const failedFlowIds = new Set(
+    rows.filter((r) => r.status === "failed" || r.status === "timedOut").map((r) => r.flowId).filter(Boolean)
+  );
   let warningFlows = 0;
   try {
     const warningsPath = path.join(reportDir, "doc-step-warnings.json");
@@ -584,11 +588,13 @@ async function main(): Promise<void> {
         warningFlows?: number;
       };
       if (Array.isArray(warningsData.warnings) && warningsData.warnings.length > 0) {
-        // Count unique flowIds — 1 per URL regardless of how many warnings it has.
-        const uniqueFlowIds = new Set(warningsData.warnings.map((w) => w.flowId).filter(Boolean));
+        // Count unique flowIds with warnings, excluding any that also failed/timed-out.
+        const uniqueFlowIds = new Set(
+          warningsData.warnings.map((w) => w.flowId).filter((id): id is string => !!id && !failedFlowIds.has(id))
+        );
         warningFlows = uniqueFlowIds.size;
       } else {
-        // Fallback: pre-computed count (older reports).
+        // Fallback: pre-computed count (older reports) — can't subtract failures, use as-is.
         warningFlows = warningsData.warningFlows ?? 0;
       }
     }
