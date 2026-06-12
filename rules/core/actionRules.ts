@@ -10961,8 +10961,9 @@ export async function performAction(
           .first();
         await expect(firstReleaseRow).toBeVisible({ timeout: t });
         await firstReleaseRow.hover({ timeout: t }).catch(() => {});
-        const lockIcon = firstReleaseRow
-          .locator("svg[name='Lock'], *[name='Lock'], [data-test-id*='lock' i], button[aria-label*='lock' i]")
+        // Lock icon is in the tooltip div outside the row — look in the page.
+        const lockIcon = page
+          .locator('[data-test-id="cs-releases-card-action-lock"] button[data-test-id="cs-button"]')
           .first();
         await expect(lockIcon).toBeVisible({ timeout: t });
         await lockIcon.click({ timeout: t, force: true }).catch(() => {});
@@ -10976,8 +10977,9 @@ export async function performAction(
           .first();
         await expect(firstReleaseRow).toBeVisible({ timeout: t });
         await firstReleaseRow.hover({ timeout: t }).catch(() => {});
-        const unlockIcon = firstReleaseRow
-          .locator("svg[name='Unlock'], *[name='Unlock'], [data-test-id*='unlock' i], button[aria-label*='unlock' i]")
+        // Unlock icon is in the tooltip div outside the row — look in the page.
+        const unlockIcon = page
+          .locator('[data-test-id="cs-releases-card-action-unlock"] button[data-test-id="cs-button"]')
           .first();
         await expect(unlockIcon).toBeVisible({ timeout: t });
         await unlockIcon.click({ timeout: t, force: true }).catch(() => {});
@@ -10991,8 +10993,9 @@ export async function performAction(
           .first();
         await expect(firstReleaseRow).toBeVisible({ timeout: t });
         await firstReleaseRow.hover({ timeout: t }).catch(() => {});
-        const lockIcon = firstReleaseRow
-          .locator("svg[name='Lock'], *[name='Lock'], [data-test-id*='lock' i], button[aria-label*='lock' i]")
+        // Lock icon renders in the tooltip div (#single-release-tooltip) outside the row element.
+        const lockIcon = page
+          .locator('[data-test-id="cs-releases-card-action-lock"] button, [data-test-id="cs-releases-card-action-lock"] svg[name="Lock"]')
           .first();
         await expect(lockIcon).toBeVisible({ timeout: t });
         break;
@@ -11005,8 +11008,9 @@ export async function performAction(
           .first();
         await expect(firstReleaseRow).toBeVisible({ timeout: t });
         await firstReleaseRow.hover({ timeout: t }).catch(() => {});
-        const unlockIcon = firstReleaseRow
-          .locator("svg[name='Unlock'], *[name='Unlock'], [data-test-id*='unlock' i], button[aria-label*='unlock' i]")
+        // Unlock icon renders in the tooltip div outside the row element.
+        const unlockIcon = page
+          .locator('[data-test-id="cs-releases-card-action-unlock"] button, [data-test-id="cs-releases-card-action-unlock"] svg[name="Unlock"]')
           .first();
         await expect(unlockIcon).toBeVisible({ timeout: t });
         break;

@@ -25,7 +25,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Lock release icon (doc step)":
     '[data-test-id="cs-releases-card-action-lock"] button[data-test-id="cs-button"], [data-test-id="cs-releases-card-action-lock"] svg[name="Lock"], [data-test-id="cs-releases-card-action-lock"]',
   "Unlock release icon (doc step)":
-    "svg[name='Unlock'], *[name='Unlock'], [data-test-id*='unlock' i], button[aria-label*='unlock' i]",
+    '[data-test-id="cs-releases-card-action-unlock"] button[data-test-id="cs-button"], [data-test-id="cs-releases-card-action-unlock"] svg[name="Unlock"], [data-test-id="cs-releases-card-action-unlock"]',
   "Hover release row for update icon (doc step)":
     '.ReleaseLeftContent [data-test-id="cs-list-row"], .ReleaseLeftContent .ListRow',
   "Update all release items icon (doc step)":
