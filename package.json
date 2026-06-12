@@ -26,6 +26,8 @@
     "test:cms:batch2:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch2.sh",
     "test:cms:batch3": "bash scripts/run-cms-batch3.sh",
     "test:cms:batch3:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch3.sh",
+    "test:cms:webhook": "bash scripts/run-cms-webhook.sh",
+    "test:cms:webhook:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-webhook.sh",
     "test:cms:full": "bash scripts/run-cms-batch1.sh; bash scripts/run-cms-batch2.sh; bash scripts/run-cms-batch3.sh",
     "test:cms:full:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch1.sh; PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch2.sh; PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch3.sh",
     "launch:cms:bg": "bash scripts/run-project-batch-background.sh CMS",
