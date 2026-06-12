@@ -27,8 +27,8 @@
       "action": "verify",
       "target": "Update Release Item(s) modal title (doc step)",
       "expected": {
-        "modalTitle": "Update Release Item(s)",
-        "labelEquals": "Update Release Item(s)",
+        "modalTitle": "Update All Release Items",
+        "labelEquals": "Update All Release Items",
         "labelMatch": "contains"
       }
     },

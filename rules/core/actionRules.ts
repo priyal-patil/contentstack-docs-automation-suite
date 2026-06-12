@@ -11060,10 +11060,10 @@ export async function performAction(
           break;
         }
 
-        // Last fallback: top-right menu route.
+        // Last fallback: top-right SeeMore menu (renders as a div, not a button).
         const topMore = page
           .locator(
-            'button[aria-label*="aria-button" i]:has(svg[name="SeeMore"]), button[aria-label*="more" i]:has(svg[name="SeeMore"]), .ReleaseHeader button:has(svg[name="SeeMore"]), .release-header button:has(svg[name="SeeMore"]), button:has(svg[name="SeeMore"])'
+            '[data-test-id="cs-releases-see-more-dropdown"], .releases-actions-see-more, button[aria-label*="aria-button" i]:has(svg[name="SeeMore"]), button:has(svg[name="SeeMore"])'
           )
           .first();
         await expect(topMore).toBeVisible({ timeout: t });

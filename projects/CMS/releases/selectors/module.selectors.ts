@@ -31,7 +31,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Update all release items icon (doc step)":
     "button[data-test-id='cs-button']:has(svg[name='Update']), button[data-test-id='cs-button'] svg[name='Update'], [data-test-id*='update-release' i], button[aria-label*='update' i]",
   "Release top-right horizontal ellipsis (doc step)":
-    'button[aria-label*="aria-button" i]:has(svg[name="SeeMore"]), button[aria-label*="more" i]:has(svg[name="SeeMore"]), .ReleaseHeader button:has(svg[name="SeeMore"]), .release-header button:has(svg[name="SeeMore"]), button:has(svg[name="SeeMore"])',
+    '[data-test-id="cs-releases-see-more-dropdown"], .releases-actions-see-more, button[aria-label*="aria-button" i]:has(svg[name="SeeMore"]), button:has(svg[name="SeeMore"])',
   "Edit from release top-right menu (doc step)":
     '[data-test-id="cs-dropdown-elements"]:has-text("Edit"), [id^="cs-dropdown-elements-"]:has-text("Edit"), li:has-text("Edit"), [role="menuitem"]:has-text("Edit")',
   "Update release items action (doc step)":
@@ -132,7 +132,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Unlock Release modal title (doc step)":
     '[data-test-id="cs-modal-title-unlock-release"], [data-test-id*="modal-title" i]:has-text("Unlock Release"), h3:has-text("Unlock Release")',
   "Update Release Item(s) modal title (doc step)":
-    '[data-test-id="cs-modal-title-update-release-item(s)"], h3:has-text("Update Release Item(s)")',
+    '[data-test-id="cs-modal-title-update-all-release-items"], [data-test-id="cs-modal-title-update-release-item(s)"], h3:has-text("Update All Release Items"), h3:has-text("Update Release Item(s)")',
   "Clone Release modal title (doc step)":
     '[data-test-id="cs-modal-title-clone-release"], h3:has-text("Clone Release")',
   "Delete Release modal title (doc step)":
