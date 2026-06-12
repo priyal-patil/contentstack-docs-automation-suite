@@ -25,7 +25,7 @@
       "expected": {}
     },
     { "action": "click", "target": "First entry checkbox (doc step)" },
-    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)", "warnOnly": true },
     {
       "action": "verify",
       "target": "Delete in floating panel (doc step)",

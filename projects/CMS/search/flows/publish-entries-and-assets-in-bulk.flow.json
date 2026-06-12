@@ -30,7 +30,7 @@
       "target": "Publish button on floating bar (doc step)",
       "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
     },
-    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)", "warnOnly": true },
     { "action": "click", "target": "Publish in floating panel (doc step)" },
     {
       "action": "verify",

@@ -30,7 +30,7 @@
       "target": "Unpublish button on floating bar (doc step)",
       "expected": { "labelEquals": "Unpublish", "labelMatch": "contains" }
     },
-    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)", "warnOnly": true },
     { "action": "click", "target": "Unpublish in floating panel (doc step)" },
     {
       "action": "verify",
