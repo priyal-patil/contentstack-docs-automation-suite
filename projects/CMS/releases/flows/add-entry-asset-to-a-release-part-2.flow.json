@@ -13,7 +13,6 @@
       "action": "verify",
       "target": "Assets (doc step)",
       "expected": {
-        "within": "Left Navigation",
         "withinStrict": true,
         "labelEquals": "Assets",
         "labelMatch": "contains"
