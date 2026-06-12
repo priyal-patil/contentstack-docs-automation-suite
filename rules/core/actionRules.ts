@@ -13193,7 +13193,52 @@ export async function performAction(
           return "";
         });
         if (!nestedFileHref) {
-          throw new Error("Opened folder but no visible file row found inside folder.");
+          // Folder was empty — navigate back to All Assets root, sort by Last Modified descending
+          // so the most recently uploaded file (if any) appears on the first page.
+          const stackMatch = page.url().match(/(\/stack\/blt[^/]+\/assets)/);
+          if (stackMatch) {
+            const origin = new URL(page.url()).origin;
+            await page.goto(`${origin}/#!/${stackMatch[1].replace(/^\//, "")}`, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+            await page.waitForTimeout(700);
+          }
+          // Clear any active folder filter (React app preserves filter state across goto).
+          const clearFilters = page.locator('[data-test-id="cs-assets-query-clear-all"]').first();
+          if (await clearFilters.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await clearFilters.click({ timeout: 5_000 }).catch(() => {});
+            await page.waitForTimeout(700);
+          }
+          // Click "Last Modified" column header twice: first click = asc, second = desc.
+          const lastModHead = page.locator('[data-test-id="cs-asset-table-head-last_modified"]').first();
+          if (await lastModHead.isVisible({ timeout: 3_000 }).catch(() => false)) {
+            await lastModHead.click({ timeout: 5_000 }).catch(() => {});
+            await page.waitForTimeout(400);
+            await lastModHead.click({ timeout: 5_000 }).catch(() => {});
+            await page.waitForTimeout(700);
+          }
+          const rootFileHref = await page.evaluate(() => {
+            const rows = Array.from(document.querySelectorAll('[data-test-id^="cs-table-body-row-"]')) as HTMLElement[];
+            for (const row of rows) {
+              const typeCell = row.querySelector('[data-test-id="cs-asset-table-head-asset-type"]');
+              const typeText = (typeCell?.textContent || "").trim().toLowerCase();
+              const isFolder = typeText.includes("folder");
+              const link = row.closest("a[href]") as HTMLAnchorElement | null;
+              const href = link?.getAttribute("href") || "";
+              if (!href.includes("/assets/blt")) continue;
+              if (!isFolder && !href.includes("/browse")) return href;
+            }
+            return "";
+          });
+          if (!rootFileHref) {
+            throw new Error("No file assets found in All Assets view or inside folder — upload at least one asset to the stack.");
+          }
+          const origin = new URL(page.url()).origin;
+          const fileUrl = rootFileHref.startsWith("http")
+            ? rootFileHref
+            : rootFileHref.startsWith("#")
+            ? `${origin}/${rootFileHref}`
+            : `${origin}${rootFileHref.startsWith("/") ? "" : "/"}${rootFileHref}`;
+          await page.goto(fileUrl, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+          break;
         }
         {
           const origin = new URL(page.url()).origin;
@@ -35052,7 +35097,7 @@ export async function performAction(
       // a window scroll event that closes the Contentstack ReactModal.
       if (step.target === "Release Name input (doc step)") {
         const t = getStepTimeoutMs(step, 30_000);
-        const inp = page.locator('[data-test-id="cs-release-name-input"] input, input[aria-label="release_name"], input[name="release_name"]').first();
+        const inp = page.locator('[data-test-id="cs-release-name-input"] input, input[aria-label="release_name"], input[name="release_name"], input[placeholder*="Enter a name" i]').first();
         await expect(inp).toBeVisible({ timeout: t });
         await inp.evaluate((el, v) => {
           const input = el as HTMLInputElement;
