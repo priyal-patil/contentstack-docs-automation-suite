@@ -11198,12 +11198,30 @@ export async function performAction(
         await expect(rowActionBtn).toBeVisible({ timeout: t });
         await rowActionBtn.click({ timeout: t });
 
-        // VerticalActionTooltip is absolutely positioned at the right edge (outside viewport).
-        // Use dispatchEvent to fire click regardless of position.
         const removeItemMenu = page
           .locator('[data-test-id="cs-releases-action-remove"], [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Remove")')
           .first();
         await expect(removeItemMenu).toBeVisible({ timeout: t });
+        // Fail hard if the Remove icon is outside the actual viewport (getBoundingClientRect).
+        const visibilityCheck = await removeItemMenu.evaluate((el) => {
+          const rect = el.getBoundingClientRect();
+          return {
+            x: Math.round(rect.x),
+            y: Math.round(rect.y),
+            inViewport:
+              rect.x >= 0 && rect.y >= 0 &&
+              rect.right <= window.innerWidth &&
+              rect.bottom <= window.innerHeight,
+            innerWidth: window.innerWidth,
+          };
+        });
+        if (!visibilityCheck.inViewport) {
+          throw new Error(
+            `Remove icon is not visible in the viewport after hovering the release item row ` +
+            `(element x:${visibilityCheck.x}, innerWidth:${visibilityCheck.innerWidth}). ` +
+            `The VerticalActionTooltip renders outside the visible area — UI/doc mismatch.`
+          );
+        }
         await removeItemMenu.dispatchEvent('click');
         break;
       }
