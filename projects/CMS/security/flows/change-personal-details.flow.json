@@ -23,7 +23,13 @@
         "labelMatch": "contains"
       }
     },
+    {
+      "action": "warn",
+      "target": "Profile option in dropdown (doc step)",
+      "value": "Doc/UI mismatch: The documentation refers to this option as \"Profile\" but the UI displays it as \"Profile Settings\"."
+    },
     { "action": "click", "target": "Profile option in dropdown (doc step)" },
+
     {
       "action": "verify",
       "target": "Profile section (doc step)",
@@ -33,9 +39,38 @@
       }
     },
     {
+      "action": "verify",
+      "target": "Last Name (doc step)",
+      "expected": {
+        "labelEquals": "Last Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Company Name (doc step)",
+      "expected": {
+        "labelEquals": "Company Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
       "action": "enter",
       "target": "Company Name input (doc step)",
-      "value": "Test Company"
+      "value": "Test Company",
+      "clearFirst": true
+    },
+        {
+      "action": "verify",
+      "target": "Profile Image (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Save button in profile (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      }
     },
     { "action": "click", "target": "Save button in profile (doc step)" }
   ]

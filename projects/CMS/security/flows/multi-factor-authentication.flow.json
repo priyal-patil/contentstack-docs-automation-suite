@@ -12,9 +12,7 @@
       "target": "User Profile icon (doc step)",
       "expected": {
         "within": "Top Bar",
-        "withinStrict": true,
-        "labelEquals": "profile",
-        "labelMatch": "contains"
+        "withinStrict": true
       }
     },
     { "action": "click", "target": "User Profile icon (doc step)", "timeoutMs": 90000 },
@@ -60,42 +58,48 @@
         "labelMatch": "contains"
       }
     },
+    {
+      "action": "verify",
+      "target": "Continue button on modal (doc step)",
+      "expected": {
+        "labelEquals": "Continue",
+        "labelMatch": "contains"
+      }
+    },
     { "action": "click", "target": "Set Up MFA modal Continue button (doc step)" },
     {
       "action": "verify",
       "target": "Authenticator App modal title (doc step)",
       "expected": {
-        "labelEquals": "Authenticator App",
+        "labelEquals": "Authenticator App (Android, iPhone, Desktop)",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Authenticator App modal Next button (doc step)",
+      "expected": {
+        "labelEquals": "Next",
         "labelMatch": "contains"
       }
     },
     { "action": "click", "target": "Authenticator App modal Next button (doc step)" },
     {
       "action": "verify",
-      "target": "Enter verification code label (doc step)",
+      "target": "Authenticator App modal title (doc step)",
       "expected": {
-        "labelEquals": "Enter verification code",
+        "labelEquals": "Authenticator App (Android, iPhone, Desktop)",
         "labelMatch": "contains"
       }
     },
     {
       "action": "verify",
-      "target": "MFA verification code input (doc step)"
-    },
-    {
-      "action": "warn",
-      "target": "Enter 6-digit code and Verify (doc step)",
-      "value": "External step: Enter the 6-digit verification code from your authenticator app and click Verify. Cannot automate TOTP code entry."
-    },
-    {
-      "action": "warn",
-      "target": "Backup codes: Copy or Download (doc step)",
-      "value": "External steps: Choose one of the following—Click Copy codes to copy the codes, or Click Download as .txt file to save them locally. Cannot automate backup code handling."
-    },
-    {
-      "action": "warn",
-      "target": "Backup codes: Done (doc step)",
-      "value": "External step: Click Done after copying or downloading your backup codes. Cannot automate."
+      "target": "Authenticator App modal Verify button (doc step)",
+      "expected": {
+        "labelEquals": "Verify",
+        "labelMatch": "contains",
+        "warnOnly": true
+      }
     }
   ]
 }

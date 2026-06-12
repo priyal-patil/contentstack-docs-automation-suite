@@ -27,6 +27,14 @@
     { "action": "click", "target": "Profile Settings option (doc step)" },
     {
       "action": "verify",
+      "target": "Profile section (doc step)",
+      "expected": {
+        "within": "Left Navigation",
+        "withinStrict": true
+      }
+    },
+    {
+      "action": "verify",
       "target": "Security tab label (doc step)",
       "expected": {
         "within": "Left Navigation",
@@ -44,6 +52,13 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Terminate Other Sessions button (doc step)" }
+    {
+      "action": "verify",
+      "target": "Terminate Other Sessions button (doc step)",
+      "expected": {
+        "labelEquals": "Terminate Other Sessions",
+        "labelMatch": "contains"
+      }
+    }
   ]
 }

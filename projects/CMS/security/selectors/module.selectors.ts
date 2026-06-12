@@ -34,6 +34,8 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '.account-settings__security__cpw [data-test-id="cs-account-security-label"], .account-settings__security__cpw label:has-text("Email & Password")',
   "Reset Password modal title (doc step)":
     '[data-test-id="cs-modal-title-reset-password"], h3:has-text("Reset Password")',
+  "Update password button in reset modal (doc step)":
+    '.change-password-modal-wrapper button:has-text("Update"), [data-test-id="cs-modal-title-reset-password"] ~ * button:has-text("Update")',
   "Old Password label (doc step)":
     'label[for="old_password"], [data-test-id="cs-field-label"]:has-text("Old Password")',
   "New Password label (doc step)":
@@ -58,16 +60,26 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-account-form-email-text-input"] input[name="email"], input[aria-label="email"]',
   "Multi-Factor Authentication section label (doc step)":
     '.account-settings__security__tfa [data-test-id="cs-account-security-label"], .account-settings__security__tfa label:has-text("Multi-Factor Authentication")',
+  "Continue button on modal (doc step)":
+    '[data-test-id="cs-session-warning-continue"], .session-termination-warning-modal button:has-text("Continue"), .ReactModal__Content button:has-text("Continue")',
   "Set Up MFA modal title (doc step)":
     '[data-test-id="cs-modal-title-set-up-multi-factor-authentication"], h3:has-text("Set Up Multi-Factor Authentication")',
   "Authenticator App modal title (doc step)":
-    '[data-test-id="cs-modal-title-authenticator-app-(android,-iphone,-desktop)"], h3:has-text("Authenticator App")',
+    '[data-test-id="cs-modal-title-authenticator-app-(android,-iphone,-desktop)"], h3:has-text("Authenticator App (Android, iPhone, Desktop)"), h3:has-text("Authenticator App")',
+  "Authenticator App modal Next button (doc step)":
+    '[data-test-id="cs-account-security-mfa-next"], .mfa-modal-container button:has-text("Next")',
+  "Authenticator App modal Verify button (doc step)":
+    '[data-test-id="cs-account-security-mfa-verify"], .mfa-modal-container button:has-text("Verify")',
   "Enter verification code label (doc step)":
     '.otp-verification-header h3:has-text("Enter verification code"), [data-test-id="cs-account-security-otp-input"]',
   "MFA verification code input (doc step)":
     '[data-test-id="cs-account-security-otp-input"] input[placeholder*="security code" i], [data-test-id="cs-account-security-otp-input"] input',
   "MFA Add or Enable button (doc step)":
     '[data-test-id="cs-account-security-mfa-enable"], .account-settings__security__tfa button:has-text("Add"), .account-settings__security__tfa button:has-text("Enable")',
+  "Profile section (doc step)":
+    '[data-test-id="cs-account-settings-profile"], .account-settings__left-nav a:has-text("Profile"), .ListRowV2:has-text("Profile"), a[href*="#/user/profile"]',
   "Session Management section label (doc step)":
-    '[data-test-id="cs-account-security-label"]:has-text("Session Management"), .account-settings__security label:has-text("Session Management"), .security-container [data-test-id="cs-account-security-label"]',
+    '[data-test-id="cs-account-security-label"]:has-text("Session Management"), .account-settings__security__sm [data-test-id="cs-account-security-label"], .account-settings__security label:has-text("Session Management")',
+  "Terminate Other Sessions button label (doc step)":
+    '[data-test-id="cs-account-security-terminate-sessions"], button:has-text("Terminate Other Sessions")',
 };
