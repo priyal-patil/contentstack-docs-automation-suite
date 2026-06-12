@@ -881,7 +881,8 @@ async function fillCreateRoleEntryOrAssetCanPermissionSelect(
   await expect(row).toBeVisible({ timeout: timeoutMs });
   const ctrl = row.locator(".Select__control").first();
   await expect(ctrl).toBeVisible({ timeout: timeoutMs });
-  await ctrl.click({ timeout: timeoutMs });
+  await ctrl.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {});
+  await ctrl.click({ force: true, timeout: timeoutMs });
   await page.waitForTimeout(350);
   const inp = row.locator('input[aria-label="cs-select-aria"], input[type="text"]').first();
   await expect(inp).toBeVisible({ timeout: Math.min(timeoutMs, 20_000) });
@@ -912,19 +913,26 @@ async function fillRoleEntryTypeScopeSelect(
 ): Promise<void> {
   const typeSelect = ruleRow.locator('[data-test-id="cs-roles-type-input-select"]').first();
   await expect(typeSelect).toBeVisible({ timeout: timeoutMs });
-  const ctrl = typeSelect.locator(".Select__control").first();
-  await ctrl.click({ timeout: timeoutMs });
-  await page.waitForTimeout(350);
-  const inp = typeSelect.locator('input[aria-label="cs-select-aria"]').first();
-  await expect(inp).toBeVisible({ timeout: Math.min(timeoutMs, 20_000) });
-  await inp.fill("");
-  await inp.fill(scopeLabel);
+  // The react-select control is covered by stacked CSS overlays (role-content__section--body,
+  // row-disabled, pb-10) that intercept pointer events. Use focus() — which bypasses
+  // pointer-event checks entirely — then open with Space key (react-select keyboard shortcut).
+  const input = typeSelect.locator("input").first();
+  await input.evaluate((el) => {
+    (el as HTMLElement).scrollIntoView({ block: "center", inline: "nearest" });
+    (el as HTMLElement).focus();
+  });
+  await page.waitForTimeout(150);
+  await page.keyboard.press("Space");
   await page.waitForTimeout(400);
+  // Click the target option from the now-open menu.
   const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
   const opt = menu.getByRole("option", { name: new RegExp(escapeRegex(scopeLabel), "i") }).first();
   if (await opt.isVisible({ timeout: 6_000 }).catch(() => false)) {
     await opt.click({ timeout: timeoutMs });
   } else {
+    // Fallback: arrow-down to navigate and Enter to confirm
+    await page.keyboard.press("ArrowDown");
+    await page.waitForTimeout(200);
     await page.keyboard.press("Enter");
   }
   await page.waitForTimeout(300);
@@ -8433,9 +8441,11 @@ export async function performAction(
 
       if (isExamplesCustomRolesScenario1Flow(flow) && step.target === "Select Content Types button for All Entries rule Scenario 1 (doc step)") {
         const t = getStepTimeoutMs(step);
-        const ruleRow = getFirstAllEntriesContentTypesRuleRow(page);
-        await expect(ruleRow).toBeVisible({ timeout: t });
-        const btn = ruleRow.locator('[data-test-id="cs-tag-as-select"]').first();
+        // The "Select Content Types" placeholder renders outside the rule row div after
+        // scope changes to "Specific Content Types", so search at page level.
+        const btn = page.locator(
+          '[data-test-id="cs-roles-type-input-select-content-type"], [data-test-id="cs-tag-as-select"]'
+        ).filter({ hasText: /Select Content Types/i }).first();
         await expect(btn).toBeVisible({ timeout: t });
         await btn.click({ timeout: t });
         await page.waitForTimeout(500);

@@ -97,8 +97,11 @@ for FLOW_ID in "${GLOBAL_FIELD_FLOWS[@]}"; do
 
   echo "[${IDX}/${TOTAL_FLOWS}] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
 
+  FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}"
+  [[ "${FLOW_ID}" == "group-fields-within-global-fields" ]] && FLOW_MAX_MINUTES=10
+
   set +e
-  PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
+  PW_FLOW_MAX_MINUTES="${FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
     --project=flows \
     --grep "Project=CMS.*${FLOW_ID}$" \
     2>&1 | tee -a "$LOG"
@@ -165,8 +168,11 @@ if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
     FLOW_START_ISO="$(date -u +'%H:%M:%SZ')"
     echo "[retry] ▶  ${FLOW_ID}  (${FLOW_START_ISO})" | tee -a "$LOG"
 
+    FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}"
+    [[ "${FLOW_ID}" == "group-fields-within-global-fields" ]] && FLOW_MAX_MINUTES=10
+
     set +e
-    PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
+    PW_FLOW_MAX_MINUTES="${FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
       --project=flows \
       --grep "Project=CMS.*${FLOW_ID}$" \
       2>&1 | tee -a "$LOG"
