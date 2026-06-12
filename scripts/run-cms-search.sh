@@ -106,7 +106,7 @@ for FLOW_ID in "${SEARCH_FLOWS[@]}"; do
   set +e
   PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
     --project=flows \
-    --grep "> ${FLOW_ID}$" \
+    --grep "${FLOW_ID}$" \
     2>&1 | tee -a "$LOG"
   FLOW_EXIT=${PIPESTATUS[0]}
   set -e
@@ -174,7 +174,7 @@ if [[ ${#FAILED_FLOWS[@]} -gt 0 ]]; then
     set +e
     PW_FLOW_MAX_MINUTES="${PW_FLOW_MAX_MINUTES}" npx playwright test tests/flows.spec.ts \
       --project=flows \
-      --grep "> ${FLOW_ID}$" \
+      --grep "${FLOW_ID}$" \
       2>&1 | tee -a "$LOG"
     FLOW_EXIT=${PIPESTATUS[0]}
     set -e
