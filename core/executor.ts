@@ -374,6 +374,12 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         console.warn(`⚠️  Warn-only step (continuing): ${step?.action} "${step?.target}"`);
         continue;
       }
+      if ((step as any).warnAndSkipRest) {
+        const warnMsg = (step as any).warnMessage || (err?.message ?? String(err));
+        recordDocStepWarning(documentUrl, flow.id, i, step as any, `warnAndSkipRest: ${warnMsg}`);
+        console.warn(`⚠️  Warn-and-skip-rest: "${step?.target}" — ${warnMsg} — skipping remaining steps.`);
+        return;
+      }
       const message = err?.message ?? String(err);
       const missingElementSummary = buildMissingElementSummary(step, message);
       let screenshotRelativePath: string | undefined;

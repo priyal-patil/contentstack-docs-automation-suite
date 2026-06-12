@@ -61,7 +61,75 @@
     },
     {
       "action": "verify",
-      "target": "Webhook log columns (doc step)"
+      "target": "First log row (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Time column header (doc step)",
+      "expected": {
+        "labelEquals": "Time",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Action column header (doc step)",
+      "expected": {
+        "labelEquals": "Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Module column header (doc step)",
+      "expected": {
+        "labelEquals": "Module",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Title column header (doc step)",
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Call Status column header (doc step)",
+      "expected": {
+        "labelEquals": "Call Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Actions column header (doc step)",
+      "expected": {
+        "labelEquals": "Actions",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Vertical ellipsis in log Actions column (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Vertical ellipsis in log Actions column (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "See Details option (doc step)",
+      "expected": {
+        "labelEquals": "See Details",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "See Details option (doc step)"
     }
   ]
 }
