@@ -59,7 +59,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
   "First Entry row (doc step)":
-    '[data-test-id^="cs-table-body-row-0"], [role="row"][data-test-id^="cs-table-body-row-"]',
+    '[data-test-id^="cs-table-body-row-"]:not(:has-text("Untitled"))',
   "See more (entry editor) (doc step)":
     '[data-test-id="cs-entry-see-more-dropdown"]',
   "Add to Release from see more (doc step)":

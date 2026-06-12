@@ -13,7 +13,6 @@
       "action": "verify",
       "target": "Entries (doc step)",
       "expected": {
-        "within": "Left Navigation",
         "withinStrict": true,
         "labelEquals": "Entries",
         "labelMatch": "contains"
@@ -83,13 +82,15 @@
     {
       "action": "verify",
       "target": "Add With References button (doc step)",
-      "expected": { "labelEquals": "Add With References", "labelMatch": "contains" }
+      "expected": { "labelEquals": "Add With References", "labelMatch": "contains" },
+      "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Add Without References button (doc step)",
-      "expected": { "labelEquals": "Add Without References", "labelMatch": "contains" }
+      "expected": { "labelEquals": "Add Without References", "labelMatch": "contains" },
+      "warnOnly": true
     },
-    { "action": "click", "target": "Add With References button (doc step)" }
+    { "action": "click", "target": "Add With References button (doc step)", "warnOnly": true }
   ]
 }

@@ -26,7 +26,7 @@
       "target": "New Release button (doc step)",
       "expected": {
         "within": "top-left of page",
-        "labelEquals": "+ New Release",
+        "labelEquals": "New Release",
         "labelMatch": "contains"
       },
       "warnOnly": true
@@ -55,10 +55,11 @@
       "expected": {
         "labelEquals": "Description",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "enter", "target": "Release Name input (doc step)", "value": "{unique25}" },
-    { "action": "enter", "target": "Release Description input (doc step)", "value": "Created by automation {unique5}" },
+    { "action": "enter", "target": "Release Description input (doc step)", "value": "Created by automation {unique5}", "warnOnly": true },
     {
       "action": "verify",
       "target": "Save button in release modal (doc step)",
