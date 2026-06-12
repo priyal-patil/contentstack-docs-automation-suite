@@ -23,6 +23,7 @@
     { "action": "verify", "target": "Releases list (doc step)" },
     { "action": "click", "target": "First release in left nav (doc step)" },
     { "action": "verify", "target": "Release items table (doc step)" },
+    { "action": "click", "target": "Hover release item row for delete icon (doc step)" },
     { "action": "click", "target": "Remove item from release row (doc step)" },
     {
       "action": "verify",

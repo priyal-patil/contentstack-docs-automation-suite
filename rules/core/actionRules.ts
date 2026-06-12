@@ -11158,7 +11158,7 @@ export async function performAction(
 
         const deleteItemMenu = page
           .locator(
-            '[data-test-id="cs-dropdown-elements"]:has-text("Remove"), [data-test-id="cs-dropdown-elements"]:has-text("Delete"), [id^="cs-dropdown-elements-"]:has-text("Remove"), [id^="cs-dropdown-elements-"]:has-text("Delete"), li:has-text("Remove"), li:has-text("Delete")'
+            '[data-test-id="cs-releases-action-remove"], [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Remove"), [data-test-id="cs-dropdown-elements"]:has-text("Remove"), [data-test-id="cs-dropdown-elements"]:has-text("Delete")'
           )
           .first();
         await expect(deleteItemMenu).toBeVisible({ timeout: t });
@@ -11166,29 +11166,45 @@ export async function performAction(
         break;
       }
 
+      if (step.target === "Hover release item row for delete icon (doc step)") {
+        const t = Math.min(getStepTimeoutMs(step), 15_000);
+        const firstReleaseItemRow = page
+          .locator('[data-test-id="cs-table-body-row-0"]')
+          .first();
+        await expect(firstReleaseItemRow).toBeVisible({ timeout: t });
+        await firstReleaseItemRow.hover({ timeout: t }).catch(() => {});
+        // Fail hard if the row action button is not revealed by hover — per doc.
+        const rowActionBtn = firstReleaseItemRow
+          .locator('[data-test-id="cs-table-action-options"]')
+          .first();
+        await expect(rowActionBtn).toBeVisible({ timeout: t });
+        break;
+      }
+
       if (step.target === "Remove item from release row (doc step)") {
         const t = Math.min(getStepTimeoutMs(step), 15_000);
         const firstReleaseItemRow = page
           .locator(
-            '[data-test-id="cs-table-body-row-0"], .Table__body [role="row"][data-test-id="cs-table-body-row-0"], .Table__body [role="row"]:has([data-test-id="cs-releases-list-title"])'
+            '[data-test-id="cs-table-body-row-0"], .Table__body [role="row"][data-test-id="cs-table-body-row-0"]'
           )
           .first();
         await expect(firstReleaseItemRow).toBeVisible({ timeout: t });
         await firstReleaseItemRow.hover({ timeout: t }).catch(() => {});
 
+        // Three-dot action button reveals on hover — fail if not visible per doc.
         const rowActionBtn = firstReleaseItemRow
-          .locator('[data-test-id="cs-table-action-options"], button[aria-label*="action" i], svg[name="DotsThreeLargeVertical"]')
+          .locator('[data-test-id="cs-table-action-options"], button[aria-label*="action" i]')
           .first();
         await expect(rowActionBtn).toBeVisible({ timeout: t });
-        await rowActionBtn.click({ timeout: t, force: true }).catch(() => {});
+        await rowActionBtn.click({ timeout: t });
 
+        // VerticalActionTooltip is absolutely positioned at the right edge (outside viewport).
+        // Use dispatchEvent to fire click regardless of position.
         const removeItemMenu = page
-          .locator(
-            '[data-test-id="cs-dropdown-elements"]:has-text("Remove"), [id^="cs-dropdown-elements-"]:has-text("Remove"), li:has-text("Remove")'
-          )
+          .locator('[data-test-id="cs-releases-action-remove"], [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Remove")')
           .first();
         await expect(removeItemMenu).toBeVisible({ timeout: t });
-        await removeItemMenu.click({ timeout: t, force: true }).catch(() => {});
+        await removeItemMenu.dispatchEvent('click');
         break;
       }
 
