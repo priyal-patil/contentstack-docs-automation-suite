@@ -1,21 +1,56 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Content Modeling — 11 flows in CRUD sequence, 1 worker, 5 min cap
+# CMS Content Modeling — 44 flows in CRUD sequence, 1 worker, 5 min cap
 #
 # Execution order (CRUD):
 #   Create:
-#   1.  import-prebuilt-content-models
-#   Read/Use:
-#   2.  hero-banner
-#   3.  about-us-page
-#   4.  blog-landing-page
-#   5.  blog-listing-page
-#   6.  contact-us-page
-#   7.  faqs
-#   8.  product-listing-page
-#   9.  website-footer
-#  10.  website-header
-#  11.  website-homepage
+#   1.  create-content-type
+#   2.  quickstart-in-5-mins
+#   3.  import-content-type
+#   Read:
+#   4.  about-field-properties
+#   5.  add-a-field-visibility-rule-part-1
+#   6.  add-a-field-visibility-rule-part-2
+#   7.  add-a-field-visibility-rule-part-3
+#   8.  boolean-part-1
+#   9.  boolean-part-2
+#  10.  example-from-bulk
+#  11.  example-from-csv
+#  12.  content-type-versioning
+#  13.  copy-content-type
+#  14.  custom
+#  15.  date-part-1
+#  16.  default-value
+#  17.  display-name
+#  18.  export-content-type
+#  19.  global-part-1
+#  20.  group-part-1
+#  21.  group-part-2
+#  22.  html-based-rich-text-editor-part-1
+#  23.  html-based-rich-text-editor-part-2
+#  24.  html-based-rich-text-editor-part-2-b
+#  25.  instruction-value
+#  26.  managing-non-localizable-fields
+#  27.  mandatory
+#  28.  minimum-and-maximum-limit-part-1
+#  29.  minimum-and-maximum-limit-part-2
+#  30.  modular-blocks
+#  31.  modular-blocks-part-2
+#  32.  multiple-part-1
+#  33.  select-extension-app-for-custom-field-only
+#  34.  show-as-tab
+#  35.  switch-between-alphabetical-and-label-view
+#  36.  unique-id
+#  37.  unique-part-1
+#  38.  use-default-url-pattern
+#  39.  validation-error-message
+#  40.  validation-regex-part-1
+#   Update:
+#  41.  create-and-apply-labels
+#  42.  manage-labels
+#  43.  edit-content-type
+#   Delete:
+#  44.  delete-content-type
 #
 # Each flow gets a hard 5-minute timeout. Failure captures a screenshot.
 # All flows share the same auth session (auth.json generated on first run).
@@ -58,17 +93,54 @@ export CMS_CONTINUE_ON_FAIL=0
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 
 CONTENT_MODELING_FLOWS=(
-  "import-prebuilt-content-models"
-  "hero-banner"
-  "about-us-page"
-  "blog-landing-page"
-  "blog-listing-page"
-  "contact-us-page"
-  "faqs"
-  "product-listing-page"
-  "website-footer"
-  "website-header"
-  "website-homepage"
+  # Create
+  "create-content-type"
+  "quickstart-in-5-mins"
+  "import-content-type"
+  # Read
+  "about-field-properties"
+  "add-a-field-visibility-rule-part-1"
+  "add-a-field-visibility-rule-part-2"
+  "add-a-field-visibility-rule-part-3"
+  "boolean-part-1"
+  "boolean-part-2"
+  "example-from-bulk"
+  "example-from-csv"
+  "content-type-versioning"
+  "copy-content-type"
+  "custom"
+  "date-part-1"
+  "default-value"
+  "display-name"
+  "export-content-type"
+  "global-part-1"
+  "group-part-1"
+  "group-part-2"
+  "html-based-rich-text-editor-part-1"
+  "html-based-rich-text-editor-part-2"
+  "html-based-rich-text-editor-part-2-b"
+  "instruction-value"
+  "managing-non-localizable-fields"
+  "mandatory"
+  "minimum-and-maximum-limit-part-1"
+  "minimum-and-maximum-limit-part-2"
+  "modular-blocks"
+  "modular-blocks-part-2"
+  "multiple-part-1"
+  "select-extension-app-for-custom-field-only"
+  "show-as-tab"
+  "switch-between-alphabetical-and-label-view"
+  "unique-id"
+  "unique-part-1"
+  "use-default-url-pattern"
+  "validation-error-message"
+  "validation-regex-part-1"
+  # Update
+  "create-and-apply-labels"
+  "manage-labels"
+  "edit-content-type"
+  # Delete
+  "delete-content-type"
 )
 
 TOTAL_FLOWS=${#CONTENT_MODELING_FLOWS[@]}

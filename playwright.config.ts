@@ -5,6 +5,9 @@ const isCI = !!process.env.CI;
 /** Set PLAYWRIGHT_HEADLESS=1 to force headless (e.g. batch CMS runs); default local runs use headed browser. */
 const useHeadless = isCI || process.env.PLAYWRIGHT_HEADLESS === "1";
 const defaultWorkers = isCI ? 2 : 1;
+
+/** Headless/CI: fixed 1920×1080. Local headed: null viewport + --start-maximized fills the actual screen. */
+const headlessViewport = { width: 1920, height: 1080 } as const;
 const workers = Number(process.env.PW_WORKERS || defaultWorkers);
 const slowMo = Number(process.env.PW_SLOWMO || 200);
 /** Flow URL tests are parallel-safe; other suites may opt out via PW_FULLY_PARALLEL=0. */
@@ -112,10 +115,15 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
-        viewport: null,
+        viewport: useHeadless ? headlessViewport : null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
+          args: [
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--start-maximized",
+            ...(useHeadless ? ["--window-size=1920,1080"] : []),
+          ],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
@@ -129,12 +137,16 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
-        // Fixed 1920×1080 viewport for both headed and headless — ensures nav bar
-        // behaves consistently (no "More" overflow on wide screens, same layout in GHA).
-        viewport: { width: 1920, height: 1080 },
+        // Headless/CI: fixed 1920×1080. Local headed: null + --start-maximized fills the actual screen.
+        viewport: useHeadless ? headlessViewport : null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized", "--window-size=1920,1080"],
+          args: [
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--start-maximized",
+            ...(useHeadless ? ["--window-size=1920,1080"] : []),
+          ],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",
@@ -150,10 +162,15 @@ export default defineConfig({
       use: {
         storageState: "auth.json",
         headless: useHeadless,
-        viewport: null,
+        viewport: useHeadless ? headlessViewport : null,
         launchOptions: {
           slowMo,
-          args: ["--disable-dev-shm-usage", "--no-sandbox", "--start-maximized"],
+          args: [
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--start-maximized",
+            ...(useHeadless ? ["--window-size=1920,1080"] : []),
+          ],
         },
         screenshot: "only-on-failure",
         video: "retain-on-failure",

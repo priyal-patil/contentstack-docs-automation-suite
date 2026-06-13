@@ -1,11 +1,21 @@
 # =============================================================================
-# CMS Content Modeling — 11 flows in CRUD sequence, 1 worker, 5 min cap
+# CMS Content Modeling — 44 flows in CRUD sequence, 1 worker, 5 min cap
 #
 # Flows (CRUD order):
-#   Create : import-prebuilt-content-models
-#   Read   : hero-banner, about-us-page, blog-landing-page, blog-listing-page,
-#            contact-us-page, faqs, product-listing-page,
-#            website-footer, website-header, website-homepage
+#   Create : create-content-type, quickstart-in-5-mins, import-content-type
+#   Read   : about-field-properties, add-a-field-visibility-rule (×3),
+#            boolean (×2), example-from-bulk, example-from-csv,
+#            content-type-versioning, copy-content-type, custom, date-part-1,
+#            default-value, display-name, export-content-type, global-part-1,
+#            group (×2), html-based-rich-text-editor (×3), instruction-value,
+#            managing-non-localizable-fields, mandatory,
+#            minimum-and-maximum-limit (×2), modular-blocks (×2),
+#            multiple-part-1, select-extension-app-for-custom-field-only,
+#            show-as-tab, switch-between-alphabetical-and-label-view,
+#            unique-id, unique-part-1, use-default-url-pattern,
+#            validation-error-message, validation-regex-part-1
+#   Update : create-and-apply-labels, manage-labels, edit-content-type
+#   Delete : delete-content-type
 #
 # Trigger: workflow_dispatch only (manual run from Actions tab)
 # =============================================================================
@@ -42,12 +52,12 @@ permissions:
 
 jobs:
   cms-content-modeling:
-    name: CMS Content Modeling — 11 CRUD flows (1 worker, 5 min/flow)
+    name: CMS Content Modeling — 44 CRUD flows (1 worker, 5 min/flow)
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
-    timeout-minutes: 180
+    timeout-minutes: 480
     env:
       CI: "true"
       PLAYWRIGHT_HEADLESS: "1"

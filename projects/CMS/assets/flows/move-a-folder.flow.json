@@ -21,6 +21,14 @@
       }
     },
     { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "First folder vertical ellipses (doc step)",
+      "expected": {
+        "labelEquals": "row 1 action",
+        "labelMatch": "contains"
+      }
+    },
     { "action": "click", "target": "First folder vertical ellipses (doc step)" },
     {
       "action": "verify",
@@ -41,6 +49,14 @@
       }
     },
     { "action": "click", "target": "Destination folder row (doc step)" },
+    {
+      "action": "verify",
+      "target": "Move here (doc step)",
+      "expected": {
+        "labelEquals": "Move Asset",
+        "labelMatch": "contains"
+      }
+    },
     { "action": "click", "target": "Move here (doc step)" }
   ]
 }
