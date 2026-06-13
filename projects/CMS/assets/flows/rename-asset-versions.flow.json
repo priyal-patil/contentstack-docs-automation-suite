@@ -5,10 +5,20 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/content-managers/author-content/rename-asset-versions",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -20,10 +30,28 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Asset row (doc step)" },
-    { "action": "click", "target": "Save (doc step)" },
-    { "action": "click", "target": "First Asset row (doc step)" },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First folder row (doc step)",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First Asset row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "First Asset row (doc step)"
+    },
     {
       "action": "verify",
       "target": "Version dropdown (doc step)",
@@ -34,10 +62,30 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Version dropdown (doc step)" },
-    { "action": "verify", "target": "Version dropdown menu (doc step)", "expected": { "labelEquals": "Version", "labelMatch": "contains" } },
-    { "action": "click", "target": "First version rename icon (doc step)" },
-    { "action": "enter", "target": "Version name input (doc step)", "value": "AssetVersionRename32CharactersOnly" },
-    { "action": "click", "target": "Version rename confirm (doc step)" }
+    {
+      "action": "click",
+      "target": "Version dropdown (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Version dropdown menu (doc step)",
+      "expected": {
+        "labelEquals": "Version",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First version rename icon (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Version name input (doc step)",
+      "value": "AssetVersionRename32CharactersOnly"
+    },
+    {
+      "action": "click",
+      "target": "Version rename confirm (doc step)"
+    }
   ]
 }

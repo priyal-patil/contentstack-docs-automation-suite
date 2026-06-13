@@ -5,10 +5,20 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/content-managers/author-content/publish-an-asset",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -20,9 +30,24 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Not Published asset row (doc step)" },
-    { "action": "click", "target": "Publish Asset button (doc step)" },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First folder row (doc step)",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First Not Published asset row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Publish Asset button (doc step)"
+    },
     {
       "action": "verify",
       "target": "Publish Asset modal title (doc step)",
@@ -35,9 +60,15 @@
     {
       "action": "verify",
       "target": "Select Environment(s) label (doc step)",
-      "expected": { "labelEquals": "Select Environment(s)", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Select Environment(s)",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "click", "target": "First Environment checkbox (doc step)" },
+    {
+      "action": "click",
+      "target": "First Environment checkbox (doc step)"
+    },
     {
       "action": "verify",
       "target": "First Environment checkbox (doc step)"
@@ -45,15 +76,34 @@
     {
       "action": "verify",
       "target": "Select Language(s) label (doc step)",
-      "expected": { "labelEquals": "Select Language(s)", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Select Language(s)",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "verify", "target": "First Language checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "First Language checkbox (doc step)"
+    },
     {
       "action": "verify",
       "target": "Publish field label (doc step)",
-      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Publish",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "verify", "target": "Now publish option (doc step)", "expected": { "labelEquals": "Now", "labelMatch": "contains" } },
-    { "action": "click", "target": "Publish modal publish button (doc step)" }
+    {
+      "action": "verify",
+      "target": "Now publish option (doc step)",
+      "expected": {
+        "labelEquals": "Now",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Publish modal publish button (doc step)"
+    }
   ]
 }

@@ -22,7 +22,16 @@
     },
     { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "New Asset (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Choose Files to Upload (doc step)" },
+    {
+      "action": "verify",
+      "target": "Upload Asset(s) modal title (doc step)",
+      "expected": {
+        "labelEquals": "Upload Asset(s)",
+        "labelMatch": "contains",
+        "modalTitle": "Upload Asset(s)"
+      }
+    },
+    { "action": "click", "target": "Choose files (doc step)" },
     { "action": "upload", "target": "Asset file input (doc step)", "value": "./dummyData/sample.svg" }
   ]
 }

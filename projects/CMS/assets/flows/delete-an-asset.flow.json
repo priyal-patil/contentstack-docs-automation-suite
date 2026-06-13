@@ -5,10 +5,20 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/content-managers/author-content/delete-an-asset",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -20,10 +30,28 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Not Published asset row (doc step)" },
-    { "action": "click", "target": "Asset see more (doc step)" },
-    { "action": "click", "target": "Delete in see more dropdown (doc step)" },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First folder row (doc step)",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First Not Published asset row (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Asset see more (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Delete in see more dropdown (doc step)"
+    },
     {
       "action": "verify",
       "target": "Delete Asset modal title (doc step)",
@@ -33,6 +61,9 @@
         "modalTitle": "Delete Asset"
       }
     },
-    { "action": "click", "target": "Delete confirm button (doc step)" }
+    {
+      "action": "click",
+      "target": "Delete confirm button (doc step)"
+    }
   ]
 }

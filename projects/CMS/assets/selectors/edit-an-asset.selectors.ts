@@ -1,4 +1,6 @@
 export const CLICK_SELECTORS: Record<string, string> = {
+  "First folder row (doc step)":
+    '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]):first-of-type [data-test-id="cs-asset-detail-title"], [data-test-id="cs-table-body-row-0"]:has(svg[name="Folder"]) [data-test-id="cs-asset-detail-title"]',
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
@@ -6,7 +8,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
   "First Asset row (doc step)":
-    'a[href*="/assets/blt"]:not([href*="/browse"]):visible, [data-test-id="cs-table-body-row-0"] [data-test-id="cs-asset-detail-title"]:visible',
+    '[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])):has([data-test-id="cs-asset-detail-title"]) [data-test-id="cs-asset-detail-title"], a[href*="/assets/blt"]:not([href*="/browse"]) [data-test-id="cs-asset-detail-title"]',
   "Asset preview area (doc step)":
     'button[aria-label*="Full screen Asset" i], [data-test-id*="asset-preview"], img[alt]',
   "Replace (doc step)":
@@ -14,7 +16,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Choose Files (doc step)":
     '#scrte-image-modal button[data-test-id="cs-button"]:has-text("Choose Files"), button:has-text("Choose Files")',
   "Save (doc step)":
-    'button:has-text("Save Changes"), [data-test-id*="asset-save"], button:has-text("Save"), button[aria-label*="save" i]',
+    '[data-test-id="cs-asset-save"], button[aria-label="Save Changes"], button:has-text("Save Changes")',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
@@ -34,4 +36,6 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '#scrte-image-modal input[data-testid="drop-input"], #scrte-image-modal input[type="file"], input[data-testid="drop-input"], input[type="file"]',
   "Upload asset modal title (doc step)":
     '#scrte-image-modal h3, [data-test-id*="cs-modal-title"]',
+  "Asset saved success toast (doc step)":
+    '[data-test-id="cs-toast-success"], .toast-message:has-text("saved"), [role="alert"]:has-text("saved")',
 };

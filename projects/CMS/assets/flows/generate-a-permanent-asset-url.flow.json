@@ -5,10 +5,20 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/content-managers/author-content/generate-a-permanent-asset-url",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -20,20 +30,48 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Not Published asset row (doc step)" },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First folder row (doc step)",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First Not Published asset row (doc step)"
+    },
     {
       "action": "verify",
       "target": "Permanent URL label (doc step)",
-      "expected": { "labelEquals": "Permanent URL", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Permanent URL",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Generate permanent URL (doc step)",
-      "expected": { "labelEquals": "Generate permanent URL", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Generate permanent URL",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "click", "target": "Generate permanent URL (doc step)" },
-    { "action": "enter", "target": "Permanent URL slug input (doc step)", "value": "asset-slug-{unique5}" },
-    { "action": "click", "target": "Save (doc step)" }
+    {
+      "action": "click",
+      "target": "Generate permanent URL (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Permanent URL slug input (doc step)",
+      "value": "asset-slug-{unique5}"
+    },
+    {
+      "action": "click",
+      "target": "Save (doc step)"
+    }
   ]
 }

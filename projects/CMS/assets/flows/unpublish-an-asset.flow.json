@@ -5,10 +5,20 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/content-managers/author-content/unpublish-an-asset",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
-    { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
-    { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 90000
+    },
     {
       "action": "verify",
       "target": "Assets (doc step)",
@@ -20,9 +30,24 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "First Published asset actions menu (doc step)" },
-    { "action": "click", "target": "Unpublish from actions dropdown (doc step)" },
+    {
+      "action": "click",
+      "target": "Assets (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "First folder row (doc step)",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "First Published asset actions menu (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Unpublish from actions dropdown (doc step)"
+    },
     {
       "action": "verify",
       "target": "Unpublish Asset modal title (doc step)",
@@ -35,22 +60,50 @@
     {
       "action": "verify",
       "target": "Select Environment(s) label (doc step)",
-      "expected": { "labelEquals": "Select Environment(s)", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Select Environment(s)",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "click", "target": "First Environment checkbox (doc step)" },
-    { "action": "verify", "target": "First Environment checkbox (doc step)" },
+    {
+      "action": "click",
+      "target": "First Environment checkbox (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "First Environment checkbox (doc step)"
+    },
     {
       "action": "verify",
       "target": "Select Language(s) label (doc step)",
-      "expected": { "labelEquals": "Select Language(s)", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Select Language(s)",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "verify", "target": "First Language checkbox (doc step)" },
+    {
+      "action": "verify",
+      "target": "First Language checkbox (doc step)"
+    },
     {
       "action": "verify",
       "target": "Unpublish field label (doc step)",
-      "expected": { "labelEquals": "Unpublish", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Unpublish",
+        "labelMatch": "contains"
+      }
     },
-    { "action": "verify", "target": "Now unpublish option (doc step)", "expected": { "labelEquals": "Now", "labelMatch": "contains" } },
-    { "action": "click", "target": "Unpublish modal unpublish button (doc step)" }
+    {
+      "action": "verify",
+      "target": "Now unpublish option (doc step)",
+      "expected": {
+        "labelEquals": "Now",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Unpublish modal unpublish button (doc step)"
+    }
   ]
 }
