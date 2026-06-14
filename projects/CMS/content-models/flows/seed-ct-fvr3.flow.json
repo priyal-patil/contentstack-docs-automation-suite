@@ -1,0 +1,17 @@
+{
+  "id": "seed-ct-fvr3",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "seed",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/create-a-content-type",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Content Models" },
+    { "action": "click", "target": "+ New Content Type (doc step)" },
+    { "action": "click", "target": "Create New (doc step)", "expected": { "modalTitle": "Create New Content Type" } },
+    { "action": "enter", "target": "Name (doc step)", "value": "AUTO-FVR3-{unique5}" },
+    { "action": "click", "target": "Save and proceed (doc step)" },
+    { "action": "click", "target": "Save (doc step)" }
+  ]
+}

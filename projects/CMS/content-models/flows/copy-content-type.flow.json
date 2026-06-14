@@ -15,14 +15,14 @@
     {
       "action": "click",
       "target": "vertical ellipsis",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-COPY-" }
     },
     {
       "action": "verify",
       "target": "Copy Content Type (doc step)",
       "expected": { "labelEquals": "Copy Content Type", "labelMatch": "equals" }
     },
-    { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-COPY-" } },
     {
       "action": "verify",
       "target": "Copy Content Type modal (doc step)",

@@ -19,12 +19,12 @@
     {
       "action": "click",
       "target": "vertical ellipsis",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-URL-" }
     },
     {
       "action": "click",
       "target": "Edit",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-URL-" }
     },
     {
       "action": "click",

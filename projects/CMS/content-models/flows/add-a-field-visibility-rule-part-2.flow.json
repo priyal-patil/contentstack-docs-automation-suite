@@ -16,15 +16,15 @@
     {
       "action": "verify",
       "target": "vertical ellipsis (doc step)",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-FVR2-" }
     },
-    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-FVR2-" } },
     {
       "action": "verify",
       "target": "Edit (doc step)",
       "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
     },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-FVR2-" } },
     {
       "action": "verify",
       "target": "Field Visibility Rules (doc step)",

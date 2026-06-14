@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 1 — 21 create/setup flows in exact sequence, 1 worker, 5 min cap
+# CMS Batch 1 — 31 create/setup flows in exact sequence, 1 worker, 5 min cap
 #
 # Execution order (creates stack first, then uses same stack for all others):
 #   1. create-a-new-stack-part-1      (stack)
@@ -9,21 +9,31 @@
 #   4. add-a-custom-language          (language)
 #   5. create-a-branch                (branches)
 #   6. create-content-type            (content-models)
-#   7. create-a-new-release           (releases)
-#   8. create-a-global-field          (global-field)
-#   9. create-a-global-field-part-2   (global-field)
-#  10. create-upload-assets           (assets)
-#  11. create-a-folder                (assets)
-#  12. create-an-entry                (entries)
-#  13. add-a-comment                  (entries)
-#  14. create-and-apply-labels        (content-models)
-#  15. set-up-live-preview-for-your-stack (live-preview)
-#  16. create-a-taxonomy              (taxonomy)
-#  17. create-a-term                  (taxonomy)
-#  18. create-a-delivery-token        (tokens)
-#  19. generate-a-management-token    (tokens)
-#  20. create-a-webhook               (webhook)
-#  21. add-workflows-and-stages       (workflows)
+#   7. seed-ct-copy                   (content-models — seed CT for copy-content-type)
+#   8. seed-ct-edit                   (content-models — seed CT for edit-content-type)
+#   9. seed-ct-export                 (content-models — seed CT for export-content-type)
+#  10. seed-ct-fvr1                   (content-models — seed CT for fvr-part-1)
+#  11. seed-ct-fvr2                   (content-models — seed CT for fvr-part-2)
+#  12. seed-ct-fvr3                   (content-models — seed CT for fvr-part-3)
+#  13. seed-ct-modblocks              (content-models — seed CT for modular-blocks)
+#  14. seed-ct-nonloc                 (content-models — seed CT for managing-non-localizable-fields)
+#  15. seed-ct-showtab                (content-models — seed CT for show-as-tab)
+#  16. seed-ct-url                    (content-models — seed CT for use-default-url-pattern)
+#  17. create-a-new-release           (releases)
+#  18. create-a-global-field          (global-field)
+#  19. create-a-global-field-part-2   (global-field)
+#  20. create-upload-assets           (assets)
+#  21. create-a-folder                (assets)
+#  22. create-an-entry                (entries)
+#  23. add-a-comment                  (entries)
+#  24. create-and-apply-labels        (content-models)
+#  25. set-up-live-preview-for-your-stack (live-preview)
+#  26. create-a-taxonomy              (taxonomy)
+#  27. create-a-term                  (taxonomy)
+#  28. create-a-delivery-token        (tokens)
+#  29. generate-a-management-token    (tokens)
+#  30. create-a-webhook               (webhook)
+#  31. add-workflows-and-stages       (workflows)
 #
 # Each flow gets a hard 5-minute timeout. Failure captures a screenshot.
 # All flows share the same auth session (auth.json generated on first run).
@@ -78,6 +88,16 @@ BATCH1_FLOWS=(
   "add-a-custom-language"
   "create-a-branch"
   "create-content-type"
+  "seed-ct-copy"
+  "seed-ct-edit"
+  "seed-ct-export"
+  "seed-ct-fvr1"
+  "seed-ct-fvr2"
+  "seed-ct-fvr3"
+  "seed-ct-modblocks"
+  "seed-ct-nonloc"
+  "seed-ct-showtab"
+  "seed-ct-url"
   "create-a-new-release"
   "create-a-global-field"
   "create-a-global-field-part-2"

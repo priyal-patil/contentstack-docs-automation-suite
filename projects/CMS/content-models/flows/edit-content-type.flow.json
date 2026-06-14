@@ -15,11 +15,11 @@
     {
       "action": "verify",
       "target": "vertical ellipsis (doc step)",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-EDIT-" }
     },
-    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-EDIT-" } },
     { "action": "verify", "target": "Settings (doc step)", "expected": { "labelEquals": "Settings", "labelMatch": "equals" } },
-    { "action": "click", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Settings", "expected": { "rowContains": "AUTO-EDIT-" } },
     { "action": "enter", "target": "Description", "value": "AUTO-{unique5}" },
     { "action": "click", "target": "Update" },
     {
@@ -30,11 +30,11 @@
     {
       "action": "verify",
       "target": "vertical ellipsis (doc step)",
-      "expected": { "rowContains": "AUTO-" }
+      "expected": { "rowContains": "AUTO-EDIT-" }
     },
-    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-EDIT-" } },
     { "action": "verify", "target": "Edit (doc step)", "expected": { "labelEquals": "Edit", "labelMatch": "equals" } },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-EDIT-" } },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Save" }
   ]
