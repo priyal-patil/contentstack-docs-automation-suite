@@ -8,7 +8,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "First folder vertical ellipses (doc step)":
     '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-detail-title"]) [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-table-action-options"]',
   "Move To option (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-asset-action-move-to"], [data-test-id="cs-vertical-action-tooltip"]:visible li:has-text("Move To"), [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Move To")',
+    '[data-test-id="cs-asset-action-move-to"] div, [data-test-id="cs-asset-action-move-to"]',
   "Destination folder row (doc step)":
     '[data-test-id="cs-modal-description"] [data-test-id="cs-asset-small-view"]',
   "Move here (doc step)":
@@ -19,7 +19,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "First folder vertical ellipses (doc step)":
     '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-detail-title"]) [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-table-action-options"]',
   "Move To option label (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-asset-action-move-to"], [data-test-id="cs-vertical-action-tooltip"]:visible li:has-text("Move To"), [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Move To")',
+    '[data-test-id="cs-asset-action-move-to"], [data-test-id="cs-asset-action-move-to"] div',
   "Move To modal title (doc step)":
     '[data-test-id="cs-modal-title-move-to"], h3:has-text("Move To")',
   "Move here (doc step)":
