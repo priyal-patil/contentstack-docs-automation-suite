@@ -5,16 +5,35 @@
   "source": "https://www.contentstack.com/docs/developers/create-content-types/edit-a-content-type",
   "type": "executable",
   "use": ["login", "selectStack"],
-  "automationNotes": "Row ⋯ `button[data-test-id=cs-table-action-options]` → wait VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms) → verify/click Edit via `ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit]` (hover + click in clickRowActionMenuItem). Same pattern for Settings.",
   "steps": [
     { "action": "click", "target": "Content Models" },
+    {
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
+    },
+    {
+      "action": "verify",
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-" }
+    },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
-    { "action": "verify", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
+    { "action": "verify", "target": "Settings (doc step)", "expected": { "labelEquals": "Settings", "labelMatch": "equals" } },
     { "action": "click", "target": "Settings", "expected": { "rowContains": "AUTO-" } },
     { "action": "enter", "target": "Description", "value": "AUTO-{unique5}" },
     { "action": "click", "target": "Update" },
+    {
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
+    },
+    {
+      "action": "verify",
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-" }
+    },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
-    { "action": "verify", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
+    { "action": "verify", "target": "Edit (doc step)", "expected": { "labelEquals": "Edit", "labelMatch": "equals" } },
     { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Save" }

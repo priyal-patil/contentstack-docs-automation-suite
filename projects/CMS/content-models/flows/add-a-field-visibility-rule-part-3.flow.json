@@ -5,38 +5,71 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/developers/create-content-types/add-a-field-visibility-rule",
   "type": "executable",
-  "use": [
-    "login",
-    "selectStack"
-  ],
+  "use": ["login", "selectStack"],
   "steps": [
+    { "action": "click", "target": "Content Models" },
     {
-      "action": "click",
-      "target": "Content Models"
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
     },
     {
-      "action": "click",
-      "target": "Edit"
+      "action": "verify",
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-" }
     },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
     {
-      "action": "click",
-      "target": "Field Visibility Rules (doc step)"
+      "action": "verify",
+      "target": "Edit (doc step)",
+      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
     {
-      "action": "click",
-      "target": "Create New Rule (doc step)"
+      "action": "verify",
+      "target": "Field Visibility Rules (doc step)",
+      "expected": { "labelEquals": "Field Visibility Rules", "labelMatch": "contains" }
     },
+    { "action": "click", "target": "Field Visibility Rules (doc step)" },
     {
-      "action": "click",
-      "target": "Properties (doc step)"
+      "action": "verify",
+      "target": "Create New Rule (doc step)",
+      "expected": { "labelEquals": "Create New Rule", "labelMatch": "contains" }
     },
+    { "action": "click", "target": "Create New Rule (doc step)" },
+    { "action": "click", "target": "Operand Field (FVR) (doc step)" },
+    { "action": "click", "target": "Condition operator (FVR) (doc step)" },
+    { "action": "click", "target": "Action type Show (FVR) (doc step)" },
+    { "action": "click", "target": "Show (FVR option) (doc step)" },
+    { "action": "click", "target": "Target field (FVR) (doc step)" },
     {
-      "action": "click",
-      "target": "Save (doc step)"
+      "action": "verify",
+      "target": "Save rule (FVR) (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Save rule (FVR) (doc step)" },
     {
-      "action": "click",
-      "target": "Save and Close (doc step)"
-    }
+      "action": "verify",
+      "target": "+ Add Another Rule (doc step)",
+      "expected": { "labelEquals": "Add Another Rule", "labelMatch": "contains" }
+    },
+    { "action": "click", "target": "+ Add Another Rule (doc step)" },
+    { "action": "click", "target": "Operand Field 2 (FVR) (doc step)" },
+    { "action": "click", "target": "Condition operator 2 (FVR) (doc step)" },
+    { "action": "click", "target": "Action type Show 2 (FVR) (doc step)" },
+    { "action": "click", "target": "Show (FVR option) (doc step)" },
+    { "action": "click", "target": "Target field 2 (FVR) (doc step)" },
+    {
+      "action": "verify",
+      "target": "Save rule (FVR) (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "equals" }
+    },
+    { "action": "click", "target": "Save rule (FVR) (doc step)" },
+    {
+      "action": "verify",
+      "target": "Save and Close (doc step)",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "equals" }
+    },
+    { "action": "click", "target": "Save and Close (doc step)" }
   ]
 }

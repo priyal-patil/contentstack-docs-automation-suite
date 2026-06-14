@@ -46,6 +46,17 @@ export const SHOW_AS_TAB_ROW_TAB_CHECKBOX_SELECTOR =
   'input[type="checkbox"][name$=".tab"], input[type="checkbox"][aria-label$=".tab"], input[type="checkbox"]';
 
 export const CLICK_SELECTORS: Record<string, string> = {
+  // Actions column header (listing page)
+  "Actions (doc step)":
+    '[data-test-id="cs-table-row-action-column-cell--4"], [role="columnheader"]:has-text("Actions")',
+
+  // Vertical ellipsis on the AUTO- row
+  "vertical ellipsis (doc step)": '[data-test-id="cs-table-action-options"]',
+
+  // Edit menu item inside the row action tooltip
+  "Edit (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"]',
+
   "ct field group tab enabled": SHOW_AS_TAB_GROUP_TOGGLE_ENABLED_SELECTOR,
 
   // Toggle OFF uses ...-disabled; ON uses ...-enabled

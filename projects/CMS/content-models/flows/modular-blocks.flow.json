@@ -4,93 +4,93 @@
   "module": "content-models",
   "source": "https://www.contentstack.com/docs/developers/create-content-types/modular-blocks",
   "type": "executable",
-  "use": [
-    "login",
-    "selectStack"
-  ],
+  "use": ["login", "selectStack"],
   "steps": [
+    { "action": "click", "target": "Content Models" },
     {
-      "action": "click",
-      "target": "Content Models"
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
     },
     {
       "action": "verify",
-      "target": "Content Types"
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-" }
     },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
     {
-      "action": "click",
-      "target": "Open the content type you want to add Modular Blocks to."
+      "action": "verify",
+      "target": "Edit (doc step)",
+      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Insert a Field (doc step)" },
+    { "action": "click", "target": "Modular Blocks (doc step)" },
+    { "action": "click", "target": "Builder area (dismiss properties)" },
     {
-      "action": "click",
-      "target": "Insert a Field (doc step)"
+      "action": "verify",
+      "target": "+ New Block (doc step)",
+      "expected": { "labelEquals": "+ New Block", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "+ New Block (doc step)" },
+    { "action": "enter", "target": "Block Name (doc step)", "value": "Hero Banner" },
     {
-      "action": "click",
-      "target": "Modular Blocks (doc step)"
+      "action": "verify",
+      "target": "Create (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Create (doc step)" },
     {
-      "action": "click",
-      "target": "Builder area (dismiss properties)"
-    },
-    {
-      "action": "click",
-      "target": "+ New Block (doc step)"
-    },
-    {
-      "action": "enter",
-      "target": "Block Name (doc step)",
-      "value": "Hero Banner"
-    },
-    {
-      "action": "click",
-      "target": "Create (doc step)"
-    },
-    {
-      "action": "click",
+      "action": "verify",
       "target": "Insert a Field (inside block) (doc step)"
     },
+    { "action": "click", "target": "Insert a Field (inside block) (doc step)" },
     {
-      "action": "click",
-      "target": "Single Line Textbox (doc step)"
+      "action": "verify",
+      "target": "Single Line Textbox (doc step)",
+      "expected": { "labelEquals": "Single Line Textbox", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Single Line Textbox (doc step)" },
     {
-      "action": "click",
+      "action": "verify",
       "target": "Properties (Single Line Textbox) (doc step)"
     },
+    { "action": "click", "target": "Properties (Single Line Textbox) (doc step)" },
+    { "action": "enter", "target": "Display Name (doc step)", "value": "Hero Banner Title" },
     {
-      "action": "enter",
-      "target": "Display Name (doc step)",
-      "value": "Hero Banner Title"
+      "action": "verify",
+      "target": "+ New Block (doc step)",
+      "expected": { "labelEquals": "+ New Block", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "+ New Block (doc step)" },
+    { "action": "enter", "target": "Block Name (doc step)", "value": "Hero Banner 2" },
     {
-      "action": "click",
-      "target": "+ New Block (doc step)"
+      "action": "verify",
+      "target": "Create (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Create (doc step)" },
     {
-      "action": "enter",
-      "target": "Block Name (doc step)",
-      "value": "Hero Banner 2"
-    },
-    {
-      "action": "click",
-      "target": "Create (doc step)"
-    },
-    {
-      "action": "click",
+      "action": "verify",
       "target": "Insert a Field (inside block) (doc step)"
     },
+    { "action": "click", "target": "Insert a Field (inside block) (doc step)" },
     {
-      "action": "click",
-      "target": "Single Line Textbox (doc step)"
+      "action": "verify",
+      "target": "Single Line Textbox (doc step)",
+      "expected": { "labelEquals": "Single Line Textbox", "labelMatch": "equals" }
     },
+    { "action": "click", "target": "Single Line Textbox (doc step)" },
     {
-      "action": "click",
+      "action": "verify",
       "target": "Delete field (doc step)"
     },
+    { "action": "click", "target": "Delete field (doc step)" },
     {
-      "action": "click",
-      "target": "Save (doc step)"
-    }
+      "action": "verify",
+      "target": "Save (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "equals" }
+    },
+    { "action": "click", "target": "Save (doc step)" }
   ]
 }

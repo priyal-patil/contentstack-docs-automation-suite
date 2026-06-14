@@ -10,9 +10,16 @@ export const MODULAR_BLOCKS_SINGLE_LINE_FIELD_ROW_SELECTOR =
   `.ContentTypeField:has(${MODULAR_BLOCKS_SINGLE_LINE_PROPERTIES_BUTTON_SELECTOR})`;
 
 export const CLICK_SELECTORS: Record<string, string> = {
-  // Open first content type row (from provided DOM: div[role="row"] with data-test-id)
-  "Open the content type you want to add Modular Blocks to.":
-    '[data-test-id="cs-table-body-row-0"]',
+  // Actions column header (listing page)
+  "Actions (doc step)":
+    '[data-test-id="cs-table-row-action-column-cell--4"], [role="columnheader"]:has-text("Actions")',
+
+  // Vertical ellipsis on the AUTO- row
+  "vertical ellipsis (doc step)": '[data-test-id="cs-table-action-options"]',
+
+  // Edit menu item inside the row action tooltip
+  "Edit (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"]',
 
   // Field picker (+) in content type builder
   "Insert a Field (doc step)":

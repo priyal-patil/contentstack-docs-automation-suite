@@ -1,6 +1,7 @@
 export const CLICK_SELECTORS: Record<string, string> = {
   // Top nav
   "Content Models": '[data-test-id="cms-nav-content-models"]',
+  "Content Models (doc step)": '[data-test-id="cms-nav-content-models"]',
 
   // Readiness gate on Content Types page
   "Content Types": '[data-test-id="cs-cb-new-ct"]',

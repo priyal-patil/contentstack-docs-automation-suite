@@ -7,7 +7,7 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models", "expected": { "within": "Left Navigation" } },
-    { "action": "click", "target": "Open the content type you want to compare." },
+    { "action": "click", "target": "First content type row (doc step)" },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Save" },
     { "action": "verify", "target": "Compare Versions" },
