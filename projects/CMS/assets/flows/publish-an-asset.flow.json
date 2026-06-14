@@ -45,6 +45,11 @@
       "target": "First Not Published asset row (doc step)"
     },
     {
+      "action": "verify",
+      "target": "Publish Asset button (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+    },
+    {
       "action": "click",
       "target": "Publish Asset button (doc step)"
     },
@@ -82,6 +87,10 @@
       }
     },
     {
+      "action": "click",
+      "target": "First Language checkbox (doc step)"
+    },
+    {
       "action": "verify",
       "target": "First Language checkbox (doc step)"
     },
@@ -100,6 +109,11 @@
         "labelEquals": "Now",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "Publish modal publish button (doc step)",
+      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
     },
     {
       "action": "click",

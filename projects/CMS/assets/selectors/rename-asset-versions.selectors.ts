@@ -8,7 +8,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
   "First Asset row (doc step)":
-    'a[href*="#/stack/"][href*="/assets/blt"]:not([href*="/browse"]):visible, a[href*="/assets/blt"]:not([href*="/browse"]):visible, [data-test-id="cs-table-body-row-0"] a[href*="/assets/"]:not([href*="/browse"]):visible',
+    '[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])):has([data-test-id="cs-asset-detail-title"]) [data-test-id="cs-asset-detail-title"]',
   "Save (doc step)":
     'button:has-text("Save Changes"), [data-test-id*="asset-save"], button:has-text("Save"), button[aria-label*="save" i]',
   "Version dropdown (doc step)":

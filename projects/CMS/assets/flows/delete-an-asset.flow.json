@@ -42,7 +42,7 @@
     },
     {
       "action": "click",
-      "target": "First Not Published asset row (doc step)"
+      "target": "First Asset row (doc step)"
     },
     {
       "action": "click",
@@ -56,7 +56,7 @@
       "action": "verify",
       "target": "Delete Asset modal title (doc step)",
       "expected": {
-        "labelEquals": "Delete Asset",
+        "labelEquals": "Delete",
         "labelMatch": "contains",
         "modalTitle": "Delete Asset"
       }

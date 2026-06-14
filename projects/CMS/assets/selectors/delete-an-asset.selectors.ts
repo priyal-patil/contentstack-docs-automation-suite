@@ -10,7 +10,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "First Not Published asset row (doc step)":
     '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-table-head-publish_status"]:has-text("Not Published")) [data-test-id="cs-asset-detail-title"]',
   "First Asset row (doc step)":
-    '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-asset-detail-title"], [data-test-id="cs-table-body-row-0"]',
+    '[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])):has([data-test-id="cs-asset-detail-title"]) [data-test-id="cs-asset-detail-title"]',
   "Asset see more (doc step)":
     '[data-test-id="cs-asset-see-more-dropdown"], button:has([data-test-id="cs-icon"][name="SeeMore"]), .asset-see-more [data-test-id="cs-icon"][name="SeeMore"]',
   "Delete in see more dropdown (doc step)":

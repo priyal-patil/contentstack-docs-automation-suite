@@ -15,6 +15,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'li[data-test-id="cs-dropdown-elements"]:has([data-test-id="cs-asset-bulk-panel-unpublish"]), [data-test-id="cs-dropdown-elements"] [data-test-id="cs-asset-bulk-panel-unpublish"], button[data-test-id="cs-asset-bulk-panel-unpublish"]',
   "First Environment checkbox (doc step)":
     'label[data-test-id="cs-asset-single-publish-env"], [data-test-id="cs-asset-single-publish-env"]',
+  "First Language checkbox (doc step)":
+    'label[data-test-id="cs-asset-single-publish-lang"]:first-of-type, label[data-test-id="cs-asset-single-publish-lang"]:nth-of-type(1), [data-test-id="cs-asset-single-publish-lang"]:first-of-type',
   "Unpublish modal unpublish button (doc step)":
     'button[data-test-id="cs-asset-bulk-unpublish-btn"], .asset-publish-modal button:has-text("Unpublish")',
 };
@@ -32,8 +34,14 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-modal-title"] span:has-text("Unpublish Asset"), [data-test-id="cs-modal-title"]:has-text("Unpublish Asset"), .asset-publish-modal h3:has-text("Unpublish Asset")',
   "Select Environment(s) label (doc step)":
     '[data-test-id="cs-field-label"]:has-text("Select Environment"), label:has-text("Select Environment")',
+  "First Environment checkbox (doc step)":
+    'label[data-test-id="cs-asset-single-publish-env"], [data-test-id="cs-asset-single-publish-env"]',
   "Select Language(s) label (doc step)":
     '[data-test-id="cs-field-label"]:has-text("Select Language"), label:has-text("Select Language")',
+  "First Language checkbox (doc step)":
+    'label[data-test-id="cs-asset-single-publish-lang"], [data-test-id="cs-asset-single-publish-lang"]',
+  "Unpublish modal unpublish button (doc step)":
+    'button[data-test-id="cs-asset-bulk-unpublish-btn"], .asset-publish-modal button:has-text("Unpublish")',
   "Unpublish modal button label (doc step)":
     '[data-test-id="cs-asset-bulk-unpublish-btn"]',
 };

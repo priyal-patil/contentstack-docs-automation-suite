@@ -11897,18 +11897,34 @@ export async function performAction(
 
       // Special case: row action menu -> "Copy Content Type" should open a modal
       if (step.target === "Copy Content Type") {
-        // This menu item is flaky: first click can close popover without opening modal.
-        // Strategy: ensure menu open → click item → wait for the *actual* modal marker (Copy button) → retry once.
+        // Strategy: check if the visible tooltip is already open (prior "vertical ellipsis" step may have opened it).
+        // If not, open it ourselves. Then find the copy item and click it. Retry once if modal doesn't appear.
+        // NOTE: getRowActionMenuRoot/.last() picks the wrong hidden tooltip when multiple rows exist.
+        // Use filter({visible:true}) to find the correct one.
         const copyBtn = page.locator('button[data-test-id="cs-cb-copy-ct"]').first();
 
-        for (let attempt = 1; attempt <= 2; attempt++) {
-          await openRowActionMenu(page, {
-            action: "click",
-            target: "vertical ellipsis",
-            expected: step.expected,
-          } as Step, flow);
+        const findVisibleTooltip = () =>
+          page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).last();
 
-          const menuRoot = await getRowActionMenuRoot(page, step.expected?.rowContains);
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          // Only open the menu if it isn't already visible (e.g., opened by a prior "vertical ellipsis" click step).
+          const alreadyOpen = await findVisibleTooltip().isVisible({ timeout: 800 }).catch(() => false);
+          if (!alreadyOpen) {
+            await openRowActionMenu(page, {
+              action: "click",
+              target: "vertical ellipsis",
+              expected: step.expected,
+            } as Step, flow);
+            // Wait for the tooltip animation to complete.
+            await page.waitForTimeout(600);
+          }
+
+          const visibleTooltip = findVisibleTooltip();
+          const tooltipVisible = await visibleTooltip.isVisible({ timeout: 5_000 }).catch(() => false);
+          const menuRoot = tooltipVisible
+            ? visibleTooltip
+            : await getRowActionMenuRoot(page, step.expected?.rowContains);
+
           const itemText = menuRoot.locator('li[data-test-id="cs-ct-action-copy"] .ml-8').first();
           const itemLi = menuRoot.locator('li[data-test-id="cs-ct-action-copy"]').first();
 
@@ -13438,25 +13454,11 @@ export async function performAction(
           .first();
         await expect(moveToOption).toBeVisible({ timeout: t });
         const moveToTitle = page.locator('[data-test-id="cs-modal-title-move-to"], h3:has-text("Move To")').first();
-        const openModalByClick = async () => {
-          await moveToOption.click({ timeout: t, force: true }).catch(() => {});
-          await page.waitForTimeout(250);
-          return await moveToTitle.isVisible().catch(() => false);
-        };
-        let opened = await openModalByClick();
-        if (!opened) {
-          await moveToOption.evaluate((el) => {
-            (el as HTMLElement).click();
-            el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-            el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-            el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-          }).catch(() => {});
-          await page.waitForTimeout(300);
-          opened = await moveToTitle.isVisible().catch(() => false);
-        }
-        if (!opened) {
+        await moveToOption.click({ timeout: t, force: true }).catch(() => {});
+        await page.waitForTimeout(2000);
+        if (!(await moveToTitle.isVisible().catch(() => false))) {
           await page.keyboard.press("Enter").catch(() => {});
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(1000);
         }
         break;
       }
@@ -13474,27 +13476,11 @@ export async function performAction(
         const renameTitle = page
           .locator('[data-test-id="cs-modal-title-rename-folder"], h3:has-text("Rename Folder")')
           .first();
-        const openByClick = async () => {
-          await renameOption.click({ timeout: t, force: true }).catch(() => {});
-          await page.waitForTimeout(250);
-          return await renameTitle.isVisible().catch(() => false);
-        };
-        let opened = await openByClick();
-        if (!opened) {
-          await renameOption
-            .evaluate((el) => {
-              (el as HTMLElement).click();
-              el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-              el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-              el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-            })
-            .catch(() => {});
-          await page.waitForTimeout(300);
-          opened = await renameTitle.isVisible().catch(() => false);
-        }
-        if (!opened) {
+        await renameOption.click({ timeout: t, force: true }).catch(() => {});
+        await page.waitForTimeout(2000);
+        if (!(await renameTitle.isVisible().catch(() => false))) {
           await page.keyboard.press("Enter").catch(() => {});
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(1000);
         }
         break;
       }

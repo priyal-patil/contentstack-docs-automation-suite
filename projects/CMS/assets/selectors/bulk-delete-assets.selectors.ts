@@ -9,14 +9,18 @@ export const ASSET_TABLE_SECOND_ROW_CHECKBOX =
   '[data-test-id="cs-table-body-row-1"] [data-test-id="cs-table-row-selection"] label[data-test-id="cs-checkbox"], [data-test-id="cs-table-body-row-1"] label[data-test-id="cs-checkbox"]';
 
 export const CLICK_SELECTORS: Record<string, string> = {
+  "First folder row (doc step)":
+    '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-detail-title"]',
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
     '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
-  "First asset checkbox (doc step)": ASSET_TABLE_FIRST_ROW_CHECKBOX,
-  "Second asset checkbox (doc step)": ASSET_TABLE_SECOND_ROW_CHECKBOX,
+  "First asset checkbox (doc step)":
+    ':nth-match([data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])) [data-test-id="cs-table-row-selection"] label[data-test-id="cs-checkbox"], 1)',
+  "Second asset checkbox (doc step)":
+    ':nth-match([data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])) [data-test-id="cs-table-row-selection"] label[data-test-id="cs-checkbox"], 2)',
   "Delete in floating panel (doc step)":
     'button[data-test-id="cs-asset-bulk-panel-delete"], [data-test-id="cs-asset-bulk-panel-delete"]',
   "Delete confirm (doc step)":

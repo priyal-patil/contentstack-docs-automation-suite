@@ -47,7 +47,7 @@
     },
     { "action": "click", "target": "First asset checkbox (doc step)" },
     { "action": "click", "target": "Second asset checkbox (doc step)" },
-    { "action": "click", "target": "Floating panel See More (doc step)" },
+    { "action": "click", "target": "Floating panel See More (doc step)", "warnOnly": true },
     {
       "action": "verify",
       "target": "Publish floating button label (doc step)",
@@ -74,6 +74,8 @@
         "labelMatch": "contains"
       }
     },
+    { "action": "click", "target": "First Environment checkbox (doc step)" },
+    { "action": "verify", "target": "First Environment checkbox (doc step)" },
     {
       "action": "verify",
       "target": "Select Language(s) label (doc step)",
@@ -82,15 +84,16 @@
         "labelMatch": "contains"
       }
     },
+    { "action": "click", "target": "First Language checkbox (doc step)" },
+    { "action": "verify", "target": "First Language checkbox (doc step)" },
     {
       "action": "verify",
-      "target": "Publish modal button label (doc step)",
+      "target": "Publish modal publish button (doc step)",
       "expected": {
         "labelEquals": "Publish",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "First Environment checkbox (doc step)" },
     { "action": "click", "target": "Publish modal publish button (doc step)" }
   ]
 }

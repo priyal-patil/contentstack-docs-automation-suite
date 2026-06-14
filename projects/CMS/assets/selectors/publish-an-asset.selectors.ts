@@ -21,11 +21,17 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'label[data-test-id="cs-asset-single-publish-env"], .asset-publish-modal [data-test-id="cs-asset-single-publish-env"]',
   "Second Language checkbox (doc step)":
     'label[data-test-id="cs-asset-single-publish-lang"]:nth-of-type(2), .asset-publish-modal [data-test-id="cs-asset-single-publish-lang"]:nth-of-type(2)',
+  "First Language checkbox (doc step)":
+    'label[data-test-id="cs-asset-single-publish-lang"]:first-of-type, label[data-test-id="cs-asset-single-publish-lang"]:nth-of-type(1), [data-test-id="cs-asset-single-publish-lang"]:first-of-type',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
+  "Publish Asset button (doc step)":
+    'button[aria-label="Publish Asset"], [data-test-id="cs-asset-publish-btn"], button:has-text("Publish Asset")',
   "Publish Asset modal title (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Publish Asset"), .asset-publish-modal h3:has-text("Publish Asset")',
+  "Publish modal publish button (doc step)":
+    'button[data-test-id="cs-asset-single-publish-btn"], .asset-publish-modal button:has-text("Publish")',
   "Select Environment(s) label (doc step)":
     '[data-test-id="cs-field-label"]:has-text("Select Environment"), label:has-text("Select Environment")',
   "Select Language(s) label (doc step)":

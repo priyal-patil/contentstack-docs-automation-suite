@@ -42,7 +42,7 @@
     },
     {
       "action": "click",
-      "target": "First Not Published asset row (doc step)"
+      "target": "First Asset row (doc step)"
     },
     {
       "action": "verify",

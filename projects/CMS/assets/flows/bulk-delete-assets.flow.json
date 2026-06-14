@@ -21,6 +21,7 @@
       }
     },
     { "action": "click", "target": "Assets (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "First folder row (doc step)", "warnOnly": true },
     { "action": "click", "target": "First asset checkbox (doc step)" },
     { "action": "click", "target": "Second asset checkbox (doc step)" },
     {

@@ -42,11 +42,16 @@
     },
     {
       "action": "click",
-      "target": "First Published asset actions menu (doc step)"
+      "target": "First Published asset row (doc step)"
+    },
+    {
+      "action": "verify",
+      "target": "Unpublish Asset button (doc step)",
+      "expected": { "labelEquals": "Unpublish", "labelMatch": "contains" }
     },
     {
       "action": "click",
-      "target": "Unpublish from actions dropdown (doc step)"
+      "target": "Unpublish Asset button (doc step)"
     },
     {
       "action": "verify",
@@ -82,6 +87,10 @@
       }
     },
     {
+      "action": "click",
+      "target": "First Language checkbox (doc step)"
+    },
+    {
       "action": "verify",
       "target": "First Language checkbox (doc step)"
     },
@@ -100,6 +109,19 @@
         "labelEquals": "Now",
         "labelMatch": "contains"
       }
+    },
+    {
+      "action": "verify",
+      "target": "Later unpublish option (doc step)",
+      "expected": {
+        "labelEquals": "Later",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Unpublish modal unpublish button (doc step)",
+      "expected": { "labelEquals": "Unpublish", "labelMatch": "contains" }
     },
     {
       "action": "click",

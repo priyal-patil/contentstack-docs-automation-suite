@@ -19,9 +19,13 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'button[data-test-id="cs-asset-single-unpublish-btn"], .asset-publish-modal button:has-text("Unpublish")',
   "First Environment checkbox (doc step)":
     'label[data-test-id="cs-asset-single-unpublish-env"], .asset-publish-modal [data-test-id="cs-asset-single-unpublish-env"]',
+  "First Language checkbox (doc step)":
+    'label[data-test-id="cs-asset-single-unpublish-lang"]:first-of-type, label[data-test-id="cs-asset-single-unpublish-lang"]:nth-of-type(1), [data-test-id="cs-asset-single-unpublish-lang"]:first-of-type',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
+  "Unpublish Asset button (doc step)":
+    'button[aria-label="Unpublish Asset"], [data-test-id="cs-asset-unpublish-btn"], button:has-text("Unpublish Asset"), button:has-text("Unpublish")',
   "Unpublish Asset modal title (doc step)":
     '[data-test-id="cs-modal-title"]:has-text("Unpublish Asset"), .asset-publish-modal h3:has-text("Unpublish Asset")',
   "Select Environment(s) label (doc step)":
@@ -32,6 +36,10 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-field-label"]:has-text("Unpublish"), label:has-text("Unpublish")',
   "Now unpublish option (doc step)":
     'label[data-test-id="cs-radio"]:has-text("Now"), .publish-radios label:has-text("Now")',
+  "Later unpublish option (doc step)":
+    'label[data-test-id="cs-radio"]:has-text("Later"), .publish-radios label:has-text("Later")',
   "First Language checkbox (doc step)":
     'label[data-test-id="cs-asset-single-unpublish-lang"], .asset-publish-modal [data-test-id="cs-asset-single-unpublish-lang"]',
+  "Unpublish modal unpublish button (doc step)":
+    'button[data-test-id="cs-asset-single-unpublish-btn"], .asset-publish-modal button:has-text("Unpublish")',
 };
