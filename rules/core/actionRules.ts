@@ -13454,7 +13454,7 @@ export async function performAction(
           .first();
         await expect(moveToOption).toBeVisible({ timeout: t });
         const moveToTitle = page.locator('[data-test-id="cs-modal-title-move-to"], h3:has-text("Move To")').first();
-        await moveToOption.click({ timeout: t, force: true }).catch(() => {});
+        await moveToOption.evaluate((el) => (el as HTMLElement).click()).catch(() => {});
         await page.waitForTimeout(2000);
         if (!(await moveToTitle.isVisible().catch(() => false))) {
           await page.keyboard.press("Enter").catch(() => {});
@@ -13476,7 +13476,7 @@ export async function performAction(
         const renameTitle = page
           .locator('[data-test-id="cs-modal-title-rename-folder"], h3:has-text("Rename Folder")')
           .first();
-        await renameOption.click({ timeout: t, force: true }).catch(() => {});
+        await renameOption.evaluate((el) => (el as HTMLElement).click()).catch(() => {});
         await page.waitForTimeout(2000);
         if (!(await renameTitle.isVisible().catch(() => false))) {
           await page.keyboard.press("Enter").catch(() => {});

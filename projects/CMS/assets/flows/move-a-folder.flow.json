@@ -53,7 +53,7 @@
       "action": "verify",
       "target": "Move here (doc step)",
       "expected": {
-        "labelEquals": "Move Asset",
+        "labelEquals": "Move here",
         "labelMatch": "contains"
       }
     },
