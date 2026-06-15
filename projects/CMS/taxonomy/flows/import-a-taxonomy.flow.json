@@ -37,9 +37,9 @@
     },
     {
       "action": "verify",
-      "target": "Create New Taxonomy split button (doc step)",
+      "target": "New Taxonomy button (doc step)",
       "expected": {
-        "labelEquals": "Create New Taxonomy",
+        "labelEquals": " New Taxonomy",
         "labelMatch": "equals"
       }
     },

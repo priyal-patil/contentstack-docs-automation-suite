@@ -1,6 +1,6 @@
 {
   "taxonomy": {
-    "uid": "DOC_UNIQUE_UID_PLACEHOLDER",
+    "uid": "doc_taxonomy_import_fixture",
     "name": "Doc Taxonomy Import",
     "description": "Automation fixture for import-a-taxonomy doc.",
     "locale": "en-us"

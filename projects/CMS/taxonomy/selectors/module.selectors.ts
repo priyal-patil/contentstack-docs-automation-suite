@@ -99,7 +99,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** taxonomy-verticle-ellipses.html — first row, Actions column (doc step 2). */
   "Taxonomy listing first row Actions vertical ellipsis (doc step)":
     '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"]',
-  /** taxonomy-verticle-menu.html — doc step 3. */
+  /** taxonomy-verticle-menu.html — doc step 3. Edit is 4th item (Copy UID, Export JSON, Export CSV, Edit, Delete). Target li directly (same pattern as Delete) so React onClick fires. */
   "Taxonomy row vertical menu Edit (doc step)":
     '[data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Edit")',
   /** taxonomy-verticle-menu.html — delete-a-taxonomy doc step 3. */
@@ -179,7 +179,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Create Taxonomy Description textarea (doc step)": 'textarea[name="taxonomy-create-modal-description"]',
   /** edit-taxonomy.html — doc "Edit Taxonomy" modal. */
   "Edit Taxonomy modal title (doc step)":
-    '[data-test-id="cs-modal-title-edit-taxonomy"], h3[data-test-id="cs-modal-title-edit-taxonomy"]',
+    '[data-test-id="cs-modal-title-edit-taxonomy"], h3[data-test-id="cs-modal-title-edit-taxonomy"], [data-testid="taxonomy-create-modal"] h3:has-text("Edit Taxonomy"), .ReactModal__taxonomy h3.cs-modal-title:has-text("Edit Taxonomy"), .ReactModal__taxonomy .ReactModal__Content__header h3:has-text("Edit Taxonomy")',
   "Edit Taxonomy Name field label (doc step)":
     '[data-test-id="cs-modal-description"] label[for="taxonomy-create-modal-name"], [data-test-id="cs-modal-description"] [data-test-id="cs-field-label"]:has-text("Name")',
   "Edit Taxonomy UID field label (doc step)":
