@@ -27,18 +27,30 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** Doc step 5 — properties on the Taxonomy field row (not Title). */
   "Properties (Taxonomy field) (doc step)":
     '.ContentTypeField:has(p[data-test-id="cs-ct-select-field-taxonomies"]), .ContentTypeField:has(svg[name="Taxonomy"]) [data-test-id$="-option-properties"], .ContentTypeField:has([data-test-id="cs-ct-select-field-taxonomies"]) button:has(svg[name="Sliders"])',
-  /** Doc step 6 — opens Add Taxonomy modal (ct-add-taxonomy.html: cs-cb-new-block). */
+  /** Doc step 6 — opens Add Taxonomy modal. Button: data-test-id="cs-cb-new-block" aria-label="Add Taxonomy". */
   "+ Add Taxonomy (doc step)":
-    '[data-test-id="cs-field-properties-container"] button[data-test-id="cs-cb-new-block"][aria-label="Add Taxonomy"], [data-test-id="cs-field-properties-container"] button:has-text("Add Taxonomy"), button[data-test-id="cs-cb-new-block"]:has-text("Add Taxonomy")',
+    'button[data-test-id="cs-cb-new-block"][aria-label="Add Taxonomy"]',
   /** add-taxonomy-modal.html — open react-select (caret or control). */
   "Select Taxonomy dropdown (doc step)":
     '[data-test-id="cs-ctf-taxonomy-modal-select"] [data-test-id="cs-async-select-caret-down"], [data-test-id="cs-ctf-taxonomy-modal-select"] .Select__control',
+  /** First option in the opened taxonomy react-select dropdown. */
+  "Select first available taxonomy from dropdown (doc step)":
+    '[data-test-id="cs-ctf-taxonomy-modal-select"] .Select__option:first-child, .Select__menu .Select__option:first-child',
   /** Doc step 9 — Apply in Add Taxonomy modal footer (add-taxonomy-modal.html: cs-cb-add-block submit). */
   "Apply taxonomy field properties (doc step)":
     '.AddTaxBlock__buttons button[data-test-id="cs-cb-add-block"], form:has([data-test-id="cs-ctf-taxonomy-modal-select"]) button[data-test-id="cs-cb-add-block"], [data-test-id="cs-field-properties-container"] button:has-text("Apply")',
-  /** Verify-only — same primary Apply as doc step 9 (visible label “Apply”). */
+  /** Verify-only — same primary Apply as doc step 9 (visible label "Apply"). */
   "Apply in Add Taxonomy modal (doc step)":
     '.AddTaxBlock__buttons button[data-test-id="cs-cb-add-block"]:has-text("Apply"), form:has([data-test-id="cs-ctf-taxonomy-modal-select"]) button[data-test-id="cs-cb-add-block"]',
+  /** Add Taxonomy modal — "Select Taxonomy" label above the taxonomy dropdown. */
+  "Select Taxonomy (doc step)":
+    '[data-test-id="cs-ctf-taxonomy-modal-select-label"], label:has-text("Select Taxonomy"), .AddTaxBlock label:has-text("Taxonomy")',
+  /** Add Taxonomy modal — "Maximum number of terms" label (cs-ctf-taxonomy-modal-limit-label). */
+  "Maximum number of terms (doc step)":
+    '[data-test-id="cs-ctf-taxonomy-modal-limit-label"], label:has-text("Maximum number of terms")',
+  /** Add Taxonomy modal — Optional Field toggle (cs-ctf-taxonomy-modal-switch-enabled). */
+  "Optional Field toggle (doc step)":
+    '[data-test-id="cs-ctf-taxonomy-modal-switch-enabled"]',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {

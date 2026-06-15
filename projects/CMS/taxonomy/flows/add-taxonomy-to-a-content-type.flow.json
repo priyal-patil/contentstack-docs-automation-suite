@@ -54,14 +54,26 @@
     { "action": "click", "target": "Taxonomy (doc step)" },
     { "action": "click", "target": "Builder area (dismiss properties)" },
     { "action": "click", "target": "Properties (Taxonomy field) (doc step)" },
+   
     { "action": "click", "target": "+ Add Taxonomy (doc step)" },
     {
       "action": "verify",
-      "target": "Select Taxonomy field label (doc step)",
-      "expected": { "labelEquals": "Select Taxonomy", "labelMatch": "contains" }
+      "target": "Select Taxonomy (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Select Taxonomy", "labelMatch": "contains" }
     },
-    { "action": "click", "target": "Select Taxonomy dropdown (doc step)" },
+        { "action": "click", "target": "Select Taxonomy dropdown (doc step)" },
     { "action": "click", "target": "Select first available taxonomy from dropdown (doc step)" },
+    {
+      "action": "verify",
+      "target": "Maximum number of terms (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Maximum number of terms", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Optional Field toggle (doc step)",
+      "expected": { "within": "Modal", "labelEquals": "Optional Field", "labelMatch": "contains" }
+    },
+
     {
       "action": "verify",
       "target": "Apply in Add Taxonomy modal (doc step)",
