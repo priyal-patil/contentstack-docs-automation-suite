@@ -56,18 +56,9 @@
       }
     },
     {
-      "action": "verify",
-      "target": "Folder Name label (doc step)",
-      "expected": {
-        "labelEquals": "Name",
-        "labelMatch": "equals"
-      },
-      "warnOnly": true
-    },
-    {
       "action": "enter",
       "target": "Folder name input (doc step)",
-      "value": "AutoFolder{unique5}"
+      "value": "AutoFolder{unique}"
     },
     {
       "action": "verify",

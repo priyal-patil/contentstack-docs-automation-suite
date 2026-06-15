@@ -5,10 +5,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
+  "First folder row (doc step)":
+    '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-detail-title"]',
   "First asset checkbox (doc step)":
-    ':nth-match([data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-row-selection"] input[type="checkbox"], 1)',
+    ':nth-match([data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])) [data-test-id="cs-table-row-selection"] input[type="checkbox"], 1)',
   "Second asset checkbox (doc step)":
-    ':nth-match([data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-row-selection"] input[type="checkbox"], 2)',
+    ':nth-match([data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])) [data-test-id="cs-table-row-selection"] input[type="checkbox"], 2)',
   "Move To in floating panel (doc step)":
     'button[data-test-id="cs-asset-bulk-panel-move_to"], [data-test-id="cs-asset-bulk-panel-move_to"]',
   "New Folder in Move To modal (doc step)":
