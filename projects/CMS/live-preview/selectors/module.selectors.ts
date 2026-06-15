@@ -20,10 +20,14 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-entry-edit-tab-live-preview"], #rhs-live-preview-icon',
   "Live Preview settings icon (doc step)":
     '[data-test-id="live-preview-browser-settings-btn"] button, [data-test-id="live-preview-browser-settings-btn"]',
+  "See More icon (doc step)":
+    '[data-test-id="live-preview-browser-settings-btn"] button, [data-test-id="live-preview-browser-settings-btn"]',
+  "Settings option in See More (doc step)":
+    '[data-test-id="live-preview-browser-settings-item"], [data-test-id*="live-preview"][data-test-id*="settings-item"], .tippy-box [data-test-id*="settings"], .tippy-content li:has-text("Settings"), .tippy-content [role="menuitem"]:has-text("Settings")',
   "Viewport toggle button (doc step)":
     '[data-test-id="live-preview-browser-toggle-viewport-btn"] button, [data-test-id="live-preview-browser-toggle-viewport-btn"]',
   "Open in new tab icon (doc step)":
-    '[data-test-id*="live-preview-browser"][data-test-id*="new-tab"], [data-test-id*="open"][data-test-id*="tab"], button[aria-label*="new tab" i], button[title*="new tab" i]',
+    '[data-test-id="live-preview-browser-new-tab-btn"] button, [data-test-id="live-preview-browser-new-tab-btn"]',
   "Preview panel resize edge (doc step)":
     '#entry__page--resizer, [id="entry__page--resizer"]',
   "Select Environment dropdown in settings modal (doc step)":
@@ -31,7 +35,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "First environment option in settings modal (doc step)":
     '.Select__menu [role="option"], .Select__menu [class*="option"], div[id^="react-select-"][id*="-option-"]',
   "Save in settings modal (doc step)":
-    '[data-test-id="live-preview-edit-url-modal-reload-button"], button:has-text("Save")',
+    '[data-test-id="live-preview-edit-url-modal-reload-button"]',
   "Editable content block in preview (doc step)":
     '[data-test-id*="live-preview" i] [data-test-id*="block" i], .lp-browser-container [class*="block" i], .lp-browser-container',
   "Edit button in preview (doc step)":
@@ -113,7 +117,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Live Preview settings modal (doc step)":
     '.settings-modal-container, .LPHeaderTitle:has-text("Settings"), [data-test-id="live-preview-edit-url-modal-reload-button"]',
   "Open in new tab icon label (doc step)":
-    '[data-test-id*="live-preview-browser"][data-test-id*="new-tab"], [data-test-id*="open"][data-test-id*="tab"], button[aria-label*="new tab" i], button[title*="new tab" i]',
+    '[data-test-id="live-preview-browser-new-tab-btn"] button, [data-test-id="live-preview-browser-new-tab-btn"]',
   "Select Environment label in settings modal (doc step)":
     '[data-test-id="live-preview-edit-url-env-dropdown"] [data-test-id="cs-field-label"]',
   "Toggle orientation button label (doc step)":

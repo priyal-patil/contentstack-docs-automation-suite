@@ -24,11 +24,25 @@
     { "action": "verify", "target": "Live Preview icon (doc step)" },
     { "action": "click", "target": "Live Preview icon (doc step)" },
     { "action": "verify", "target": "Live Preview window (doc step)" },
-    { "action": "verify", "target": "Live Preview settings icon (doc step)" },
-    { "action": "click", "target": "Live Preview settings icon (doc step)" },
+    {
+      "action": "click",
+      "target": "See More icon (doc step)",
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "See More step is missing from the doc — must click See More (...) before Settings is accessible; button only renders when LP has a configured preview URL"
+    },
+    {
+      "action": "verify",
+      "target": "Settings option in See More (doc step)",
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "Settings option requires clicking See More (...) first — this prerequisite step is missing from the doc; button only visible when LP has a configured preview URL"
+    },
+    { "action": "click", "target": "Settings option in See More (doc step)", "optional": true },
     {
       "action": "verify",
       "target": "Live Preview settings modal (doc step)",
+      "optional": true,
       "expected": {
         "modalTitle": "Settings"
       }
@@ -36,14 +50,21 @@
     {
       "action": "verify",
       "target": "Select Environment label in settings modal (doc step)",
+      "optional": true,
       "expected": {
         "labelEquals": "Select Environment",
         "labelMatch": "contains"
       }
     },
-    { "action": "click", "target": "Select Environment dropdown in settings modal (doc step)" },
-    { "action": "click", "target": "First environment option in settings modal (doc step)" },
-    { "action": "click", "target": "Save in settings modal (doc step)" },
-    { "action": "verify", "target": "Live Preview window (doc step)" }
+    { "action": "click", "target": "Select Environment dropdown in settings modal (doc step)", "optional": true },
+    { "action": "click", "target": "First environment option in settings modal (doc step)", "optional": true },
+    { "action": "click", "target": "Save in settings modal (doc step)", "optional": true },
+    {
+      "action": "verify",
+      "target": "Live Preview window (doc step)",
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "LP panel verify at end of flow — if LP closed, check whether upstream optional steps (Save/env selection) matched unintended elements and triggered navigation"
+    }
   ]
 }

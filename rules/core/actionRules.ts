@@ -18,6 +18,7 @@ type Step = {
     | "verify"
     | "navigate"
     | "drag"
+    | "dragBy"
     | "warn"
     | "hover"
     | "press"
@@ -13306,59 +13307,386 @@ export async function performAction(
         break;
       }
       if (
+        step.target === "Assets (doc step)" &&
+        ["bulk-publish-assets", "bulk-unpublish-assets"].includes(String(flow?.id || "").toLowerCase())
+      ) {
+        const t = getStepTimeoutMs(step);
+        const assetsNav = page
+          .locator('[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")')
+          .first();
+        await expect(assetsNav).toBeVisible({ timeout: t });
+        await assetsNav.click({ timeout: t }).catch(() => {});
+        await page.waitForTimeout(1_000);
+        // Clear any active folder filter that may be left from a previous flow.
+        const clearFiltersBulk = page.locator('[data-test-id="cs-assets-query-clear-all"]').first();
+        if (await clearFiltersBulk.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await clearFiltersBulk.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(700);
+        }
+        // Sort by Last Modified descending to surface file rows before folder rows.
+        const lastModHead = page.locator('[data-test-id="cs-asset-table-head-last_modified"]').first();
+        if (await lastModHead.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await lastModHead.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(400);
+          await lastModHead.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(700);
+        }
+        break;
+      }
+      if (
+        step.target === "First Not Published asset row (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "publish-an-asset"
+      ) {
+        const t = getStepTimeoutMs(step);
+        // Helper: first visible non-folder row with "Not Published" status
+        const firstNotPublishedTitle = () =>
+          page.locator(
+            '[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])):has([data-test-id="cs-asset-table-head-publish_status"]:has-text("Not Published")) [data-test-id="cs-asset-table-head-title"]'
+          ).first();
+        // Navigate to asset detail page via <a href> on the row
+        const navigateToAssetDetailNP = async (): Promise<boolean> => {
+          if (!(await firstNotPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false))) return false;
+          const assetDetailUrlNP = await page.evaluate(() => {
+            const rows = Array.from(document.querySelectorAll('[data-test-id^="cs-table-body-row-"]')) as HTMLElement[];
+            for (const r of rows) {
+              if (r.querySelector('svg[name="Folder"]')) continue;
+              const statusEl = r.querySelector('[data-test-id="cs-asset-table-head-publish_status"]');
+              if (!statusEl?.textContent?.includes('Not Published')) continue;
+              const linkEl = r.closest('a[href]') as HTMLAnchorElement | null;
+              if (linkEl?.href && /\/assets\/blt[a-f0-9]{16}/.test(linkEl.href)) return linkEl.href;
+              break;
+            }
+            return "";
+          }).catch(() => "");
+          if (assetDetailUrlNP) {
+            const urlBeforeNP = page.url();
+            await page.evaluate((url: string) => { window.location.href = url; }, assetDetailUrlNP).catch(() => {});
+            await page.waitForFunction((before: string) => location.href !== before, urlBeforeNP, { timeout: 10_000 }).catch(() => {});
+            const onDetail = await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 20_000 }).then(() => true).catch(() => false);
+            if (onDetail) return true;
+          }
+          const urlBefore = page.url();
+          await firstNotPublishedTitle().click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForFunction((before: string) => location.href !== before, urlBefore, { timeout: 8_000 }).catch(() => {});
+          return await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false);
+        };
+        // Clear any active folder filter — use Playwright click (triggers React synthetic events)
+        const currentUrlNP = page.url();
+        const stackUidNP = currentUrlNP.match(/stack\/(blt[a-f0-9]{16})/)?.[1];
+        const clearAllLocNP = page.locator('[data-test-id="cs-assets-query-clear-all"]');
+        if (await clearAllLocNP.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await clearAllLocNP.click({ timeout: 5_000 }).catch(() => {});
+          await clearAllLocNP.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+          await page.waitForTimeout(600);
+        }
+        // If filter still visible, navigate away and back to force React state reset
+        if (await clearAllLocNP.isVisible({ timeout: 1_000 }).catch(() => false) && stackUidNP) {
+          const originNP = new URL(currentUrlNP).origin;
+          await page.goto(`${originNP}/#!/stack/${stackUidNP}`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.waitForTimeout(600);
+          await page.goto(`${originNP}/#!/stack/${stackUidNP}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 12_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+        }
+        // Sort by Last Modified desc
+        const lastModHeadNP = page.locator('[data-test-id="cs-asset-table-head-last_modified"]').first();
+        if (await lastModHeadNP.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await lastModHeadNP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+          await lastModHeadNP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_000);
+        }
+        // Check root, then iterate folders
+        if (await firstNotPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await navigateToAssetDetailNP();
+          break;
+        }
+        let foundNP = false;
+        const numFoldersNP = await page.evaluate(() =>
+          document.querySelectorAll('[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"])').length
+        ).catch(() => 0);
+        for (let fi = 0; fi < Math.min(numFoldersNP, 8); fi++) {
+          const folderTitleNP = page.locator(
+            '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-table-head-title"]'
+          ).nth(fi);
+          if (!(await folderTitleNP.isVisible({ timeout: 2_000 }).catch(() => false))) break;
+          await folderTitleNP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_200);
+          if (await firstNotPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+            await navigateToAssetDetailNP();
+            foundNP = true;
+            break;
+          }
+          // Return to root — Playwright click on Clear All triggers React synthetic event
+          if (await clearAllLocNP.isVisible({ timeout: 1_500 }).catch(() => false)) {
+            await clearAllLocNP.click({ timeout: 5_000 }).catch(() => {});
+            await clearAllLocNP.waitFor({ state: 'hidden', timeout: 8_000 }).catch(() => {});
+          } else if (stackUidNP) {
+            const originNP2 = new URL(page.url()).origin;
+            await page.goto(`${originNP2}/#!/stack/${stackUidNP}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+            await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
+          }
+          await page.waitForTimeout(800);
+        }
+        if (!foundNP) {
+          throw new Error(`No "Not Published" asset row found for publish-an-asset — checked root and first 8 folders.`);
+        }
+        break;
+      }
+      if (
+        step.target === "First Published asset row (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "unpublish-an-asset"
+      ) {
+        const t = getStepTimeoutMs(step);
+        // Helper: first visible non-folder row with "Published" (but not "Not Published") status
+        const firstPublishedTitle = () =>
+          page.locator(
+            '[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])):has([data-test-id="cs-asset-table-head-publish_status"]:has-text("Published"):not(:has-text("Not Published"))) [data-test-id="cs-asset-table-head-title"]'
+          ).first();
+        const navigateToAssetDetailP = async (): Promise<boolean> => {
+          if (!(await firstPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false))) return false;
+          const assetDetailUrlP = await page.evaluate(() => {
+            const rows = Array.from(document.querySelectorAll('[data-test-id^="cs-table-body-row-"]')) as HTMLElement[];
+            for (const r of rows) {
+              if (r.querySelector('svg[name="Folder"]')) continue;
+              const statusEl = r.querySelector('[data-test-id="cs-asset-table-head-publish_status"]');
+              const statusText = statusEl?.textContent || "";
+              if (!statusText.includes('Published') || statusText.includes('Not Published')) continue;
+              const linkEl = r.closest('a[href]') as HTMLAnchorElement | null;
+              if (linkEl?.href && /\/assets\/blt[a-f0-9]{16}/.test(linkEl.href)) return linkEl.href;
+              break;
+            }
+            return "";
+          }).catch(() => "");
+          if (assetDetailUrlP) {
+            const urlBeforeP = page.url();
+            await page.evaluate((url: string) => { window.location.href = url; }, assetDetailUrlP).catch(() => {});
+            await page.waitForFunction((before: string) => location.href !== before, urlBeforeP, { timeout: 10_000 }).catch(() => {});
+            const onDetail = await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 20_000 }).then(() => true).catch(() => false);
+            if (onDetail) return true;
+          }
+          const urlBefore = page.url();
+          await firstPublishedTitle().click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForFunction((before: string) => location.href !== before, urlBefore, { timeout: 8_000 }).catch(() => {});
+          return await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false);
+        };
+        // Clear any active folder filter — use Playwright click (triggers React synthetic events)
+        const currentUrlP = page.url();
+        const stackUidP = currentUrlP.match(/stack\/(blt[a-f0-9]{16})/)?.[1];
+        const clearAllLocP = page.locator('[data-test-id="cs-assets-query-clear-all"]');
+        if (await clearAllLocP.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await clearAllLocP.click({ timeout: 5_000 }).catch(() => {});
+          await clearAllLocP.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+          await page.waitForTimeout(600);
+        }
+        // If filter still visible, navigate away and back to force React state reset
+        if (await clearAllLocP.isVisible({ timeout: 1_000 }).catch(() => false) && stackUidP) {
+          const originP = new URL(currentUrlP).origin;
+          await page.goto(`${originP}/#!/stack/${stackUidP}`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.waitForTimeout(600);
+          await page.goto(`${originP}/#!/stack/${stackUidP}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 12_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+        }
+        // Sort by Last Modified desc
+        const lastModHeadP = page.locator('[data-test-id="cs-asset-table-head-last_modified"]').first();
+        if (await lastModHeadP.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await lastModHeadP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+          await lastModHeadP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_000);
+        }
+        // Check root, then iterate folders
+        if (await firstPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await navigateToAssetDetailP();
+          break;
+        }
+        let foundP = false;
+        const numFoldersP = await page.evaluate(() =>
+          document.querySelectorAll('[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"])').length
+        ).catch(() => 0);
+        for (let fi = 0; fi < Math.min(numFoldersP, 8); fi++) {
+          const folderTitleP = page.locator(
+            '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-table-head-title"]'
+          ).nth(fi);
+          if (!(await folderTitleP.isVisible({ timeout: 2_000 }).catch(() => false))) break;
+          await folderTitleP.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_200);
+          if (await firstPublishedTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+            await navigateToAssetDetailP();
+            foundP = true;
+            break;
+          }
+          // Return to root — Playwright click on Clear All triggers React synthetic event
+          if (await clearAllLocP.isVisible({ timeout: 1_500 }).catch(() => false)) {
+            await clearAllLocP.click({ timeout: 5_000 }).catch(() => {});
+            await clearAllLocP.waitFor({ state: 'hidden', timeout: 8_000 }).catch(() => {});
+          } else if (stackUidP) {
+            const originP2 = new URL(page.url()).origin;
+            await page.goto(`${originP2}/#!/stack/${stackUidP}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+            await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
+          }
+          await page.waitForTimeout(800);
+        }
+        if (!foundP) {
+          throw new Error(`No "Published" asset row found for unpublish-an-asset — checked root and first 8 folders.`);
+        }
+        break;
+      }
+      if (
         step.target === "First Asset row (doc step)" &&
-        ["name-asset-versions", "rename-asset-versions", "restore-old-asset-version", "create-a-folder"].includes(
+        ["name-asset-versions", "rename-asset-versions", "restore-old-asset-version", "create-a-folder",
+         "edit-an-asset", "delete-an-asset", "generate-a-permanent-asset-url"].includes(
           String(flow?.id || "").toLowerCase()
         )
       ) {
         const t = getStepTimeoutMs(step);
-        const hrefFromDom = await page.evaluate(() => {
-          const rowCandidates = Array.from(
-            document.querySelectorAll('[role="row"], [data-test-id^="cs-table-body-row-"]')
-          ) as HTMLElement[];
-          for (const row of rowCandidates) {
-            const txt = (row.textContent || "").toLowerCase();
-            const isImageRow = txt.includes(".svg") || txt.includes(".png") || txt.includes(" image ");
-            if (!isImageRow) continue;
-            const link = (row.closest('a[href*="/assets/blt"]') ||
-              row.querySelector('a[href*="/assets/blt"]')) as HTMLAnchorElement | null;
-            if (!link) continue;
-            const href = link.getAttribute("href") || "";
-            if (!href || href.includes("/browse")) continue;
-            return href;
+        // If already on full asset detail page (URL has /assets/bltUID), we're done
+        const currentUrlAR = page.url();
+        if (/\/assets\/blt[a-f0-9]{16}/.test(currentUrlAR)) break;
+        // If preview panel is open (cs-asset-details-version-list visible but URL is root),
+        // extract asset UID from CDN URL in the panel and navigate to full detail page
+        const previewVisibleAR = await page.locator('[data-test-id="cs-asset-details-version-list"]').isVisible({ timeout: 2_000 }).catch(() => false);
+        if (previewVisibleAR) {
+          const previewAssetUid = await page.evaluate(() => {
+            const match = (document.body.textContent || "").match(/\/assets\/blt[a-f0-9]{16}\/(blt[a-f0-9]{16})\//);
+            return match ? match[1] : "";
+          }).catch(() => "");
+          if (previewAssetUid) {
+            const stackMatch = currentUrlAR.match(/stack\/(blt[a-f0-9]{16})/);
+            if (stackMatch) {
+              const origin = new URL(currentUrlAR).origin;
+              await page.goto(`${origin}/#!/stack/${stackMatch[1]}/assets/${previewAssetUid}`, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+              // Wait for React to render the full asset detail page (Save Changes button appears)
+              await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
+              break;
+            }
           }
-          return "";
-        });
-        if (hrefFromDom) {
-          const origin = new URL(page.url()).origin;
-          const targetUrl = hrefFromDom.startsWith("http")
-            ? hrefFromDom
-            : hrefFromDom.startsWith("#")
-            ? `${origin}/${hrefFromDom}`
-            : `${origin}${hrefFromDom.startsWith("/") ? "" : "/"}${hrefFromDom}`;
-          await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
-          break;
         }
-        const firstDataRow = page
-          .locator('[role="row"]:has-text(".svg"), [role="row"]:has-text(".png"), [data-test-id^="cs-table-body-row-"]:has-text(".svg"), [data-test-id^="cs-table-body-row-"]:has-text(".png")')
-          .first();
-        await expect(firstDataRow).toBeVisible({ timeout: t });
-        await firstDataRow.click({ timeout: t, force: true }).catch(() => {});
-        await page.waitForTimeout(800);
-        if (!/\/assets\/blt/i.test(page.url())) {
-          const hrefFromRow = await firstDataRow.evaluate((el) => {
-            const link = (el.closest("a") || el.querySelector("a[href]")) as HTMLAnchorElement | null;
-            return link?.getAttribute("href") || "";
-          });
-          if (hrefFromRow) {
-            const origin = new URL(page.url()).origin;
-            const targetUrl = hrefFromRow.startsWith("http")
-              ? hrefFromRow
-              : hrefFromRow.startsWith("#")
-              ? `${origin}/${hrefFromRow}`
-              : `${origin}${hrefFromRow.startsWith("/") ? "" : "/"}${hrefFromRow}`;
-            await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+        // Helper: locator for the first non-folder row (file rows have no Folder SVG)
+        const firstFileRow = () =>
+          page.locator('[data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"]))').first();
+        const firstFileRowTitle = () =>
+          firstFileRow().locator('[data-test-id="cs-asset-table-head-title"]').first();
+        // Navigate to the full asset detail page (URL changes to /assets/bltUID)
+        const stackUidForNav = currentUrlAR.match(/stack\/(blt[a-f0-9]{16})/)?.[1];
+        const navigateToAssetDetail = async (): Promise<boolean> => {
+          const row = firstFileRow();
+          if (!(await row.isVisible({ timeout: 2_000 }).catch(() => false))) return false;
+          // Get the full resolved href from the <a> wrapping the row (avoids URL construction errors)
+          // File rows are wrapped in <a href="#/stack/.../assets/bltUID?branch=main">, folder rows are not
+          const assetDetailFullUrl = await page.evaluate(() => {
+            const rows = Array.from(document.querySelectorAll('[data-test-id^="cs-table-body-row-"]')) as HTMLElement[];
+            for (const r of rows) {
+              if (r.querySelector('svg[name="Folder"]')) continue;
+              const linkEl = r.closest('a[href]') as HTMLAnchorElement | null;
+              // linkEl.href returns full absolute URL (e.g. https://app.contentstack.com/#/stack/.../assets/bltUID)
+              if (linkEl?.href && /\/assets\/blt[a-f0-9]{16}/.test(linkEl.href)) {
+                return linkEl.href;
+              }
+              break;
+            }
+            return "";
+          }).catch(() => "");
+          process.stdout.write(`[AR-DIAG] assetDetailFullUrl="${assetDetailFullUrl}" pageUrl="${page.url()}"\n`);
+          if (assetDetailFullUrl) {
+            // Use window.location.href assignment (same as clicking <a href>; more reliable for SPA hash routing)
+            const urlBefore = page.url();
+            await page.evaluate((url: string) => { window.location.href = url; }, assetDetailFullUrl).catch(() => {});
+            // Wait for URL to actually change (confirms router handled the navigation)
+            await page.waitForFunction(
+              (before: string) => location.href !== before,
+              urlBefore,
+              { timeout: 10_000 }
+            ).catch(() => {});
+            // Wait for React to render the asset detail page (Save button appears)
+            const onDetail = await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 20_000 }).then(() => true).catch(() => false);
+            if (onDetail) return true;
           }
+          // Double-click fallback on title cell
+          const titleCell = firstFileRowTitle();
+          if (!(await titleCell.isVisible({ timeout: 1_500 }).catch(() => false))) return false;
+          const urlBefore = page.url();
+          await titleCell.dblclick({ timeout: 5_000 }).catch(() => {});
+          await page.waitForFunction(
+            (before: string) => location.href !== before,
+            urlBefore,
+            { timeout: 8_000 }
+          ).catch(() => {});
+          const onDetailAfterDblClick = await page.locator('[data-test-id="cs-asset-save"], button:has-text("Save Changes")').waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false);
+          return onDetailAfterDblClick;
+        };
+        // If any file row is already visible (even with folder filter active), navigate immediately
+        if (await firstFileRowTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+          const navigated = await navigateToAssetDetail();
+          if (navigated) break;
+        }
+        // Try clearing filter with Playwright click (triggers React synthetic events)
+        const clearAllLocAR = page.locator('[data-test-id="cs-assets-query-clear-all"]');
+        if (await clearAllLocAR.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await clearAllLocAR.click({ timeout: 5_000 }).catch(() => {});
+          await clearAllLocAR.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+          await page.waitForTimeout(600);
+        }
+        // If filter still visible, navigate away and back to force React component remount
+        if (await clearAllLocAR.isVisible({ timeout: 1_000 }).catch(() => false) && stackUidForNav) {
+          const originForNav = new URL(currentUrlAR).origin;
+          await page.goto(`${originForNav}/#!/stack/${stackUidForNav}`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.waitForTimeout(600);
+          await page.goto(`${originForNav}/#!/stack/${stackUidForNav}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 12_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+        }
+        // Sort by Last Modified desc to surface recently uploaded files first
+        const lastModHeadAR = page.locator('[data-test-id="cs-asset-table-head-last_modified"]').first();
+        if (await lastModHeadAR.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await lastModHeadAR.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(500);
+          await lastModHeadAR.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_000);
+        }
+        // Check if a file row is now visible after clearing filter/sorting
+        if (await firstFileRowTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+          const navigated = await navigateToAssetDetail();
+          if (navigated) break;
+        }
+        // No file rows visible — iterate folder rows and check inside each
+        let foundFileInFolder = false;
+        const numVisibleFolders = await page.evaluate(() =>
+          document.querySelectorAll('[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"])').length
+        ).catch(() => 0);
+        for (let fi = 0; fi < Math.min(numVisibleFolders, 8); fi++) {
+          const folderTitleAR = page.locator(
+            '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-table-head-title"]'
+          ).nth(fi);
+          if (!(await folderTitleAR.isVisible({ timeout: 2_000 }).catch(() => false))) break;
+          await folderTitleAR.click({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(1_200);
+          if (await firstFileRowTitle().isVisible({ timeout: 2_000 }).catch(() => false)) {
+            const navigated = await navigateToAssetDetail();
+            if (navigated) { foundFileInFolder = true; break; }
+          }
+          // Return to root — Playwright click on Clear All triggers React synthetic event
+          if (await clearAllLocAR.isVisible({ timeout: 1_500 }).catch(() => false)) {
+            await clearAllLocAR.click({ timeout: 5_000 }).catch(() => {});
+            await clearAllLocAR.waitFor({ state: 'hidden', timeout: 8_000 }).catch(() => {});
+          } else if (stackUidForNav) {
+            const originForNav2 = new URL(page.url()).origin;
+            await page.goto(`${originForNav2}/#!/stack/${stackUidForNav}/assets`, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+            await page.locator('[data-test-id^="cs-table-body-row-"]').first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
+          }
+          await page.waitForTimeout(800);
+        }
+        if (!foundFileInFolder) {
+          const diagInfo = await page.evaluate(() => {
+            const rows = document.querySelectorAll('[data-test-id^="cs-table-body-row-"]');
+            const cf = document.querySelector('[data-test-id="cs-assets-query-clear-all"]');
+            const noAssets = (document.body?.innerText || "").includes("No assets available");
+            return `rows=${rows.length}, clearFilterVisible=${!!cf}, noAssets=${noAssets}`;
+          }).catch(() => "eval-failed");
+          throw new Error(
+            `No file asset row found for "${step.target}" in flow "${flow?.id}" — checked root and first 8 folders. State: ${diagInfo}`
+          );
         }
         break;
       }
@@ -13440,6 +13768,45 @@ export async function performAction(
         } else {
           await page.keyboard.press("Escape").catch(() => {});
         }
+        break;
+      }
+      if (
+        step.target === "First asset checkbox (doc step)" &&
+        String(flow?.id || "").toLowerCase() === "move-assets-to-folder-in-bulk"
+      ) {
+        const t = getStepTimeoutMs(step);
+        const nonFolderCheckbox = () =>
+          page
+            .locator(
+              ':nth-match([data-test-id^="cs-table-body-row-"]:not(:has(svg[name="Folder"])) [data-test-id="cs-table-row-selection"] input[type="checkbox"], 1)'
+            )
+            .first();
+        let found = await nonFolderCheckbox().isVisible({ timeout: 3_000 }).catch(() => false);
+        if (!found) {
+          // Try navigating into each visible folder until we find one with asset rows.
+          const folderHrefs = await page.evaluate((): string[] => {
+            const rows = Array.from(document.querySelectorAll('[data-test-id^="cs-table-body-row-"]')) as HTMLElement[];
+            const hrefs: string[] = [];
+            for (const row of rows) {
+              if (!row.querySelector('svg[name="Folder"]')) continue;
+              const link = (row.closest("a[href]") || row.querySelector("a[href]")) as HTMLAnchorElement | null;
+              const href = link?.getAttribute("href") || "";
+              if (href) hrefs.push(href);
+            }
+            return hrefs.slice(0, 15);
+          });
+          for (const href of folderHrefs) {
+            if (!href) continue;
+            const origin = new URL(page.url()).origin;
+            const folderUrl = href.startsWith("http") ? href : href.startsWith("#") ? `${origin}/${href}` : `${origin}${href.startsWith("/") ? "" : "/"}${href}`;
+            await page.goto(folderUrl, { waitUntil: "domcontentloaded", timeout: t }).catch(() => {});
+            await page.waitForTimeout(1_000);
+            found = await nonFolderCheckbox().isVisible({ timeout: 3_000 }).catch(() => false);
+            if (found) break;
+          }
+        }
+        await expect(nonFolderCheckbox()).toBeVisible({ timeout: t });
+        await nonFolderCheckbox().click({ timeout: t, force: true }).catch(() => {});
         break;
       }
       if (
@@ -35603,6 +35970,29 @@ export async function performAction(
       await expect(sourceEl).toBeVisible({ timeout: timeoutMs });
       await expect(targetEl).toBeVisible({ timeout: timeoutMs });
       await sourceEl.dragTo(targetEl, { timeout: timeoutMs });
+      break;
+    }
+
+    case "dragBy": {
+      // value format: "dx,dy" e.g. "-150,0" to drag left 150px
+      const parts = String(step.value || "").split(",");
+      const dx = parseInt(parts[0] ?? "0", 10);
+      const dy = parseInt(parts[1] ?? "0", 10);
+      if (isNaN(dx) || isNaN(dy)) throw new Error(`dragBy step 'value' must be "dx,dy" — got: ${step.value}`);
+
+      const { click } = loadOverrides(flow);
+      const sel = click[step.target] || CLICK_SELECTORS[step.target];
+      const el = sel ? page.locator(sel).first() : await resolveTarget(page, step.target, flow);
+      const timeoutMs = getStepTimeoutMs(step);
+      await expect(el).toBeVisible({ timeout: timeoutMs });
+      const box = await el.boundingBox();
+      if (!box) throw new Error(`dragBy: could not get bounding box for "${step.target}"`);
+      const startX = box.x + box.width / 2;
+      const startY = box.y + box.height / 2;
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(startX + dx, startY + dy, { steps: 10 });
+      await page.mouse.up();
       break;
     }
 

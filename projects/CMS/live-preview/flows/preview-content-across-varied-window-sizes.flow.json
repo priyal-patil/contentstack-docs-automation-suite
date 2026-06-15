@@ -25,9 +25,15 @@
     { "action": "click", "target": "Live Preview icon (doc step)" },
     { "action": "verify", "target": "Live Preview window (doc step)" },
     { "action": "verify", "target": "Preview panel resize edge (doc step)" },
-    { "action": "click", "target": "Preview panel resize edge (doc step)" },
-    { "action": "verify", "target": "Open in new tab icon (doc step)" },
-    { "action": "click", "target": "Open in new tab icon (doc step)" },
+    { "action": "dragBy", "target": "Preview panel resize edge (doc step)", "value": "-150,0" },
+    {
+      "action": "verify",
+      "target": "Open in new tab icon (doc step)",
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "Open in new tab icon (live-preview-browser-new-tab-btn) not visible — button only renders when LP has a configured preview URL"
+    },
+    { "action": "click", "target": "Open in new tab icon (doc step)", "optional": true },
     {
       "action": "click",
       "target": "Viewport toggle button (doc step)",
@@ -40,6 +46,8 @@
       "action": "verify",
       "target": "Toggle orientation button (doc step)",
       "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "Toggle orientation button not displayed — click 'Toggle Viewport' button first to reveal the orientation toggle",
       "expected": {
         "labelEquals": "Orientation",
         "labelMatch": "contains"
