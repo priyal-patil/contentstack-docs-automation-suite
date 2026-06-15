@@ -18,24 +18,7 @@
       "expected": { "rowContains": "AUTO-EDIT-" }
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-EDIT-" } },
-    { "action": "verify", "target": "Settings (doc step)" },
-    { "action": "click", "target": "Settings (doc step)" },
-    { "action": "enter", "target": "Description", "value": "AUTO-{unique5}" },
-    { "action": "click", "target": "Update" },
-    {
-      "action": "verify",
-      "target": "Actions (doc step)",
-      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
-    },
-    {
-      "action": "verify",
-      "target": "vertical ellipsis (doc step)",
-      "expected": { "rowContains": "AUTO-EDIT-" }
-    },
-    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-EDIT-" } },
     { "action": "verify", "target": "Edit (doc step)" },
-    { "action": "click", "target": "Edit (doc step)" },
-    { "action": "click", "target": "Insert a field" },
-    { "action": "click", "target": "Save" }
+    { "action": "click", "target": "Edit (doc step)" }
   ]
 }

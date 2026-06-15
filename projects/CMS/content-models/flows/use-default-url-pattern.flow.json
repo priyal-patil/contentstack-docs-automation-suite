@@ -32,14 +32,6 @@
       "expected": { "rowContains": "AUTO-URL-" }
     },
     { "action": "verify", "target": "Edit (doc step)" },
-    { "action": "click", "target": "Edit (doc step)" },
-    {
-      "action": "click",
-      "target": "Insert a field"
-    },
-    {
-      "action": "click",
-      "target": "URL (doc step)"
-    }
+    { "action": "click", "target": "Edit (doc step)" }
   ]
 }

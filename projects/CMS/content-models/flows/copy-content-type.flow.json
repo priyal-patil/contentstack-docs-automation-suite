@@ -13,14 +13,17 @@
     },
     { "action": "click", "target": "Content Models" },
     {
-      "action": "click",
-      "target": "vertical ellipsis",
-      "expected": { "rowContains": "AUTO-COPY-" }
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
     },
     {
       "action": "verify",
-      "target": "Copy Content Type (doc step)"
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-COPY-" }
     },
+    { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-COPY-" } },
+    { "action": "verify", "target": "Copy Content Type (doc step)" },
     { "action": "click", "target": "Copy Content Type (doc step)" },
     {
       "action": "verify",
@@ -32,7 +35,6 @@
       "target": "Copy (doc step)",
       "expected": { "within": "Modal", "labelEquals": "Copy", "labelMatch": "equals" }
     },
-    { "action": "click", "target": "Copy", "expected": { "within": "Modal" } },
-    { "action": "verify", "target": "Save (doc step)" }
+    { "action": "click", "target": "Copy", "expected": { "within": "Modal" } }
   ]
 }

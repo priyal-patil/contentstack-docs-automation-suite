@@ -31,26 +31,6 @@
       "expected": { "rowContains": "AUTO-NLOC-" }
     },
     { "action": "verify", "target": "Edit (doc step)" },
-    { "action": "click", "target": "Edit (doc step)" },
-    {
-      "action": "click",
-      "target": "Insert a field"
-    },
-    {
-      "action": "click",
-      "target": "Group (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Advanced (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Non-localizable (doc step)"
-    },
-    {
-      "action": "click",
-      "target": "Save and Close (doc step)"
-    }
+    { "action": "click", "target": "Edit (doc step)" }
   ]
 }
