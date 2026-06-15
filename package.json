@@ -30,6 +30,8 @@
     "test:cms:webhook:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-webhook.sh",
     "test:cms:releases": "bash scripts/run-cms-releases.sh",
     "test:cms:releases:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-releases.sh",
+    "test:cms:live-preview": "bash scripts/run-cms-live-preview.sh",
+    "test:cms:live-preview:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-live-preview.sh",
     "test:cms:full": "bash scripts/run-cms-batch1.sh; bash scripts/run-cms-batch2.sh; bash scripts/run-cms-batch3.sh",
     "test:cms:full:headed": "PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch1.sh; PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch2.sh; PLAYWRIGHT_HEADLESS=0 bash scripts/run-cms-batch3.sh",
     "launch:cms:bg": "bash scripts/run-project-batch-background.sh CMS",
