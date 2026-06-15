@@ -10,7 +10,7 @@
     { "action": "click", "target": "Content Models" },
     { "action": "click", "target": "+ New Content Type" },
     { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
-    { "action": "enter", "target": "Name", "value": "Json RTE CT-{unique5}" },
+    { "action": "enter", "target": "Name", "value": "Shared JSON RTE Doc CT-{unique5}" },
     { "action": "click", "target": "Save and proceed" },
     { "action": "click", "target": "Insert a field (doc step)" },
     { "action": "click", "target": "JSON Rich Text Editor field tile (doc step)" },

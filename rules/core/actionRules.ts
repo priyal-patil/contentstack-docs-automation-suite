@@ -9793,11 +9793,11 @@ export async function performAction(
         }).catch(() => {});
         await page.waitForTimeout(500);
 
-        const shortId = unique.split("-")[0];
         const ctPrefix = jsonRteCtNamePrefix(flow);
+        // Match any CT with the seed prefix — seed runs separately so the unique suffix differs.
         const titleMatch = modal
           .locator('[data-test-id="cs-content-type-list-title-text"]')
-          .filter({ hasText: new RegExp(`${escapeRegex(ctPrefix)}.*${escapeRegex(shortId)}`, "i") })
+          .filter({ hasText: new RegExp(escapeRegex(ctPrefix), "i") })
           .first();
         let row: Locator;
         if ((await titleMatch.count().catch(() => 0)) > 0 && (await titleMatch.isVisible().catch(() => false))) {
