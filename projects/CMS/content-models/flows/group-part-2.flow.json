@@ -4,42 +4,150 @@
   "module": "content-models",
   "source": "https://www.contentstack.com/docs/developers/create-content-types/group#example-2-survey-form",
   "type": "executable",
-  "use": ["login", "selectStack"],
+  "use": [
+    "login",
+    "selectStack"
+  ],
   "steps": [
-    {"action": "click", "target": "Content Models"},
-    {"action": "verify", "target": "Content Types"},
-    {"action": "click", "target": "New Content Type"},
-    {"action": "verify", "target": "Create New"},
-    {"action": "click", "target": "Create New", "expected": {"modalTitle": "Create New Content Type"}},
-    {"action": "enter", "target": "Name", "value": "Group-Demo-{unique5}"},
-    {"action": "enter", "target": "Description", "value": "Group-Demo-{unique5}"},
-    {"action": "click", "target": "Single (Type)"},
-    {"action": "click", "target": "Save and proceed"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Group (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Properties (Group) (doc step)", "nth": 1},
-    {"action": "enter", "target": "Display Name (doc step)", "value": "Mental Health Survey"},
-    {"action": "click", "target": "Advanced (Group) (doc step)"},
-    {"action": "click", "target": "Multiple (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Single Line Textbox (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Number (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Date (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "File (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Boolean (doc step)"},
-    {"action": "click", "target": "Builder area (dismiss properties)"},
-    {"action": "click", "target": "Insert a field"},
-    {"action": "click", "target": "Rich Text Editor (doc step)"},
-    {"action": "click", "target": "Save and Close"}
+    {
+      "action": "click",
+      "target": "Content Models"
+    },
+    {
+      "action": "verify",
+      "target": "Content Types"
+    },
+    {
+      "action": "click",
+      "target": "New Content Type"
+    },
+    {
+      "action": "click",
+      "target": "Create New (doc step)"
+    },
+    {
+      "action": "enter",
+      "target": "Name",
+      "value": "Group-Demo-{unique5}"
+    },
+    {
+      "action": "enter",
+      "target": "Description",
+      "value": "Group-Demo-{unique5}"
+    },
+    {
+      "action": "click",
+      "target": "Single (Type)"
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Group (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Properties (Group) (doc step)",
+      "nth": 1
+    },
+    {
+      "action": "enter",
+      "target": "Display Name (doc step)",
+      "value": "Mental Health Survey"
+    },
+    {
+      "action": "click",
+      "target": "Advanced (Group) (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Multiple (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Number (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Date (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "File (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Boolean (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
+      "target": "Insert a field"
+    },
+    {
+      "action": "click",
+      "target": "Rich Text Editor (doc step)"
+    },
+    {
+      "action": "click",
+      "target": "Save and Close"
+    }
   ]
 }

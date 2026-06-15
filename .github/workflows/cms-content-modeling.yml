@@ -279,7 +279,8 @@ jobs:
 
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
             echo "Posting detailed Slack summary via urlRunSummaryAndSlack.ts…"
-            BATCH1_DURATION_LABEL="CMS Content Modeling (${DURATION})" \
+            BATCH1_DURATION_LABEL="CMS Content Models (${DURATION})" \
+            CMS_SLACK_TITLE="CMS Content Models — URL run summary" \
               npx ts-node scripts/urlRunSummaryAndSlack.ts 2>&1 || \
               echo "::warning::urlRunSummaryAndSlack.ts failed — posting minimal alert"
           else
@@ -288,6 +289,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Content Modeling — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 11 CRUD flows | 1 worker | 5 min cap. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Content Models — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 44 CRUD flows | 1 worker | 5 min cap. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
