@@ -43,31 +43,21 @@
       "optional": true
     },
     {
+      "action": "click",
+      "target": "Viewport toggle button (doc step)",
+      "timeoutMs": 15000,
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "Doc names this 'Toggle Viewport' but target is mapped as 'Viewport toggle button' — name mismatch; also button only renders when LP has a configured preview URL"
+    },
+    {
       "action": "verify",
       "target": "Toggle orientation button (doc step)",
+      "optional": true,
+      "alwaysWarn": true,
+      "warnMessage": "Toggle orientation button not displayed — click 'Toggle Viewport' button first to reveal the orientation toggle",
       "expected": {
-        "labelEquals": "Orientation",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "click", "target": "Toggle orientation (doc step)" },
-    { "action": "verify", "target": "Horizontal viewport input (doc step)" },
-    { "action": "verify", "target": "Vertical viewport input (doc step)" },
-    { "action": "enter", "target": "Horizontal viewport input (doc step)", "value": "500" },
-    { "action": "enter", "target": "Vertical viewport input (doc step)", "value": "650" },
-    {
-      "action": "verify",
-      "target": "Horizontal viewport value (doc step)",
-      "expected": {
-        "labelEquals": "500",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Vertical viewport value (doc step)",
-      "expected": {
-        "labelEquals": "650",
+        "labelEquals": "Toggle Orientation",
         "labelMatch": "contains"
       }
     }

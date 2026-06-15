@@ -20,6 +20,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-entry-edit-tab-live-preview"], #rhs-live-preview-icon',
   "Live Preview settings icon (doc step)":
     '[data-test-id="live-preview-browser-settings-btn"] button, [data-test-id="live-preview-browser-settings-btn"]',
+  "Viewport toggle button (doc step)":
+    '[data-test-id="live-preview-browser-toggle-viewport-btn"] button, [data-test-id="live-preview-browser-toggle-viewport-btn"]',
   "Open in new tab icon (doc step)":
     '[data-test-id*="live-preview-browser"][data-test-id*="new-tab"], [data-test-id*="open"][data-test-id*="tab"], button[aria-label*="new tab" i], button[title*="new tab" i]',
   "Preview panel resize edge (doc step)":
@@ -35,9 +37,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Edit button in preview (doc step)":
     'button[data-test-id="cs-cslp-tooltip"], [data-test-id="cslp-singular-edit-button"], button[data-test-id="cs-cslp-tooltip"]:has-text("Edit")',
   "Toggle orientation button (doc step)":
-    '[data-test-id="live-preview-browser-toggle-viewport-btn"], [data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"], .lp-viewport-orientation-icon',
+    'button.lp-viewport-orientation-icon, [data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"] button, [data-test-id="live-preview-browser-toggle-viewport-btn"] button',
   "Toggle orientation (doc step)":
-    '[data-test-id="live-preview-browser-toggle-viewport-btn"], [data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"], .lp-viewport-orientation-icon',
+    'button.lp-viewport-orientation-icon, [data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"] button, [data-test-id="live-preview-browser-toggle-viewport-btn"] button',
   "Environments from left nav (doc step)":
     'a.ListRowV2-wrapper:has([data-test-id="cs-stack-settings-environments"]), [data-test-id="cs-stack-settings-environments"]',
   "Environment row action menu first row (doc step)":
@@ -115,7 +117,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Select Environment label in settings modal (doc step)":
     '[data-test-id="live-preview-edit-url-env-dropdown"] [data-test-id="cs-field-label"]',
   "Toggle orientation button label (doc step)":
-    '[data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"]',
+    'button.lp-viewport-orientation-icon, [data-test-id="live-preview-browser-viewport-settings-bar-toggle-viewport"] button',
   "Horizontal viewport input (doc step)":
     '[data-test-id="live-preview-browser-viewport-settings-bar-horizontal-viewport"] input',
   "Vertical viewport input (doc step)":
