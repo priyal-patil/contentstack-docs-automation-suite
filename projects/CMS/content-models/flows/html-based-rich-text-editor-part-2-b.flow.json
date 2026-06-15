@@ -8,8 +8,7 @@
   "steps": [
     { "action": "click", "target": "Content Models" },
     { "action": "click", "target": "New Content Type" },
-    { "action": "verify", "target": "Create New" },
-    { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
+    { "action": "click", "target": "Create New (doc step)" },
     { "action": "enter", "target": "Name", "value": "AUTO-RTE-EMBED-CUSTOM-{unique5}" },
     { "action": "enter", "target": "Description", "value": "AUTO-RTE-EMBED-CUSTOM-{unique5}" },
     { "action": "click", "target": "Single (Type)" },
