@@ -12629,7 +12629,7 @@ export async function performAction(
       const isJsonRteModuleInsertFieldDocStep =
         step.target === "Insert a field (doc step)" &&
         String(flow?.module || "").toLowerCase() === "json-rich-text-editor" &&
-        ["customize-json-rich-text-editor"].includes(String(flow?.id || "").toLowerCase());
+        ["customize-json-rich-text-editor", "seed-ct-json-rte"].includes(String(flow?.id || "").toLowerCase());
       if (
         step.target === "Insert a field" ||
         isJsonRteModuleInsertFieldDocStep ||
@@ -20477,32 +20477,20 @@ export async function performAction(
           }
         }
         if (step.target === "Create New (doc step)") {
-          const createNew = page
-            .locator('[data-test-id="cs-cb-new-ct-child"], button:has-text("Create New"), [role="button"]:has-text("Create New"), [role="menuitem"]:has-text("Create New"), [data-test-id="cs-add-stack-create-new"]')
-            .first();
-          // Wait up to 10s for the dropdown item to appear — prevents a race condition
-          // where the "+ New Stack" dropdown animation hasn't finished when isVisible()
-          // fires, causing a false-negative fallthrough to the generic handler at the
-          // bottom of the click case which unconditionally calls waitForCreateContentTypeForm.
-          const appeared = await createNew.waitFor({ state: "visible", timeout: 10_000 })
-            .then(() => true).catch(() => false);
-          if (appeared) {
-            await createNew.click({ timeout: t, force: true }).catch(() => {});
-            await page.waitForTimeout(600);
-            // Stack creation opens "Create New Stack" modal — no cs-modal-title-create-new-content-type.
-            // Check which modal appeared and handle generically rather than calling waitForCreateContentTypeForm.
-            const isContentTypeModal = await page
-              .locator('[data-test-id="cs-modal-title-create-new-content-type"]')
-              .isVisible({ timeout: 2_000 }).catch(() => false);
-            if (isContentTypeModal) {
-              await waitForCreateContentTypeForm(page);
-            } else {
-              // Generic modal wait (stack, global field, etc.)
-              await page.locator('[data-testid="cs-modal"][role="dialog"], [role="dialog"]')
-                .first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
-            }
-            break;
+          const createNewSel = '[data-test-id="cs-cb-new-ct-child"]';
+          const newCtBtnSel =
+            overridesClick["+ New Content Type (doc step)"] || overridesClick["+ New Content Type"] ||
+            '[data-test-id="cs-cb-new-ct"], button:has-text("+ New Content Type"), button:has-text("New Content Type")';
+          const createNew = page.locator(createNewSel).first();
+          if (!(await createNew.isVisible().catch(() => false))) {
+            await page.locator(newCtBtnSel).first().click({ timeout: 8_000 }).catch(() => {});
+            await page.waitForTimeout(1_200);
           }
+          await expect(createNew).toBeVisible({ timeout: t });
+          await createNew.scrollIntoViewIfNeeded().catch(() => {});
+          await createNew.click({ timeout: t });
+          await waitForCreateContentTypeForm(page);
+          break;
         }
         if (step.target === "Before (FVR option) (doc step)" || step.target === "Show (FVR option) (doc step)" || step.target === "Hide (FVR option) (doc step)" || step.target?.endsWith("(FVR option) (doc step)")) {
           const label = step.target.replace(/\s*\(FVR option\)\s*\(doc step\)\s*$/, "").trim();
@@ -35469,7 +35457,15 @@ export async function performAction(
             .locator('[data-test-id="cs-ct-create-modal-ct-name-input"] input[name="name"]')
             .first();
           await expect(name).toBeVisible({ timeout: 30_000 });
-          await name.fill(val);
+          // Use evaluate() to set value without triggering scrollIntoView, which fires a
+          // window scroll event that closes Contentstack's ReactModal.
+          await name.evaluate((el: HTMLInputElement, v: string) => {
+            el.focus({ preventScroll: true });
+            const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+            setter?.call(el, v);
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+          }, val);
           break;
         }
 

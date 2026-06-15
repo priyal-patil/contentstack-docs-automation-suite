@@ -1,0 +1,22 @@
+{
+  "id": "seed-ct-json-rte",
+  "project": "CMS",
+  "module": "json-rich-text-editor",
+  "stage": "seed",
+  "source": "https://www.contentstack.com/docs/developers/json-rich-text-editor/customize-json-rich-text-editor",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Content Models" },
+    { "action": "click", "target": "+ New Content Type" },
+    { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
+    { "action": "enter", "target": "Name", "value": "Json RTE CT-{unique5}" },
+    { "action": "click", "target": "Save and proceed" },
+    { "action": "click", "target": "Insert a field (doc step)" },
+    { "action": "click", "target": "JSON Rich Text Editor field tile (doc step)" },
+    { "action": "click", "target": "JSON RTE Advanced tab (doc step)" },
+    { "action": "click", "target": "Editor Type Custom JSON RTE (doc step)" },
+    { "action": "click", "target": "JSON RTE Select All formatting options (doc step)" },
+    { "action": "click", "target": "Save and Close (doc step)" }
+  ]
+}

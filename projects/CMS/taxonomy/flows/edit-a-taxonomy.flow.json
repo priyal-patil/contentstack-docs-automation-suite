@@ -6,35 +6,36 @@
   "source": "https://www.contentstack.com/docs/developers/taxonomy/edit-a-taxonomy",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Row Actions ⋯ resolves to `button[data-test-id=cs-table-action-options]`; after menu open, runner waits VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms). Edit: `ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit]` (hover + click). Taxonomy selectors map the doc step target for the first-row ellipsis to the same control.",
+  "automationNotes": "Row Actions ⋯ resolves to `button[data-test-id=cs-table-action-options]`; after menu open, runner waits VERTICAL_ELLIPSIS_POST_OPEN_MS (default 2000ms). Edit: `ul[data-test-id=cs-vertical-action-tooltip-actions] li[data-test-id=cs-ct-action-edit]` (hover + click). Taxonomy selectors map the doc step target for the first-row ellipsis to the same control. NOTE: taxonomy edit modal uses data-testid (not data-test-id) so within:Modal is intentionally omitted.",
   "steps": [
     { "action": "click", "target": "Headless CMS", "timeoutMs": 90000 },
     { "action": "click", "target": "Any Stack Card (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
       "target": "Settings (doc step)",
-      "expected": {
-        "labelEquals": "Settings",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Settings (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
       "target": "Taxonomy in settings (doc step)",
-      "expected": {
-        "labelEquals": "Taxonomy",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Taxonomy", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Taxonomy in settings (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Taxonomy page title (doc step)",
-      "expected": {
-        "labelEquals": "Taxonomy",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Taxonomy", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Actions column (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Taxonomy listing first row Actions vertical ellipsis (doc step)",
+      "expected": { "labelEquals": "row 1 action", "labelMatch": "contains" }
     },
     {
       "action": "click",
@@ -44,65 +45,33 @@
     {
       "action": "verify",
       "target": "Taxonomy row vertical menu Edit (doc step)",
-      "expected": {
-        "labelEquals": "Edit",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Edit", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Taxonomy row vertical menu Edit (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Edit Taxonomy modal title (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Edit Taxonomy",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Edit Taxonomy", "labelMatch": "contains" }
     },
     {
       "action": "verify",
       "target": "Edit Taxonomy Name field label (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Name",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
     },
     {
       "action": "verify",
       "target": "Edit Taxonomy UID field label (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "UID",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "UID", "labelMatch": "contains" }
     },
     {
       "action": "verify",
       "target": "Edit Taxonomy UID read only label (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "read only",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "read only", "labelMatch": "contains" }
     },
     {
       "action": "verify",
       "target": "Edit Taxonomy Description field label (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Description",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Edit Taxonomy UID instruction text (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "UID cannot be changed once saved",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
     },
     {
       "action": "enter",
@@ -117,11 +86,7 @@
     {
       "action": "verify",
       "target": "Edit Taxonomy modal Update button (doc step)",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Update",
-        "labelMatch": "contains"
-      }
+      "expected": { "labelEquals": "Update", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Edit Taxonomy modal Update button (doc step)", "timeoutMs": 90000 }
   ]

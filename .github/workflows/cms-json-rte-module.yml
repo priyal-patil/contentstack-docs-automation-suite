@@ -123,7 +123,26 @@ jobs:
           mkdir -p "${{ env.REPORT_DIR }}"
 
       # -------------------------------------------------------------------
-      # 5) Run JSON RTE module — all 11 flows in CRUD order
+      # 5) Seed — create a CT with JSON RTE field (prerequisite for main flows)
+      # -------------------------------------------------------------------
+      - name: Seed — create CT with JSON RTE field
+        id: seed_json_rte
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: |
+          set -uo pipefail
+          echo "Running seed flow: seed-ct-json-rte"
+          set +e
+          npx playwright test tests/flows.spec.ts --project=flows \
+            --grep "Project=CMS Module=json-rich-text-editor Stage=seed" \
+            2>&1 | tee "${{ env.REPORT_DIR }}/seed-json-rte-run.log"
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+          echo "Seed exit code: ${EXIT_CODE}"
+          exit ${EXIT_CODE}
+
+      # -------------------------------------------------------------------
+      # 6) Run JSON RTE module — all 11 flows in CRUD order
       #    read  : basic-formatting, assets,
       #             block-and-inline-properties-part-1,
       #             block-and-inline-properties-part-2,

@@ -6,6 +6,8 @@
 export const CLICK_SELECTORS: Record<string, string> = {
   "Content Models (doc step)":
     '[data-test-id="cms-nav-content-models"], a:has-text("Content Models"), button:has-text("Content Models")',
+  "First content type in list (doc step)":
+    '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-cell-title"], [data-test-id="cs-table-body-row-0"] a, [data-test-id="cs-table-body-row-0"]',
   "+ New Content Type (doc step)":
     '[data-test-id="cs-cb-new-ct"], button:has-text("New Content Type"), button[aria-label="Create New Content Type"]',
   "Create New (doc step)":

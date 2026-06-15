@@ -93,6 +93,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Create Taxonomy modal Create Taxonomy button (doc step)":
     '[data-test-id="cs-taxonomy-createBtn"], [data-testid="create-taxonomy-button"], button:has-text("Create Taxonomy")',
   "Create Taxonomy modal Cancel button (doc step)": '[data-test-id="cs-taxonomy-cancelBtn"]',
+  /** taxonomy-listing.html — Actions column header in the listing table. */
+  "Actions column (doc step)":
+    '[data-test-id^="cs-table-row-action-column-text--"], .Table__head__cell--tableRowAction [data-test-id^="cs-table-row-action-column-text--"]',
   /** taxonomy-verticle-ellipses.html — first row, Actions column (doc step 2). */
   "Taxonomy listing first row Actions vertical ellipsis (doc step)":
     '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"]',
