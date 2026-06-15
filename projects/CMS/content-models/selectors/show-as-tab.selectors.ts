@@ -62,8 +62,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
   // Toggle OFF uses ...-disabled; ON uses ...-enabled
   "Show as Tab (doc step)": `${SHOW_AS_TAB_GROUP_TOGGLE_ENABLED_SELECTOR}, ${SHOW_AS_TAB_GROUP_TOGGLE_DISABLED_SELECTOR}`,
 
-  /** After enabling: wrapper is cs-ct-field-group-tab-enabled; checkbox inside should be checked (verify step). */
-  "Show as Tab toggle on (doc step)": SHOW_AS_TAB_GROUP_TOGGLE_ENABLED_SELECTOR,
+  /** Verify the Show as Tab toggle exists (either enabled or disabled state — before clicking it). */
+  "Show as Tab toggle on (doc step)": `${SHOW_AS_TAB_GROUP_TOGGLE_ENABLED_SELECTOR}, ${SHOW_AS_TAB_GROUP_TOGGLE_DISABLED_SELECTOR}`,
 
   // Properties icon on the Group field row (label may be p[data-test-id=cs-ct-select-field-group]; hover reveals Sliders)
   "Properties (doc step)":

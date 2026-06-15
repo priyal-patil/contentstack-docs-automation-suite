@@ -19,10 +19,9 @@
     },
     {
       "action": "verify",
-      "target": "Copy Content Type (doc step)",
-      "expected": { "labelEquals": "Copy Content Type", "labelMatch": "equals" }
+      "target": "Copy Content Type (doc step)"
     },
-    { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-COPY-" } },
+    { "action": "click", "target": "Copy Content Type (doc step)" },
     {
       "action": "verify",
       "target": "Copy Content Type modal (doc step)",

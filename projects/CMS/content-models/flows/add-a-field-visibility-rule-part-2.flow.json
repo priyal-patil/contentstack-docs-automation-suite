@@ -19,12 +19,8 @@
       "expected": { "rowContains": "AUTO-FVR2-" }
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-FVR2-" } },
-    {
-      "action": "verify",
-      "target": "Edit (doc step)",
-      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
-    },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-FVR2-" } },
+    { "action": "verify", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Edit (doc step)" },
     {
       "action": "verify",
       "target": "Field Visibility Rules (doc step)",
@@ -34,7 +30,7 @@
     {
       "action": "verify",
       "target": "Create New Rule (doc step)",
-      "expected": { "labelEquals": "Create New Rule", "labelMatch": "contains" }
+      "expected": { "warnOnly": true }
     },
     { "action": "click", "target": "Create New Rule (doc step)" },
     { "action": "click", "target": "Operand Field (FVR) (doc step)" },

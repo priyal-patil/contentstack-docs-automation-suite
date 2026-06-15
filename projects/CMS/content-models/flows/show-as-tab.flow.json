@@ -19,20 +19,10 @@
       "expected": { "rowContains": "AUTO-TAB-" }
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-TAB-" } },
-    {
-      "action": "verify",
-      "target": "Edit (doc step)",
-      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
-    },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-TAB-" } },
+    { "action": "verify", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Edit (doc step)" },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Group (doc step)" },
-    {
-      "action": "verify",
-      "target": "Properties (doc step)",
-      "expected": { "labelEquals": "Properties", "labelMatch": "contains" }
-    },
-    { "action": "click", "target": "Properties (doc step)" },
     {
       "action": "verify",
       "target": "Advanced (doc step)",

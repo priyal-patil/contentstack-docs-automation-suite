@@ -8,10 +8,10 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models" },
-    { "action": "click", "target": "+ New Content Type (doc step)" },
-    { "action": "click", "target": "Create New (doc step)", "expected": { "modalTitle": "Create New Content Type" } },
-    { "action": "enter", "target": "Name (doc step)", "value": "AUTO-EDIT-{unique5}" },
-    { "action": "click", "target": "Save and proceed (doc step)" },
+    { "action": "click", "target": "+ New Content Type" },
+    { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
+    { "action": "enter", "target": "Name", "value": "AUTO-EDIT-{unique5}" },
+    { "action": "click", "target": "Save and proceed" },
     { "action": "click", "target": "Save (doc step)" }
   ]
 }

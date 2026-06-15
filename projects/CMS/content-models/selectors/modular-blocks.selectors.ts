@@ -21,9 +21,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Edit (doc step)":
     '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"]',
 
-  // Field picker (+) in content type builder
+  // Field picker (+) in content type builder (CT-level, not inside a block)
   "Insert a Field (doc step)":
-    'button:has(svg[name="PurpleAdd"]):visible, [role="button"]:has(svg[name="PurpleAdd"]):visible, svg[name="PurpleAdd"]:visible',
+    'button:has(svg[name="PurpleAdd"]):visible, [role="button"]:has(svg[name="PurpleAdd"]):visible, svg[name="PurpleAdd"]:visible, button:has-text("Insert a field"), a:has-text("Insert a field")',
 
   // Select Modular Blocks field tile (from provided outerHTML)
   "Modular Blocks (doc step)": '[data-test-id="cs-ct-select-field-modular_blocks"]',

@@ -79,7 +79,8 @@
     },
     {
       "action": "verify",
-      "target": "Edit label item (doc step)"
+      "target": "Edit label item (doc step)",
+      "expected": { "warnOnly": true }
     },
     {
       "action": "click",

@@ -13,7 +13,6 @@
     { "action": "click", "target": "Create New", "expected": { "modalTitle": "Create New Content Type" } },
     { "action": "enter", "target": "Name", "value": "Page-{unique5}" },
     { "action": "enter", "target": "Description", "value": "Page-{unique5}" },
-    { "action": "click", "target": "Single (Type)" },
     { "action": "click", "target": "Save and proceed" },
 
     { "action": "click", "target": "Insert a field" },

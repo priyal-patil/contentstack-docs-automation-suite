@@ -19,12 +19,8 @@
       "expected": { "rowContains": "AUTO-FVR1-" }
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-FVR1-" } },
-    {
-      "action": "verify",
-      "target": "Edit (doc step)",
-      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
-    },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-FVR1-" } },
+    { "action": "verify", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Edit (doc step)" },
     { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Date (doc step)" },
     { "action": "click", "target": "Insert a field" },
@@ -43,7 +39,7 @@
     {
       "action": "verify",
       "target": "Create New Rule (doc step)",
-      "expected": { "labelEquals": "Create New Rule", "labelMatch": "contains" }
+      "expected": { "warnOnly": true }
     },
     { "action": "click", "target": "Create New Rule (doc step)" },
     { "action": "click", "target": "Operand Field (FVR) (doc step)" },

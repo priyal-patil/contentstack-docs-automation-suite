@@ -16,15 +16,22 @@
       "target": "Content Models"
     },
     {
-      "action": "click",
-      "target": "vertical ellipsis",
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
+    },
+    {
+      "action": "verify",
+      "target": "vertical ellipsis (doc step)",
       "expected": { "rowContains": "AUTO-NLOC-" }
     },
     {
       "action": "click",
-      "target": "Edit",
+      "target": "vertical ellipsis",
       "expected": { "rowContains": "AUTO-NLOC-" }
     },
+    { "action": "verify", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Edit (doc step)" },
     {
       "action": "click",
       "target": "Insert a field"
@@ -35,9 +42,8 @@
     },
     {
       "action": "click",
-      "target": "Properties (doc step)"
+      "target": "Advanced (doc step)"
     },
-
     {
       "action": "click",
       "target": "Non-localizable (doc step)"

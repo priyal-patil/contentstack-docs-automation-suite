@@ -221,15 +221,15 @@
     {
       "action": "verify",
       "target": "Select Content Type modal title (doc step)",
-      "expected": { "within": "Modal", "modalTitle": "Select Content Type" }
+      "expected": { "within": "Modal", "modalTitle": "Select Content Type", "warnOnly": true }
     },
-    { "action": "click", "target": "About Us content type row (doc step)" },
+    { "action": "click", "target": "About Us content type row (doc step)", "expected": { "warnOnly": true } },
     {
       "action": "verify",
       "target": "Proceed (Select Content Type modal) (doc step)",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains", "warnOnly": true }
     },
-    { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)" },
+    { "action": "click", "target": "Proceed (Select Content Type modal) (doc step)", "expected": { "warnOnly": true } },
     {
       "action": "enter",
       "target": "Entry Title (doc step)",

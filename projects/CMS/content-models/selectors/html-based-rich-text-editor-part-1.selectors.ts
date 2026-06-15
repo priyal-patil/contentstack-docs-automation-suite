@@ -12,6 +12,10 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Open Rich Text Editor properties (row)":
     'xpath=//h3[normalize-space(.)="Rich Text Editor"]/ancestor::*[self::div or self::li][1]//button[2]',
 
+  // RTE Properties Advanced tab (panel opens on Basic tab; Custom is on Advanced)
+  "Advanced (RTE tab) (doc step)":
+    '[data-test-id="cs-ct-field-rich-text-editor-tab-advanced"], [role="tab"]:has-text("Advanced"), .Tab__item:has-text("Advanced"), button:has-text("Advanced")',
+
   // RTE config
   "Custom (Editor Type)":
     '[data-test-id="cs-content-type-field-rich-text-editor-advanced-custom-editor-type-radio"]',

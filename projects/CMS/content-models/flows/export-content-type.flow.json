@@ -7,8 +7,18 @@
   "use": ["login", "selectStack"],
   "steps": [
     { "action": "click", "target": "Content Models" },
+    {
+      "action": "verify",
+      "target": "Actions (doc step)",
+      "expected": { "labelEquals": "Actions", "labelMatch": "equals" }
+    },
+    {
+      "action": "verify",
+      "target": "vertical ellipsis (doc step)",
+      "expected": { "rowContains": "AUTO-EXPORT-" }
+    },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-EXPORT-" } },
-    { "action": "verify", "target": "Export", "expected": { "rowContains": "AUTO-EXPORT-" } },
-    { "action": "click", "target": "Export", "expected": { "rowContains": "AUTO-EXPORT-" } }
+    { "action": "verify", "target": "Export (doc step)" },
+    { "action": "click", "target": "Export (doc step)" }
   ]
 }

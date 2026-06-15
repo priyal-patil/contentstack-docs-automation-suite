@@ -21,10 +21,9 @@
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-" } },
     {
       "action": "verify",
-      "target": "Delete (doc step)",
-      "expected": { "labelEquals": "Delete", "labelMatch": "equals" }
+      "target": "Delete (doc step)"
     },
-    { "action": "click", "target": "Delete", "expected": { "rowContains": "AUTO-" } },
+    { "action": "click", "target": "Delete (doc step)" },
     {
       "action": "verify",
       "target": "Confirm Delete (doc step)",

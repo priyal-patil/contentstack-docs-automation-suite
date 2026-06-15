@@ -18,12 +18,8 @@
       "expected": { "rowContains": "AUTO-MB-" }
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-MB-" } },
-    {
-      "action": "verify",
-      "target": "Edit (doc step)",
-      "expected": { "labelEquals": "Edit", "labelMatch": "equals" }
-    },
-    { "action": "click", "target": "Edit", "expected": { "rowContains": "AUTO-MB-" } },
+    { "action": "verify", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Edit (doc step)" },
     { "action": "click", "target": "Insert a Field (doc step)" },
     { "action": "click", "target": "Modular Blocks (doc step)" },
     { "action": "click", "target": "Builder area (dismiss properties)" },

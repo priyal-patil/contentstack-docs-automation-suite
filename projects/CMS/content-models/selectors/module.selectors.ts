@@ -25,9 +25,15 @@ export const CLICK_SELECTORS: Record<string, string> = {
   // Content Types table row actions (default to first row for determinism)
   "vertical ellipsis": '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"]',
 
-  // Row action popover container + items
+  // Row action popover container + items (cs-vertical-action-tooltip is the portaled tooltip root)
   Settings: '#tableRowActionNode [data-test-id="cs-ct-action-settings"]',
   Edit: '#tableRowActionNode [data-test-id="cs-ct-action-edit"]',
+  "Edit (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"]',
+  "Settings (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-settings"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-settings"]',
+  "Delete (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"]',
 
   // Builder actions (Save / Save and Close – common for all content type flows)
   Save: '[data-test-id="cs-ct-save"], button:has-text("Save")',
