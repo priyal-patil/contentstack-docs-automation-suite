@@ -142,50 +142,69 @@ jobs:
           exit ${EXIT_CODE}
 
       # -------------------------------------------------------------------
-      # 6) Run JSON RTE module — all 11 flows in CRUD order
-      #    read  : basic-formatting, assets,
-      #             block-and-inline-properties-part-1,
-      #             block-and-inline-properties-part-2,
-      #             code-blocks,
-      #             embed-entries-or-assets-part-1,
-      #             embed-entries-or-assets-part-2,
-      #             markdown-content,
-      #             use-slash-command-for-shortcuts-in-json-rte,
-      #             videos-and-social-embeds
-      #    update: customize-json-rich-text-editor
+      # 6) Run JSON RTE read flows (10 flows) — use seed CT, no CT creation
+      #    basic-formatting, assets,
+      #    block-and-inline-properties-part-1, block-and-inline-properties-part-2,
+      #    code-blocks, embed-entries-or-assets-part-1, embed-entries-or-assets-part-2,
+      #    markdown-content, use-slash-command-for-shortcuts-in-json-rte, videos-and-social-embeds
       # -------------------------------------------------------------------
-      - name: Run JSON RTE module — read, update (11 flows)
-        id: json_rte_run
+      - name: Run JSON RTE read flows (10 flows)
+        id: json_rte_read
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
         run: |
           set -uo pipefail
-          echo "Running JSON RTE module (CRUD): basic-formatting → assets → block-and-inline-properties-part-1 → block-and-inline-properties-part-2 → code-blocks → embed-entries-or-assets-part-1 → embed-entries-or-assets-part-2 → markdown-content → use-slash-command-for-shortcuts-in-json-rte → videos-and-social-embeds → customize-json-rich-text-editor"
+          echo "Running JSON RTE read flows: basic-formatting → assets → block-and-inline-properties-part-1 → block-and-inline-properties-part-2 → code-blocks → embed-entries-or-assets-part-1 → embed-entries-or-assets-part-2 → markdown-content → use-slash-command-for-shortcuts-in-json-rte → videos-and-social-embeds"
           set +e
           npx playwright test tests/flows.spec.ts --project=flows \
             --grep "Project=CMS Module=json-rich-text-editor Stage=main" \
-            2>&1 | tee "${{ env.REPORT_DIR }}/json-rte-run.log"
+            --grep-invert "customize-json-rich-text-editor" \
+            2>&1 | tee "${{ env.REPORT_DIR }}/json-rte-read-run.log"
           EXIT_CODE=${PIPESTATUS[0]}
           set -e
-          echo "Exit code: ${EXIT_CODE}"
+          echo "Read flows exit code: ${EXIT_CODE}"
           exit ${EXIT_CODE}
 
       # -------------------------------------------------------------------
-      # 6) Generate reports (always)
+      # 7) Run customize-json-rich-text-editor (update flow) — runs AFTER
+      #    read flows so its intermediate CT creation does not pollute CT selection
+      # -------------------------------------------------------------------
+      - name: Run customize-json-rich-text-editor (update flow)
+        id: json_rte_customize
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+        run: |
+          set -uo pipefail
+          echo "Running update flow: customize-json-rich-text-editor"
+          set +e
+          npx playwright test tests/flows.spec.ts --project=flows \
+            --grep "customize-json-rich-text-editor" \
+            2>&1 | tee "${{ env.REPORT_DIR }}/json-rte-customize-run.log"
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+          echo "Customize exit code: ${EXIT_CODE}"
+          exit ${EXIT_CODE}
+
+      # -------------------------------------------------------------------
+      # 8) Generate reports (always)
       # -------------------------------------------------------------------
       - name: Generate reports
         if: always()
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
           BATCH_START_EPOCH: ${{ steps.run_start.outputs.start_epoch }}
-          JSON_RTE_OUTCOME: ${{ steps.json_rte_run.outcome }}
+          JSON_RTE_READ_OUTCOME: ${{ steps.json_rte_read.outcome }}
+          JSON_RTE_CUSTOMIZE_OUTCOME: ${{ steps.json_rte_customize.outcome }}
         run: |
           set -eo pipefail
           END_EPOCH="$(date +%s)"
           ELAPSED_SECS=$(( END_EPOCH - BATCH_START_EPOCH ))
           ELAPSED_MIN=$(( ELAPSED_SECS / 60 ))
           ELAPSED_SEC=$(( ELAPSED_SECS % 60 ))
-          LOG="$REPORT_DIR/json-rte-run.log"
+          LOG="$REPORT_DIR/json-rte-read-run.log"
+          JSON_RTE_OUTCOME="${JSON_RTE_READ_OUTCOME:-unknown}"
+          [[ "${JSON_RTE_CUSTOMIZE_OUTCOME:-}" == "failure" ]] && JSON_RTE_OUTCOME="failure"
 
           echo "" | tee -a "$LOG"
           echo "=============================" | tee -a "$LOG"
@@ -203,7 +222,7 @@ jobs:
           fi
 
       # -------------------------------------------------------------------
-      # 7) Upload artifacts
+      # 9) Upload artifacts
       # -------------------------------------------------------------------
       - name: Upload reports
         if: always()
@@ -232,7 +251,8 @@ jobs:
           REPORT_DIR: ${{ env.REPORT_DIR }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-          JSON_RTE_OUTCOME: ${{ steps.json_rte_run.outcome }}
+          JSON_RTE_READ_OUTCOME: ${{ steps.json_rte_read.outcome }}
+          JSON_RTE_CUSTOMIZE_OUTCOME: ${{ steps.json_rte_customize.outcome }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           SKIP_SLACK: ${{ inputs.skip_slack == 'true' && '1' || '0' }}
         run: |
@@ -255,11 +275,14 @@ jobs:
               npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || \
               echo "::warning::urlRunSummaryAndSlack.ts failed"
           else
+            OVERALL="success"
+            [[ "${JSON_RTE_READ_OUTCOME:-}" != "success" ]] && OVERALL="${JSON_RTE_READ_OUTCOME:-unknown}"
+            [[ "${JSON_RTE_CUSTOMIZE_OUTCOME:-}" == "failure" ]] && OVERALL="failure"
             ICON=":white_check_mark:"
-            [[ "${JSON_RTE_OUTCOME:-}" != "success" ]] && ICON=":x:"
+            [[ "${OVERALL}" != "success" ]] && ICON=":x:"
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS JSON Rich Text Editor Module — ${JSON_RTE_OUTCOME:-unknown}* | Duration: ${DURATION} | 11 flows (CRUD) | <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS JSON Rich Text Editor Module — ${OVERALL}* | Duration: ${DURATION} | 11 flows (CRUD) | <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
