@@ -205,7 +205,7 @@ export const INPUT_SELECTORS: Record<string, string> = {
   "Delete Taxonomy modal title (doc step)":
     '[data-test-id="cs-modal-title-delete-taxonomy"], h3[data-test-id="cs-modal-title-delete-taxonomy"]',
   "Delete Taxonomy modal instruction type DELETE (doc step)":
-    '.ReactModal__taxonomy .taxonomy-delete-text:has-text("DELETE")',
+    '.ReactModal__taxonomy .taxonomy-delete-text:has-text("Please type DELETE")',
   "Delete Taxonomy type DELETE input (doc step)":
     '[data-test-id="cs-taxonomy-textInputDelete"] input, .ReactModal__taxonomy input[placeholder*="DELETE" i]',
   /** delete-term-modal.html — delete-a-term doc step 4. */

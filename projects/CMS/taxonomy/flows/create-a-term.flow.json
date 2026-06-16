@@ -91,6 +91,7 @@
       "expected": { "labelEquals": "Create Sibling", "labelMatch": "equals" },
       "warnOnly": true
     },
+    { "action": "hover", "target": "Term vertical menu Create a Sibling Term (doc step)" },
     { "action": "click", "target": "Term vertical menu Create a Sibling Term (doc step)", "timeoutMs": 60000 },
     {
       "action": "enter",
@@ -110,6 +111,7 @@
       "expected": { "labelEquals": "Create Child", "labelMatch": "equals" },
       "warnOnly": true
     },
+    { "action": "hover", "target": "Term vertical menu Create a Child Term (doc step)" },
     { "action": "click", "target": "Term vertical menu Create a Child Term (doc step)", "timeoutMs": 60000 },
     {
       "action": "enter",
