@@ -5,6 +5,17 @@
  */
 
 export const CLICK_SELECTORS: Record<string, string> = {
+  // Actions column header (listing page)
+  "Actions (doc step)":
+    '[data-test-id="cs-table-row-action-column-cell--4"], [role="columnheader"]:has-text("Actions")',
+
+  // Vertical ellipsis on the AUTO- row
+  "vertical ellipsis (doc step)": '[data-test-id="cs-table-action-options"]',
+
+  // Edit menu item inside the row action tooltip
+  "Edit (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-edit"]',
+
   "Link": "[data-test-id=\"cs-icon\"]",
   // URL field tile in Field Type Selector (doc: "Click the URL field from the field selector")
   "URL (doc step)":

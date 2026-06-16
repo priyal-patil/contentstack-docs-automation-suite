@@ -80,7 +80,7 @@
     {
       "action": "verify",
       "target": "Edit label item (doc step)",
-      "expected": { "warnOnly": true }
+      "expected": { "documentedStructure": {} }
     },
     {
       "action": "click",
@@ -100,7 +100,8 @@
     },
     {
       "action": "verify",
-      "target": "Nest Label Under (edit label doc step)"
+      "target": "Nest Label Under (edit label doc step)",
+      "expected": { "labelEquals": "Nest Label Under", "labelMatch": "contains" }
     },
     {
       "action": "enter",

@@ -20,7 +20,7 @@
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-MB-" } },
     { "action": "verify", "target": "Edit (doc step)" },
     { "action": "click", "target": "Edit (doc step)" },
-    { "action": "click", "target": "Insert a Field (doc step)" },
+    { "action": "click", "target": "Insert a field" },
     { "action": "click", "target": "Modular Blocks (doc step)" },
     { "action": "click", "target": "Builder area (dismiss properties)" },
     {

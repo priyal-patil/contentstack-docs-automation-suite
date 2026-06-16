@@ -1,4 +1,8 @@
 export const CLICK_SELECTORS: Record<string, string> = {
+  // Actions column header (listing page)
+  "Actions (doc step)":
+    '[data-test-id="cs-table-row-action-column-cell--4"], [role="columnheader"]:has-text("Actions")',
+
   // Row action menu option — popup uses .VerticalActionTooltip, not #tableRowActionNode
   "Copy Content Type":
     '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-copy"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-copy"]',

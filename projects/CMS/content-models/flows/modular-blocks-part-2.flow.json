@@ -108,6 +108,10 @@
     },
     {
       "action": "click",
+      "target": "Builder area (dismiss properties)"
+    },
+    {
+      "action": "click",
       "target": "Properties (Modular Blocks) (doc step)"
     },
     {
