@@ -11907,7 +11907,7 @@ export async function performAction(
         // If not, open it ourselves. Then find the copy item and click it. Retry once if modal doesn't appear.
         // NOTE: getRowActionMenuRoot/.last() picks the wrong hidden tooltip when multiple rows exist.
         // Use filter({visible:true}) to find the correct one.
-        const copyBtn = page.locator('button[data-test-id="cs-cb-copy-ct"]').first();
+        const copyBtn = page.locator('[data-test-id="cs-cb-copy-ct"]').first();
 
         const findVisibleTooltip = () =>
           page.locator('[data-test-id="cs-vertical-action-tooltip"]').filter({ visible: true }).last();
