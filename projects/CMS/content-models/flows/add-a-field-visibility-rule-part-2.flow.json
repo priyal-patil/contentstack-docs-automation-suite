@@ -21,6 +21,13 @@
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-FVR2-" } },
     { "action": "verify", "target": "Edit (doc step)" },
     { "action": "click", "target": "Edit (doc step)" },
+    { "action": "click", "target": "Insert a field" },
+    { "action": "click", "target": "Single Line Textbox (doc step)" },
+    { "action": "click", "target": "Insert a field" },
+    { "action": "click", "target": "Multi Line Textbox (doc step)" },
+    { "action": "click", "target": "Insert a field" },
+    { "action": "click", "target": "Date (doc step)" },
+    { "action": "click", "target": "Save (doc step)" },
     {
       "action": "verify",
       "target": "Field Visibility Rules (doc step)",

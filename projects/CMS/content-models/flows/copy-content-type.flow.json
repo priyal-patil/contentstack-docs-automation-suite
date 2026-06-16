@@ -24,7 +24,7 @@
     },
     { "action": "click", "target": "vertical ellipsis", "expected": { "rowContains": "AUTO-COPY-" } },
     { "action": "verify", "target": "Copy Content Type (doc step)" },
-    { "action": "click", "target": "Copy Content Type (doc step)" },
+    { "action": "click", "target": "Copy Content Type", "expected": { "rowContains": "AUTO-COPY-" } },
     {
       "action": "verify",
       "target": "Copy Content Type modal (doc step)",

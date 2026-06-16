@@ -2718,7 +2718,8 @@ async function ensureManageLabelEditMode(page: Page, flow: any, unique: string, 
   const nameInput = page.locator(nameSel).first();
   if (await nameInput.isVisible().catch(() => false)) return;
 
-  const createdLabel = `Auto Label ${unique}`;
+  const unique5 = unique.replace(/-/g, "").slice(0, 5);
+  const createdLabel = `Auto Label ${unique5}`;
   const targetedRow = page
     .locator("[data-test-id='cs-cb-manage-labels-modal-list']")
     .filter({ hasText: new RegExp(escapeRegex(createdLabel), "i") })
@@ -2764,8 +2765,9 @@ async function ensureManageLabelDeleteMode(page: Page, flow: any, unique: string
   const deleteBtn = page.locator(deleteSel).first();
   if (await deleteBtn.isVisible().catch(() => false)) return;
 
-  const updatedLabel = `Auto Label Updated ${unique}`;
-  const createdLabel = `Auto Label ${unique}`;
+  const unique5 = unique.replace(/-/g, "").slice(0, 5);
+  const updatedLabel = `Auto Label Updated ${unique5}`;
+  const createdLabel = `Auto Label ${unique5}`;
   const targetedUpdatedRow = page
     .locator("[data-test-id='cs-cb-manage-labels-modal-list']")
     .filter({ hasText: new RegExp(escapeRegex(updatedLabel), "i") })
@@ -9063,37 +9065,40 @@ export async function performAction(
 
       if (String(flow?.id || "").toLowerCase() === "customize-json-rich-text-editor" && step.target === "JSON RTE Embed reference select Shared content type (doc step)") {
         const t = getStepTimeoutMs(step);
-        const shortSeg = unique.split("-")[0];
-        const ctName = `Shared JSON RTE Doc CT-${unique}`;
+        const ctPrefix = jsonRteCtNamePrefix(flow); // "Shared JSON RTE Doc CT-"
         const scope = page.locator('[data-test-id="cs-field-properties-container"]');
         await scope.waitFor({ state: "visible", timeout: Math.min(t, 25_000) });
-        // Opens modal "Select Embed Object(s)" with searchable table — not a Select__menu dropdown.
-        const trigger = scope
-          .locator('[data-test-id="cs-content-type-field-json-rich-text-editor-advanced-select-objects-tag-as-select"]')
-          .or(scope.locator('div.Select__tag__placeholder:has-text("Select Object"), div:has-text("Select Object(s)"):has(img)'))
-          .or(scope.getByText("Select Object(s)", { exact: true }))
-          .first();
-        await trigger.waitFor({ state: "visible", timeout: Math.min(t, 25_000) });
-        await trigger.click({ timeout: t, force: true });
-        await page.waitForTimeout(500);
+
         const embedDialog = page
           .getByRole("dialog")
           .filter({ has: page.getByRole("heading", { name: /select embed object/i }) })
           .first();
+
+        // Only click the trigger if the modal isn't already open (toggle may have auto-opened it).
+        if ((await embedDialog.count().catch(() => 0)) === 0 || !(await embedDialog.isVisible().catch(() => false))) {
+          // Opens modal "Select Embed Object(s)" with searchable table — not a Select__menu dropdown.
+          const trigger = scope
+            .locator('[data-test-id="cs-content-type-field-json-rich-text-editor-advanced-select-objects-tag-as-select"]')
+            .or(scope.locator('div.Select__tag__placeholder:has-text("Select Object"), div:has-text("Select Object(s)"):has(img)'))
+            .or(scope.getByText("Select Object(s)", { exact: true }))
+            .first();
+          await trigger.waitFor({ state: "visible", timeout: Math.min(t, 25_000) });
+          await trigger.click({ timeout: t, force: true });
+          await page.waitForTimeout(500);
+        }
+
         await embedDialog.waitFor({ state: "visible", timeout: Math.min(t, 25_000) });
         const search = embedDialog
           .getByPlaceholder(/search content types/i)
           .or(embedDialog.locator('input[type="text"][placeholder*="Search"]'))
           .first();
         await search.waitFor({ state: "visible", timeout: Math.min(t, 15_000) });
+        // Search by prefix only — seed CT was created with unique5 suffix, not the full run UUID.
         await search.fill("");
-        await search.fill(ctName);
+        await search.fill(ctPrefix);
         await page.waitForTimeout(800);
-        // Prefer row matching full UUID; fallback short segment or partial title.
-        let row = embedDialog.getByRole("row").filter({ hasText: new RegExp(escapeRegex(unique), "i") }).first();
-        if ((await row.count().catch(() => 0)) === 0) {
-          row = embedDialog.getByRole("row").filter({ hasText: new RegExp(escapeRegex(shortSeg), "i") }).first();
-        }
+        // Match any Shared JSON RTE Doc CT row (first one found).
+        let row = embedDialog.getByRole("row").filter({ hasText: new RegExp(escapeRegex(ctPrefix), "i") }).first();
         if ((await row.count().catch(() => 0)) === 0) {
           row = embedDialog.getByRole("row").filter({ hasText: /Shared JSON RTE Doc CT/i }).first();
         }
@@ -20479,7 +20484,6 @@ export async function performAction(
         if (step.target === "Create New (doc step)") {
           const createNewSel = '[data-test-id="cs-cb-new-ct-child"]';
           const newCtBtnSel =
-            overridesClick["+ New Content Type (doc step)"] || overridesClick["+ New Content Type"] ||
             '[data-test-id="cs-cb-new-ct"], button:has-text("+ New Content Type"), button:has-text("New Content Type")';
           const createNew = page.locator(createNewSel).first();
           if (!(await createNew.isVisible().catch(() => false))) {
@@ -35452,7 +35456,7 @@ export async function performAction(
             .catch(() => 0)) > 0);
 
       if (isCreateContentTypeModal) {
-        if (step.target === "Name") {
+        if (step.target === "Name" || step.target === "Name (doc step)") {
           const name = createModal
             .locator('[data-test-id="cs-ct-create-modal-ct-name-input"] input[name="name"]')
             .first();
@@ -35589,11 +35593,13 @@ export async function performAction(
     }
 
     case "select": {
-      // In Create CT modal, Type is radio buttons ("Single"/"Multiple")
+      // In Create CT modal, Type is radio buttons ("Single"/"Multiple").
+      // Use evaluate(el.click()) instead of radio.check() — Playwright's check() internally calls
+      // scrollIntoViewIfNeeded() which fires a window scroll event that closes Contentstack's ReactModal.
       const radio = page.getByRole("radio", { name: step.value ?? "", exact: false }).first();
       if (await radio.count().catch(() => 0)) {
         await expect(radio).toBeVisible({ timeout: 30_000 });
-        await radio.check({ timeout: 30_000 });
+        await radio.evaluate((el) => (el as HTMLInputElement).click());
         break;
       }
 
