@@ -72,7 +72,7 @@ permissions:
 
 jobs:
   cms-batch2:
-    name: CMS Batch 2 — 20 modules (20 workers, CRUD, 5 min/flow, 3 min element)
+    name: CMS Batch 2 — 20 modules (1 worker/module, CRUD, 5 min/flow, 3 min element)
     runs-on: ubuntu-latest
     # Auto-chain when Batch 1 was triggered by schedule (nightly) or repository_dispatch.
     # Skip when Batch 1 was triggered manually (workflow_dispatch) so a single-batch
@@ -179,7 +179,7 @@ jobs:
       # -------------------------------------------------------------------
       # 5) Run Batch 2 — 20 modules (CRUD order, skip Batch 1 + deletes)
       # -------------------------------------------------------------------
-      - name: Run CMS Batch 2 — 20 modules (217 flows, 20 workers)
+      - name: Run CMS Batch 2 — 20 modules (217 flows, 1 worker/module)
         id: batch2_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -387,6 +387,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 20 modules: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security, tokens, webhook, workflows, taxonomy, visual-experience | 20 workers | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 20 modules: environment, language, branches, stack, content-models, global-field, assets, entries, json-rich-text-editor, releases, users-and-roles, live-preview, content-modeling, search, security, tokens, webhook, workflows, taxonomy, visual-experience | 1 worker/module | CRUD order | 3 min element timeout. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi

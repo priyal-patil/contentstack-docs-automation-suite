@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 217 flows, 20 shared workers, true idle-browser reuse
+# CMS Batch 2 — 217 flows, 20 modules in parallel, 1 worker per module
 #
 # Architecture:
-#   ONE Playwright invocation with PW_WORKERS=14.
-#   All 106 flows from 8 modules share a single worker pool.
-#   When any worker finishes a flow it immediately picks up the next queued
-#   flow from any module — no idle browsers, no wasted time.
-#
-# Actual perf (16 workers, 164 flows): 21m 33s → ~2.1 min/flow avg
-# Estimated with 20 workers, 217 flows: ~23 min
-#
-# Workers vs GHA runner (2 CPU cores, 7 GB RAM, headless Chromium ~250 MB):
-#   20 workers × 250 MB = 5.0 GB — well within 7 GB limit
-#   Raise to PW_WORKERS=24 for max speed (6 GB, still safe on GHA).
+#   20 Playwright invocations run simultaneously — one per module, 1 worker each.
+#   Each module's flows run sequentially within that module's worker.
+#   When a module finishes early, its process exits and its resources free up
+#   naturally (the remaining modules continue unaffected).
+#   Flows with no intra-module dependencies benefit from this: small modules
+#   (environment=1 flow, tokens=2) finish in ~2-4 min while large ones
+#   (content-models=41, visual-experience=21) run concurrently to the end.
 #
 # Modules (flows after skipping Batch 1 + deletes):
 #   environment          :  1 flow
@@ -31,11 +27,11 @@
 #   content-modeling     : 11 flows
 #   search               : 12 flows
 #   security             :  6 flows
-#   tokens               :  2 flows  ← added
-#   webhook              :  5 flows  ← added
-#   workflows            : 16 flows  ← added (delete-a-publish-rule + revoke-edit-access added to skip; 3 flows removed)
-#   taxonomy             :  8 flows  ← added
-#   visual-experience    : 21 flows  ← added (no Batch1 or delete skips needed)
+#   tokens               :  2 flows
+#   webhook              :  5 flows
+#   workflows            : 16 flows  (delete-a-publish-rule + revoke-edit-access in skip; 3 flows removed)
+#   taxonomy             :  8 flows
+#   visual-experience    : 21 flows
 #   ──────────────────────────────────
 #   Total                : 217 flows
 #
@@ -49,7 +45,6 @@
 # Usage:
 #   ./scripts/run-cms-batch2.sh
 #   PLAYWRIGHT_HEADLESS=0 ./scripts/run-cms-batch2.sh
-#   PW_WORKERS=20 ./scripts/run-cms-batch2.sh              (max speed, still safe)
 #   REPORT_DIR=reports/my-batch2 ./scripts/run-cms-batch2.sh
 #   SKIP_SLACK=1 ./scripts/run-cms-batch2.sh
 #   PW_RETRIES=0 ./scripts/run-cms-batch2.sh               (disable retries for fast local debug)
@@ -79,11 +74,6 @@ LOG="$REPORT_DIR/batch2-run.log"
 PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
-# ── Workers ──────────────────────────────────────────────────────────────────
-# 20 workers: 5.0 GB RAM, ~23 min for 217 flows at 2.1 min/flow avg.
-# Raise to 24 for max speed (6 GB, still safe on GHA 7 GB runner).
-export PW_WORKERS="${PW_WORKERS:-20}"
-
 # ── Per-flow timeouts ────────────────────────────────────────────────────────
 # Each flow is its own Playwright test (CMS_SEQUENTIAL_MODULE_ORDER=0).
 # PW_FLOW_MAX_MINUTES caps the entire test; PW_ACTION_TIMEOUT_MINUTES caps
@@ -93,10 +83,7 @@ export PW_ACTION_TIMEOUT_MINUTES="${PW_ACTION_TIMEOUT_MINUTES:-3}"
 export PW_SLOWMO="${PW_SLOWMO:-0}"
 export PLAYWRIGHT_HEADLESS="${PLAYWRIGHT_HEADLESS:-1}"
 
-# Individual flow tests — no module-batch overhead, no CMS_MODULE_BATCH_TIMEOUT_MS.
-# PW_FLOW_MAX_MINUTES=5 is the actual timeout that applies per flow.
 export CMS_SEQUENTIAL_MODULE_ORDER=0
-# With individual tests, each flow is its own test — no continuation needed.
 export CMS_CONTINUE_ON_FAIL=0
 export OPEN_FLOW_REPORT="${OPEN_FLOW_REPORT:-false}"
 
@@ -141,64 +128,165 @@ CMS_DELETE_FLOWS=(
 )
 
 ALL_SKIP_FLOWS=("${CMS_BATCH1_FLOWS[@]}" "${CMS_DELETE_FLOWS[@]}")
-# Consumed by flows.spec.ts to exclude these flow IDs from the test queue.
 export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${ALL_SKIP_FLOWS[@]}" | sed 's/,$//')"
 
 # ── --grep-invert pattern ─────────────────────────────────────────────────────
-# WHY this matters with CMS_SEQUENTIAL_MODULE_ORDER=0:
-#   In individual-flow mode each test title ends with the flow ID, e.g.:
-#     "Project=CMS Module=stack Stage=main create-a-new-stack-part-1"
-#   CMS_SKIP_FLOW_IDS is only read by flows.spec.ts in module-batch mode (=1).
-#   With =0 it has NO effect — only --grep-invert reliably excludes flows.
-#
-# Pattern is anchored with $ so "create-a-global-field" does NOT exclude
-# "create-a-global-field-part-2" (different flow ID at end of title).
-#
-# Covers: all 21 Batch 1 flows (in these 7 modules) + all delete flows.
-# Batch 1 flows (across all 10 modules) + delete flows, anchored with $ so
-# "create-a-global-field" does NOT accidentally match "create-a-global-field-part-2".
-# releases: create-a-new-release (Batch 1), delete-a-release + remove-entry-asset-from-a-release (delete)
-# json-rich-text-editor: no Batch 1 flows, no delete flows — all 11 flows run
 CMS_SKIP_GREP="(create-a-new-stack-part-1|add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-content-type|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages|delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership|remove-entry-asset-from-a-release|delete-a-publish-rule|revoke-edit-access-for-an-entry)$"
 
-# ── Run ───────────────────────────────────────────────────────────────────────
+# ── Modules ───────────────────────────────────────────────────────────────────
+MODULES=(
+  "environment"
+  "language"
+  "branches"
+  "stack"
+  "content-models"
+  "global-field"
+  "assets"
+  "entries"
+  "json-rich-text-editor"
+  "releases"
+  "users-and-roles"
+  "live-preview"
+  "content-modeling"
+  "search"
+  "security"
+  "tokens"
+  "webhook"
+  "workflows"
+  "taxonomy"
+  "visual-experience"
+)
+
+# ── Launch all modules in parallel (1 worker each) ───────────────────────────
 START_EPOCH="$(date +%s)"
 START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 2 — shared worker pool" | tee -a "$LOG"
-echo "  Workers  : ${PW_WORKERS} shared across all 217 flows" | tee -a "$LOG"
+echo "  CMS Batch 2 — ${#MODULES[@]} modules in parallel (1 worker each)" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$LOG"
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
 echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
 echo "             live-preview(6) content-modeling(11) search(12) security(6)" | tee -a "$LOG"
 echo "             tokens(2) webhook(5) workflows(16) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
 echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
-echo "  Est. time: ~$(( 217 / PW_WORKERS * 2 )) min (217 flows ÷ ${PW_WORKERS} workers × 2.1 min avg)" | tee -a "$LOG"
-echo "  Skipping : Batch 1 flows + delete flows (via --grep-invert)" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
 echo "" | tee -a "$LOG"
 
-TOTAL_EXIT=0
-set +e
-npx playwright test tests/flows.spec.ts --project=flows \
-  --grep "Project=CMS Module=(environment|language|branches|stack|content-models|global-field|assets|entries|json-rich-text-editor|releases|users-and-roles|live-preview|content-modeling|search|security|tokens|webhook|workflows|taxonomy|visual-experience) Stage=main" \
-  --grep-invert "$CMS_SKIP_GREP" \
-  2>&1 | tee -a "$LOG"
-PW_EXIT=${PIPESTATUS[0]}
-set -e
-[[ "$PW_EXIT" -ne 0 ]] && TOTAL_EXIT=1
+declare -A MODULE_PIDS
+declare -A MODULE_DIRS
 
-# Save the result file to parts directory for partial-merge in GHA always-step.
+for MODULE in "${MODULES[@]}"; do
+  MODULE_DIR="$PARTS_DIR/module-${MODULE}"
+  mkdir -p "$MODULE_DIR"
+  MODULE_DIRS["$MODULE"]="$MODULE_DIR"
+  MODULE_LOG="$MODULE_DIR/module.log"
+
+  (
+    : > "$MODULE_LOG"
+    echo "[${MODULE}] Starting at $(date -u +'%H:%M:%SZ')" >> "$MODULE_LOG"
+    set +e
+    REPORT_DIR="$MODULE_DIR" \
+    PW_WORKERS=1 \
+      npx playwright test tests/flows.spec.ts \
+        --project=flows \
+        --grep "Project=CMS Module=${MODULE} Stage=main" \
+        --grep-invert "$CMS_SKIP_GREP" \
+        >> "$MODULE_LOG" 2>&1
+    EXIT_CODE=$?
+    set -e
+    echo "[${MODULE}] Finished at $(date -u +'%H:%M:%SZ') — exit ${EXIT_CODE}" >> "$MODULE_LOG"
+    exit $EXIT_CODE
+  ) &
+  MODULE_PIDS["$MODULE"]=$!
+  echo "  ▶  ${MODULE} (pid ${MODULE_PIDS[$MODULE]})" | tee -a "$LOG"
+done
+
+echo "" | tee -a "$LOG"
+echo "All ${#MODULES[@]} modules launched. Waiting for completion..." | tee -a "$LOG"
+echo "" | tee -a "$LOG"
+
+# ── Wait and collect exit codes ───────────────────────────────────────────────
+TOTAL_EXIT=0
+declare -A MODULE_EXITS
+
+for MODULE in "${MODULES[@]}"; do
+  wait "${MODULE_PIDS[$MODULE]}" 2>/dev/null || true
+  MODULE_EXITS["$MODULE"]=$?
+  if [[ "${MODULE_EXITS[$MODULE]}" -ne 0 ]]; then
+    TOTAL_EXIT=1
+    echo "  ❌  ${MODULE} — exit ${MODULE_EXITS[$MODULE]}" | tee -a "$LOG"
+  else
+    echo "  ✅  ${MODULE} — passed" | tee -a "$LOG"
+  fi
+done
+
+# ── Append per-module logs to main log ────────────────────────────────────────
+echo "" >> "$LOG"
+echo "================================================================" >> "$LOG"
+echo "  Per-module detailed logs" >> "$LOG"
+echo "================================================================" >> "$LOG"
+for MODULE in "${MODULES[@]}"; do
+  MODULE_LOG="${MODULE_DIRS[$MODULE]}/module.log"
+  if [[ -f "$MODULE_LOG" ]]; then
+    echo "" >> "$LOG"
+    echo "--- ${MODULE} ---" >> "$LOG"
+    cat "$MODULE_LOG" >> "$LOG"
+  fi
+done
+
+# ── Merge part results ────────────────────────────────────────────────────────
+echo "" | tee -a "$LOG"
+echo "Merging module results..." | tee -a "$LOG"
+
+PART_JSON_FILES=()
+for MODULE in "${MODULES[@]}"; do
+  MODULE_DIR="${MODULE_DIRS[$MODULE]}"
+  if [[ -f "$MODULE_DIR/flows-results.json" ]]; then
+    cp "$MODULE_DIR/flows-results.json" "$PARTS_DIR/module-${MODULE}.json" 2>/dev/null || true
+    PART_JSON_FILES+=("$PARTS_DIR/module-${MODULE}.json")
+  fi
+done
+
+if [[ ${#PART_JSON_FILES[@]} -gt 0 ]]; then
+  npx ts-node "$ROOT/scripts/mergePlaywrightFlowJsonReports.ts" \
+    --out "$REPORT_DIR/flows-results.json" "${PART_JSON_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+fi
+
+# Save merged result for partial-merge in GHA always-step.
 if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
   cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/batch2-all-modules.json"
 fi
 
-# Save warnings from the main run before any retry overwrites them.
-if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
+# ── Merge warnings from all modules ──────────────────────────────────────────
+WARN_PARTS=()
+for MODULE in "${MODULES[@]}"; do
+  MODULE_DIR="${MODULE_DIRS[$MODULE]}"
+  if [[ -f "$MODULE_DIR/doc-step-warnings.json" ]]; then
+    WARN_PARTS+=("$MODULE_DIR/doc-step-warnings.json")
+  fi
+done
+
+if [[ ${#WARN_PARTS[@]} -gt 0 ]]; then
+  node -e "
+    const fs = require('fs');
+    const parts = process.argv.slice(1);
+    const all = [];
+    for (const p of parts) {
+      try {
+        const d = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        if (Array.isArray(d.warnings)) all.push(...d.warnings);
+      } catch {}
+    }
+    const uniqueFlows = new Set(all.map(w => w.flowId).filter(Boolean)).size;
+    fs.writeFileSync(
+      '${REPORT_DIR}/doc-step-warnings.json',
+      JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
+    );
+    console.log('Merged ' + parts.length + ' warning parts → ' + all.length + ' warnings across ' + uniqueFlows + ' flows.');
+  " "${WARN_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
   cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/batch2-base-warnings.json" 2>/dev/null || true
 fi
 
@@ -286,22 +374,19 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     echo "  Still failing: ${RETRY_FAIL}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
     echo "================================================================" | tee -a "$LOG"
 
-    # Patch the original batch result with retry outcomes and restore flows-results.json.
     if [[ ${#RETRY_FILES[@]} -gt 0 && -f "$PARTS_DIR/batch2-all-modules.json" ]]; then
       npx ts-node "$ROOT/scripts/applyFlowRetries.ts" \
         --base "$PARTS_DIR/batch2-all-modules.json" "${RETRY_FILES[@]}" 2>&1 | tee -a "$LOG" || true
       cp "$PARTS_DIR/batch2-all-modules.json" "$REPORT_DIR/flows-results.json" 2>/dev/null || true
     fi
 
-    # Merge warnings: base run + each retried flow's warnings (retry result overrides by flowId+stepIndex key).
     shopt -s nullglob
-    WARN_PARTS=("$PARTS_DIR/batch2-base-warnings.json" "$PARTS_DIR"/*-retry-warnings.json)
+    WARN_RETRY_PARTS=("$PARTS_DIR/batch2-base-warnings.json" "$PARTS_DIR"/*-retry-warnings.json)
     shopt -u nullglob
-    if [[ ${#WARN_PARTS[@]} -gt 0 ]]; then
+    if [[ ${#WARN_RETRY_PARTS[@]} -gt 0 ]]; then
       node -e "
         const fs = require('fs');
         const parts = process.argv.slice(1);
-        // Index by flowId|stepIndex so retry entries replace base entries for the same step.
         const byKey = new Map();
         for (const p of parts) {
           try {
@@ -319,7 +404,7 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
           JSON.stringify({ generatedAt: new Date().toISOString(), warningFlows: uniqueFlows, warnings: all }, null, 2)
         );
         console.log('Merged warnings → ' + all.length + ' entries across ' + uniqueFlows + ' flows.');
-      " "${WARN_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
+      " "${WARN_RETRY_PARTS[@]}" 2>&1 | tee -a "$LOG" || true
     fi
 
     [[ "$RETRY_FAIL" -eq 0 ]] && TOTAL_EXIT=0 || TOTAL_EXIT=1
@@ -344,8 +429,10 @@ CMS Batch 2 — Duration: ${TOTAL_MIN}m ${TOTAL_SEC}s
 Started:  ${START_ISO}
 Finished: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
 Outcome:  $([ $TOTAL_EXIT -eq 0 ] && echo 'success' || echo 'failure')
-Workers:  ${PW_WORKERS}
-Modules:  environment, language, branches, stack, content-models, global-field, assets
+Workers:  1 per module (20 modules in parallel)
+Modules:  environment, language, branches, stack, content-models, global-field, assets,
+          entries, json-rich-text-editor, releases, users-and-roles, live-preview,
+          content-modeling, search, security, tokens, webhook, workflows, taxonomy, visual-experience
 EOF
 
 # ── Reports ───────────────────────────────────────────────────────────────────
