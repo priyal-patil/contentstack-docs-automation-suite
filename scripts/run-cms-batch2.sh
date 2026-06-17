@@ -157,13 +157,17 @@ MODULES=(
   "visual-experience"
 )
 
-# ── Launch all modules in parallel (1 worker each) ───────────────────────────
+# ── Launch modules with max 10 concurrent (semaphore) ────────────────────────
+# 10 concurrent × ~400 MB (250 MB browser + 150 MB Node) = 4 GB — safe on 7 GB GHA runner.
+# When a module finishes, the next queued module starts automatically.
+MAX_CONCURRENT=10
+
 START_EPOCH="$(date +%s)"
 START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 2 — ${#MODULES[@]} modules in parallel (1 worker each)" | tee -a "$LOG"
+echo "  CMS Batch 2 — ${#MODULES[@]} modules, max ${MAX_CONCURRENT} concurrent (1 worker each)" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$LOG"
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
 echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
@@ -177,8 +181,16 @@ echo "" | tee -a "$LOG"
 
 declare -A MODULE_PIDS
 declare -A MODULE_DIRS
+declare -A MODULE_EXITS
+RUNNING=0
 
 for MODULE in "${MODULES[@]}"; do
+  # Wait until a slot is free
+  while [[ $RUNNING -ge $MAX_CONCURRENT ]]; do
+    wait -n 2>/dev/null || true
+    RUNNING=$(( RUNNING - 1 ))
+  done
+
   MODULE_DIR="$PARTS_DIR/module-${MODULE}"
   mkdir -p "$MODULE_DIR"
   MODULE_DIRS["$MODULE"]="$MODULE_DIR"
@@ -201,16 +213,16 @@ for MODULE in "${MODULES[@]}"; do
     exit $EXIT_CODE
   ) &
   MODULE_PIDS["$MODULE"]=$!
-  echo "  ▶  ${MODULE} (pid ${MODULE_PIDS[$MODULE]})" | tee -a "$LOG"
+  RUNNING=$(( RUNNING + 1 ))
+  echo "  ▶  ${MODULE} (pid ${MODULE_PIDS[$MODULE]}, running: ${RUNNING}/${MAX_CONCURRENT})" | tee -a "$LOG"
 done
 
 echo "" | tee -a "$LOG"
-echo "All ${#MODULES[@]} modules launched. Waiting for completion..." | tee -a "$LOG"
+echo "All modules launched. Waiting for remaining to complete..." | tee -a "$LOG"
 echo "" | tee -a "$LOG"
 
-# ── Wait and collect exit codes ───────────────────────────────────────────────
+# ── Wait for all remaining and collect exit codes ─────────────────────────────
 TOTAL_EXIT=0
-declare -A MODULE_EXITS
 
 for MODULE in "${MODULES[@]}"; do
   wait "${MODULE_PIDS[$MODULE]}" 2>/dev/null || true
