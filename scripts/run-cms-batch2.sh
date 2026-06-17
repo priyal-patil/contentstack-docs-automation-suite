@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 220 flows, 20 shared workers, true idle-browser reuse
+# CMS Batch 2 — 217 flows, 20 shared workers, true idle-browser reuse
 #
 # Architecture:
 #   ONE Playwright invocation with PW_WORKERS=14.
@@ -9,7 +9,7 @@
 #   flow from any module — no idle browsers, no wasted time.
 #
 # Actual perf (16 workers, 164 flows): 21m 33s → ~2.1 min/flow avg
-# Estimated with 20 workers, 220 flows: ~23 min
+# Estimated with 20 workers, 217 flows: ~23 min
 #
 # Workers vs GHA runner (2 CPU cores, 7 GB RAM, headless Chromium ~250 MB):
 #   20 workers × 250 MB = 5.0 GB — well within 7 GB limit
@@ -33,11 +33,11 @@
 #   security             :  6 flows
 #   tokens               :  2 flows  ← added
 #   webhook              :  5 flows  ← added
-#   workflows            : 19 flows  ← added (delete-a-publish-rule + revoke-edit-access added to skip)
+#   workflows            : 16 flows  ← added (delete-a-publish-rule + revoke-edit-access added to skip; 3 flows removed)
 #   taxonomy             :  8 flows  ← added
 #   visual-experience    : 21 flows  ← added (no Batch1 or delete skips needed)
 #   ──────────────────────────────────
-#   Total                : 220 flows
+#   Total                : 217 flows
 #
 # Skips (via --grep-invert anchored with $):
 #   Batch 1 flows : create-an-entry, add-a-comment (entries)
@@ -80,7 +80,7 @@ PARTS_DIR="$REPORT_DIR/playwright-parts"
 mkdir -p "$REPORT_DIR" "$PARTS_DIR"
 
 # ── Workers ──────────────────────────────────────────────────────────────────
-# 20 workers: 5.0 GB RAM, ~23 min for 220 flows at 2.1 min/flow avg.
+# 20 workers: 5.0 GB RAM, ~23 min for 217 flows at 2.1 min/flow avg.
 # Raise to 24 for max speed (6 GB, still safe on GHA 7 GB runner).
 export PW_WORKERS="${PW_WORKERS:-20}"
 
@@ -168,14 +168,14 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
 echo "  CMS Batch 2 — shared worker pool" | tee -a "$LOG"
-echo "  Workers  : ${PW_WORKERS} shared across all 220 flows" | tee -a "$LOG"
+echo "  Workers  : ${PW_WORKERS} shared across all 217 flows" | tee -a "$LOG"
 echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$LOG"
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
 echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
 echo "             live-preview(6) content-modeling(11) search(12) security(6)" | tee -a "$LOG"
-echo "             tokens(2) webhook(5) workflows(19) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
+echo "             tokens(2) webhook(5) workflows(16) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
 echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
-echo "  Est. time: ~$(( 220 / PW_WORKERS * 2 )) min (220 flows ÷ ${PW_WORKERS} workers × 2.1 min avg)" | tee -a "$LOG"
+echo "  Est. time: ~$(( 217 / PW_WORKERS * 2 )) min (217 flows ÷ ${PW_WORKERS} workers × 2.1 min avg)" | tee -a "$LOG"
 echo "  Skipping : Batch 1 flows + delete flows (via --grep-invert)" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"

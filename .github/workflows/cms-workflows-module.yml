@@ -1,5 +1,5 @@
 # =============================================================================
-# CMS Workflows — 23 flows in CRUD sequence, 1 worker, 5 min cap
+# CMS Workflows — 20 flows in CRUD sequence, 1 worker, 5 min cap
 #
 # Flows (CRUD order):
 #   Read (about) : about-workflows, about-workflow-stages,
@@ -11,13 +11,10 @@
 #                  send-an-entry-for-edit-access-approval,
 #                  approve-edit-access-request-for-an-entry,
 #                  revoke-edit-access-for-an-entry,
-#                  send-an-entry-for-publish-or-unpublish-approval-part-1,
-#                  send-an-entry-for-publish-or-unpublish-approval-part-2,
 #                  send-an-entry-for-publish-or-unpublish-approval
 #   Update       : update-a-workflow, update-a-publish-rule,
 #                  enable-or-disable-a-workflow-part-1,
-#                  enable-or-disable-a-workflow-part-2,
-#                  enable-or-disable-a-workflow
+#                  enable-or-disable-a-workflow-part-2
 #   Delete       : delete-a-workflow, delete-a-publish-rule
 #
 # Trigger: workflow_dispatch only (manual run from Actions tab)
@@ -55,7 +52,7 @@ permissions:
 
 jobs:
   cms-workflows:
-    name: CMS Workflows — 23 CRUD flows (1 worker, 5 min/flow)
+    name: CMS Workflows — 20 CRUD flows (1 worker, 5 min/flow)
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-noble
@@ -120,7 +117,7 @@ jobs:
           mkdir -p "${{ env.REPORT_DIR }}"
           echo "CMS Workflows started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee "${{ env.REPORT_DIR }}/workflows-run.log"
 
-      - name: Run CMS Workflows — 23 CRUD flows (exact sequence via script)
+      - name: Run CMS Workflows — 20 CRUD flows (exact sequence via script)
         id: workflows_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -292,6 +289,6 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Workflows — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 23 CRUD flows | 1 worker | 5 min cap. <${RUN_URL}|Open run>\"}" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Workflows — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 20 CRUD flows | 1 worker | 5 min cap. <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi

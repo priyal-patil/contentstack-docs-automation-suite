@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Workflows — 23 flows in CRUD sequence, 1 worker, 5 min cap
+# CMS Workflows — 20 flows in CRUD sequence, 1 worker, 5 min cap
 #
 # Execution order (CRUD):
 #   Read (about/info):
@@ -19,18 +19,15 @@
 #     11. send-an-entry-for-edit-access-approval
 #     12. approve-edit-access-request-for-an-entry
 #     13. revoke-edit-access-for-an-entry
-#     14. send-an-entry-for-publish-or-unpublish-approval-part-1
-#     15. send-an-entry-for-publish-or-unpublish-approval-part-2
-#     16. send-an-entry-for-publish-or-unpublish-approval
+#     14. send-an-entry-for-publish-or-unpublish-approval
 #   Update:
-#     17. update-a-workflow
-#     18. update-a-publish-rule
-#     19. enable-or-disable-a-workflow-part-1
-#     20. enable-or-disable-a-workflow-part-2
-#     21. enable-or-disable-a-workflow
+#     15. update-a-workflow
+#     16. update-a-publish-rule
+#     17. enable-or-disable-a-workflow-part-1
+#     18. enable-or-disable-a-workflow-part-2
 #   Delete:
-#     22. delete-a-workflow
-#     23. delete-a-publish-rule
+#     19. delete-a-workflow
+#     20. delete-a-publish-rule
 #
 # Each flow gets a hard 5-minute timeout. Failure captures a screenshot.
 # All flows share the same auth session (auth.json generated on first run).
@@ -86,14 +83,11 @@ WORKFLOWS_FLOWS=(
   "send-an-entry-for-edit-access-approval"
   "approve-edit-access-request-for-an-entry"
   "revoke-edit-access-for-an-entry"
-  "send-an-entry-for-publish-or-unpublish-approval-part-1"
-  "send-an-entry-for-publish-or-unpublish-approval-part-2"
   "send-an-entry-for-publish-or-unpublish-approval"
   "update-a-workflow"
   "update-a-publish-rule"
   "enable-or-disable-a-workflow-part-1"
   "enable-or-disable-a-workflow-part-2"
-  "enable-or-disable-a-workflow"
   "delete-a-workflow"
   "delete-a-publish-rule"
 )

@@ -9,7 +9,7 @@
 # Job chain:
 #   batch1  (21 create flows,    1 worker,  ~15 min, timeout 180 min)
 #     ↓ needs: batch1
-#   batch2  (220 edit flows,    20 workers, ~29 min, timeout 360 min)
+#   batch2  (217 edit flows,    20 workers, ~29 min, timeout 360 min)
 #     ↓ needs: batch2
 #   batch3  (38 delete+trash,  variable,   ~32 min, timeout 180 min)
 #
@@ -189,10 +189,10 @@ jobs:
           fi
 
 # =============================================================================
-# JOB 2 — CMS Batch 2 (220 edit flows, 20 workers)
+# JOB 2 — CMS Batch 2 (217 edit flows, 20 workers)
 # =============================================================================
   batch2:
-    name: "Batch 2 — 220 edit flows (20 workers, ~29 min)"
+    name: "Batch 2 — 217 edit flows (20 workers, ~29 min)"
     needs: batch1
     if: always()
     runs-on: ubuntu-latest
@@ -253,7 +253,7 @@ jobs:
           echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
           mkdir -p "${{ env.REPORT_DIR }}"
 
-      - name: Run Batch 2 — 220 edit flows (20 workers)
+      - name: Run Batch 2 — 217 edit flows (20 workers)
         id: batch2_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -319,7 +319,7 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 220 flows | 20 workers | 20 modules. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 217 flows | 20 workers | 20 modules. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
           fi
 
 # =============================================================================

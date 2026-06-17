@@ -96,7 +96,7 @@ jobs:
       OPEN_CMS_DASHBOARD: "0"
       SKIP_OPEN_DASHBOARD: "1"
       PW_SLOWMO: "0"
-      # 8 shared workers across all 220 flows from 20 modules.
+      # 8 shared workers across all 217 flows from 20 modules.
       # When any worker finishes its flow it immediately picks up the next
       # queued flow from any module — zero idle time.
       # GHA ubuntu-latest: 2 vCPU / 7 GB RAM.
@@ -179,7 +179,7 @@ jobs:
       # -------------------------------------------------------------------
       # 5) Run Batch 2 — 20 modules (CRUD order, skip Batch 1 + deletes)
       # -------------------------------------------------------------------
-      - name: Run CMS Batch 2 — 20 modules (220 flows, 20 workers)
+      - name: Run CMS Batch 2 — 20 modules (217 flows, 20 workers)
         id: batch2_run
         env:
           REPORT_DIR: ${{ env.REPORT_DIR }}
@@ -189,7 +189,7 @@ jobs:
           echo "Architecture: 7 parallel subprocesses (one per module)"
           echo "              CMS_SEQUENTIAL_MODULE_ORDER=0, PW_WORKERS=1/module"
           echo "              5 min/flow | 3 min element timeout"
-          echo "              ~220 flows total across 20 modules"
+          echo "              ~217 flows total across 20 modules"
           bash scripts/run-cms-batch2.sh
           EXIT_CODE=$?
           echo "Batch 2 exit code: ${EXIT_CODE}"
