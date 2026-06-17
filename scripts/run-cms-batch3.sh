@@ -12,7 +12,7 @@
 #   Phase 2  — Taxonomy   ( 2 flows, 1 worker)  — term MUST precede taxonomy
 #   Phase 3  — Structure  ( 2 flows, 2 workers) — independent
 #   Phase 4  — Releases   ( 2 flows, 2 workers) — independent
-#   Phase 5  — Services   ( 6 flows, 3 workers) — mostly independent
+#   Phase 5  — Services   ( 5 flows, 3 workers) — mostly independent
 #   Phase 6  — Branches   ( 2 flows, 1 worker)  — alias MUST precede branch
 #   Phase 7  — Env/Lang   ( 2 flows, 2 workers) — independent
 #   Phase 8  — Users      ( 2 flows, 2 workers) — independent
@@ -178,7 +178,6 @@ run_phase "services" 3 \
   "delete-a-delivery-token" \
   "delete-a-management-token" \
   "delete-a-webhook" \
-  "revoke-edit-access-for-an-entry" \
   "delete-a-publish-rule" \
   "delete-a-workflow"
 

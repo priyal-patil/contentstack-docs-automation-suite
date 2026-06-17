@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Batch 2 — 217 flows, 20 modules in parallel, 1 worker per module
+# CMS Batch 2 — 218 flows, 20 modules in parallel, 1 worker per module
 #
 # Architecture:
 #   20 Playwright invocations run simultaneously — one per module, 1 worker each.
@@ -29,11 +29,11 @@
 #   security             :  6 flows
 #   tokens               :  2 flows
 #   webhook              :  5 flows
-#   workflows            : 16 flows  (delete-a-publish-rule + revoke-edit-access in skip; 3 flows removed)
+#   workflows            : 17 flows  (delete-a-publish-rule + delete-a-workflow in skip; 3 flows removed)
 #   taxonomy             :  8 flows
 #   visual-experience    : 21 flows
 #   ──────────────────────────────────
-#   Total                : 217 flows
+#   Total                : 218 flows
 #
 # Skips (via --grep-invert anchored with $):
 #   Batch 1 flows : create-an-entry, add-a-comment (entries)
@@ -131,7 +131,7 @@ ALL_SKIP_FLOWS=("${CMS_BATCH1_FLOWS[@]}" "${CMS_DELETE_FLOWS[@]}")
 export CMS_SKIP_FLOW_IDS="$(printf '%s,' "${ALL_SKIP_FLOWS[@]}" | sed 's/,$//')"
 
 # ── --grep-invert pattern ─────────────────────────────────────────────────────
-CMS_SKIP_GREP="(create-a-new-stack-part-1|add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-content-type|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages|delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership|remove-entry-asset-from-a-release|delete-a-publish-rule|revoke-edit-access-for-an-entry)$"
+CMS_SKIP_GREP="(create-a-new-stack-part-1|add-an-environment|add-a-language|add-a-custom-language|create-a-branch|create-content-type|create-a-global-field|create-a-global-field-part-2|create-upload-assets|create-a-folder|create-an-entry|add-a-comment|create-and-apply-labels|set-up-live-preview-for-your-stack|create-a-taxonomy|create-a-term|create-a-delivery-token|generate-a-management-token|create-a-webhook|add-workflows-and-stages|delete-a-term|delete-a-taxonomy|delete-a-workflow|delete-an-alias|delete-a-webhook|delete-a-global-field|delete-a-delivery-token|delete-a-management-token|delete-a-release|delete-entries-and-assets-in-bulk|bulk-delete-entries|bulk-delete-assets|bulk-delete-localized-entry-versions|delete-a-folder|delete-an-asset|delete-an-entry|delete-an-entry-part-2|delete-a-language|delete-an-environment|delete-a-branch|delete-content-type|delete-a-stack|edit-or-delete-a-comment|leave-a-stack|transfer-stack-ownership|remove-entry-asset-from-a-release|delete-a-publish-rule)$"
 
 # ── Modules ───────────────────────────────────────────────────────────────────
 MODULES=(
@@ -172,7 +172,7 @@ echo "  Modules  : environment(1) language(3) branches(3) stack(7)" | tee -a "$L
 echo "             content-models(41) global-field(9) assets(12) entries(30)" | tee -a "$LOG"
 echo "             json-rich-text-editor(11) releases(8) users-and-roles(5)" | tee -a "$LOG"
 echo "             live-preview(6) content-modeling(11) search(12) security(6)" | tee -a "$LOG"
-echo "             tokens(2) webhook(5) workflows(16) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
+echo "             tokens(2) webhook(5) workflows(17) taxonomy(8) visual-experience(21)" | tee -a "$LOG"
 echo "  Per-flow : ${PW_FLOW_MAX_MINUTES} min/flow | ${PW_ACTION_TIMEOUT_MINUTES} min/element" | tee -a "$LOG"
 echo "  Started  : ${START_ISO}" | tee -a "$LOG"
 echo "  Report   : ${REPORT_DIR}" | tee -a "$LOG"

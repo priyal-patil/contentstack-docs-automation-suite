@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CMS Workflows — 20 flows in CRUD sequence, 1 worker, 5 min cap
+# CMS Workflows — 18 flows in CRUD sequence, 1 worker, 5 min cap
 #
 # Execution order (CRUD):
 #   Read (about/info):
@@ -25,9 +25,7 @@
 #     16. update-a-publish-rule
 #     17. enable-or-disable-a-workflow-part-1
 #     18. enable-or-disable-a-workflow-part-2
-#   Delete:
-#     19. delete-a-workflow
-#     20. delete-a-publish-rule
+#   Delete: (handled by Batch 3 global delete sweep)
 #
 # Each flow gets a hard 5-minute timeout. Failure captures a screenshot.
 # All flows share the same auth session (auth.json generated on first run).
@@ -88,8 +86,6 @@ WORKFLOWS_FLOWS=(
   "update-a-publish-rule"
   "enable-or-disable-a-workflow-part-1"
   "enable-or-disable-a-workflow-part-2"
-  "delete-a-workflow"
-  "delete-a-publish-rule"
 )
 
 TOTAL_FLOWS=${#WORKFLOWS_FLOWS[@]}
@@ -104,7 +100,7 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Workflows — ${TOTAL_FLOWS} flows | 1 worker | ${PW_FLOW_MAX_MINUTES} min cap" | tee -a "$LOG"
+echo "  CMS Workflows — ${TOTAL_FLOWS} flows (deletes in Batch 3) | 1 worker | ${PW_FLOW_MAX_MINUTES} min cap" | tee -a "$LOG"
 echo "  Started: ${START_ISO}" | tee -a "$LOG"
 echo "  Report:  ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
