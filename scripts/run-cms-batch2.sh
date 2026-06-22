@@ -347,7 +347,13 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
       FLOW_START="$(date +%s)"
       echo "[retry] ▶  ${FLOW_ID}" | tee -a "$LOG"
 
+      # Write retry output to its own dir so Playwright never overwrites the
+      # merged $REPORT_DIR/flows-results.json (playwright.config reads REPORT_DIR).
+      RETRY_RUN_DIR="$PARTS_DIR/${FLOW_ID}-retry-run"
+      mkdir -p "$RETRY_RUN_DIR"
+
       set +e
+      REPORT_DIR="$RETRY_RUN_DIR" \
       PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
         --project=flows \
         --grep "Project=CMS.*${FLOW_ID}$" \
@@ -368,12 +374,12 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
       fi
 
       RETRY_OUT="$PARTS_DIR/${FLOW_ID}-retry.json"
-      if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
-        cp "$REPORT_DIR/flows-results.json" "$RETRY_OUT" 2>/dev/null || true
+      if [[ -f "$RETRY_RUN_DIR/flows-results.json" ]]; then
+        cp "$RETRY_RUN_DIR/flows-results.json" "$RETRY_OUT" 2>/dev/null || true
         RETRY_FILES+=("$RETRY_OUT")
       fi
-      if [[ -f "$REPORT_DIR/doc-step-warnings.json" ]]; then
-        cp "$REPORT_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-retry-warnings.json" 2>/dev/null || true
+      if [[ -f "$RETRY_RUN_DIR/doc-step-warnings.json" ]]; then
+        cp "$RETRY_RUN_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-retry-warnings.json" 2>/dev/null || true
       fi
 
       echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
