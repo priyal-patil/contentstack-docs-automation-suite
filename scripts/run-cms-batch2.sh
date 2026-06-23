@@ -197,6 +197,11 @@ for MODULE in "${MODULES[@]}"; do
   MODULE_LOG="$MODULE_DIR/module.log"
 
   (
+    # visual-experience requires the "Compass starter app" stack (has VB content).
+    # All other modules use the DEFAULT_STACK from .env (PriyalDocsStack).
+    if [[ "$MODULE" == "visual-experience" ]]; then
+      export DEFAULT_STACK="Compass starter app"
+    fi
     : > "$MODULE_LOG"
     echo "[${MODULE}] Starting at $(date -u +'%H:%M:%SZ')" >> "$MODULE_LOG"
     set +e
@@ -215,6 +220,9 @@ for MODULE in "${MODULES[@]}"; do
   MODULE_PIDS["$MODULE"]=$!
   RUNNING=$(( RUNNING + 1 ))
   echo "  ▶  ${MODULE} (pid ${MODULE_PIDS[$MODULE]}, running: ${RUNNING}/${MAX_CONCURRENT})" | tee -a "$LOG"
+  # Stagger launches by 4s so workers don't all hit the stacks page simultaneously.
+  # 20 modules × 4s = 76s total overhead — negligible vs 5+ min per module.
+  sleep 4
 done
 
 echo "" | tee -a "$LOG"

@@ -10,12 +10,11 @@ const STACKS_URL = appUrl("/#!/stacks");
 
 const HEADLESS_TILE = '[data-test-id="cs-global-dashboard-product-tile-headless-cms"]';
 
-// ✅ Prefer true “ready” markers for stacks list, not the title (title can be duplicated/hidden)
+// ✅ Only use markers that confirm stack cards are actually rendered — generic page markers
+// (cs-page-title, cs-page-layout-contentBody) fire before cards load and cause false-ready.
 const STACKS_READY_MARKERS = [
-  ".StackList",
-  '[data-test-id^="cs-stacklist-card-"]',
-  '[data-test-id="cs-page-layout-contentBody"]',
-  '[data-test-id="cs-page-title"]',
+  '[data-test-id^=”cs-stacklist-card-”]',
+  “.StackList”,
 ];
 
 async function waitForAnySelector(page: Page, selectors: string[], timeout = 90_000) {
@@ -73,8 +72,10 @@ export async function ensureOnStacksAndSelectStack(page: Page) {
     await page.goto(STACKS_URL, { waitUntil: "domcontentloaded" });
   }
 
-  // 5) Confirm stacks UI loaded (use list/card markers, not just title text)
-  const marker = await waitForAnySelector(page, STACKS_READY_MARKERS, 90_000);
+  // 5) Confirm stacks UI loaded — wait for an actual stack card, not just any page element.
+  // Under GHA load (10+ concurrent workers all hitting the stacks page), cards can take
+  // longer than 90s to render. 150s stays within the 5-min flow timeout.
+  const marker = await waitForAnySelector(page, STACKS_READY_MARKERS, 150_000);
   console.log("✅ Stacks page looks ready via marker:", marker, "| URL:", page.url());
 
   // 6) Select configured stack with PriyalDocsStack as fallback.
@@ -85,14 +86,18 @@ export async function ensureOnStacksAndSelectStack(page: Page) {
 
   const FALLBACK_STACK = "PriyalDocsStack";
 
-  // Try the configured DEFAULT_STACK first; fall back to PriyalDocsStack if not found within 5s.
-  let stackLink = page.locator(`[data-test-id="cs-stacklist-card-${stackName}"]`).first();
-  const primaryFound = await stackLink.isVisible({ timeout: 5_000 }).catch(() => false);
+  // Stack display names may contain spaces; the test-id replaces them with hyphens
+  // e.g. "Compass starter app" → cs-stacklist-card-Compass-starter-app
+  const toStackId = (name: string) => name.replace(/\s+/g, "-");
+
+  // Try the configured DEFAULT_STACK first; fall back to PriyalDocsStack if not found within 10s.
+  let stackLink = page.locator(`[data-test-id="cs-stacklist-card-${toStackId(stackName)}"]`).first();
+  const primaryFound = await stackLink.isVisible({ timeout: 10_000 }).catch(() => false);
 
   if (!primaryFound) {
     console.warn(`⚠️ Stack card "${stackName}" not found — trying fallback "${FALLBACK_STACK}"`);
-    stackLink = page.locator(`[data-test-id="cs-stacklist-card-${FALLBACK_STACK}"]`).first();
-    await expect(stackLink).toBeVisible({ timeout: 90_000 });
+    stackLink = page.locator(`[data-test-id="cs-stacklist-card-${toStackId(FALLBACK_STACK)}"]`).first();
+    await expect(stackLink).toBeVisible({ timeout: 150_000 });
     console.log(`✅ Using fallback stack: ${FALLBACK_STACK}`);
   }
 
