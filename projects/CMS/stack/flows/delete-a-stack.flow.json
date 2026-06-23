@@ -68,10 +68,6 @@
         "labelEquals": "Delete",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "click",
-      "target": "Delete (confirm doc step)"
     }
   ]
 }

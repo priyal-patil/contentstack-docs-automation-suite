@@ -5,6 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:agentos": "bash scripts/run-agentos-headless.sh",
+    "test:agentos:agent-os": "OPEN_FLOW_REPORT=false PW_RETRIES=3 playwright test tests/flows.spec.ts --project=flows --grep=\"Project=AgentOS Module=agent-os\"",
+    "test:agentos:agents": "OPEN_FLOW_REPORT=false PW_RETRIES=3 playwright test tests/flows.spec.ts --project=flows --grep=\"Project=AgentOS Module=agents\"",
+    "test:agentos:automations": "bash scripts/run-agentos-automations-headless.sh",
     "test:stable": "PW_WORKERS=1 PW_SLOWMO=200 playwright test",
     "test:ui": "playwright test --ui",
     "codegen": "playwright codegen --load-storage=auth.json",

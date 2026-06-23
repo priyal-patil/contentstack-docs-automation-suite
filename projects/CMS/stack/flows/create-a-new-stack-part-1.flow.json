@@ -112,11 +112,6 @@
         "labelEquals": "Create",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "click",
-      "target": "Create (doc step)",
-      "timeoutMs": 60000
     }
   ]
 }

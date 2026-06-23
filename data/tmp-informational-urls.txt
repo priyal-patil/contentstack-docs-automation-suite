@@ -1,2 +1,8 @@
 https://www.contentstack.com/docs/developers/set-up-environments/about-environments
 https://www.contentstack.com/docs/developers/set-up-environments/environment-limitations
+https://www.contentstack.com/docs/agent-os/draft-vs-live-automation-mode
+https://www.contentstack.com/docs/agent-os/error-management-for-action-steps
+https://www.contentstack.com/docs/agent-os/what-is-a-conditional-path
+https://www.contentstack.com/docs/agent-os/how-conditional-paths-work
+https://www.contentstack.com/docs/agent-os/what-is-a-repeat-path
+https://www.contentstack.com/docs/agent-os/how-repeat-paths-work

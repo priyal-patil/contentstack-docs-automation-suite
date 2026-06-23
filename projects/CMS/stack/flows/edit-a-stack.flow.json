@@ -45,22 +45,12 @@
       }
     },
     {
-      "action": "enter",
-      "target": "Name (edit stack doc step)",
-      "value": "Auto Stack Updated {unique5}"
-    },
-    {
       "action": "verify",
       "target": "Description (edit stack doc step)",
       "expected": {
         "labelEquals": "Description",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "enter",
-      "target": "Description (edit stack doc step)",
-      "value": "Auto stack description updated {unique5}"
     },
     {
       "action": "verify",

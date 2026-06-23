@@ -21,6 +21,7 @@
 name: CMS Batch 1 — daily create flows (5 AM IST, 1 worker)
 
 on:
+  # Manual trigger only — nightly chain is handled by cms-full-trigger.yml → cms-full-scheduled.yml
   workflow_dispatch:
     inputs:
       skip_slack:
@@ -35,19 +36,6 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
-
-  schedule:
-    # 23:30 UTC = 5:00 AM IST (Asia/Kolkata, UTC+5:30)
-    # schedule trigger (unlike repository_dispatch) fires workflow_run events,
-    # which is required for Batch 2 and Batch 3 to auto-chain after Batch 1.
-    - cron: "30 23 * * *"
-
-  repository_dispatch:
-    types:
-      - cms-batch1-5am-ist
-  # NOTE: repository_dispatch is kept for backwards-compat but does NOT chain Batch 2/3
-  # because GitHub does not fire workflow_run events for repository_dispatch-triggered runs.
-  # The schedule trigger above is the correct nightly trigger for the full chain.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.repository }}

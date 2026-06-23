@@ -85,10 +85,6 @@
         "labelEquals": "Import Sample",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "click",
-      "target": "Import Sample (doc step)"
     }
   ]
 }

@@ -31,12 +31,7 @@
 name: CMS Batch 3 — delete flows (after Batch 2, 1 worker, sequential)
 
 on:
-  workflow_run:
-    workflows:
-      - "CMS Batch 2 — edit/update flows (after Batch 1, 7 workers)"
-    types:
-      - completed
-
+  # Manual trigger only — nightly chain is handled by cms-full-trigger.yml → cms-full-scheduled.yml
   workflow_dispatch:
     inputs:
       skip_slack:
@@ -68,9 +63,7 @@ jobs:
   cms-batch3:
     name: CMS Batch 3 — 38 flows — 30 delete + 8 trash (variable workers per phase, 5 min/flow)
     runs-on: ubuntu-latest
-    # Auto-chain when Batch 2 was triggered by workflow_run from a schedule/repository_dispatch Batch 1.
-    # Skip when Batch 2 was triggered manually (workflow_dispatch) to avoid unintended full-chain runs.
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'repository_dispatch'
+    if: always()
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root

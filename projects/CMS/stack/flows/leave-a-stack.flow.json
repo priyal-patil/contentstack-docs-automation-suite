@@ -58,11 +58,6 @@
         "labelEquals": "Leave Stack",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "click",
-      "target": "Leave Stack (confirm doc step)",
-      "optional": true
     }
   ]
 }

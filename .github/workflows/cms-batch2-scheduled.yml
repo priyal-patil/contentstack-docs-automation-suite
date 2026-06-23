@@ -35,14 +35,7 @@
 name: CMS Batch 2 — edit/update flows (after Batch 1, 7 workers)
 
 on:
-  # Primary trigger: fires automatically when Batch 1 workflow completes.
-  workflow_run:
-    workflows:
-      - "CMS Batch 1 — daily create flows (5 AM IST, 1 worker)"
-    types:
-      - completed
-
-  # Manual trigger (re-run Batch 2 on demand from Actions tab).
+  # Manual trigger only — nightly chain is handled by cms-full-trigger.yml → cms-full-scheduled.yml
   workflow_dispatch:
     inputs:
       skip_slack:
@@ -74,12 +67,7 @@ jobs:
   cms-batch2:
     name: CMS Batch 2 — 20 modules (1 worker/module, CRUD, 5 min/flow, 3 min element)
     runs-on: ubuntu-latest
-    # Auto-chain when Batch 1 was triggered by schedule (nightly) or repository_dispatch.
-    # Skip when Batch 1 was triggered manually (workflow_dispatch) so a single-batch
-    # test run does not cascade into Batch 2 + 3 and send multiple Slack messages.
-    # NOTE: workflow_run events only fire for schedule/push/etc. — NOT repository_dispatch.
-    # The nightly trigger uses schedule (cms-batch1-scheduled.yml cron) for this reason.
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'repository_dispatch'
+    if: always()
     # Same Docker image as Batch 1: Chromium pre-installed, zero CDN download.
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-noble

@@ -28,12 +28,7 @@
 name: CMS Docs Audit — broken links & images (after CMS Full Run)
 
 on:
-  workflow_run:
-    workflows:
-      - "CMS Full Run — Batch 1 → 2 → 3 (3 AM IST daily)"
-    types:
-      - completed
-
+  # Manual trigger only — removed auto workflow_run to prevent random Slack messages
   workflow_dispatch:
 
 concurrency:

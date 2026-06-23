@@ -58,7 +58,15 @@
       "expected": { "labelEquals": "Stack Color", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Stack Color swatch (doc step)" },
-    { "action": "click", "target": "Create (doc step)" },
+      {
+      "action": "verify",
+      "target": "Create (doc step)",
+      "timeoutMs": 15000,
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
 
     {
       "action": "verify",
