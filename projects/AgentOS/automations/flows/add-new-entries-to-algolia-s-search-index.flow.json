@@ -1,0 +1,430 @@
+{
+  "id": "add-new-entries-to-algolia-s-search-index",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/add-new-entries-to-algolia-s-search-index",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "algolia-index-automation-{unique5}"
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create New Automation modal (doc step)",
+      "value": "algolia-index-automation-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger section on page (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger in trigger events list (doc step)",
+      "docWarning": "Doc says 'click the Contentstack connector' then jumps to 'select Entry Created' — the intermediate Entry Trigger selection step is missing from the document.",
+      "expected": { "labelEquals": "Entry Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entry Trigger in trigger events list (doc step)",
+      "docWarning": "Doc says 'click the Contentstack connector' then jumps to 'select Entry Created' — the intermediate Entry Trigger selection step is missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-trigger-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack radio button selected in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack QA", "labelMatch": "contains" },
+      "timeoutMs": 60000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after OAuth authorization (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Set Account Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Created events field in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Entry Created", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entry Created events field in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any option in Entry Created events field dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack from Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": { "labelEquals": "Test Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading (doc step)",
+      "docWarning": "Doc says 'Within the Configure Action Step, click the Algolia connector' — if the Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Algolia", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Index Entries action in Choose an Action list (doc step)",
+      "expected": { "labelEquals": "Index Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Index Entries action in Choose an Action list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "algolia-account-selection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Algolia account list (doc step)",
+      "onlyIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Application ID field in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": { "labelEquals": "Application ID", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Application ID input in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "value": "algolia-app-id-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": { "labelEquals": "API Key", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "value": "algolia-api-key-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Algolia Add Account (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Index Name field in Algolia Index Entries Configure Action (doc step)",
+      "expected": { "labelEquals": "Index Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Index Name field in Algolia Index Entries Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any index from Index Name list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries field in Algolia Index Entries Configure Action (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Entries field in Algolia Index Entries Configure Action (doc step)",
+      "value": "{\"objectID\": \"test-entry-{unique5}\", \"title\": \"test-entry-{unique5}\"}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Action Step page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Action Step page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

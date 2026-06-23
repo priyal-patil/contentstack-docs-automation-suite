@@ -1,0 +1,102 @@
+{
+  "id": "monitor-agent-os-activities-in-audit-log",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/monitor-agent-os-activities-in-audit-log",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Audit Log tab (doc step)",
+      "expected": {
+        "labelEquals": "Audit Log",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audit Log tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Date column header (doc step)",
+      "expected": {
+        "labelEquals": "Date",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Module column header (doc step)",
+      "expected": {
+        "labelEquals": "Module",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Action column header (doc step)",
+      "expected": {
+        "labelEquals": "Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Title column header (doc step)",
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

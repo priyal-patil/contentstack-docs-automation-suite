@@ -1,0 +1,710 @@
+{
+  "id": "on-demand-automation-app",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/on-demand-automation-app",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Marketplace in App Switcher list (doc step)",
+      "expected": { "labelEquals": "Marketplace", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Marketplace in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Apps in left panel (doc step)",
+      "expected": { "labelEquals": "Apps", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Apps in left panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "search input in Marketplace Apps (doc step)",
+      "docWarning": "Doc says 'Hover over the Agent OS app and click Install' but the actual app to search for in Marketplace is 'Automate', not 'Agent OS' — searching by 'Automate' as required.",
+      "value": "Automate"
+    },
+    {
+      "action": "hover",
+      "target": "Automate app card in Marketplace (doc step)",
+      "docWarning": "Doc says 'Hover over the Agent OS app' but the actual app card in Marketplace is named 'Automate' — doc/UI mismatch on app name.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Install button on Automate app card (doc step)",
+      "docWarning": "Doc refers to this app as 'Agent OS' but the Marketplace app name is 'Automate' — doc/UI mismatch on app name.",
+      "expected": { "labelEquals": "Install", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Install button on Automate app card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "stack selection dropdown in Install pop-up (doc step)",
+      "docWarning": "Doc says 'select the stack where you want to install the Agent OS app' but does not name the specific UI element — added as required step missing from the document.",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "stack selection dropdown in Install pop-up (doc step)",
+      "docWarning": "Doc does not specify which stack to select — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "first enabled stack option in stack dropdown (doc step)",
+      "docWarning": "Doc does not specify which stack to select — selecting first enabled stack option as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "capture",
+      "target": "selected stack name from stack dropdown as INSTALL_STACK_NAME (doc step)",
+      "note": "Captures the selected stack label into flow variable {INSTALL_STACK_NAME} for reuse in subsequent stack-selection steps."
+    },
+    {
+      "action": "verify",
+      "target": "terms and conditions checkbox in Install pop-up (doc step)",
+      "docWarning": "Doc says 'accept the terms and conditions' but does not detail the checkbox element — added as required step missing from the document.",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "terms and conditions checkbox in Install pop-up (doc step)",
+      "docWarning": "Doc does not detail the T&C checkbox interaction — added as required step missing from the document.",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Install button in Install pop-up (doc step)",
+      "expected": { "labelEquals": "Install", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Install button in Install pop-up (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "UI Locations tab on configuration screen (doc step)",
+      "expected": { "labelEquals": "UI Locations", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Sidebar Rail UI location on configuration screen (doc step)",
+      "expected": { "labelEquals": "Entry Sidebar Rail", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Sidebar Rail UI location on configuration screen (doc step)",
+      "expected": { "labelEquals": "Asset Sidebar Rail", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Open Stack button on configuration screen (doc step)",
+      "expected": { "labelEquals": "Open Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Open Stack button on configuration screen (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Content Models icon in left navigation panel (doc step)",
+      "docWarning": "Doc says 'click the Content Models icon in the left navigation panel' — Content Models may appear in the top navigation instead of the left nav depending on the UI state. If not found in left nav, click from the top navigation.",
+      "expected": { "within": "left navigation panel", "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "Content Models icon in left navigation panel or top navigation (doc step)",
+      "docWarning": "Doc says left navigation panel — Content Models may be in the top navigation. Clicking from whichever location is available.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Content Type button (doc step)",
+      "expected": { "labelEquals": "+ New Content Type", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Content Type button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Name field in content type creation (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name input in content type creation (doc step)",
+      "value": "content-type-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Save and proceed button in content type creation (doc step)",
+      "expected": { "labelEquals": "Save and proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and proceed button in content type creation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Insert a field button in content type builder (doc step)",
+      "docWarning": "Doc says 'Create a content type by adding relevant details' but does not specify clicking Insert a field — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Single Line Textbox option in field type list (doc step)",
+      "docWarning": "Doc does not specify adding a Single Line Textbox field — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Close button in content type builder (doc step)",
+      "docWarning": "Doc does not mention clicking Save and Close in the content type builder — added as required step missing from the document.",
+      "expected": { "labelEquals": "Save and Close", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Close button in content type builder (doc step)",
+      "docWarning": "Doc does not mention clicking 'Save and Close' — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries in left navigation panel (doc step)",
+      "docWarning": "Doc says 'navigate to the Entries page' — Entries may appear in the top navigation instead of the left nav. If not found in left nav, click from the top navigation.",
+      "expected": { "within": "left navigation panel", "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entries in left navigation panel or top navigation (doc step)",
+      "docWarning": "Doc says left navigation panel — Entries may be in the top navigation. Clicking from whichever location is available.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Entry button (doc step)",
+      "expected": { "labelEquals": "+ New Entry", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Entry button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "content type created in previous step (doc step)",
+      "expected": { "labelEquals": "content-type-{unique5}", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "content type created in previous step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in New Entry (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in New Entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save button on entry editor page (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button on entry editor page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automate icon in right navigation panel (doc step)",
+      "docWarning": "Doc says 'Agent OS App icon in the right navigation panel' — the actual icon in the app is labelled 'Automate', not 'Agent OS App'. Doc/UI mismatch on icon name.",
+      "expected": { "labelEquals": "Automate", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Automate icon in right navigation panel (doc step)",
+      "docWarning": "Doc refers to this as 'Agent OS App icon' but actual UI label is 'Automate' — doc/UI mismatch on icon name.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "View Recipes icon (doc step)",
+      "expected": { "labelEquals": "View Recipes", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Manage Automations icon (doc step)",
+      "expected": { "labelEquals": "Manage Automations", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "docWarning": "Doc says 'From the left navigation panel, click Agent OS' without mentioning App Switcher navigation — added as required prerequisite navigation missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention selecting Agent OS from the App Switcher list — added as required prerequisite navigation missing from the document.",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention clicking Agent OS from App Switcher — added as required prerequisite navigation missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations project page (doc step)",
+      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "On-demand Automation project (doc step)",
+      "expected": { "labelEquals": "On-demand Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "On-demand Automation project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field (doc step)",
+      "expected": { "labelEquals": "Automation Name", "labelMatch": "contains" }
+    },
+    
+    {
+      "action": "enter",
+      "target": "Automation Name input (doc step)",
+      "value": "automation-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field (doc step)",
+      "expected": { "labelEquals": " Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create button in New Automation (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create button in New Automation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "On-Demand Automation trigger (doc step)",
+      "expected": { "labelEquals": "On-Demand Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "On-Demand Automation trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Sidebar trigger under Choose Trigger (doc step)",
+      "expected": { "labelEquals": "Entry Sidebar", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entry Sidebar trigger under Choose Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack field on Entry Sidebar Configure Trigger page (doc step)",
+      "expected": { "labelEquals": " Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Stack field on Entry Sidebar Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "{INSTALL_STACK_NAME} from Lookup list (doc step)",
+      "note": "Selects the same stack captured during Marketplace installation via {INSTALL_STACK_NAME}.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Branch field on Entry Sidebar Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Branch", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Branch field on Entry Sidebar Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any branch option from Lookup list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "expected": { "labelEquals": "Show Optional Fields", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Input Options button (doc step)",
+      "expected": { "labelEquals": "+ Input Options", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Input Options button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Label field (doc step)",
+      "expected": { "labelEquals": "Input Label", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Input Label input (doc step)",
+      "value": "Ask Something!"
+    },
+    {
+      "action": "verify",
+      "target": "Input Type drop-down (doc step)",
+      "expected": { "labelEquals": "Input Type", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Input Type drop-down (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "String option in Input Type drop-down (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Description field (doc step)",
+      "expected": { "labelEquals": "Input Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Input Description input (doc step)",
+      "value": "Enter the content to generate the response"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": { "labelEquals": "Test Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step button (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Email by Agent OS connector (doc step)",
+      "docWarning": "Doc says 'Email by Agent OS' connector — actual connector name in the UI may be just 'Email'. Doc/UI mismatch on connector name.",
+      "expected": { "labelEquals": "Email by Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Email by Agent OS connector (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Email by Agent OS action under Choose an Action tab (doc step)",
+      "docWarning": "Doc says 'Email by Agent OS' action — actual action name in the UI may be just 'Email'. Doc/UI mismatch on action name.",
+      "expected": { "labelEquals": "Email by Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Email by Agent OS action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "To field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "To", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "To email input on Configure Action page (doc step)",
+      "value": "{TEST_EMAIL}"
+    },
+    {
+      "action": "verify",
+      "target": "Subject field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "Subject", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Subject input on Configure Action page (doc step)",
+      "value": "automation-subject-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Body Type field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "Body Type", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Body Type dropdown on Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Body Type option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Body field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "Body", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Body input on Configure Action page (doc step)",
+      "value": "automation-body-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button on Configure Action page (doc step)",
+      "expected": { "labelEquals": "Show Optional Fields", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button on Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "CC field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "CC", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "BCC field on Configure Action page (doc step)",
+      "expected": { "labelEquals": "BCC", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Configure Action Step (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Configure Action Step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button in Configure Action Step (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button in Configure Action Step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Activate Automation toggle button (doc step)",
+      "expected": { "labelEquals": "Activate Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Activate Automation toggle button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "docWarning": "Doc says 'Navigate to the Agent OS App in the entries page' without detailing navigation — App Switcher → CMS added as required prerequisite navigation missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "CMS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention navigating via App Switcher to CMS — added as required prerequisite navigation missing from the document.",
+      "expected": { "labelEquals": "CMS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "CMS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention clicking CMS from App Switcher — added as required prerequisite navigation missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "{INSTALL_STACK_NAME} stack card (doc step)",
+      "docWarning": "Doc does not specify navigating to a stack — selecting the same stack captured during Marketplace installation via {INSTALL_STACK_NAME}.",
+      "note": "Uses {INSTALL_STACK_NAME} captured at install time.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries in top navigation (doc step)",
+      "docWarning": "Doc says 'Navigate to the entries page' without detail — Entries may be in top navigation. Added as required prerequisite navigation missing from the document.",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entries in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "first entry in Entries list (doc step)",
+      "docWarning": "Doc does not specify which entry to open — clicking the first entry as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automate icon in right navigation panel on entry page (doc step)",
+      "docWarning": "Doc says 'navigate to the Agent OS App' — actual icon in the right nav is labelled 'Automate', not 'Agent OS App'. Doc/UI mismatch on icon name.",
+      "expected": { "labelEquals": "Automate", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Automate icon in right navigation panel on entry page (doc step)",
+      "docWarning": "Doc refers to this as 'Agent OS App' but actual UI label is 'Automate' — doc/UI mismatch on icon name.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Execute icon for active automation (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "Execute icon for active automation (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

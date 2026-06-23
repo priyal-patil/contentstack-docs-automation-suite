@@ -1,0 +1,215 @@
+{
+  "id": "managing-automations",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/managing-automations",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button (doc step)",
+      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Project button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "project name input in New Project (doc step)",
+      "value": "automation-project-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "+ Create Project button (doc step)",
+      "docWarning": "Doc says 'Click + New Project or create a new one' without detailing a Create Project button — added as required step missing from the document.",
+      "expected": { "labelEquals": "+ Create Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Create Project button (doc step)",
+      "docWarning": "Doc does not mention clicking '+ Create Project' — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Automation Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "automation-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create New Automation modal (doc step)",
+      "value": "automation-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations listing page (doc step)",
+      "docWarning": "Doc says 'Navigate to the Automations listing page' without detailing navigation — added as required prerequisite navigation missing from the document.",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel to return to listing (doc step)",
+      "docWarning": "Doc says 'Navigate to the Automations listing page' without detail — clicking Automations in top nav to navigate back.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipses on automation row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Edit option in dropdown (doc step)",
+      "expected": { "labelEquals": "Edit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Edit option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Automation modal (doc step)",
+      "expected": { "labelEquals": "Edit Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Name field in Edit Automation modal (doc step)",
+      "expected": { "labelEquals": "Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Name input in Edit Automation modal (doc step)",
+      "value": "automation-edited-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Edit Automation modal (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Edit Automation modal (doc step)",
+      "value": "automation-description-edited-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Update button in Edit Automation modal (doc step)",
+      "expected": { "labelEquals": "Update", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Update button in Edit Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations listing page after Update (doc step)",
+      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipses on automation row (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete option in dropdown (doc step)",
+      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Automation modal (doc step)",
+      "expected": { "labelEquals": "Delete Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete button in Delete Automation modal (doc step)",
+      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete button in Delete Automation modal (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

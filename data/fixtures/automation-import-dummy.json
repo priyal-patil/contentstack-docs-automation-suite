@@ -1,0 +1,8 @@
+{
+  "name": "dummy-automation",
+  "description": "Dummy automation JSON file used for import testing.",
+  "trigger": {
+    "type": "on_demand"
+  },
+  "steps": []
+}

@@ -1,0 +1,76 @@
+{
+  "id": "delete-an-agent",
+  "project": "AgentOS",
+  "module": "agents",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/delete-an-agent",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agents in top navigation panel (doc step)",
+      "expected": { "labelEquals": "Agents", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agents in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipses on an agent (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete option in dropdown (doc step)",
+      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Agent pop-up (doc step)",
+      "expected": { "labelEquals": "Delete Agent", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "DELETE confirmation input in Delete Agent pop-up (doc step)",
+      "value": "DELETE"
+    },
+    {
+      "action": "verify",
+      "target": "Delete button in Delete Agent pop-up (doc step)",
+      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete button in Delete Agent pop-up (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

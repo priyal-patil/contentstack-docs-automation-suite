@@ -1,0 +1,91 @@
+{
+  "id": "executions-in-agent-os",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/executions-in-agent-os",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "timeoutMs": 90000,
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Execution Log in left nav (doc step)",
+      "expected": { "labelEquals": "Execution Log", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Execution Log in left nav (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Failed status in execution log (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "No failed execution found — requires a pre-existing failed automation run to test retry functionality.",
+      "expected": { "labelEquals": "Failed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Info icon on failed execution (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Retry Execution button (doc step)",
+      "warnOnly": true,
+      "expected": { "labelEquals": "Retry Execution", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Code icon in execution detail (doc step)",
+      "warnOnly": true,
+      "warnMessage": "Code icon not found — requires navigating into a failed execution step detail.",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "verify",
+      "target": "Copy icon in execution detail (doc step)",
+      "warnOnly": true,
+      "warnMessage": "Copy icon not found — requires navigating into a failed execution step detail.",
+      "expected": { "labelMatch": "exists" }
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "id": "managing-projects",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/managing-projects",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Projects page (doc step)",
+      "expected": { "labelEquals": "Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project (doc step)",
+      "expected": { "labelEquals": "New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Project modal (doc step)",
+      "expected": { "labelEquals": "Create New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Project Name field (doc step)",
+      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Project Name input (doc step)",
+      "value": "Auto Project {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input (doc step)",
+      "value": "Auto description {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Tags field (doc step)",
+      "expected": { "labelEquals": "Tags", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Create Project button (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create Project button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Name field (doc step)",
+      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Project Name input (doc step)",
+      "value": "Auto Project Edited {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input (doc step)",
+      "value": "Auto description edited {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Save Changes button (doc step)",
+      "expected": { "labelEquals": "Save Changes", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save Changes button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Go back to Projects (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Projects page (doc step)",
+      "expected": { "labelEquals": "Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Star icon (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "Star icon (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

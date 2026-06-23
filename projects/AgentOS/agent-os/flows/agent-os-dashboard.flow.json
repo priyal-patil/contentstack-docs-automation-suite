@@ -1,0 +1,66 @@
+{
+  "id": "agent-os-dashboard",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/agent-os-dashboard",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Overview section on Dashboard (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Overview section not found \u2014 this section only appears when automations or agents exist and have execution data in the project.",
+      "expected": {
+        "labelEquals": "Overview",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Execution Log section on Dashboard (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Execution Log section not found \u2014 this section only appears when automations or agents have been executed in the project.",
+      "expected": {
+        "labelEquals": "Execution Log",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

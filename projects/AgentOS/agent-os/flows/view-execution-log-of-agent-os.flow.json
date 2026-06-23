@@ -1,0 +1,281 @@
+{
+  "id": "view-execution-log-of-agent-os",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/view-execution-log-of-agent-os",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Execution Log in left nav (doc step)",
+      "expected": {
+        "labelEquals": "Execution Log",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Execution Log in left nav (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Name column header (doc step)",
+      "expected": {
+        "labelEquals": "Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Status column header (doc step)",
+      "expected": {
+        "labelEquals": "Status",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Started At column header (doc step)",
+      "expected": {
+        "labelEquals": "Started At",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Duration column header (doc step)",
+      "expected": {
+        "labelEquals": "Duration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Connectors Used column header (doc step)",
+      "expected": {
+        "labelEquals": "Connectors Used",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Tools Used column header (doc step)",
+      "warnOnly": true,
+      "alwaysWarn": true,
+      "warnMessage": "Tools Used column is only visible in the Agents execution view \u2014 not shown in the default Automation view.",
+      "expected": {
+        "labelEquals": "Tools Used",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Execution log type filter dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "First log entry row (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true,
+      "warnMessage": "No Automation log entry found \u2014 requires a pre-existing automation execution in the project."
+    },
+    {
+      "action": "verify",
+      "target": "Started At in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Started At",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Duration in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Duration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Input in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Input",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Output in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Output",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Back to Execution Log button (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "warnMessage": "Back button not found \u2014 may not have navigated into a log detail."
+    },
+    {
+      "action": "click",
+      "target": "Execution log type filter dropdown (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "warnMessage": "Execution log filter dropdown not clickable \u2014 requires being on the Execution Log page."
+    },
+    {
+      "action": "verify",
+      "target": "Agents dropdown option (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Agent",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agents dropdown option (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "warnMessage": "Agent option not found in dropdown \u2014 dropdown may not have opened."
+    },
+    {
+      "action": "click",
+      "target": "First log entry row (doc step)",
+      "timeoutMs": 60000,
+      "warnOnly": true,
+      "warnMessage": "No Agents log entry found \u2014 requires a pre-existing agent execution in the project."
+    },
+    {
+      "action": "verify",
+      "target": "Execution steps in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Execution steps",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Metrics section in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Metrics",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Started At in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Started At",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Duration in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Duration",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Total Tokens in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Total Tokens",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Model in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Model",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Input in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Input",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Output in execution detail (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Output",
+        "labelMatch": "contains"
+      }
+    }
+  ]
+}

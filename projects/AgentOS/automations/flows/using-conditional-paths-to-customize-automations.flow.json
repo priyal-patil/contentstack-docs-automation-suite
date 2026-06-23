@@ -1,0 +1,793 @@
+{
+  "id": "using-conditional-paths-to-customize-automations",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/using-conditional-paths-to-customize-automations",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "docWarning": "Doc says 'click the Automate icon' without detailing App Switcher navigation — App Switcher added as required prerequisite navigation.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher — label mismatch between doc and UI.",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher — label mismatch between doc and UI.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Automation Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "conditional-automation-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create New Automation modal (doc step)",
+      "value": "conditional-automation-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger in trigger events list (doc step)",
+      "expected": { "labelEquals": "Entry Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entry Trigger in trigger events list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-trigger-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack radio button selected in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack QA", "labelMatch": "contains" },
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Set Account Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Created event option (doc step)",
+      "expected": { "labelEquals": "Entry Created", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entry Created event option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown (doc step)",
+      "expected": { "labelEquals": "Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack from Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup dropdown (doc step)",
+      "expected": { "labelEquals": "Branch", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any branch from Branch Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": { "labelEquals": "Test Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+
+    {
+      "action": "verify",
+      "target": "Conditional Path option (doc step)",
+      "expected": { "labelEquals": "Conditional Path", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Conditional Path option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Condition button (doc step)",
+      "expected": { "labelEquals": "+ Add Condition", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Condition button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select Input box for content type UID (doc step)",
+      "expected": { "labelEquals": "Select Input", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Select Input box for content type UID (doc step)",
+      "value": "content-type-uid-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Matches (Text) option (doc step)",
+      "expected": { "labelEquals": "Matches (Text)", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Matches (Text) option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "content type UID input box (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "enter",
+      "target": "content type UID input box (doc step)",
+      "value": "content-type-uid-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Save Configuration button (doc step)",
+      "expected": { "labelEquals": "Save Configuration", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save Configuration button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Step button under If step (doc step)",
+      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Step button under If step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Slack connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Slack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Slack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section after selecting Slack connector (doc step)",
+      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Send Message action in Choose an Action list (doc step)",
+      "expected": { "labelEquals": "Send Message", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Send Message action in Choose an Action list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action tab (doc step)",
+      "expected": { "labelEquals": "Configure Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "detect",
+      "target": "slack-account-selection-state (doc step)",
+      "note": "Detects whether a Slack account is already connected or if + Add New Account button is displayed.",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Slack connector (doc step)",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize Account modal (doc step)",
+      "docWarning": "Doc does not mention the Authorize Account modal — added as required step missing from the document.",
+      "expected": { "labelEquals": "Authorize Account", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Authorize Account modal (doc step)",
+      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal — added as required step missing from the document.",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Authorize Account modal (doc step)",
+      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal — added as required step missing from the document.",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Manage Permissions modal (doc step)",
+      "docWarning": "Doc does not mention the Manage Permissions modal — added as required step missing from the document.",
+      "expected": { "labelEquals": "Manage Permissions", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions modal (doc step)",
+      "docWarning": "Doc does not mention clicking Authorize in the Manage Permissions modal — added as required step missing from the document.",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions modal (doc step)",
+      "docWarning": "Doc does not mention clicking Authorize in the Manage Permissions modal — added as required step missing from the document.",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Allow button in new tab opened by Slack authorization (doc step)",
+      "docWarning": "Doc does not mention a new tab opening for Slack authorization — added as required step missing from the document.",
+      "expected": { "labelEquals": "Allow", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "Allow button in new tab opened by Slack authorization (doc step)",
+      "docWarning": "Doc does not mention clicking Allow in the new tab — added as required step missing from the document.",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab (doc step)",
+      "docWarning": "Doc does not mention switching back to the original tab after Slack authorization — added as required step missing from the document.",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Title field for Slack account (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "enter",
+      "target": "Title input for Slack account (doc step)",
+      "value": "slack-account-{unique5}",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "verify",
+      "target": "Save button for Slack account title (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" },
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "Save button for Slack account title (doc step)",
+      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Channel field in Slack Send Message configuration (doc step)",
+      "expected": { "labelEquals": "Channel", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Channel field lookup in Slack Send Message configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "search input in Channel lookup (doc step)",
+      "value": "test"
+    },
+    {
+      "action": "click",
+      "target": "first channel result in Channel lookup search results (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Message field in Slack Send Message configuration (doc step)",
+      "expected": { "labelEquals": "Message", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Message textbox in Slack Send Message configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "Message textbox in Slack Send Message configuration (doc step)",
+      "value": "test-message-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Action Step page for If step (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Action Step page for If step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for If step (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for If step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for If step (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for If step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Step button under Else step (doc step)",
+      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Step button under Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on Configure Action Step page for Else step (doc step)",
+      "expected": { "labelEquals": "Choose Connector", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app — if not found, this step will fail.",
+      "expected": { "labelEquals": "Transform", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app — if not found, this step will fail.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section after selecting Transform connector (doc step)",
+      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Transform action in Choose an Action list (doc step)",
+      "expected": { "labelEquals": "Transform", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Transform action in Choose an Action list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Input button in Transform Configure Action (doc step)",
+      "expected": { "labelEquals": "Add Input", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Add Input button in Transform Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "variable name input in Add Input (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "enter",
+      "target": "variable name input in Add Input (doc step)",
+      "value": "variable-{unique5}"
+    },
+    {
+      "action": "enter",
+      "target": "variable value input in Add Input (doc step)",
+      "value": "variable-value-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Objects to Merge button (doc step)",
+      "expected": { "labelEquals": "+ Add Objects to Merge", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Objects to Merge button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Transformation field (doc step)",
+      "expected": { "labelEquals": "Transformation", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Transformation field (doc step)",
+      "value": "{}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Action Step page for Transform Else step (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Action Step page for Transform Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Transform Else step (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Transform Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Transform Else step (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Transform Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Step button under Else step for Algolia (doc step)",
+      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Step button under Else step for Algolia (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on Configure Action Step page for Algolia (doc step)",
+      "expected": { "labelEquals": "Choose Connector", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Algolia", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section after selecting Algolia connector (doc step)",
+      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Index Entries action in Choose an Action list (doc step)",
+      "expected": { "labelEquals": "Index Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Index Entries action in Choose an Action list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action tab for Algolia (doc step)",
+      "expected": { "labelEquals": "Configure Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "detect",
+      "target": "algolia-account-selection-state (doc step)",
+      "note": "Detects whether an Algolia account is already connected or if Add Account button is displayed.",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "click",
+      "target": "Add Account button for Algolia connector (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Index Name field in Algolia Configure Action (doc step)",
+      "expected": { "labelEquals": "Index Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Index Name field in Algolia Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any index from Index Name list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entries field in Algolia Configure Action (doc step)",
+      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Entries field in Algolia Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "entry data from Transform step in Entries field options (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Action Step page for Algolia Else step (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Action Step page for Algolia Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Algolia Else step (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Algolia Else step (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Algolia Else step (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Algolia Else step (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

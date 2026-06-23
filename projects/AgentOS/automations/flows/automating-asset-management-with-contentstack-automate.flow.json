@@ -1,0 +1,1135 @@
+{
+  "id": "automating-asset-management-with-contentstack-automate",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/automating-asset-management-with-contentstack-automate",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Name field in new project modal (doc step)",
+      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Description field in new project modal (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "close button on new project modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations tab in top navigation (doc step)",
+      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Automations tab in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create New Automation", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Automation Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "asset-management-automation-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create New Automation modal (doc step)",
+      "value": "asset-management-automation-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger section on page (doc step)",
+      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack trigger connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack trigger connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab (doc step)",
+      "expected": { "labelEquals": "Choose Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Trigger under Choose Trigger tab (doc step)",
+      "expected": { "labelEquals": "Asset Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Asset Trigger under Choose Trigger tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-trigger-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Contentstack trigger account list (doc step)",
+      "onlyIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack OAuth", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack QA", "labelMatch": "contains" },
+      "timeoutMs": 60000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after OAuth authorization (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Set Account Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Event dropdown field in Configure Trigger (doc step)",
+      "docWarning": "Doc says 'Select the trigger event from the drop-down' — field label 'Event' is inferred from UI; doc does not name it explicitly.",
+      "expected": { "labelEquals": "Event", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Event dropdown field in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Asset Created option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Created", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Updated option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Updated", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Deleted option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Deleted", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Published option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Published", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Publish Failed option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Publish Failed", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Unpublished option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Unpublished", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Unpublish Failed option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "Asset Unpublish Failed", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "All option in Event dropdown (doc step)",
+      "expected": { "labelEquals": "All", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Asset Published option in Event dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack from Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup dropdown in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Branch", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any branch from Branch Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle in Configure Trigger (doc step)",
+      "expected": { "labelEquals": "Show Optional Fields", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": { "labelEquals": "Test Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading (doc step)",
+      "docWarning": "Doc says 'Within the Configure Action Step, click the ChatGPT connector' — if the Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "ChatGPT", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Chat with Vision action under Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Chat with Vision", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Chat with Vision action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "chatgpt-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in ChatGPT account list (doc step)",
+      "onlyIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for ChatGPT connector (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for ChatGPT connector (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in ChatGPT Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "expected": { "labelEquals": "API Key", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in ChatGPT Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "value": "chatgpt-api-key-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in ChatGPT Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in ChatGPT Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown in Chat with Vision Configure Action (doc step)",
+      "expected": { "labelEquals": "API Model", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown in Chat with Vision Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "gpt-4-vision-preview option in API Model dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Prompt Input button in Chat with Vision Configure Action (doc step)",
+      "expected": { "labelEquals": "+ Add Prompt Input", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Prompt Input button in Chat with Vision Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select Prompt Type dropdown (doc step)",
+      "expected": { "labelEquals": "Select Prompt Type", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Select Prompt Type dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Text option in Select Prompt Type dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Value field in Chat with Vision Configure Action (doc step)",
+      "expected": { "labelEquals": "Prompt Value", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Value input in Chat with Vision Configure Action (doc step)",
+      "value": "Describe this asset in detail: {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Chat with Vision Configure Action page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Chat with Vision Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Chat with Vision (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Chat with Vision (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Chat with Vision (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Chat with Vision (doc step)",
+      "timeoutMs": 90000
+    },
+
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Brand Kit (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Brand Kit (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Brand Kit (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Brand Kit (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Brand Kit (doc step)",
+      "docWarning": "Doc says 'Within the Configure Action Step, click the Brand Kit connector' — if the Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit connector in Choose Connector list (doc step)",
+      "expected": { "labelEquals": "Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Voice Profile action under Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Get a Single Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Get a Single Voice Profile action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "brandkit-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Brand Kit account list (doc step)",
+      "onlyIfFlowFlagTrue": "brandKitAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Brand Kit connector (doc step)",
+      "skipIfFlowFlagTrue": "brandKitAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Brand Kit connector (doc step)",
+      "skipIfFlowFlagTrue": "brandKitAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Brand Kit Lookup dropdown in Get a Single Voice Profile Configure Action (doc step)",
+      "expected": { "labelEquals": "Brand Kit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Brand Kit Lookup dropdown in Get a Single Voice Profile Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any Brand Kit from Brand Kit Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Voice Profile Lookup dropdown in Get a Single Voice Profile Configure Action (doc step)",
+      "expected": { "labelEquals": "Voice Profile", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Voice Profile Lookup dropdown in Get a Single Voice Profile Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any Voice Profile from Voice Profile Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Get a Single Voice Profile Configure Action page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Get a Single Voice Profile Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Get a Single Voice Profile (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Get a Single Voice Profile (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Get a Single Voice Profile (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Get a Single Voice Profile (doc step)",
+      "timeoutMs": 90000
+    },
+
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for ChatGPT Chat (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for ChatGPT Chat (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for ChatGPT Chat (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for ChatGPT Chat (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for ChatGPT Chat (doc step)",
+      "docWarning": "Doc says 'Within the Configure Action Step, click the ChatGPT connector' — if the Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in Choose Connector list for Chat action (doc step)",
+      "expected": { "labelEquals": "ChatGPT", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in Choose Connector list for Chat action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Chat action under Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Chat", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Chat action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "chatgpt-chat-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in ChatGPT Chat account list (doc step)",
+      "onlyIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for ChatGPT Chat connector (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for ChatGPT Chat connector (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in ChatGPT Chat Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "expected": { "labelEquals": "API Key", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in ChatGPT Chat Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "value": "chatgpt-api-key-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in ChatGPT Chat Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in ChatGPT Chat Add Account (doc step)",
+      "skipIfFlowFlagTrue": "chatgptChatAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown in Chat Configure Action (doc step)",
+      "expected": { "labelEquals": "API Model", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown in Chat Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any API model option from API Model dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Prompt Text button in Chat Configure Action (doc step)",
+      "expected": { "labelEquals": "+ Add Prompt Text", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add Prompt Text button in Chat Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown in Chat Configure Action (doc step)",
+      "expected": { "labelEquals": "Role", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown in Chat Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "user option in Role dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Query field in Chat Configure Action (doc step)",
+      "expected": { "labelEquals": "Input Query", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Input Query input in Chat Configure Action (doc step)",
+      "value": "Generate an asset description based on the Voice Profile and asset details: {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Chat Configure Action page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Chat Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Chat (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Chat (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Chat (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Chat (doc step)",
+      "timeoutMs": 90000
+    },
+
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Contentstack Update an Asset (doc step)",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Contentstack Update an Asset (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Contentstack Update an Asset (doc step)",
+      "expected": { "labelEquals": "Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Contentstack Update an Asset (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Contentstack (doc step)",
+      "docWarning": "Doc says 'Within the Configure Action Step, click the Contentstack connector' — if the Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list for action (doc step)",
+      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list for action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management connector option (doc step)",
+      "expected": { "labelEquals": "Contentstack Management", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management connector option (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Update an Asset action under Choose an Action tab (doc step)",
+      "expected": { "labelEquals": "Update an Asset", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Update an Asset action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-action-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Contentstack action account list (doc step)",
+      "onlyIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Update an Asset Configure Action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Update an Asset Configure Action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in Add Account modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack OAuth", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Contentstack QA", "labelMatch": "contains" },
+      "timeoutMs": 60000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
+      "scrollIntoView": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after action OAuth authorization (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Set Account Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal for action (doc step)",
+      "skipIfFlowFlagTrue": "contentstackActionAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "Stack", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown in Update an Asset Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack from Stack Lookup dropdown in Update an Asset (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Asset Lookup dropdown in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "Asset", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Asset Lookup dropdown in Update an Asset Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any asset from Asset Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Title field in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Title input in Update an Asset Configure Action (doc step)",
+      "value": "test-asset-title-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Update an Asset Configure Action (doc step)",
+      "value": "test-asset-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "File Name field in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "File Name", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "File Name input in Update an Asset Configure Action (doc step)",
+      "value": "test-asset-{unique5}.jpg"
+    },
+    {
+      "action": "verify",
+      "target": "Input URL field in Update an Asset Configure Action (doc step)",
+      "expected": { "labelEquals": "Input URL", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Input URL input in Update an Asset Configure Action (doc step)",
+      "value": "https://example.com/test-asset-{unique5}.jpg"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Update an Asset Configure Action page (doc step)",
+      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Update an Asset Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Update an Asset (doc step)",
+      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Update an Asset (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Update an Asset (doc step)",
+      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Update an Asset (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

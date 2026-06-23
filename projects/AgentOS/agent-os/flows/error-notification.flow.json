@@ -1,0 +1,111 @@
+{
+  "id": "error-notification",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/error-notification",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Projects page (doc step)",
+      "expected": { "labelEquals": "Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Settings icon on Projects page (doc step)",
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Settings icon on Projects page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Email Notifications toggle (doc step)",
+      "expected": { "labelEquals": "Email Notifications", "labelMatch": "equals" }
+    },
+    {
+      "action": "click",
+      "target": "Email Notifications toggle (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Primary Recipient(s) field (doc step)",
+      "expected": { "labelEquals": "Primary Recipient(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Primary Recipient(s) dropdown input (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Creator option (doc step)",
+      "expected": { "labelEquals": "Automation Creator", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Org Owner option (doc step)",
+      "expected": { "labelEquals": "Org Owner", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Org Admins option (doc step)",
+      "expected": { "labelEquals": "Org Admins", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Add Other Recipients field (doc step)",
+      "expected": { "labelEquals": "Add Other Recipient(s)", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Notifications field (doc step)",
+      "expected": { "labelEquals": "Frequency of Notifications", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Immediately option (doc step)",
+      "expected": { "labelEquals": "Immediately", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Daily option (doc step)",
+      "expected": { "labelEquals": "Daily", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Weekly option (doc step)",
+      "expected": { "labelEquals": "Weekly", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Throttle Frequency field (doc step)",
+      "expected": { "labelEquals": "Throttle Frequency", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Cancel Settings button (doc step)",
+      "timeoutMs": 30000
+    }
+  ]
+}

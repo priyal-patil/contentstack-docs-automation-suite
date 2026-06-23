@@ -1,0 +1,15 @@
+{
+  "id": "cleanup-delete-one-content-type",
+  "project": "CMS",
+  "module": "content-models",
+  "stage": "delete",
+  "source": "https://www.contentstack.com/docs/developers/create-content-types/delete-a-content-type",
+  "type": "executable",
+  "use": ["login", "selectStack"],
+  "steps": [
+    { "action": "click", "target": "Content Models", "expected": { "within": "Left Navigation" } },
+    { "action": "click", "target": "vertical ellipsis" },
+    { "action": "click", "target": "Delete (doc step)" },
+    { "action": "click", "target": "Confirm Delete", "expected": { "within": "Modal" } }
+  ]
+}

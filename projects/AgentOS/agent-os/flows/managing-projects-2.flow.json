@@ -1,0 +1,96 @@
+{
+  "id": "managing-project-delete-project-2",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/managing-projects",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Projects page (doc step)",
+      "expected": { "labelEquals": "Projects", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Project card (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "Project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "General settings tab (doc step)",
+      "expected": { "labelEquals": "General", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "General settings tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Advanced Settings section (doc step)",
+      "expected": { "labelEquals": "Advanced Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Delete Project button (doc step)",
+      "expected": { "labelEquals": "Delete Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Delete Project button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete Project modal (doc step)",
+      "expected": { "labelEquals": "Delete Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Delete Project name confirm input (doc step)",
+      "value": "Auto Project {unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Yes Delete Project button (doc step)",
+      "expected": { "labelEquals": "Yes, Delete Project", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Yes Delete Project button (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

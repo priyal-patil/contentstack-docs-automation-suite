@@ -1,0 +1,113 @@
+{
+  "id": "create-an-agent",
+  "project": "AgentOS",
+  "module": "agents",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/create-an-agent",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "expected": { "labelMatch": "exists" },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Agent button (doc step)",
+      "expected": { "labelEquals": "+ New Agent", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "+ New Agent button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create Agent modal (doc step)",
+      "expected": { "labelEquals": "Create Agent", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Skip, I'll create manually link (doc step)",
+      "expected": { "labelEquals": "Skip, I'll create manually", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Skip, I'll create manually link (doc step)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Title field (doc step)",
+      "expected": { "labelEquals": "Title", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Title input (doc step)",
+      "value": "agent-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Create Agent (doc step)",
+      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create Agent (doc step)",
+      "value": "agent-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create Agent button (doc step)",
+      "expected": { "labelEquals": "Create Agent", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Create Agent button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent Builder page (doc step)",
+      "expected": { "labelEquals": "Agent Builder", "labelMatch": "contains" },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Trigger component (doc step)",
+      "expected": { "labelEquals": "Trigger", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Tools component (doc step)",
+      "expected": { "labelEquals": "Tools", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Instructions component (doc step)",
+      "expected": { "labelEquals": "Instructions", "labelMatch": "contains" }
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "id": "project-sharing",
+  "project": "AgentOS",
+  "module": "agent-os",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/project-sharing",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Project Dashboard loaded (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings (doc step)",
+      "expected": {
+        "labelEquals": "Settings",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Settings (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "General settings tab (doc step)",
+      "expected": {
+        "labelEquals": "General",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Project Name field (doc step)",
+      "expected": {
+        "labelEquals": "Project Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Description field (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Tags field (doc step)",
+      "expected": {
+        "labelEquals": "Tags",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Save Changes button (doc step)",
+      "expected": {
+        "labelEquals": "Save Changes",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Users in left nav (doc step)",
+      "expected": {
+        "labelEquals": "Users",
+        "labelMatch": "contains",
+        "within": "Left Navigation"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Users in left nav (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Invite Users field (doc step)",
+      "expected": {
+        "labelEquals": "Invite Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Invite Users button (doc step)",
+      "expected": {
+        "labelEquals": "Invite Users",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Audit Log tab (doc step)",
+      "expected": {
+        "labelEquals": "Audit Log",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Audit Log tab (doc step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

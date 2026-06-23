@@ -1,0 +1,62 @@
+{
+  "id": "edit-an-agent",
+  "project": "AgentOS",
+  "module": "agents",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/edit-an-agent",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any existing project card (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agents in top navigation panel (doc step)",
+      "expected": { "labelEquals": "Agents", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agents in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "vertical ellipses on an agent (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Edit Agent option in dropdown (doc step)",
+      "expected": { "labelEquals": "Edit Agent", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Edit Agent option in dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent Builder screen (doc step)",
+      "expected": { "labelEquals": "Agent Builder", "labelMatch": "contains" },
+      "timeoutMs": 90000
+    }
+  ]
+}
