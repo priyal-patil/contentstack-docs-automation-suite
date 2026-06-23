@@ -335,41 +335,74 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     RETRY_PASS=0
     RETRY_FAIL=0
 
+    # 5 flows retry in parallel, 3 min cap each (vs 5 min in main run).
+    # Worst case: ceil(162/5) × 3 min = ~97 min, vs 324 min sequential.
+    MAX_RETRY_CONCURRENT=5
+    RETRY_FLOW_MAX_MINUTES=3
+
     echo "" | tee -a "$LOG"
     echo "================================================================" | tee -a "$LOG"
-    echo "  RETRY — ${#FAILED_FLOWS[@]} failed flow(s) — running once more" | tee -a "$LOG"
+    echo "  RETRY — ${#FAILED_FLOWS[@]} failed flow(s) — ${MAX_RETRY_CONCURRENT} parallel, ${RETRY_FLOW_MAX_MINUTES} min cap each" | tee -a "$LOG"
     echo "================================================================" | tee -a "$LOG"
     echo "" | tee -a "$LOG"
+
+    declare -A RETRY_PIDS
+    declare -A RETRY_DIRS
+    RETRY_RUNNING=0
 
     RETRY_FILES=()
+
+    # ── Launch retries in parallel (semaphore: MAX_RETRY_CONCURRENT slots) ──
     for FLOW_ID in "${FAILED_FLOWS[@]}"; do
       [[ -z "${FLOW_ID// }" ]] && continue
-      FLOW_START="$(date +%s)"
-      echo "[retry] ▶  ${FLOW_ID}" | tee -a "$LOG"
 
-      # Write retry output to its own dir so Playwright never overwrites the
-      # merged $REPORT_DIR/flows-results.json (playwright.config reads REPORT_DIR).
+      while [[ $RETRY_RUNNING -ge $MAX_RETRY_CONCURRENT ]]; do
+        wait -n 2>/dev/null || true
+        RETRY_RUNNING=$(( RETRY_RUNNING - 1 ))
+      done
+
       RETRY_RUN_DIR="$PARTS_DIR/${FLOW_ID}-retry-run"
       mkdir -p "$RETRY_RUN_DIR"
+      RETRY_DIRS["$FLOW_ID"]="$RETRY_RUN_DIR"
 
-      set +e
-      REPORT_DIR="$RETRY_RUN_DIR" \
-      PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
-        --project=flows \
-        --grep "Project=CMS.*${FLOW_ID}$" \
-        2>&1 | tee -a "$LOG"
-      FLOW_EXIT=${PIPESTATUS[0]}
-      set -e
+      echo "[retry] ▶  ${FLOW_ID} (slot $((RETRY_RUNNING + 1))/${MAX_RETRY_CONCURRENT})" | tee -a "$LOG"
 
-      FLOW_ELAPSED=$(( $(date +%s) - FLOW_START ))
-      FLOW_MIN=$(( FLOW_ELAPSED / 60 ))
-      FLOW_SEC=$(( FLOW_ELAPSED % 60 ))
+      (
+        set +e
+        REPORT_DIR="$RETRY_RUN_DIR" \
+        PW_FLOW_MAX_MINUTES="$RETRY_FLOW_MAX_MINUTES" \
+        PW_WORKERS=1 npx playwright test tests/flows.spec.ts \
+          --project=flows \
+          --grep "Project=CMS.*${FLOW_ID}$" \
+          >> "$RETRY_RUN_DIR/retry.log" 2>&1
+        exit $?
+      ) &
+      RETRY_PIDS["$FLOW_ID"]=$!
+      RETRY_RUNNING=$(( RETRY_RUNNING + 1 ))
+    done
+
+    # ── Wait for all remaining retries ──
+    echo "" | tee -a "$LOG"
+    echo "All retries launched. Waiting for remaining to complete..." | tee -a "$LOG"
+    for FLOW_ID in "${!RETRY_PIDS[@]}"; do
+      wait "${RETRY_PIDS[$FLOW_ID]}" 2>/dev/null || true
+    done
+
+    # ── Collect results ──
+    echo "" | tee -a "$LOG"
+    for FLOW_ID in "${FAILED_FLOWS[@]}"; do
+      [[ -z "${FLOW_ID// }" ]] && continue
+      RETRY_RUN_DIR="${RETRY_DIRS[$FLOW_ID]:-}"
+      [[ -z "$RETRY_RUN_DIR" ]] && continue
+
+      wait "${RETRY_PIDS[$FLOW_ID]}" 2>/dev/null
+      FLOW_EXIT=$?
 
       if [[ "$FLOW_EXIT" -eq 0 ]]; then
-        STATUS="✅ PASS (retry)"
+        echo "  ✅ PASS (retry) — ${FLOW_ID}" | tee -a "$LOG"
         RETRY_PASS=$((RETRY_PASS + 1))
       else
-        STATUS="❌ FAIL (retry)"
+        echo "  ❌ FAIL (retry) — ${FLOW_ID}" | tee -a "$LOG"
         RETRY_FAIL=$((RETRY_FAIL + 1))
       fi
 
@@ -382,10 +415,14 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
         cp "$RETRY_RUN_DIR/doc-step-warnings.json" "$PARTS_DIR/${FLOW_ID}-retry-warnings.json" 2>/dev/null || true
       fi
 
-      echo "     ${STATUS}  — ${FLOW_MIN}m ${FLOW_SEC}s" | tee -a "$LOG"
-      echo "" | tee -a "$LOG"
+      # Append individual retry log to main log
+      if [[ -f "$RETRY_RUN_DIR/retry.log" ]]; then
+        echo "--- retry log: ${FLOW_ID} ---" >> "$LOG"
+        cat "$RETRY_RUN_DIR/retry.log" >> "$LOG"
+      fi
     done
 
+    echo "" | tee -a "$LOG"
     echo "================================================================" | tee -a "$LOG"
     echo "  RETRY COMPLETE" | tee -a "$LOG"
     echo "  Recovered    : ${RETRY_PASS}/${#FAILED_FLOWS[@]}" | tee -a "$LOG"
