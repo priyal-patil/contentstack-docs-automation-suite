@@ -381,22 +381,20 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
       RETRY_RUNNING=$(( RETRY_RUNNING + 1 ))
     done
 
-    # ── Wait for all remaining retries ──
+    # ── Wait for all remaining retries and collect results ──
+    # Single wait per PID — a second wait on the same PID always returns 0,
+    # which would falsely mark every flow as PASS.
     echo "" | tee -a "$LOG"
     echo "All retries launched. Waiting for remaining to complete..." | tee -a "$LOG"
-    for FLOW_ID in "${!RETRY_PIDS[@]}"; do
-      wait "${RETRY_PIDS[$FLOW_ID]}" 2>/dev/null || true
-    done
-
-    # ── Collect results ──
-    echo "" | tee -a "$LOG"
     for FLOW_ID in "${FAILED_FLOWS[@]}"; do
       [[ -z "${FLOW_ID// }" ]] && continue
       RETRY_RUN_DIR="${RETRY_DIRS[$FLOW_ID]:-}"
       [[ -z "$RETRY_RUN_DIR" ]] && continue
 
+      set +e
       wait "${RETRY_PIDS[$FLOW_ID]}" 2>/dev/null
       FLOW_EXIT=$?
+      set -e
 
       if [[ "$FLOW_EXIT" -eq 0 ]]; then
         echo "  ✅ PASS (retry) — ${FLOW_ID}" | tee -a "$LOG"
