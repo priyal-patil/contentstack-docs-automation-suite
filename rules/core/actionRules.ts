@@ -17,6 +17,8 @@ type Step = {
     | "upload"
     | "verify"
     | "navigate"
+    | "openNewTabAndNavigate"
+    | "switchTab"
     | "drag"
     | "dragBy"
     | "warn"
@@ -36109,6 +36111,37 @@ export async function performAction(
       await expect(inputEl).toBeVisible({ timeout: tInp });
       await inputEl.scrollIntoViewIfNeeded().catch(() => {});
       await inputEl.fill(inputValue, { timeout: tInp });
+      break;
+    }
+
+    case "switchTab": {
+      const tSwitch = getStepTimeoutMs(step, 30_000);
+      const pages = page.context().pages();
+      // Return the first/original page — used after OAuth new-tab flows close and control returns.
+      const originalPage = pages[0];
+      if (originalPage && originalPage !== page) {
+        await originalPage.bringToFront();
+        await originalPage.waitForLoadState("domcontentloaded", { timeout: tSwitch }).catch(() => {});
+        return originalPage;
+      }
+      await page.bringToFront();
+      break;
+    }
+
+    case "openNewTabAndNavigate": {
+      const t = getStepTimeoutMs(step, 30_000);
+      // Grant clipboard-read so navigator.clipboard.readText() works in headless Chromium.
+      await page.context().grantPermissions(["clipboard-read"]);
+      const url = await page.evaluate(() => navigator.clipboard.readText()).catch(() => "");
+      if (!url || !/^https?:\/\//i.test(url.trim())) {
+        throw new Error(
+          `openNewTabAndNavigate: clipboard does not contain a valid URL (got: "${url}"). ` +
+          `Make sure the copy icon was clicked before this step.`
+        );
+      }
+      const newTab = await page.context().newPage();
+      await newTab.goto(url.trim(), { waitUntil: "domcontentloaded", timeout: t });
+      await newTab.waitForLoadState("networkidle").catch(() => {});
       break;
     }
 

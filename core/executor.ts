@@ -331,9 +331,43 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
     return;
   }
 
+  // Helper: search a saved failure DOM for the step target and log candidate selectors.
+  const searchSavedFailureDom = (flowId: string, stepNum: number, targetLabel: string) => {
+    try {
+      const proj = String(flow.project || "").replace(/[^a-zA-Z0-9_.-]/g, "_");
+      const mod = String(flow.module || "").replace(/[^a-zA-Z0-9_.-]/g, "_");
+      const safeId = String(flowId || "flow").replace(/[^a-zA-Z0-9_.-]/g, "_");
+      const domFile = path.join(process.cwd(), "data", "dom", proj, mod, `${safeId}-step-${stepNum}-failure.html`);
+      if (!fs.existsSync(domFile)) return;
+      const html = fs.readFileSync(domFile, "utf8");
+      const label = targetLabel.replace(/\s*\(doc step\)\s*$/i, "").trim();
+      // Extract short snippets around each occurrence of the label text
+      const results: string[] = [];
+      let pos = 0;
+      while (results.length < 3) {
+        const idx = html.indexOf(label, pos);
+        if (idx === -1) break;
+        const snippet = html.slice(Math.max(0, idx - 120), idx + 200).replace(/\s+/g, " ").trim();
+        results.push(snippet);
+        pos = idx + label.length;
+      }
+      if (results.length > 0) {
+        console.log(`🔄 [DOM retry] Prior failure DOM found for step ${stepNum} — "${label}" appears ${results.length} time(s):`);
+        results.forEach((s, n) => console.log(`   match ${n + 1}: ...${s}...`));
+      } else {
+        console.log(`🔄 [DOM retry] Prior failure DOM found for step ${stepNum} — "${label}" NOT present in saved DOM.`);
+      }
+    } catch { /* best-effort */ }
+  };
+
   for (let i = mainStepStartIndex; i < flow.steps.length; i++) {
     const step = flow.steps[i];
     console.log(`STEP ${i + 1}/${flow.steps.length}:`, step);
+    // On retry runs, if a failure DOM was saved previously, search it for the target element.
+    const targetLabel = step?.target ? String(step.target) : "";
+    if (targetLabel) {
+      searchSavedFailureDom(flow.id, i + 1, targetLabel);
+    }
     try {
       const maybeNextPage = await performAction(currentPage, step, unique, flow, {
         documentUrl,
@@ -400,7 +434,6 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
           const domContent = await currentPage.content().catch(() => "");
           if (domContent) {
             fs.writeFileSync(absDom, domContent, "utf8");
-            // Try to locate the failing target in the saved DOM for diagnostics
             const targetLabel = step?.target ? String(step.target) : "";
             if (targetLabel) {
               const targetInDom = domContent.includes(targetLabel);
@@ -408,6 +441,20 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
                 `🔍 DOM saved: ${domFileName} — target "${targetLabel}" ${targetInDom ? "FOUND" : "NOT FOUND"} in DOM`
               );
             }
+            // Also save to data/dom/<project>/<module>/ for cross-run retry lookup
+            try {
+              const proj = String(flow.project || "").replace(/[^a-zA-Z0-9_.-]/g, "_");
+              const mod = String(flow.module || "").replace(/[^a-zA-Z0-9_.-]/g, "_");
+              if (proj && mod) {
+                const persistDir = path.join(process.cwd(), "data", "dom", proj, mod);
+                fs.mkdirSync(persistDir, { recursive: true });
+                fs.writeFileSync(
+                  path.join(persistDir, `${safeFlow}-step-${i + 1}-failure.html`),
+                  domContent,
+                  "utf8"
+                );
+              }
+            } catch { /* best-effort */ }
           }
         } catch {
           // DOM save is best-effort

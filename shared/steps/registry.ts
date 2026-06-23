@@ -3,8 +3,9 @@ import { loginStep } from "./login.step";
 import { selectStackStep } from "./selectStack.step";
 import { openLoginStep } from "./openLogin.step";
 import { orgDashboardStep } from "./orgDashboard.step";
+import { onDemandAutomationAppStep } from "./onDemandAutomationApp.step";
 
-export type SharedStepName = "login" | "selectStack" | "openLogin" | "orgDashboard";
+export type SharedStepName = "login" | "selectStack" | "openLogin" | "orgDashboard" | "on-demand-automation-app";
 
 export async function runSharedSteps(page: Page, use: string[] | undefined) {
   // Default shared setup only when `use` is omitted.
@@ -24,6 +25,9 @@ export async function runSharedSteps(page: Page, use: string[] | undefined) {
         break;
       case "orgDashboard":
         await orgDashboardStep(page);
+        break;
+      case "on-demand-automation-app":
+        await onDemandAutomationAppStep(page);
         break;
       default:
         throw new Error(`Unknown shared step: ${name}`);
