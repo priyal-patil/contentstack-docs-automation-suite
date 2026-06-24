@@ -5,7 +5,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
-    '[data-test-id*="stack-card" i], [data-test-id*="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack"), a[href*="/#!/stack/"]',
+    '[data-test-id="cs-stacklist-card-Compass-starter-app"]',
   "Entries (doc step)":
     'a[href*="/#!/stack/"][href*="/entries"], button[data-test-id="cms-nav-entries"], [data-test-id="cms-nav-entries"], button:has-text("Entries"), a:has-text("Entries")',
   "Entries page (doc step)":
