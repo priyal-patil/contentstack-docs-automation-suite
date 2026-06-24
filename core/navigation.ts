@@ -13,8 +13,8 @@ const HEADLESS_TILE = '[data-test-id="cs-global-dashboard-product-tile-headless-
 // ✅ Only use markers that confirm stack cards are actually rendered — generic page markers
 // (cs-page-title, cs-page-layout-contentBody) fire before cards load and cause false-ready.
 const STACKS_READY_MARKERS = [
-  '[data-test-id^=”cs-stacklist-card-”]',
-  “.StackList”,
+  '[data-test-id^="cs-stacklist-card-"]',
+  ".StackList",
 ];
 
 async function waitForAnySelector(page: Page, selectors: string[], timeout = 90_000) {
