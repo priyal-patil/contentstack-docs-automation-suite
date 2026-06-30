@@ -4,7 +4,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
-    '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
+    '[data-test-id="cs-stacklist-card-PriyalDocsStack"]',
   "Assets (doc step)":
     '[data-test-id="cms-nav-assets"], button:has-text("Assets"), a:has-text("Assets")',
   "First Published asset row (doc step)":

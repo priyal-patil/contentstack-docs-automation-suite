@@ -4,7 +4,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Stacks (doc step)":
     'button:has-text("Stacks"), [aria-label*="Stacks" i], [data-test-id*="stacks" i]',
   "Any Stack Card (doc step)":
-    '[data-test-id*="stack-card" i], [data-test-id*="stack-list" i] [role="button"], a[href*="/#!/stack/"], .stack-card, .stacklist-card',
+    '[data-test-id="cs-stacklist-card-PriyalDocsStack"]',
   "Settings (doc step)":
     '[data-test-id="cms-nav-settings"], [aria-label="Settings"], button:has-text("Settings"), a:has-text("Settings")',
   "More (doc step)":

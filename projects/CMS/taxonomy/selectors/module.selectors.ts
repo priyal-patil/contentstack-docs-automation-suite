@@ -8,7 +8,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":
-    '[data-test-id^="stack-card"], [data-test-id^="cs-stack-card"], [role="button"]:has-text("Stack"), [role="link"]:has-text("Stack")',
+    '[data-test-id="cs-stacklist-card-PriyalDocsStack"]',
   /** Top bar Settings (settings-top-nav.html — cms-nav-settings). */
   "Settings (doc step)":
     'div.TopNavbar__content__items__list__redirect a[href*="/settings/stack"] button[data-test-id="cms-nav-settings"], a[href*="/settings/stack"] [data-test-id="cms-nav-settings"], [data-test-id="cms-nav-settings"], button:has-text("Settings")',
