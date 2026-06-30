@@ -61,21 +61,13 @@
       "timeoutMs": 60000
     },
     {
-      "action": "click",
-      "target": "Role row Actions menu (doc step)",
-      "timeoutMs": 60000
-    },
-    {
-      "action": "verify",
-      "target": "Delete option in role actions menu (doc step)",
-      "expected": {
-        "labelEquals": "Delete",
-        "labelMatch": "contains"
-      }
+      "action": "hover",
+      "target": "Roles table row to delete (doc step)",
+      "timeoutMs": 90000
     },
     {
       "action": "click",
-      "target": "Delete option in role actions menu (doc step)",
+      "target": "Delete icon at extreme right of role row after hover (doc step)",
       "timeoutMs": 60000
     },
     {

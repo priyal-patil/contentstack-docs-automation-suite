@@ -47,6 +47,7 @@
       "target": "Taxonomy row vertical menu Edit (doc step)",
       "expected": { "labelEquals": "Edit", "labelMatch": "contains" }
     },
+    { "action": "hover", "target": "Taxonomy row vertical menu Edit (doc step)" },
     { "action": "click", "target": "Taxonomy row vertical menu Edit (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",

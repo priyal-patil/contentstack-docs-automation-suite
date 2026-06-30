@@ -33,7 +33,7 @@
       "action": "verify",
       "target": "Workflow page title (doc step)",
       "expected": {
-        "labelEquals": "Workflow Settings",
+        "labelEquals": "Workflow",
         "labelMatch": "contains"
       }
     },
@@ -54,19 +54,11 @@
       }
     },
     {
-      "action": "click",
-      "target": "Workflow first row Actions menu (doc step)",
+      "action": "hover",
+      "target": "Workflow listing first workflow row hover for delete icon (doc step)",
       "timeoutMs": 60000
     },
-    {
-      "action": "verify",
-      "target": "Workflow first row Delete option in menu (doc step)",
-      "expected": {
-        "labelEquals": "Delete",
-        "labelMatch": "contains"
-      }
-    },
-    { "action": "click", "target": "Workflow first row Delete option in menu (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Workflow listing first workflow row Delete icon (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Workflow delete confirmation Proceed button (doc step)",

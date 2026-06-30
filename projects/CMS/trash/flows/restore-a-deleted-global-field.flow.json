@@ -81,7 +81,16 @@
       }
     },
     { "action": "click", "target": "Trash Reset filters button (doc step)" },
-    { "action": "click", "target": "Trash global field row Actions menu (doc step)", "timeoutMs": 60000 },
+    { "action": "hover", "target": "Trash global field row to restore hover (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Trash global field row Restore action visible after hover (doc step)",
+      "timeoutMs": 8000,
+      "expected": {
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
     { "action": "click", "target": "Trash global field row Restore action after hover (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",

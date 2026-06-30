@@ -47,10 +47,6 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'a[href*="/workflow/"][href$="/edit"]:has([data-test-id="cs-table-body-row-0"]), a[href*="/settings/workflow/"][href$="/edit"]:has([data-test-id="cs-table-body-row-0"])',
   "Workflow listing first workflow row Delete icon (doc step)":
     '[data-test-id="cs-table-body-row-0"] button:has(svg[name="Delete"]), [data-test-id="cs-table-body-row-0"] a:has(svg[name="Delete"])',
-  "Workflow first row Actions menu (doc step)":
-    '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"], [data-test-id="cs-table-body-row-0"] button.three-dots-vertical-icon, [data-test-id="cs-table-body-row-0"] button[aria-label*="action" i]',
-  "Workflow first row Delete option in menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] [data-test-id*="delete" i], [role="menuitem"]:has-text("Delete"), ul[data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Delete")',
   "Workflow listing first workflow row Power icon (doc step)":
     '[data-test-id="cs-table-body-row-0"] button:has(svg[name="Power"]), [data-test-id="cs-table-body-row-0"] button:has(svg[name="Lightning"]), [data-test-id="cs-table-body-row-0"] svg[name="Power"]',
   "Workflow delete confirmation Proceed button (doc step)":

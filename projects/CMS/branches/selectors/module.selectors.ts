@@ -43,22 +43,6 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-branches-new-branch-source-select"] .Portal__control, [data-test-id="cs-branches-new-branch-source-select"]',
   "main option in target branch dropdown (doc step)":
     '[role="listbox"] [role="option"]:has-text("main"), [role="option"]:has-text("main"), .Portal__menu [role="option"]:has-text("main")',
-  "More Options icon on alias row (doc step)":
-    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"] button.three-dots-vertical-icon, [data-test-id^="cs-table-body-row-"] button[aria-label*="action" i]',
-  "Delete Alias option in menu (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] [data-test-id*="delete" i], [role="menuitem"]:has-text("Delete"), ul[data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Delete")',
-  "Delete Alias modal (doc step)":
-    '[data-test-id="cs-modal-title"]:has-text("Delete Alias"), [role="dialog"] h2:has-text("Delete Alias"), .Modal__title:has-text("Delete Alias")',
-  "Delete button in Delete Alias modal (doc step)":
-    '[role="dialog"] button:has-text("Delete"), .Modal button:has-text("Delete"), [data-test-id*="modal"] button:has-text("Delete")',
-  "Edit icon on alias row (doc step)":
-    '[data-test-id^="cs-table-body-row-"] button:has(svg[name="Edit"]), [data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"] button[aria-label*="edit" i]',
-  "Edit Alias modal (doc step)":
-    '[data-test-id="cs-modal-title"]:has-text("Edit Alias"), [role="dialog"] h2:has-text("Edit Alias"), .Modal__title:has-text("Edit Alias")',
-  "Target Branch dropdown in Edit Alias (doc step)":
-    '[data-test-id="cs-settings-branches-edit-alias-name-target-branch-select"] .Portal__control, [data-test-id="cs-settings-branches-edit-alias-name-target-branch-select"], [role="dialog"] [data-test-id*="target" i] .Portal__control',
-  "Save button in Edit Alias modal (doc step)":
-    '[data-test-id="cs-settings-branches-edit-alias-name-create-branch-save-cta"], [role="dialog"] button:has-text("Save")',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
@@ -74,10 +58,4 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-settings-branches-edit-alias-name-target-branch-field"], label:has-text("Target Branch")',
   "Alias ID input (doc step)":
     '[data-test-id="cs-settings-branches-create-alias-name-text-input"] input, input[name="alias"], input[placeholder*="alias ID"]',
-  "Alias ID input in Delete modal (doc step)":
-    '[role="dialog"] [data-test-id="cs-settings-branches-create-alias-name-text-input"] input, [role="dialog"] input[name="alias"], [role="dialog"] input[placeholder*="alias" i]',
-  "Alias ID label in Edit modal (doc step)":
-    '[role="dialog"] [data-test-id="cs-settings-branches-create-alias-name-field"], [role="dialog"] label:has-text("Alias ID")',
-  "Target Branch label in Edit modal (doc step)":
-    '[role="dialog"] [data-test-id="cs-settings-branches-edit-alias-name-target-branch-field"], [role="dialog"] label:has-text("Target Branch")',
 };

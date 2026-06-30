@@ -79,7 +79,16 @@
       }
     },
     { "action": "click", "target": "Trash Reset filters button (doc step)" },
-    { "action": "click", "target": "Trash asset row Actions menu (doc step)", "timeoutMs": 60000 },
+    { "action": "hover", "target": "Trash deleted asset file row to restore hover (doc step)", "timeoutMs": 90000 },
+    {
+      "action": "verify",
+      "target": "Trash asset row Restore action visible after hover (doc step)",
+      "timeoutMs": 8000,
+      "expected": {
+        "labelEquals": "Restore",
+        "labelMatch": "contains"
+      }
+    },
     { "action": "click", "target": "Trash asset row Restore action after hover (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
