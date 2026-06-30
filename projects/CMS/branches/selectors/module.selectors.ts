@@ -11,6 +11,10 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-branches-add-newbranch-cta"], button:has-text("New Branch"), button:has-text("+ New Branch")',
   "Branches page header (doc step)":
     '[data-test-id="cs-leftnavheader-header"] .page-header__title, .page-header__title:has-text("Branches"), span:has-text("Branches")',
+  "Actions menu on branch row (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-menu"], [data-test-id^="cs-table-body-row-"] button[aria-label*="action" i], [data-test-id^="cs-table-body-row-"] .Table__body__row__actions button, .branches-table tbody tr:first-child [class*="action" i] button, [data-test-id^="cs-table-body-row-"]:first-child button:last-child',
+  "Delete option in branch actions menu (doc step)":
+    '[role="menuitem"]:has-text("Delete"), [data-test-id="cs-table-action-menu-delete"], [role="option"]:has-text("Delete"), ul[role="menu"] li:has-text("Delete"), .Dropdown__menu li:has-text("Delete")',
   "Aliases tab (doc step)":
     '[data-test-id="cs-aliases-tab"], .Tab__item:has-text("Aliases")',
   "+ Assign Alias button (doc step)":

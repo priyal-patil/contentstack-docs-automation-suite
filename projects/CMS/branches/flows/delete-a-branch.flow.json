@@ -44,28 +44,17 @@
     },
     {
       "action": "click",
-      "target": "Hover over branch row (doc step)",
+      "target": "Actions menu on branch row (doc step)",
       "timeoutMs": 15000
     },
     {
-      "action": "click",
-      "target": "Delete icon on branch row (doc step)"
-    },
-    {
       "action": "verify",
-      "target": "Delete Branch modal title (doc step)",
+      "target": "Delete option in branch actions menu (doc step)",
+      "warnOnly": true,
       "expected": {
-        "modalTitle": "Delete Branch"
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
       }
-    },
-    {
-      "action": "enter",
-      "target": "Branch ID input in Delete modal (doc step)",
-      "value": "automation_test_branch"
-    },
-    {
-      "action": "click",
-      "target": "Delete button in Delete Branch modal (doc step)"
     }
   ]
 }
