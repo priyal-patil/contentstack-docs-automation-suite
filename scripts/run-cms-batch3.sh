@@ -253,6 +253,13 @@ if [[ ${#FLOWS_PART_FILES[@]} -gt 0 ]]; then
     --out "$REPORT_DIR/flows-results.json" "${FLOWS_PART_FILES[@]}" 2>&1 | tee -a "$LOG" || true
 fi
 
+# Save merged result before any retries overwrite flows-results.json.
+# Retry Playwright runs each write a single-flow flows-results.json; using this
+# backup as the --base for applyFlowRetries.ts preserves all 38 flow results.
+if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+  cp "$REPORT_DIR/flows-results.json" "$PARTS_DIR/batch3-all-flows.json"
+fi
+
 # ── Merge per-phase warnings into a single doc-step-warnings.json ─────────────
 shopt -s nullglob
 WARN_PARTS=("$PARTS_DIR"/*-warnings.json)
@@ -366,9 +373,13 @@ if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
     echo "================================================================" | tee -a "$LOG"
 
     # Patch merged flows-results.json with retry outcomes.
-    if [[ ${#RETRY_FILES[@]} -gt 0 ]]; then
+    # Use batch3-all-flows.json (pre-retry snapshot) as base — individual retry runs
+    # overwrite flows-results.json with a single-flow result, so we must patch the
+    # full merged snapshot (same pattern as run-cms-batch2.sh / batch2-all-modules.json).
+    if [[ ${#RETRY_FILES[@]} -gt 0 && -f "$PARTS_DIR/batch3-all-flows.json" ]]; then
       npx ts-node "$ROOT/scripts/applyFlowRetries.ts" \
-        --base "$REPORT_DIR/flows-results.json" "${RETRY_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+        --base "$PARTS_DIR/batch3-all-flows.json" "${RETRY_FILES[@]}" 2>&1 | tee -a "$LOG" || true
+      cp "$PARTS_DIR/batch3-all-flows.json" "$REPORT_DIR/flows-results.json" 2>/dev/null || true
     fi
 
     # Re-merge warnings to include retry flow warnings.
