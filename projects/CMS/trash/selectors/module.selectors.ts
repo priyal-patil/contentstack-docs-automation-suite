@@ -33,6 +33,15 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** data/dom/CMS/trash/reset-filter.html */
   "Trash Reset filters button (doc step)":
     '[data-test-id="cs-left-sidebar-reset-filter"], button[aria-label*="reset" i][aria-label*="filter" i]',
+  /** ⋮ Actions menu on first non-empty CT/GF/entries/assets trash row (replaces hover-reveal pattern). */
+  "Trash content type row Actions menu (doc step)":
+    '.trash-content-types [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"], .trash-content-types [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button.three-dots-vertical-icon',
+  "Trash global field row Actions menu (doc step)":
+    '.trash-global-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"], .trash-global-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button.three-dots-vertical-icon',
+  "Trash entry row Actions menu (doc step)":
+    '.trash-entries [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"], .trash-entries [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button.three-dots-vertical-icon',
+  "Trash asset row Actions menu (doc step)":
+    '.trash-assets [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"], .trash-assets [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button.three-dots-vertical-icon',
   /** Hover first trash CT row (left area); then Restore in VerticalActionTooltip — data/dom/CMS/trash/content-type-verticle-menu.html */
   "Trash content type row to restore hover (doc step)":
     '.trash-content-types [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)',

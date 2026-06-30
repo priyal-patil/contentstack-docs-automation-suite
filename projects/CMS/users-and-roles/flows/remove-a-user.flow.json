@@ -47,13 +47,8 @@
       }
     },
     {
-      "action": "hover",
-      "target": "Users table row to remove user (doc step)",
-      "timeoutMs": 90000
-    },
-    {
       "action": "click",
-      "target": "Delete icon at extreme right of user row after hover (doc step)",
+      "target": "User row Actions menu (doc step)",
       "timeoutMs": 60000
     },
     {

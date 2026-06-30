@@ -48,7 +48,6 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "hover", "target": "Taxonomy row vertical menu Delete (doc step)" },
     { "action": "click", "target": "Taxonomy row vertical menu Delete (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",

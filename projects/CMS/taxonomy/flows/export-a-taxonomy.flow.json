@@ -56,7 +56,6 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "hover", "target": "Taxonomy row vertical menu Export as JSON (doc step)" },
     {
       "action": "click",
       "target": "Taxonomy row vertical menu Export as JSON (doc step)",

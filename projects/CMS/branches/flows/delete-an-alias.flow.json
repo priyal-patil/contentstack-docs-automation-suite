@@ -48,12 +48,8 @@
     },
     {
       "action": "click",
-      "target": "Hover over alias row (doc step)",
+      "target": "More Options icon on alias row (doc step)",
       "timeoutMs": 15000
-    },
-    {
-      "action": "click",
-      "target": "More Options icon on alias row (doc step)"
     },
     {
       "action": "click",

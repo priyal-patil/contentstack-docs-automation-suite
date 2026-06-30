@@ -45,7 +45,6 @@
         "labelMatch": "contains"
       }
     },
-    { "action": "hover", "target": "Term vertical menu Delete Term (doc step)" },
     { "action": "click", "target": "Term vertical menu Delete Term (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",

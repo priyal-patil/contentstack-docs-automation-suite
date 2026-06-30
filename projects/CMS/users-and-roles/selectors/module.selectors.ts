@@ -21,6 +21,13 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** Roles react-select control (invite-user-modal.html — Portal__placeholder Select Role(s)). */
   "Invite User modal Roles select control (doc step)":
     '[data-test-id="cs-roles-invite-user-roles-select-input"] .Portal__control, [data-test-id="cs-roles-invite-user-roles-select-input"] div[class*="control"]',
+  /** ⋮ Actions menu on user/role table rows (replaces hover-reveal delete pattern). */
+  "User row Actions menu (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"] button.three-dots-vertical-icon, [data-test-id^="cs-table-body-row-"] [data-test-id="cs-users-action-dropdown"]',
+  "Role row Actions menu (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"] button.three-dots-vertical-icon, [data-test-id^="cs-table-body-row-"] [data-test-id="cs-roles-action-dropdown"]',
+  "Delete option in role actions menu (doc step)":
+    '[data-test-id="cs-vertical-action-tooltip"] [data-test-id*="delete" i], [role="menuitem"]:has-text("Delete"), ul[data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Delete"), [data-test-id="cs-roles-action-delete"]',
   /** After Delete/row action opens menu — Remove (data/dom/CMS/users-and-roles/users-verticle-menu.html). */
   "Remove in user row actions menu (doc step)": '[data-test-id="cs-users-action-remove"]',
   /** Confirmation dialog primary Remove (destructive). */

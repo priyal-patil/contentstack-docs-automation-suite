@@ -79,16 +79,7 @@
       }
     },
     { "action": "click", "target": "Trash Reset filters button (doc step)" },
-    { "action": "hover", "target": "Trash entry row to restore hover (doc step)", "timeoutMs": 90000 },
-    {
-      "action": "verify",
-      "target": "Trash entry row Restore action visible after hover (doc step)",
-      "timeoutMs": 8000,
-      "expected": {
-        "labelEquals": "Restore",
-        "labelMatch": "contains"
-      }
-    },
+    { "action": "click", "target": "Trash entry row Actions menu (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Trash entry row Restore action after hover (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
