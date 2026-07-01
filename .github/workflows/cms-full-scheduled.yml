@@ -27,7 +27,7 @@
 #          at 23:30 UTC (5:00 AM IST) daily.
 # =============================================================================
 
-name: CMS Full Run — Batch 1 → 2 → 3 (3 AM IST daily)
+name: CMS Full Run — Batch 1 → 2 → 3 (4 AM IST daily)
 
 on:
   repository_dispatch:
