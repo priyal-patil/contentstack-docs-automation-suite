@@ -5,6 +5,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id^="cs-table-body-row-0"], [role="row"][data-test-id^="cs-table-body-row-"]',
   "Comment mode icon (doc step)":
     'button[aria-label*="comment" i], [data-test-id*="comment"][role="button"], button:has([name*="Comment"])',
+  "Automation seed comment thread":
+    'text=Automation seed comment thread',
   "First comment row (doc step)":
     '[data-test-id="comment-item-can-edit"], #commentslist [role="row"]',
   "Edit comment icon (doc step)":

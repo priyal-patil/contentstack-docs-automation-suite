@@ -12,9 +12,19 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Branches page header (doc step)":
     '[data-test-id="cs-leftnavheader-header"] .page-header__title, .page-header__title:has-text("Branches"), span:has-text("Branches")',
   "Actions menu on branch row (doc step)":
-    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-menu"], [data-test-id^="cs-table-body-row-"] button[aria-label*="action" i], [data-test-id^="cs-table-body-row-"] .Table__body__row__actions button, .branches-table tbody tr:first-child [class*="action" i] button, [data-test-id^="cs-table-body-row-"]:first-child button:last-child',
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"] button[aria-label*="action" i], [data-test-id^="cs-table-body-row-"] .Table__body__row__actions button, .branches-table tbody tr:first-child [class*="action" i] button, [data-test-id^="cs-table-body-row-"]:first-child button:last-child',
   "Delete option in branch actions menu (doc step)":
-    '[role="menuitem"]:has-text("Delete"), [data-test-id="cs-table-action-menu-delete"], [role="option"]:has-text("Delete"), ul[role="menu"] li:has-text("Delete"), .Dropdown__menu li:has-text("Delete")',
+    '[data-test-id="cs-branch-delete"], [role="menuitem"]:has-text("Delete Branch"), [role="option"]:has-text("Delete"), ul[role="menu"] li:has-text("Delete"), .Dropdown__menu li:has-text("Delete")',
+  "Hover over alias row (doc step)":
+    '[data-test-id="cs-table-body-row-0"], [data-test-id^="cs-table-body-row-"]:first-child',
+  "More Options icon on alias row (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-table-action-options"]',
+  "Delete Alias option in menu (doc step)":
+    '[data-test-id="cs-alias-delete"]',
+  "Delete Alias modal (doc step)":
+    '[data-test-id="cs-modal-title-delete-alias"]',
+  "Delete button in Delete Alias modal (doc step)":
+    '[data-test-id="cs-settings-branchs-delete-branch-cta"]',
   "Aliases tab (doc step)":
     '[data-test-id="cs-aliases-tab"], .Tab__item:has-text("Aliases")',
   "+ Assign Alias button (doc step)":
@@ -58,4 +68,6 @@ export const INPUT_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-settings-branches-edit-alias-name-target-branch-field"], label:has-text("Target Branch")',
   "Alias ID input (doc step)":
     '[data-test-id="cs-settings-branches-create-alias-name-text-input"] input, input[name="alias"], input[placeholder*="alias ID"]',
+  "Alias ID input in Delete modal (doc step)":
+    '[data-test-id="cs-settings-branchs-delete-branch-text-input"] input, [data-test-id="cs-settings-branchs-delete-branch-text-input"]',
 };

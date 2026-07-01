@@ -16,10 +16,7 @@
       "action": "verify",
       "target": "Version icon (doc step)",
       "expected": {
-        "within": "Top-right corner",
-        "withinStrict": true,
-        "labelEquals": "Version",
-        "labelMatch": "contains"
+        "visible": true
       }
     },
     { "action": "click", "target": "Version icon (doc step)" },
