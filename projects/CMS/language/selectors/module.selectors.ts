@@ -48,7 +48,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Delete action (doc step)":
     '[role="menuitem"]:has-text("Delete"), li:has-text("Delete"), [data-test-id="cs-languages-action-delete"]',
   "Remove (doc step)":
-    '[role="dialog"] button:has-text("Remove"), [role="dialog"] button:has-text("Delete"), [data-test-id="cs-languages-remove-button"], [data-test-id="cs-languages-action-remove"]',
+    '.ReactModal__Content button:has-text("Remove"), [data-test-id="cs-languages-remove-button"], [data-test-id="cs-languages-action-remove"], [role="dialog"] button:has-text("Remove"), [role="dialog"] button:has-text("Delete")',
   "Add Supported Language option (doc step)":
     '[data-test-id="cs-languages-modal-existing-language"], label:has-text("Add Supported Language")',
   "Create Custom Language option (doc step)":
