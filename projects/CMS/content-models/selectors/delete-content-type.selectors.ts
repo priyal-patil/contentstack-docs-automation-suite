@@ -9,15 +9,18 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   // Delete menu item in the row action tooltip
   Delete:
-    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"]',
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"], [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Delete"), [data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id*="delete" i]',
   "Delete (doc step)":
-    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"]',
+    '[data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"] .ml-8, [data-test-id="cs-vertical-action-tooltip"] li[data-test-id="cs-ct-action-delete"], [data-test-id="cs-vertical-action-tooltip-actions"] li:has-text("Delete"), [data-test-id="cs-vertical-action-tooltip-actions"] [data-test-id*="delete" i]',
 
-  // Confirm Delete button inside the modal
+  // Confirm Delete button inside the modal (CMS modals use ReactModal, not role=dialog)
   "Confirm Delete":
-    '[role="dialog"] button:has-text("Delete"), [data-testid="cs-modal"][role="dialog"] button:has-text("Delete")',
+    '.ReactModal__Content button:has-text("Delete"), [data-test-id="cs-cb-delete-ct"], [data-test-id*="delete-ct" i], [role="dialog"] button:has-text("Delete")',
   "Confirm Delete (doc step)":
-    '[role="dialog"] button:has-text("Delete"), [data-testid="cs-modal"][role="dialog"] button:has-text("Delete")',
+    '.ReactModal__Content button:has-text("Delete"), [data-test-id="cs-cb-delete-ct"], [data-test-id*="delete-ct" i], [role="dialog"] button:has-text("Delete")',
 };
 
-export const INPUT_SELECTORS: Record<string, string> = {};
+export const INPUT_SELECTORS: Record<string, string> = {
+  "Confirm Delete (doc step)":
+    '.ReactModal__Content button:has-text("Delete"), [data-test-id="cs-cb-delete-ct"], [data-test-id*="delete-ct" i]',
+};
