@@ -63,6 +63,13 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-users-update-user-save"], [data-test-id="cs-users-update-save"], [role="dialog"] button.Button--primary:has-text("Update"), [role="dialog"] button:has-text("Update")',
   /** roles-listing.html — open role edit (update-a-role doc step 2). */
   "Role row link to open role for editing (doc step)": 'a[href*="/settings/roles/"][href*="/edit"]',
+  /** delete-a-role: hover the first role row (doc step 7). */
+  "Roles table row to delete (doc step)":
+    '[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)',
+  /** Doc says Delete icon appears at extreme right on hover — app uses ⋮ instead.
+   *  This selector targets the hover-revealed icon; since it does not exist, step hard-fails. */
+  "Delete icon at extreme right of role row after hover (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-roles-delete-icon"], [data-test-id^="cs-table-body-row-"] button[aria-label*="delete" i]:not([data-test-id="cs-table-action-options"])',
   /** delete-role-modal.html — confirm delete custom role. */
   "Delete Role modal title (doc step)": '[data-test-id="cs-modal-title-delete-role"]',
   "Delete Role confirmation modal Delete button (doc step)": '[data-test-id="cs-roles-quick-action-delete"]',

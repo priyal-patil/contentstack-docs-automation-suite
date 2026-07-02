@@ -7,6 +7,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cms-nav-entries"], button:has-text("Entries"), a:has-text("Entries")',
   "First Entry row (doc step)":
     '[data-test-id^="cs-table-body-row-0"], [role="row"][data-test-id^="cs-table-body-row-"]',
+  /** Doc: ensure master locale is active before delete — click locale dropdown. */
+  "Ensure Master Locale Selected (doc step)":
+    '[data-test-id="cs-edit-entry-locale-dropdown"], [data-test-id="cs-edit-entry-locale-dropdown-value"]',
   "See more (entry editor) (doc step)":
     '[data-test-id="cs-entry-see-more-dropdown"]',
   "Delete from see more (doc step)":

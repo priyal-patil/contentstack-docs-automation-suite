@@ -14,6 +14,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
+  /** Version History sidebar panel title (verify step after clicking Version icon). */
+  "Version History":
+    '.SidebarWindow__content__title:has-text("Version History"), [aria-label="Version History"], [data-test-id="cs-version-timeline"]',
   "Version name input (doc step)":
     '[data-test-id="cs-version-timeline-version"] input, input[aria-label*="version" i], input[placeholder*="version" i], [data-test-id="cs-version-timeline-version-name"][contenteditable="true"]',
 };

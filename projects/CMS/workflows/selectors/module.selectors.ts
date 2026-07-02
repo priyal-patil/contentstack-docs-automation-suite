@@ -29,6 +29,23 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Pending Access Requests Reject button (doc step)":
     '[role="dialog"] button:has-text("Reject"), .ReactModal__Content__footer button:has-text("Reject"), [data-test-id*="pending" i] button:has-text("Reject"), [data-test-id*="edit-access" i] button:has-text("Reject")',
   /** send-an-entry-for-publish-or-unpublish-approval (right-panel + publish modal path). */
+  /** delete-a-publish-rule: Publish Rules tab (unselected) on Workflow Settings page. */
+  "Publish Rules tab Workflow Settings (doc step)":
+    '[data-test-id="cs-settings-publish-rules-tab"]',
+  /** ⋮ actions button on first publish rule row. */
+  "Publish rules list first row Actions ellipsis (doc step)":
+    '[data-test-id="cs-table-body-row-0"] [data-test-id="cs-table-action-options"]',
+  /** Delete option in the ⋮ menu — used for both verify and click steps. */
+  "Publish rules list first row Delete in actions menu visible (doc step)":
+    '[data-test-id="cs-publish-rules-action-delete"]',
+  "Publish rules list Delete in vertical actions menu (doc step)":
+    '[data-test-id="cs-publish-rules-action-delete"]',
+  /** Delete button inside Delete publish rule confirmation modal. */
+  "Delete publish rule modal Delete button (doc step)":
+    '[data-test-id="cs-publish-rules-quick-action-delete"]',
+  /** After deletion: table or empty state confirms return to publish rules list. */
+  "Publish rule delete completed success or modal dismissed (doc step)":
+    '.content-main.workflows [data-test-id="cs-table"], .content-main.workflows [data-test-id="cs-empty-state"]',
   "Publish Rules Request Approval button (doc step)":
     '#resizable__panel button:has-text("Request Approval"), #resizable__panel a:has-text("Request Approval"), .SidebarWindow__content button:has-text("Request Approval"), .SidebarWindow__content a:has-text("Request Approval"), [data-test-id*="publish-rule" i] button:has-text("Request Approval"), [data-test-id*="publish-rule" i] a:has-text("Request Approval")',
   "Publish (bottom) button (doc step)":
@@ -45,6 +62,10 @@ export const CLICK_SELECTORS: Record<string, string> = {
     'a.ListRowV2-wrapper:has([data-test-id="cs-stack-settings-workflows"]), [data-test-id="cs-stack-settings-workflows"]',
   "Workflow listing first workflow row link (doc step)":
     'a[href*="/workflow/"][href$="/edit"]:has([data-test-id="cs-table-body-row-0"]), a[href*="/settings/workflow/"][href$="/edit"]:has([data-test-id="cs-table-body-row-0"])',
+  /** Doc: hover workflow row to reveal Delete icon — app uses ⋮ menu instead.
+   *  Hover executes; click on Delete icon fails correctly documenting doc/app mismatch. */
+  "Workflow listing first workflow row hover for delete icon (doc step)":
+    '[data-test-id="cs-table-body-row-0"]',
   "Workflow listing first workflow row Delete icon (doc step)":
     '[data-test-id="cs-table-body-row-0"] button:has(svg[name="Delete"]), [data-test-id="cs-table-body-row-0"] a:has(svg[name="Delete"])',
   "Workflow listing first workflow row Power icon (doc step)":

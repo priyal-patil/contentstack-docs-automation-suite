@@ -28,6 +28,12 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-releases-card-action-unlock"] button[data-test-id="cs-button"], [data-test-id="cs-releases-card-action-unlock"] svg[name="Unlock"], [data-test-id="cs-releases-card-action-unlock"]',
   "Hover release row for update icon (doc step)":
     '.ReleaseLeftContent [data-test-id="cs-list-row"], .ReleaseLeftContent .ListRow',
+  /** delete-a-release: click/hover first release row in left nav to reveal delete icon. */
+  "Hover release row for delete icon (doc step)":
+    '.ReleaseLeftContent [data-test-id="cs-list-row"], .ReleaseLeftContent .ListRow',
+  /** remove-entry-asset-from-a-release: hover first item row in the release items table. */
+  "Hover release item row for delete icon (doc step)":
+    '[data-test-id^="cs-table-body-row-"], .Table__body [role="row"][data-test-id^="cs-table-body-row-"]',
   "Update all release items icon (doc step)":
     "button[data-test-id='cs-button']:has(svg[name='Update']), button[data-test-id='cs-button'] svg[name='Update'], [data-test-id*='update-release' i], button[aria-label*='update' i]",
   "Release top-right horizontal ellipsis (doc step)":
