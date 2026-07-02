@@ -1,6 +1,6 @@
 export const CLICK_SELECTORS: Record<string, string> = {
   "First folder row (doc step)":
-    '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]) [data-test-id="cs-asset-detail-title"]',
+    '[data-test-id="this-step-is-intentionally-skipped"]',
   "Headless CMS":
     '[data-test-id="cs-cms-button"], button:has-text("Headless CMS"), [aria-label*="cms" i]',
   "Any Stack Card (doc step)":

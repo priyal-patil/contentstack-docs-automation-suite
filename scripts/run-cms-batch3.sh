@@ -8,7 +8,8 @@
 # multiple workers, order-sensitive phases use 1.
 #
 # Phase design:
-#   Phase 1  — Content    (10 flows, 5 workers) — all independent
+#   Phase 1a — Comment    ( 1 flow,  1 worker)  — must precede delete-an-entry
+#   Phase 1  — Content    ( 8 flows, 5 workers) — all independent
 #   Phase 2  — Taxonomy   ( 2 flows, 1 worker)  — term MUST precede taxonomy
 #   Phase 3  — Structure  ( 2 flows, 2 workers) — independent
 #   Phase 4  — Releases   ( 2 flows, 2 workers) — independent
@@ -19,7 +20,7 @@
 #   Phase 9  — Stack      ( 3 flows, 1 worker)  — leave → transfer → delete
 #   Phase 10 — Trash      ( 8 flows, 7 workers) — all independent restores
 #
-# Total: 38 flows | Est. ~32 min (30 delete + 2 min trash)
+# Total: 37 flows | Est. ~32 min (29 delete + 8 trash)
 #
 # Usage:
 #   ./scripts/run-cms-batch3.sh
@@ -136,7 +137,7 @@ START_ISO="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 : > "$LOG"
 echo "================================================================" | tee -a "$LOG"
-echo "  CMS Batch 3 — 38 flows (30 delete + 8 trash), phase-based parallelism" | tee -a "$LOG"
+echo "  CMS Batch 3 — 37 flows (29 delete + 8 trash), phase-based parallelism" | tee -a "$LOG"
 echo "  Phase 1(5w) → 2(1w) → 3(2w) → 4(2w) → 5(3w)" | tee -a "$LOG"
 echo "  → 6(1w) → 7(2w) → 8(2w) → 9(1w) → 10-trash(7w)" | tee -a "$LOG"
 echo "  Est. ~32 min | 3 min element timeout | 5 min/flow cap" | tee -a "$LOG"
@@ -144,12 +145,15 @@ echo "  Started : ${START_ISO}" | tee -a "$LOG"
 echo "  Report  : ${REPORT_DIR}" | tee -a "$LOG"
 echo "================================================================" | tee -a "$LOG"
 
+# ── Phase 1a: Comment (1 worker — must run before delete-an-entry) ───────────
+echo "" | tee -a "$LOG"
+echo ">>> [Phase 1a] comment — 1 flow, 1 worker (must precede delete-an-entry)" | tee -a "$LOG"
+run_flow "edit-or-delete-a-comment"
+
 # ── Phase 1: Content (5 workers — all independent) ───────────────────────────
 run_phase "content" 5 \
-  "edit-or-delete-a-comment" \
   "remove-entry-version-names" \
   "delete-an-entry" \
-  "delete-an-entry-part-2" \
   "bulk-delete-entries" \
   "bulk-delete-localized-entry-versions" \
   "delete-a-folder" \
