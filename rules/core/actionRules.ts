@@ -2820,6 +2820,51 @@ function resolveStepAnchorLocator(page: Page, anchorTarget: string, flow?: any):
 const LAUNCH_GITHUB_ALREADY_CONNECTED_FLAG = "launchGithubAlreadyConnected";
 const LAUNCH_BITBUCKET_ALREADY_CONNECTED_FLAG = "launchBitbucketAlreadyConnected";
 
+/** "box-trigger" → "boxTriggerAccountAlreadySelected" */
+function deriveAccountFlagName(connectorId: string): string {
+  return connectorId.replace(/-([a-z])/g, (_: string, c: string) => c.toUpperCase()) + "AccountAlreadySelected";
+}
+
+/**
+ * Generic connector account-selection detect. Polls until an existing account card is visible
+ * (sets flow[flagName]=true) or the "+ Add New Account" button appears (sets flag=false).
+ * Covers all AgentOS connector triggers and actions via the pattern
+ * `{connector-id}-account-selection-state (doc step)`.
+ */
+async function detectConnectorAccountSelectionState(page: Page, flow: any, connectorId: string, timeoutMs: number) {
+  if (!flow || typeof flow !== "object") {
+    throw new Error(`detect ${connectorId}-account-selection-state requires flow object`);
+  }
+  const flagName = deriveAccountFlagName(connectorId);
+  const deadline = Date.now() + timeoutMs;
+  const existingAccountLocator = page.locator(
+    '[class*="account-card"], [class*="AccountCard"], [class*="account-item"], [class*="AccountItem"], [class*="account-row"]'
+  ).first();
+  const addNewAccountLocator = page.locator(
+    'button:has-text("+ Add New Account"), button:has-text("Add New Account")'
+  ).first();
+
+  while (Date.now() < deadline) {
+    if (await existingAccountLocator.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[flagName] = true;
+      // eslint-disable-next-line no-console
+      console.log(`✅ ${flagName}=true (existing account visible — ${connectorId})`);
+      return;
+    }
+    if (await addNewAccountLocator.isVisible({ timeout: 400 }).catch(() => false)) {
+      (flow as any)[flagName] = false;
+      // eslint-disable-next-line no-console
+      console.log(`ℹ️ ${flagName}=false (+ Add New Account button visible — ${connectorId})`);
+      return;
+    }
+    await page.waitForTimeout(320);
+  }
+
+  (flow as any)[flagName] = false;
+  // eslint-disable-next-line no-console
+  console.warn(`⚠️ detect ${connectorId}-account-selection-state: timeout ${timeoutMs}ms — defaulting ${flagName}=false`);
+}
+
 /**
  * After "Import from a Git Repository", poll until either GitHub shows Connected or Connect Account is available.
  * Sets `flow.launchGithubAlreadyConnected` for `skipIfFlowFlagTrue` / branching (Launch import-from-GitHub doc flow).
@@ -3524,6 +3569,15 @@ export async function performAction(
         await detectLaunchDeploymentsFileUploadPanelVsDoc(page, flow, context, step, getStepTimeoutMs(step, 180_000));
         break;
       }
+      // Generic handler: any "{connector-id}-account-selection-state (doc step)" target.
+      // Derives flagName via camelCase: "box-trigger" → "boxTriggerAccountAlreadySelected".
+      const accountStateMatch = target.match(/^(.+)-account-selection-state \(doc step\)$/);
+      if (accountStateMatch) {
+        const connectorId = accountStateMatch[1];
+        const t = getStepTimeoutMs(step, 10_000);
+        await detectConnectorAccountSelectionState(page, flow, connectorId, t);
+        break;
+      }
       throw new Error(`Unknown detect target: ${step.target}`);
     }
 
@@ -3753,6 +3807,141 @@ export async function performAction(
         const t = getStepTimeoutMs(step, 30_000);
         await page.goto("https://app.contentstack.com/#!/automations/projects");
         await page.waitForLoadState("networkidle", { timeout: t }).catch(() => {});
+        break;
+      }
+
+      // AgentOS — Create Automation button in Create New Automation modal.
+      // Known issue: the app creates the automation via API (status 201) but does NOT
+      // auto-navigate to the editor — the modal stays open. Also, if the project has
+      // reached the 50-automation limit, the API returns 403.
+      // Strategy:
+      //   1. Intercept the POST /automations-api/projects/{id}/rules API response.
+      //   2. Click Create (force bypasses any overlay).
+      //   3. On 201: extract the rule ID, navigate directly to the editor URL.
+      //   4. On 403 "Exceeded max": close modal, click the first automation in the list.
+      //   5. Fallback: close modal, log warning.
+      if (
+        step.target === "Create button in Create New Automation modal (doc step)" ||
+        step.target === "Create button in new automation modal (doc step)" ||
+        step.target === "Create button in New Automation (doc step)"
+      ) {
+        const t = getStepTimeoutMs(step, 90_000);
+        const btn = page.locator('button[data-test-id="createAutomation"], button#createRule').first();
+        await btn.waitFor({ state: "visible", timeout: t });
+
+        // Extract project ID and automation name hint from current context
+        const currentUrl = page.url();
+        const projectIdMatch = currentUrl.match(/\/automations\/projects\/([^/]+)/);
+        const projectId = projectIdMatch ? projectIdMatch[1] : '';
+        const titleInput = page.locator(
+          'input[aria-label="title"], input[name="title"], input[placeholder*="automation name" i]'
+        ).first();
+        const automationName = await titleInput.inputValue().catch(() => '');
+        // Derive a name prefix for finding existing automations (e.g. "algolia-index" from "algolia-index-automation-abc12")
+        const namePrefixMatch = automationName.match(/^([a-z0-9]+(?:-[a-z0-9]+){0,3})-automation/);
+        const namePrefix = namePrefixMatch ? namePrefixMatch[1] : '';
+
+        // Editor URL pattern: #!/automations/projects/{id}/automations/{ruleId}
+        const editorUrlPattern = (url: string): boolean => {
+          const hash = url.split('#!')[1] || '';
+          return /\/automations\/projects\/[^/]+\/automations\/[^/\s?]+/.test(hash);
+        };
+
+        // Helper: close modal + navigate to an existing automation editor via direct URL.
+        // Uses the automations API to get the first rule ID, then goto the editor URL.
+        const openExistingAutomation = async (): Promise<boolean> => {
+          await page.locator('button[data-test-id="cancelCreateAutomation"]')
+            .click({ force: true, timeout: 5_000 }).catch(() => {});
+          await page.locator('[role="dialog"]')
+            .waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+
+          // Fetch existing automations via the API (runs in browser context, uses existing session)
+          const rulesResult = await page.evaluate(async (projId: string) => {
+            try {
+              const resp = await fetch(`/automations-api/projects/${projId}/rules?limit=5`, {
+                credentials: 'include'
+              });
+              if (!resp.ok) return { error: resp.status, rules: [] };
+              const data = await resp.json();
+              return { error: null, rules: data.rules || data.data || [] };
+            } catch (e) {
+              return { error: String(e), rules: [] };
+            }
+          }, projectId).catch(() => ({ error: 'evaluate-failed', rules: [] as any[] }));
+
+          console.log(`[AgentOS] Existing rules fetch: ${JSON.stringify({ error: rulesResult.error, count: rulesResult.rules?.length })}`);
+
+          const rules: Array<{ id: string; title: string }> = rulesResult.rules || [];
+          // Prefer a rule whose title matches the name prefix
+          const targetRule = namePrefix
+            ? (rules.find(r => r.title?.includes(namePrefix)) || rules[0])
+            : rules[0];
+
+          if (targetRule?.id && projectId) {
+            const editorUrl = `https://app.contentstack.com/#!/automations/projects/${projectId}/automations/${targetRule.id}`;
+            console.log(`[AgentOS] Navigating to existing automation: ${editorUrl} (title="${targetRule.title}")`);
+            await page.goto(editorUrl, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+            return await page.waitForURL(editorUrlPattern, { timeout: 30_000 })
+              .then(() => true).catch(() => false);
+          }
+          return false;
+        };
+
+        // Register API response interceptor BEFORE clicking so we catch it
+        const createRuleResponsePromise = page.waitForResponse(
+          resp =>
+            resp.url().includes('/automations-api/') &&
+            resp.url().includes('/rules') &&
+            !resp.url().includes('/rules/') &&
+            resp.request().method() === 'POST',
+          { timeout: 60_000 }
+        ).catch(() => null);
+
+        await btn.click({ force: true });
+
+        const createRuleResponse = await createRuleResponsePromise;
+        let ruleId = '';
+        let apiStatus = 0;
+        if (createRuleResponse) {
+          apiStatus = createRuleResponse.status();
+          let bodyText = '';
+          try { bodyText = (await createRuleResponse.text()).slice(0, 300); } catch { /* */ }
+          console.log(`[AgentOS] Create rule API status: ${apiStatus} | body: ${bodyText}`);
+          if (apiStatus === 201) {
+            try {
+              const data = JSON.parse(bodyText);
+              ruleId = data.id || data.rule_id || '';
+            } catch { /* ignore parse errors */ }
+          }
+        }
+
+        let navigated = false;
+
+        if (ruleId && projectId) {
+          // Success — navigate directly to the automation editor
+          const editorUrl = `https://app.contentstack.com/#!/automations/projects/${projectId}/automations/${ruleId}`;
+          console.log(`[AgentOS] Navigating to new editor: ${editorUrl}`);
+          await page.goto(editorUrl, { waitUntil: 'domcontentloaded', timeout: t }).catch(() => {});
+          navigated = await page.waitForURL(editorUrlPattern, { timeout: 30_000 })
+            .then(() => true).catch(() => false);
+        } else if (apiStatus === 403) {
+          // Project is at automation limit — open an existing automation instead
+          console.log('[AgentOS] Project at 50-automation limit. Opening an existing automation.');
+          navigated = await openExistingAutomation();
+        }
+
+        if (!navigated) {
+          // Final fallback: check if app auto-navigated, else close modal
+          navigated = await page.waitForURL(editorUrlPattern, { timeout: 10_000 })
+            .then(() => true).catch(() => false);
+          if (!navigated) {
+            await page.locator('button[data-test-id="cancelCreateAutomation"]')
+              .click({ force: true }).catch(() => {});
+            await page.locator('[role="dialog"]')
+              .waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+            console.warn('[AgentOS] Could not navigate to automation editor — subsequent verify steps may fail.');
+          }
+        }
         break;
       }
 
@@ -10052,14 +10241,16 @@ export async function performAction(
         break;
       }
 
-      // Trash → Taxonomies: Actions ellipsis on first row whose Type column is Term (taxonomies-listing-page.html termTypeCell).
+      // Trash → Taxonomies: Actions ellipsis on first row whose Type column is Term.
+      // Term rows do NOT have .termTypeCell; Taxonomy rows DO — so invert: select rows without .termTypeCell.
+      // See restore-a-deleted-term-step-14-failure.html: row-0=Term (no termTypeCell), row-1=Taxonomy (has termTypeCell).
       if (step.target === "Trash term first row Actions ellipsis (doc step)") {
         const t = getStepTimeoutMs(step);
         const root = page.locator(".trash-taxonomy-fields").first();
         await expect(root).toBeVisible({ timeout: t });
         const termRows = page
           .locator('.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
-          .filter({ has: page.locator(".termTypeCell").getByText("Term", { exact: true }) });
+          .filter({ hasNot: page.locator(".termTypeCell") });
         const pollUntil = Date.now() + Math.min(t, 90_000);
         let rowCount = 0;
         while (Date.now() < pollUntil) {
@@ -10093,9 +10284,30 @@ export async function performAction(
       ) {
         const t = getStepTimeoutMs(step);
         const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
-        await expect(tip).toBeVisible({ timeout: t });
+        // The tooltip may have auto-closed between the verify steps and this click.
+        // If it is not visible, re-click the ellipsis on the appropriate row to reopen it.
+        if (!(await tip.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          const isTerm = step.target.includes("term");
+          let ellipsis: import("@playwright/test").Locator;
+          if (isTerm) {
+            // Term rows do NOT have .termTypeCell; Taxonomy rows do
+            ellipsis = page
+              .locator('.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+              .filter({ hasNot: page.locator(".termTypeCell") })
+              .locator('[data-test-id="cs-table-action-options"]')
+              .first();
+          } else {
+            ellipsis = page
+              .locator('.trash-taxonomy-fields [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row) [data-test-id="cs-table-action-options"]')
+              .first();
+          }
+          await expect(ellipsis).toBeVisible({ timeout: Math.min(t, 30_000) });
+          await ellipsis.click({ timeout: Math.min(t, 30_000), force: true });
+          await page.waitForTimeout(300);
+        }
+        await expect(tip).toBeVisible({ timeout: Math.min(t, 30_000) });
         const label = tip.locator('.restore-label:has-text("Restore")').first();
-        await expect(label).toBeVisible({ timeout: t });
+        await expect(label).toBeVisible({ timeout: Math.min(t, 15_000) });
         await label.click({ timeout: t, force: true });
         const modalMarker = page
           .locator(
@@ -10885,12 +11097,37 @@ export async function performAction(
       // Edit/Delete alias: hover over alias row to reveal More Options (three dots) at extreme right (per doc)
       if (step.target === "Hover over alias row (doc step)" && (String(flow?.id || "").toLowerCase() === "edit-an-alias" || String(flow?.id || "").toLowerCase() === "delete-an-alias")) {
         const t = Math.min(getStepTimeoutMs(step), 15_000);
+        const unique4Local = unique.replace(/-/g, "").slice(0, 4);
         const aliasRow = page
-          .locator('[data-test-id^="cs-table-body-row-"]:has-text("automation_test_alias"), [data-test-id="cs-table-body-row-0"]')
+          .locator(`[data-test-id^="cs-table-body-row-"]:has-text("alias${unique4Local}"), [data-test-id="cs-table-body-row-0"]`)
           .first();
         await expect(aliasRow).toBeVisible({ timeout: t });
         await aliasRow.hover({ timeout: t }).catch(() => {});
         await page.waitForTimeout(300);
+        break;
+      }
+
+      // Delete alias: click "Delete Alias" option in the open VerticalActionTooltip, then wait for the modal.
+      // If tooltip has auto-closed between hover/More-Options and this step, re-click the three-dots button.
+      if (step.target === "Delete Alias option in menu (doc step)" && String(flow?.id || "").toLowerCase() === "delete-an-alias") {
+        const t = getStepTimeoutMs(step);
+        const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+        if (!(await tip.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          // Re-hover the alias row and re-click the 3-dot button
+          const aliasRow = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+          await expect(aliasRow).toBeVisible({ timeout: Math.min(t, 15_000) });
+          await aliasRow.hover({ timeout: 5_000 }).catch(() => {});
+          await page.waitForTimeout(200);
+          const threeDots = aliasRow.locator('[data-test-id="cs-table-action-options"]').first();
+          await expect(threeDots).toBeVisible({ timeout: Math.min(t, 15_000) });
+          await threeDots.click({ timeout: Math.min(t, 15_000), force: true });
+          await page.waitForTimeout(300);
+        }
+        await expect(tip).toBeVisible({ timeout: Math.min(t, 15_000) });
+        const deleteOpt = tip.locator('[data-test-id="cs-alias-delete"]').first();
+        await expect(deleteOpt).toBeVisible({ timeout: Math.min(t, 10_000) });
+        await deleteOpt.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
         break;
       }
 
@@ -13728,11 +13965,19 @@ export async function performAction(
         const t = Math.min(getStepTimeoutMs(step), 12_000);
         const flowId = String(flow?.id || "").toLowerCase();
         const expectedMenuLabel = flowId === "move-a-folder" ? "Move" : flowId === "delete-a-folder" ? "Delete" : "Rename";
+        // Folder rows may have svg[name="Folder"] in title cell OR show "Folder" text in the type cell
         const firstFolderRow = page
           .locator(
-            '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-table-head-asset-type"]:has-text("Folder")), [data-test-id^="cs-table-body-row-"]:has([role="cell"]:has-text("Folder"))'
+            '[data-test-id^="cs-table-body-row-"]:has(svg[name="Folder"]):not(.Table__empty__row), ' +
+            '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-table-head-asset-type"]:has-text("Folder")):not(.Table__empty__row), ' +
+            '[data-test-id^="cs-table-body-row-"]:has([data-test-id="cs-asset-detail-title"]:has-text("Folder")):not(.Table__empty__row)'
           )
           .first();
+        // Wait for folder rows to load before looking for action button
+        await firstFolderRow.waitFor({ state: "visible", timeout: t }).catch(async () => {
+          // Maybe page hasn't loaded — wait for any row and retry
+          await page.locator('[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)').first().waitFor({ state: "visible", timeout: Math.min(t, 10_000) }).catch(() => {});
+        });
         const actionBtn = firstFolderRow
           .locator(
             '[data-test-id="cs-table-action-options"], a svg[name="DotsThreeLargeVertical"], a:has(svg[name="DotsThreeLargeVertical"])'

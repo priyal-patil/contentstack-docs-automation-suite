@@ -90,9 +90,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** Doc modal step: split Restore → choose “Restore with Content Type Association” (restore-taxonomy-modal.html). */
   "Restore taxonomy With Content Type Association (doc step)":
     '[role="menuitem"]:has-text("Restore with Content Type Association"), button:has-text("Restore with Content Type Association")',
-  /** Trash → Taxonomies: Type column = Term (taxonomies-listing-page.html termTypeCell); ellipsis + menu match taxonomy-verticle-menu.html */
+  /** Trash → Taxonomies: Term rows do NOT have .termTypeCell (only Taxonomy rows do); select rows without termTypeCell — see restore-a-deleted-term-step-14-failure.html */
   "Trash term first row Actions ellipsis (doc step)":
-    '.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row):has(.termTypeCell :has-text("Term")) [data-test-id="cs-table-action-options"]',
+    '.trash-taxonomy-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row):not(:has(.termTypeCell)) [data-test-id="cs-table-action-options"]',
   "Trash term View Details in vertical action menu (doc step)":
     '[data-test-id="cs-vertical-action-tooltip"] .trash_viewDetails_text, [data-test-id="cs-vertical-action-tooltip-actions"] .trash_viewDetails_text',
   "Trash term Restore in vertical action menu visible (doc step)":

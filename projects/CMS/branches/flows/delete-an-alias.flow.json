@@ -69,7 +69,7 @@
     {
       "action": "enter",
       "target": "Alias ID input in Delete modal (doc step)",
-      "value": "automation_test_alias"
+      "value": "alias{unique4}"
     },
     {
       "action": "verify",
