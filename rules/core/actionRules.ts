@@ -11161,6 +11161,30 @@ export async function performAction(
         break;
       }
 
+      // delete-a-language: click "Delete action" in the VerticalActionTooltip after opening the row menu.
+      // If tooltip has closed before this click, re-click the first AUTO- row's action menu button.
+      if (step.target === "Delete action (doc step)" && String(flow?.id || "").toLowerCase() === "delete-a-language") {
+        const t = getStepTimeoutMs(step);
+        const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+        if (!(await tip.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          const langRow = page
+            .locator('[role="row"]:has-text("AUTO-") button[data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button[data-test-id="cs-table-action-options"]:not([disabled])')
+            .first();
+          if (await langRow.isVisible({ timeout: Math.min(t, 10_000) }).catch(() => false)) {
+            await langRow.click({ timeout: Math.min(t, 10_000), force: true });
+            await page.waitForTimeout(300);
+          }
+        }
+        await expect(tip).toBeVisible({ timeout: Math.min(t, 15_000) });
+        const deleteOpt = tip
+          .locator('[data-test-id="cs-languages-action-delete"], li:has-text("Delete")')
+          .first();
+        await expect(deleteOpt).toBeVisible({ timeout: Math.min(t, 10_000) });
+        await deleteOpt.click({ timeout: t, force: true });
+        await page.waitForTimeout(500);
+        break;
+      }
+
       if (step.target === "Hover release row for delete icon (doc step)") {
         const t = Math.min(getStepTimeoutMs(step), 15_000);
         const firstReleaseRow = page
