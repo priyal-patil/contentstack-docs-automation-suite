@@ -21,6 +21,14 @@ export const CLICK_SELECTORS: Record<string, string> = {
   /** Roles react-select control (invite-user-modal.html — Portal__placeholder Select Role(s)). */
   "Invite User modal Roles select control (doc step)":
     '[data-test-id="cs-roles-invite-user-roles-select-input"] .Portal__control, [data-test-id="cs-roles-invite-user-roles-select-input"] div[class*="control"]',
+  /** users-listing.html — user table row (hover target per doc). */
+  "Users table row to remove user (doc step)":
+    '[data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)',
+  /** Doc says trash-bin icon appears at extreme right on hover — app uses ⋮ menu instead.
+   *  This selector targets the hover-revealed icon the doc describes; since it does not exist
+   *  in the app, this step will hard-fail, correctly recording the doc/app mismatch. */
+  "Delete icon at extreme right of user row after hover (doc step)":
+    '[data-test-id^="cs-table-body-row-"] [data-test-id="cs-users-delete-icon"], [data-test-id^="cs-table-body-row-"] button[aria-label*="delete" i]:not([data-test-id="cs-table-action-options"])',
   /** After Delete/row action opens menu — Remove (data/dom/CMS/users-and-roles/users-verticle-menu.html). */
   "Remove in user row actions menu (doc step)": '[data-test-id="cs-users-action-remove"]',
   /** Confirmation dialog primary Remove (destructive). */
