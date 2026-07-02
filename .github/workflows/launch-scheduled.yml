@@ -147,7 +147,8 @@ jobs:
           ELAPSED=$(( $(date +%s) - START ))
           DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
           if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
-            LAUNCH_DURATION_LABEL="Launch (${DURATION})" \
+            CMS_SLACK_TITLE="Launch — URL run summary" \
+            CMS_BATCH_DURATION_LABEL="Launch (${DURATION})" \
               npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
           else
             ICON=":x:"; [[ "${LAUNCH_STEP_OUTCOME}" == "success" ]] && ICON=":white_check_mark:"
