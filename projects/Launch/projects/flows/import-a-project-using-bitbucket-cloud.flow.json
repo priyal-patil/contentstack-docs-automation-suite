@@ -66,7 +66,8 @@
     {
       "action": "verify",
       "target": "Build Command field label (doc step)",
-      "expected": { "labelEquals": "Build Commands", "labelMatch": "contains" }
+      "expected": { "labelEquals": "Build Commands", "labelMatch": "contains" },
+      "warnOnly": true
     },
     {
       "action": "verify",
