@@ -8701,14 +8701,16 @@ export async function performAction(
 
       if (isRemoveAUserFlow(flow) && step.target === "Remove user confirmation modal Remove button (doc step)") {
         const t = getStepTimeoutMs(step);
-        const dlg = page.getByRole("dialog").first();
+        // CMS modals use .ReactModal__Content; fall back to [role="dialog"].
+        const dlg = page.locator('.ReactModal__Content, [role="dialog"]').first();
         await expect(dlg).toBeVisible({ timeout: t });
-        const primary = dlg
-          .getByRole("button", { name: /^Remove$/i })
-          .or(page.locator('[data-test-id="cs-users-quick-action-remove"]'))
-          .or(dlg.locator('button.Button--primary:has-text("Remove")'));
-        await expect(primary.first()).toBeVisible({ timeout: t });
-        await primary.first().click({ timeout: t });
+        const primary = page
+          .locator(
+            '.ReactModal__Content button.Button--primary:has-text("Remove"), .ReactModal__Content button:has-text("Remove"), [data-test-id="cs-users-quick-action-remove"], [role="dialog"] button.Button--primary:has-text("Remove"), [role="dialog"] button:has-text("Remove")'
+          )
+          .first();
+        await expect(primary).toBeVisible({ timeout: t });
+        await primary.click({ timeout: t, force: true });
         await page.waitForTimeout(400);
         break;
       }
@@ -10306,9 +10308,11 @@ export async function performAction(
           await page.waitForTimeout(300);
         }
         await expect(tip).toBeVisible({ timeout: Math.min(t, 30_000) });
-        const label = tip.locator('.restore-label:has-text("Restore")').first();
-        await expect(label).toBeVisible({ timeout: Math.min(t, 15_000) });
-        await label.click({ timeout: t, force: true });
+        // Click the <li> that wraps .restore-btn — clicking just the inner span is unreliable in headless.
+        const restoreItem = tip.locator('li:has(.restore-btn), .restore-btn').first();
+        await expect(restoreItem).toBeVisible({ timeout: Math.min(t, 15_000) });
+        await page.waitForTimeout(400);
+        await restoreItem.click({ timeout: t, force: true });
         const modalMarker = page
           .locator(
             '[data-test-id="cs-modal-title-restore-taxonomy"], [data-test-id="cs-modal-title-restore-term"], [data-test-id^="cs-modal-title-restore-term"]'
@@ -11126,8 +11130,37 @@ export async function performAction(
         await expect(tip).toBeVisible({ timeout: Math.min(t, 15_000) });
         const deleteOpt = tip.locator('[data-test-id="cs-alias-delete"]').first();
         await expect(deleteOpt).toBeVisible({ timeout: Math.min(t, 10_000) });
+        await page.waitForTimeout(500); // let tooltip fully settle before clicking
         await deleteOpt.click({ timeout: t, force: true });
-        await page.waitForTimeout(500);
+        // Wait for modal; if not mounted after 3s, retry the click once.
+        const aliasModal = page.locator('[data-test-id="cs-modal-title-delete-alias"], .ReactModal__delete-branches').first();
+        if (!(await aliasModal.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          await page.waitForTimeout(500);
+          if (await tip.isVisible({ timeout: 2_000 }).catch(() => false)) {
+            const retryOpt = tip.locator('[data-test-id="cs-alias-delete"]').first();
+            if (await retryOpt.isVisible({ timeout: 2_000 }).catch(() => false)) {
+              await retryOpt.click({ timeout: t, force: true });
+            }
+          } else {
+            // Re-open tooltip and click again
+            const aliasRow2 = page.locator('[data-test-id="cs-table-body-row-0"]').first();
+            await aliasRow2.hover({ timeout: 5_000 }).catch(() => {});
+            await page.waitForTimeout(200);
+            const dots2 = aliasRow2.locator('[data-test-id="cs-table-action-options"]').first();
+            if (await dots2.isVisible({ timeout: 3_000 }).catch(() => false)) {
+              await dots2.click({ timeout: 5_000, force: true });
+              await page.waitForTimeout(400);
+              const tip2 = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+              if (await tip2.isVisible({ timeout: 5_000 }).catch(() => false)) {
+                const del2 = tip2.locator('[data-test-id="cs-alias-delete"]').first();
+                if (await del2.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                  await del2.click({ timeout: t, force: true });
+                }
+              }
+            }
+          }
+        }
+        await page.waitForTimeout(300);
         break;
       }
 
@@ -11161,6 +11194,45 @@ export async function performAction(
         break;
       }
 
+      // delete-content-type: click "Delete" in the VerticalActionTooltip and wait for the confirmation modal.
+      // If tooltip has auto-closed, re-click the first AUTO- row's ellipsis to reopen.
+      if (step.target === "Delete (doc step)" && String(flow?.id || "").toLowerCase() === "delete-content-type") {
+        const t = getStepTimeoutMs(step);
+        const tip = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+        if (!(await tip.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          const ellipsis = page.locator('[data-test-id="cs-table-action-options"]').first();
+          if (await ellipsis.isVisible({ timeout: Math.min(t, 10_000) }).catch(() => false)) {
+            await ellipsis.click({ timeout: Math.min(t, 10_000), force: true });
+            await page.waitForTimeout(300);
+          }
+        }
+        await expect(tip).toBeVisible({ timeout: Math.min(t, 15_000) });
+        const deleteOpt = tip.locator('li[data-test-id="cs-ct-action-delete"]').first();
+        await expect(deleteOpt).toBeVisible({ timeout: Math.min(t, 10_000) });
+        await page.waitForTimeout(400); // let tooltip fully settle
+        await deleteOpt.click({ timeout: t, force: true });
+        // Wait for ReactModal to mount; retry once if needed.
+        const ctModal = page.locator('.ReactModal__Content, [role="dialog"]').first();
+        if (!(await ctModal.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          await page.waitForTimeout(500);
+          if (!(await tip.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            const ellipsis2 = page.locator('[data-test-id="cs-table-action-options"]').first();
+            if (await ellipsis2.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              await ellipsis2.click({ timeout: 5_000, force: true });
+              await page.waitForTimeout(300);
+            }
+          }
+          if (await tip.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            const del2 = tip.locator('li[data-test-id="cs-ct-action-delete"]').first();
+            if (await del2.isVisible({ timeout: 3_000 }).catch(() => false)) {
+              await del2.click({ timeout: t, force: true });
+            }
+          }
+        }
+        await page.waitForTimeout(300);
+        break;
+      }
+
       // delete-a-language: click "Delete action" in the VerticalActionTooltip after opening the row menu.
       // If tooltip has closed before this click, re-click the first AUTO- row's action menu button.
       if (step.target === "Delete action (doc step)" && String(flow?.id || "").toLowerCase() === "delete-a-language") {
@@ -11180,8 +11252,28 @@ export async function performAction(
           .locator('[data-test-id="cs-languages-action-delete"], li:has-text("Delete")')
           .first();
         await expect(deleteOpt).toBeVisible({ timeout: Math.min(t, 10_000) });
+        await page.waitForTimeout(500); // let tooltip fully settle
         await deleteOpt.click({ timeout: t, force: true });
-        await page.waitForTimeout(500);
+        // Retry once if modal doesn't mount within 3s.
+        const langModal = page.locator('.ReactModal__Content, [role="dialog"]').first();
+        if (!(await langModal.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          await page.waitForTimeout(500);
+          const langRow2 = page
+            .locator('[role="row"]:has-text("AUTO-") button[data-test-id="cs-table-action-options"], [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row) button[data-test-id="cs-table-action-options"]:not([disabled])')
+            .first();
+          if (await langRow2.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            await langRow2.click({ timeout: 5_000, force: true });
+            await page.waitForTimeout(400);
+            const tip2 = page.locator('[data-test-id="cs-vertical-action-tooltip"]').first();
+            if (await tip2.isVisible({ timeout: 5_000 }).catch(() => false)) {
+              const del2 = tip2.locator('[data-test-id="cs-languages-action-delete"], li:has-text("Delete")').first();
+              if (await del2.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                await del2.click({ timeout: t, force: true });
+              }
+            }
+          }
+        }
+        await page.waitForTimeout(300);
         break;
       }
 
@@ -30072,6 +30164,16 @@ export async function performAction(
         const restore = page
           .locator('[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-gf-action-restore"]')
           .first();
+        // In GHA headless, hover may not trigger :hover reliably — re-hover the first row if tooltip isn't showing.
+        if (!(await restore.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          const firstRow = page
+            .locator('.trash-global-fields [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+            .first();
+          if (await firstRow.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            await hoverTrashListingRowDocOnly(page, firstRow, 10_000);
+            await page.waitForTimeout(400);
+          }
+        }
         try {
           await expect(restore).toBeVisible({ timeout: t });
         } catch {
@@ -30091,6 +30193,16 @@ export async function performAction(
         const restore = page
           .locator('[data-test-id="cs-vertical-action-tooltip"] [data-test-id="cs-trash-entries-action-restore"]')
           .first();
+        // In GHA headless, hover may not trigger :hover reliably — re-hover the first row if tooltip isn't showing.
+        if (!(await restore.isVisible({ timeout: 2_000 }).catch(() => false))) {
+          const firstRow = page
+            .locator('.trash-entries [data-test-id^="cs-table-body-row-"]:not(.Table__empty__row)')
+            .first();
+          if (await firstRow.isVisible({ timeout: 5_000 }).catch(() => false)) {
+            await hoverTrashListingRowDocOnly(page, firstRow, 10_000);
+            await page.waitForTimeout(400);
+          }
+        }
         try {
           await expect(restore).toBeVisible({ timeout: t });
         } catch {
@@ -36114,17 +36226,22 @@ export async function performAction(
           .locator('.content-main.workflows [data-test-id="cs-table-body-row-0"]:not(.Table__empty__row)')
           .first();
         await expect(row).toBeVisible({ timeout: t });
-        await row.hover({ timeout: Math.min(t, 15_000) });
-        await page.waitForTimeout(280);
+        // Multi-position hover — headless Chrome may not trigger :hover on first attempt.
+        await row.scrollIntoViewIfNeeded().catch(() => {});
+        for (const pos of [{ x: 120, y: 20 }, { x: 60, y: 20 }, { x: 280, y: 20 }]) {
+          await row.hover({ position: pos, timeout: Math.min(t, 10_000), force: true }).catch(() => {});
+          await page.waitForTimeout(280);
+        }
         const scoped = page.locator('[data-test-id="cs-table-body-row-0"]');
         const deleteCandidates = [
           scoped.locator('button:has(svg[name="Delete"])').first(),
           scoped.locator('svg[name="Delete"]').first(),
           scoped.locator('[data-test-id*="delete" i]').first(),
+          page.locator('[data-test-id="cs-workflow-action-delete"], [data-test-id*="workflow"][data-test-id*="delete" i]').first(),
         ];
         let ok = false;
         for (const loc of deleteCandidates) {
-          if (await loc.isVisible({ timeout: 4_000 }).catch(() => false)) {
+          if (await loc.isVisible({ timeout: 8_000 }).catch(() => false)) {
             ok = true;
             break;
           }

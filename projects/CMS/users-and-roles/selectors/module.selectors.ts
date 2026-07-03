@@ -33,7 +33,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Remove in user row actions menu (doc step)": '[data-test-id="cs-users-action-remove"]',
   /** Confirmation dialog primary Remove (destructive). */
   "Remove user confirmation modal Remove button (doc step)":
-    '[role="dialog"] button.Button--primary:has-text("Remove"), [role="dialog"] button:has-text("Remove")',
+    '.ReactModal__Content button.Button--primary:has-text("Remove"), .ReactModal__Content button:has-text("Remove"), [data-test-id="cs-users-quick-action-remove"], [role="dialog"] button.Button--primary:has-text("Remove"), [role="dialog"] button:has-text("Remove")',
   /** users-tab.html — Users | Roles tabs (doc: Users page for assign-role-to-a-user). */
   "Users tab on Users and Roles page (doc step)":
     '[data-test-id="cs-settings-tab-users"], [data-test-id="cs-settings-users-tab"], button:has-text("Users")',
