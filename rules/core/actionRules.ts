@@ -34715,6 +34715,10 @@ export async function performAction(
             .first();
           await expect(dlg).toBeVisible({ timeout: t });
           const raw = String(step.value ?? process.env.CS_INVITE_TEST_EMAIL ?? "doc-launch-users-{unique}@example.com")
+            .split("{unique8}")
+            .join(unique.replace(/-/g, "").slice(0, 8))
+            .split("{unique5}")
+            .join(unique.replace(/-/g, "").slice(0, 5))
             .split("{unique}")
             .join(unique);
           const email = raw.trim();
