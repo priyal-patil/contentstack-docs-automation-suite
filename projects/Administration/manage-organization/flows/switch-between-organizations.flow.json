@@ -32,7 +32,7 @@
     },
     {
       "action": "click",
-      "target": "Switch organization dropdown (doc step)",
+      "target": "Organization dropdown trigger (doc step)",
       "timeoutMs": 60000
     },
     {

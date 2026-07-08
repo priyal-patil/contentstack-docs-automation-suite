@@ -6,17 +6,25 @@
 export const CLICK_SELECTORS: Record<string, string> = {
   // ── switch-between-organizations ────────────────────────────────────────────
 
-  /** Profile icon in the top-right header — opens the profile/account menu (doc step). */
+  /** Profile icon in the top-right header — opens the profile/account menu (doc step).
+   * DOM: <div data-test-id="cs-user-profile"><label aria-label="User Profile" role="button">. */
   "Profile icon (doc step)":
-    '[data-test-id="cs-header-profile"], [data-test-id="cs-profile-icon"], button[aria-label*="Profile" i], button[aria-label*="Account" i], .header__profile, .profile-icon',
+    '[data-test-id="cs-user-profile"]',
 
-  /** "Switch organization" label/section inside the profile dropdown menu (doc step). */
+  /** "Switch organization" static label/section heading inside the profile dropdown menu (doc step).
+   * DOM: <div class="switch_organization" aria-label="Switch Organization"><p>Switch organization</p></div> — not interactive. */
   "Switch organization dropdown (doc step)":
-    '[data-test-id="cs-switch-organization"], [data-test-id="cs-profile-switch-org"], button:has-text("Switch organization"), a:has-text("Switch organization"), [aria-label*="Switch organization" i]',
+    '[aria-label="Switch Organization"]',
 
-  /** First available organization option in the Switch organization dropdown list (doc step). */
+  /** Actual dropdown control that reveals org options — a hover-triggered widget next to the "Switch organization" label (doc step).
+   * DOM: <div data-test-id="cs-userprofile-orgdropdown" class="Dropdown--hover ..." aria-expanded="false"> — opens on hover, not click. */
+  "Organization dropdown trigger (doc step)":
+    '[data-test-id="cs-userprofile-orgdropdown"]',
+
+  /** First available organization option in the Switch organization dropdown list (doc step).
+   * DOM: <ul class="Dropdown__menu__list"><li data-test-id="cs-dropdown-elements" class="Dropdown__menu__list__item ...">. */
   "Organization option in Switch organization dropdown (doc step)":
-    '[data-test-id="cs-switch-org-option"], [data-test-id^="cs-org-option-"], .switch-org__list li:first-child, [role="menu"] li:first-child, [role="listbox"] [role="option"]:first-child',
+    'ul.Dropdown__menu__list li[data-test-id="cs-dropdown-elements"]',
 
   // ── customer-entitlements ───────────────────────────────────────────────────
 
@@ -124,37 +132,47 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   // ── manage-notifications ────────────────────────────────────────────────────
 
-  /** Bell icon in the top right corner of the screen — opens the Notifications panel (doc step). */
+  /** Bell icon in the top right corner of the screen — opens the Notifications panel (doc step).
+   * DOM varies by app: Administration wraps it in a div with data-test-id="cs-notification-bellicon";
+   * CMS Dashboard's outer wrapper has no data-test-id (only the inner svg carries "cs-notification-bell-icon").
+   * aria-label="Notification" is present on the clickable wrapper in both. */
   "Bell icon in top right corner (doc step)":
-    '[data-test-id="cs-notification-bell"], button[aria-label*="Notification" i], button[aria-label*="Bell" i], .notification-bell, header button:has(svg[class*="bell" i])',
+    '[data-test-id="cs-notification-bellicon"], [aria-label="Notification"]',
 
-  /** Notifications panel/drawer that opens after clicking the bell icon (doc step). */
+  /** Notifications panel/drawer that opens after clicking the bell icon (doc step).
+   * DOM: <div class="notification__list"><div class="notification__list__header">... (BEM double-underscore, not hyphenated). */
   "Notifications panel (doc step)":
-    '[data-test-id="cs-notifications-panel"], [data-test-id="cs-notifications-drawer"], [aria-label*="Notifications" i][role="dialog"], .notifications-panel, .notification-list',
+    '.notification__list',
 
-  /** Ellipsis (three dots) icon on an individual notification row (doc step). */
+  /** Ellipsis (three dots) icon on an individual notification row (doc step).
+   * DOM: <div class="notification__group__right"><div data-test-id="cs-dropdown" class="... actions__dropdown"> (DotsThreeLargeVertical svg icon). */
   "Ellipsis on notification (doc step)":
-    '[data-test-id="cs-notification-item-ellipsis"], [data-test-id="cs-notification-item-menu"], .notification-item button[aria-label*="more" i], .notification-item button[aria-label*="options" i], .notification-item [data-test-id*="ellipsis"]',
+    '.notification__group__right .actions__dropdown',
 
-  /** "Mark as Read" option in the per-notification ellipsis menu (doc step). */
+  /** "Mark as Read" option in the per-notification ellipsis menu (doc step).
+   * DOM: <ul class="Dropdown__menu__list"><li data-test-id="cs-dropdown-elements">Mark as Read</li> — no role="menu", generic id, scope by text. */
   "Mark as Read option in notification menu (doc step)":
-    '[data-test-id="cs-notification-mark-read"], [role="menu"] li:has-text("Mark as Read"), [role="menuitem"]:has-text("Mark as Read"), button:has-text("Mark as Read")',
+    'ul.Dropdown__menu__list li[data-test-id="cs-dropdown-elements"]:has-text("Mark as Read")',
 
-  /** "Delete" option in the per-notification ellipsis menu (doc step). */
+  /** "Delete" option in the per-notification ellipsis menu (doc step).
+   * DOM: same list as above, sibling <li> with text "Delete". */
   "Delete option in notification menu (doc step)":
-    '[data-test-id="cs-notification-delete"], [role="menu"] li:has-text("Delete"), [role="menuitem"]:has-text("Delete"), button:has-text("Delete")',
+    'ul.Dropdown__menu__list li[data-test-id="cs-dropdown-elements"]:has-text("Delete")',
 
-  /** Three dots menu icon at the panel level for bulk notification actions (doc step). */
+  /** Three dots menu icon at the panel level for bulk notification actions (doc step).
+   * DOM: <div class="notification__list__header"><div class="group">...<div data-test-id="cs-dropdown" class="... actions__dropdown"> (DotsThreeLargeVertical, distinct from per-row ellipsis). */
   "Three dots menu on Notifications panel (doc step)":
-    '[data-test-id="cs-notifications-panel-menu"], [data-test-id="cs-notifications-bulk-menu"], .notifications-panel button[aria-label*="more" i], .notifications-panel button[aria-label*="options" i], .notification-panel__header [data-test-id*="ellipsis"]',
+    '.notification__list__header .actions__dropdown',
 
-  /** "Mark All Read" option in the panel-level three dots menu (doc step). */
+  /** "Mark All Read" option in the panel-level three dots menu (doc step).
+   * No DOM sample captured for this menu's open state — exact wording unconfirmed, generic fallback only. */
   "Mark All Read option in Notifications menu (doc step)":
-    '[data-test-id="cs-notifications-mark-all-read"], [role="menu"] li:has-text("Mark All Read"), [role="menuitem"]:has-text("Mark All Read"), button:has-text("Mark All Read")',
+    'ul.Dropdown__menu__list li[data-test-id="cs-dropdown-elements"]:has-text("Mark All Read")',
 
-  /** "Delete All" option in the panel-level three dots menu (doc step). */
+  /** "Delete All" option in the panel-level three dots menu (doc step).
+   * No DOM sample captured for this menu's open state — exact wording unconfirmed, generic fallback only. */
   "Delete All option in Notifications menu (doc step)":
-    '[data-test-id="cs-notifications-delete-all"], [role="menu"] li:has-text("Delete All"), [role="menuitem"]:has-text("Delete All"), button:has-text("Delete All")',
+    'ul.Dropdown__menu__list li[data-test-id="cs-dropdown-elements"]:has-text("Delete All")',
 
   // ── monitor-organization-activities-in-audit-log ───────────────────────────
 
