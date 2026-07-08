@@ -1,0 +1,59 @@
+{
+  "id": "delete-quick-start-react-project",
+  "project": "Launch",
+  "module": "quick-start-guides",
+  "stage": "delete",
+  "type": "executable",
+  "use": [
+    "login",
+    "orgDashboard"
+  ],
+  "automationNotes": "Not doc-derived \u2014 no published \"delete a Launch project\" doc exists. Explicit QA test-hygiene cleanup requested by the user: after quick-start-react creates a project, delete it so the org does not accumulate leftover Launch projects. Matches the project card by the exact name quick-start-react used (\"ReactJS Starter App {unique5}\") \u2014 the {unique5} token is shared with the sibling quick-start-react run via core/executor.ts uniqueForFlow() (falls back to the first listed project card, with a warning, if run standalone). Steps: open project card -> Settings (top nav) -> scroll to Delete Project section -> Delete Project button -> confirm modal (type DELETE, click Yes, Delete). Handlers: rules/core/actionRules.ts (delete-quick-start-*-project).",
+  "steps": [
+    {
+      "action": "verify",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Launch",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Launch dashboard entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Delete Launch Project: open project card by name (cleanup step)",
+      "value": "ReactJS Starter App {unique5}",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Delete Launch Project: Settings top navigation button (cleanup step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Delete Launch Project: scroll Delete Project section into view (cleanup step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Delete Launch Project: Delete Project button (cleanup step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "enter",
+      "target": "Delete Launch Project modal type DELETE confirmation (cleanup step)",
+      "value": "DELETE"
+    },
+    {
+      "action": "click",
+      "target": "Delete Launch Project modal confirm Yes, Delete button (cleanup step)",
+      "timeoutMs": 90000
+    }
+  ]
+}

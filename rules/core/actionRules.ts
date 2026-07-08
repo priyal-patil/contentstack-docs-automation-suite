@@ -18346,6 +18346,92 @@ export async function performAction(
         }
       }
 
+      // Launch quick-start-guides cleanup — delete the project a sibling quick-start-* flow just created.
+      // Not doc-derived (no published "delete a Launch project" doc exists): explicit QA test-hygiene step
+      // so quick-start runs don't leave projects behind. Project name/unique token is shared with the
+      // sibling quick-start-* flow via core/executor.ts uniqueForFlow(); falls back to the first listed
+      // project card (with a console warning) if run standalone.
+      {
+        const fidQS = String(flow?.id || "").toLowerCase();
+        const isDeleteQuickStartProjectFlow =
+          String(flow?.module || "") === "quick-start-guides" &&
+          fidQS.startsWith("delete-quick-start-") &&
+          fidQS.endsWith("-project");
+        if (isDeleteQuickStartProjectFlow) {
+          if (step.action === "click" && step.target === "Delete Launch Project: open project card by name (cleanup step)") {
+            const tQS = getStepTimeoutMs(step, 90_000);
+            const unique5QS = unique.replace(/-/g, "").slice(0, 5);
+            const needle = String(step.value ?? "").split("{unique5}").join(unique5QS).trim();
+            const cards = page.locator('[data-testid^="project-settings-"]');
+            await expect(cards.first()).toBeVisible({ timeout: tQS });
+            let card = needle
+              ? cards.filter({ hasText: new RegExp(escapeRegex(needle), "i") }).first()
+              : cards.first();
+            if (needle && !(await card.isVisible({ timeout: 15_000 }).catch(() => false))) {
+              console.warn(
+                `[${fidQS}] No Launch project card matched "${needle}" — deleting the first listed project card instead (cleanup step).`
+              );
+              card = cards.first();
+            }
+            await expect(card).toBeVisible({ timeout: Math.min(tQS, 45_000) });
+            await card.click({ timeout: tQS });
+            await page.waitForLoadState("domcontentloaded").catch(() => {});
+            await page.waitForTimeout(800);
+            break;
+          }
+          if (step.action === "click" && step.target === "Delete Launch Project: Settings top navigation button (cleanup step)") {
+            const tQS = getStepTimeoutMs(step, 60_000);
+            const btn = page.locator('[data-test-id="launch-nav-settings"]').first();
+            await expect(btn).toBeVisible({ timeout: tQS });
+            await btn.click({ timeout: tQS });
+            await page.waitForTimeout(600);
+            break;
+          }
+          if (
+            step.action === "click" &&
+            step.target === "Delete Launch Project: scroll Delete Project section into view (cleanup step)"
+          ) {
+            const tQS = getStepTimeoutMs(step, 60_000);
+            const section = page.locator('[data-testid="delete-project-section"]').first();
+            await expect(section).toBeVisible({ timeout: tQS });
+            await section.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (step.action === "click" && step.target === "Delete Launch Project: Delete Project button (cleanup step)") {
+            const tQS = getStepTimeoutMs(step, 60_000);
+            const btn = page.locator('[data-testid="delete-project-button"]').first();
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await expect(btn).toBeVisible({ timeout: tQS });
+            await btn.click({ timeout: tQS });
+            await page.waitForTimeout(500);
+            break;
+          }
+          if (
+            step.action === "click" &&
+            step.target === "Delete Launch Project modal confirm Yes, Delete button (cleanup step)"
+          ) {
+            const tQS = getStepTimeoutMs(step, 90_000);
+            const dlg = page.getByRole("dialog").last();
+            // The confirm button carries aria-label="aria-button" (overrides its "Yes, Delete" text as the
+            // accessible name) and reuses data-testid="delete-project-button" from the outer trigger button —
+            // scoping to the dialog subtree disambiguates it.
+            let btn = dlg.locator('[data-testid="delete-project-button"]').last();
+            if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              btn = dlg.getByRole("button", { name: /^Yes,\s*Delete$/i }).first();
+            }
+            if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              btn = dlg.getByRole("button", { name: /Delete/i }).last();
+            }
+            await expect(btn).toBeVisible({ timeout: tQS });
+            await btn.click({ timeout: tQS });
+            await page.waitForURL(/#!\/launch(\/projects)?(\?.*)?$/i, { timeout: Math.min(tQS, 90_000) }).catch(() => {});
+            await page.waitForTimeout(800);
+            break;
+          }
+        }
+      }
+
       // Analytics guides — optional org switch + dashboard Analytics tile + hub dashboard tabs.
       if (step.action === "click" && ANALYTICS_GUIDE_FLOW_IDS.has(String(flow?.id || "").toLowerCase())) {
         const tAn = getStepTimeoutMs(step);
@@ -35261,6 +35347,33 @@ export async function performAction(
         await inp.blur().catch(() => {});
         await page.waitForTimeout(450);
         break;
+      }
+
+      {
+        const fidQSEnter = String(flow?.id || "").toLowerCase();
+        if (
+          String(flow?.module || "") === "quick-start-guides" &&
+          fidQSEnter.startsWith("delete-quick-start-") &&
+          fidQSEnter.endsWith("-project") &&
+          step.target === "Delete Launch Project modal type DELETE confirmation (cleanup step)"
+        ) {
+          const tQS = getStepTimeoutMs(step, 60_000);
+          const dlg = page.getByRole("dialog").last();
+          await expect(dlg).toBeVisible({ timeout: tQS });
+          const want = String(step.value ?? "DELETE").trim();
+          let inp = dlg.locator('input[placeholder*="DELETE" i], input[aria-label*="DELETE" i]').first();
+          if (!(await inp.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            inp = dlg.locator('input[type="text"]:not([readonly]), input:not([type])').first();
+          }
+          await expect(inp).toBeVisible({ timeout: Math.min(tQS, 45_000) });
+          await inp.click({ timeout: tQS }).catch(() => {});
+          await inp.fill("");
+          await inp.fill(want);
+          await inp.dispatchEvent("input").catch(() => {});
+          await inp.blur().catch(() => {});
+          await page.waitForTimeout(400);
+          break;
+        }
       }
 
       const unique25 = unique.replace(/-/g, "").slice(0, 25);
