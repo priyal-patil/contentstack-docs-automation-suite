@@ -56,6 +56,7 @@
     "test:cms:content-models": "CMS_SEQUENTIAL_MODULE_ORDER=1 CMS_CONTINUE_ON_FAIL=1 playwright test tests/flows.spec.ts --project=flows -g \"Project=CMS Module=content-models Stage=main\" --grep-invert delete-content-type",
     "test:cms:delete-urls": "playwright test tests/flows.spec.ts --project=flows -g \"Project=CMS.*Stage=(delete|cleanup)\"",
     "test:launch": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-15} playwright test tests/flows.spec.ts --project=flows -g \"Project=Launch\"; npm run report:slack",
+    "test:administration": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-15} playwright test tests/flows.spec.ts --project=flows -g \"Project=Administration\"; npm run report:slack",
     "test:personalize": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-15} playwright test tests/flows.spec.ts --project=flows -g \"Project=Personalize\"; npm run report:slack",
     "test:personalize:edit-custom-attribute:headed": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-20} PLAYWRIGHT_HEADLESS=0 PW_WORKERS=1 playwright test tests/flows.spec.ts --project=flows --headed -g \"edit-custom-attribute\"",
     "test:personalize:create-event:headed": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-20} PLAYWRIGHT_HEADLESS=0 PW_WORKERS=1 playwright test tests/flows.spec.ts --project=flows --headed -g \"create-event\"",
