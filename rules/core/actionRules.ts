@@ -241,8 +241,6 @@ async function resolveVisibleLaunchEnvironmentRowActionsMenu(page: Page): Promis
   return base.filter({ visible: true }).last();
 }
 
-type LaunchEnvRowMenuReopenRow = "first" | "default";
-
 /**
  * Env **settings** route (tabs: General, Event Tracking, …) — listing row ⋮ reopen must not resolve the environments table here.
  * Use the same looseness as `onEnvSettingsUrl` steps: Launch often keeps the route in the hash (`…#!/…/envs/{id}/settings/…`),
@@ -256,46 +254,6 @@ function launchUrlIndicatesEnvDetailSettings(page: Page): boolean {
   } catch {
     return false;
   }
-}
-
-/** Open env table row ⋮ if no visible Settings menu; return tooltip that contains the gear icon. */
-async function getOrReopenLaunchEnvironmentRowActionsMenu(
-  page: Page,
-  t0: number,
-  opts?: { reopenRow?: LaunchEnvRowMenuReopenRow }
-): Promise<Locator> {
-  await assertPageOpen(page, "getOrReopen");
-  let menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-  if (await menu.isVisible({ timeout: 4_000 }).catch(() => false)) {
-    return menu;
-  }
-  menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-  if (await menu.isVisible({ timeout: 3_000 }).catch(() => false)) {
-    return menu;
-  }
-  if (launchUrlIndicatesEnvDetailSettings(page)) {
-    throw new Error(
-      `[Launch] Env row ⋮ menu is hidden on env settings route — cannot reopen from environments table (finish navigation or wait for SPA). URL: ${page.url().slice(0, 420)}`
-    );
-  }
-  const reopenRow = opts?.reopenRow ?? "first";
-  const row =
-    reopenRow === "default"
-      ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, t0)
-      : await resolveLaunchEnvironmentsFirstTableRow(page, t0);
-  await row.scrollIntoViewIfNeeded().catch(() => {});
-  const dotsPrecise = row
-    .locator(
-      'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
-    )
-    .first();
-  const dotsFallback = row.locator('button[data-test-id="cs-table-action-options"]').first();
-  const dots = (await dotsPrecise.isVisible().catch(() => false)) ? dotsPrecise : dotsFallback;
-  await expect(dots).toBeVisible({ timeout: Math.min(t0, 30_000) });
-  await dots.click({ timeout: t0, force: true });
-  await page.waitForTimeout(2_000);
-  menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-  return menu;
 }
 
 /** Settings row inside env ⋮ menu — prefer `[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-icon"]` (+ Settings copy); fallback gear markup / plain Settings row. */
@@ -538,62 +496,6 @@ async function resolveLaunchEnvironmentsNamedEnvironmentRow(page: Page, name: st
     `Launch: environment list must include "${trimmed}" (doc). For Development, create it first per Create an Environment / environments flow.`
   ).toBeVisible({ timeout: t });
   return row;
-}
-
-/** Row ⋮ menu has no `<a href>` in captured DOM — scan Default row HTML for `/envs/{mongoId}/` (data attrs, React props). */
-function extractLaunchDefaultEnvMongoIdFromDom(page: Page): Promise<string | null> {
-  return page.evaluate(() => {
-    const nodes = document.querySelectorAll(
-      '[data-test-id^="cs-table-body-row"], div.Table__body__row[role="row"]'
-    );
-    const max = Math.min(nodes.length, 80);
-    for (let i = 0; i < max; i++) {
-      const el = nodes[i] as HTMLElement;
-      if (!/\bDefault\b/i.test(el.textContent || "")) continue;
-      const html = el.outerHTML;
-      const m =
-        html.match(/\/envs\/([a-f0-9]{24})\b/i) ??
-        html.match(
-          /\/envs\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/i
-        );
-      if (m) return m[1];
-      const link = el.querySelector('a[href*="/envs/"]');
-      if (link) {
-        const h = link.getAttribute("href") || "";
-        const m2 = h.match(/\/envs\/([^/?#'"]+)/i);
-        if (m2) return m2[1];
-      }
-    }
-    return null;
-  });
-}
-
-/** First data row with an environment name cell — for hash nav after row ⋮ → Settings (first-row flows). */
-function extractLaunchFirstEnvironmentRowEnvIdFromDom(page: Page): Promise<string | null> {
-  return page.evaluate(() => {
-    const nodes = document.querySelectorAll(
-      '[data-test-id^="cs-table-body-row"], div.Table__body__row[role="row"]'
-    );
-    const max = Math.min(nodes.length, 80);
-    for (let i = 0; i < max; i++) {
-      const el = nodes[i] as HTMLElement;
-      if (!el.querySelector(".env-column-name")) continue;
-      const html = el.outerHTML;
-      const m =
-        html.match(/\/envs\/([a-f0-9]{24})\b/i) ??
-        html.match(
-          /\/envs\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/i
-        );
-      if (m) return m[1];
-      const link = el.querySelector('a[href*="/envs/"]');
-      if (link) {
-        const h = link.getAttribute("href") || "";
-        const m2 = h.match(/\/envs\/([^/?#'"]+)/i);
-        if (m2) return m2[1];
-      }
-    }
-    return null;
-  });
 }
 
 /** After env row ⋮ → Settings: full URL (incl. hash) should mention settings, e.g. `.../settings/general`. */
@@ -7658,287 +7560,19 @@ export async function performAction(
         }
         if (step.target === "Launch environment actions Settings menu item (doc step)") {
           // Row: <li class="flex-v-center">…<svg data-test-id="cs-icon" data-testid="environment-settings-action-selector" name="Setting">…</svg><div class="ml-8">Settings</div></li>
-          // Prefer clicking the label cell (div.ml-8, exact "Settings"); fall back to <li> or SVG. Do not use
-          // filter({ has: page.locator(...) }) — inner page.locator is not scoped per li and can attach to the wrong row.
-          const rowContainsRaw = String((step as any).expected?.rowContains ?? "").trim();
-          const menuReopenRow: LaunchEnvRowMenuReopenRow = /^default$/i.test(rowContainsRaw) ? "default" : "first";
-          const settingsChromeFast = page.locator(
-            '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="domains-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
-          );
-          const onEnvSettingsUrl = /\/envs\/[^/]+\/settings/i.test(page.url());
-          const skipDefaultEnvHash = (step as any)?.expected?.launchSkipDefaultEnvHashNav === true;
-          // Fast path: project id from URL + env row id — first row or Default row per expected.rowContains.
-          const projFromUrl =
-            page.url().match(/\/launch\/projects\/([a-f0-9]{24})\b/i)?.[1] ??
-            page.url().match(/\/launch\/projects\/([a-f0-9-]{36})\b/i)?.[1] ??
-            null;
-          const envIdForHash =
-            menuReopenRow === "default"
-              ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
-              : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null);
-          if (
-            launchUrlIndicatesEnvDetailSettings(page) &&
-            (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(14_000) }).catch(() => false))
-          ) {
-            await page.waitForTimeout(350);
-            break;
-          }
-          // ⋮ tooltip often auto-dismisses between the prior verify step and this click — reopen quickly (skip heavy table prep).
-          {
-            const tipProbe = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-            if (!(await tipProbe.isVisible({ timeout: 2_500 }).catch(() => false))) {
-              if (!launchUrlIndicatesEnvDetailSettings(page)) {
-                const tRe = Math.min(t0, 45_000);
-                const rowR =
-                  menuReopenRow === "default"
-                    ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, tRe, {
-                        skipTablePrep: true,
-                        minimalResolve: true,
-                      })
-                    : await resolveLaunchEnvironmentsFirstTableRow(page, tRe);
-                await rowR.scrollIntoViewIfNeeded().catch(() => {});
-                const dotsP = rowR
-                  .locator(
-                    'button[data-test-id="cs-table-action-options"].three-dots-vertical-icon[aria-label*="row"][aria-label*="action"]'
-                  )
-                  .first();
-                const dotsFb = rowR.locator('button[data-test-id="cs-table-action-options"]').first();
-                const dots2 = (await dotsP.isVisible().catch(() => false)) ? dotsP : dotsFb;
-                await expect(dots2).toBeVisible({ timeout: Math.min(tRe, 30_000) });
-                await dots2.click({ timeout: tRe, force: true });
-                await page.waitForTimeout(2_000);
-                await expect(await resolveVisibleLaunchEnvironmentRowActionsMenu(page)).toBeVisible({
-                  timeout: Math.min(tRe, 28_000),
-                });
-              }
-            }
-          }
-          if (!skipDefaultEnvHash && projFromUrl && envIdForHash && !onEnvSettingsUrl) {
-            await page.evaluate(
-              (h) => {
-                window.location.hash = h.startsWith("#") ? h : `#${h}`;
-              },
-              `#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`
-            );
-            await page.waitForTimeout(900);
-            await page.waitForURL(/\/envs\/.+\/settings/i, { timeout: fastFailCap(45_000) }).catch(() => {});
-            await page.waitForLoadState("domcontentloaded").catch(() => {});
-            if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(35_000) }).catch(() => false)) {
-              await page.waitForTimeout(300);
-              break;
-            }
-            const origin = page.url().replace(/#.*$/, "");
-            await page
-              .goto(`${origin}#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`, {
-                waitUntil: "domcontentloaded",
-                timeout: fastFailCap(60_000),
-              })
-              .catch(() => {});
-            await page.waitForTimeout(700);
-            await page.waitForURL(/\/envs\/.+\/settings/i, { timeout: fastFailCap(35_000) }).catch(() => {});
-            if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(30_000) }).catch(() => false)) {
-              await page.waitForTimeout(300);
-              break;
-            }
-          }
-          if (onEnvSettingsUrl && (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(4_000) }).catch(() => false))) {
-            await page.waitForTimeout(300);
-            break;
-          }
-          // Step 8 often leaves the row ⋮ menu open — hover + click Settings scoped to `[data-test-id="cs-vertical-action-tooltip-actions"]` (QA: ⋮ → 2s → li[data-test-id="cs-icon"] + Settings text).
-          const menuRootFast = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-          if (await menuRootFast.isVisible({ timeout: fastFailCap(12_000) }).catch(() => false)) {
-            const actionsRootFast = menuRootFast.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
-            if (await actionsRootFast.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
-              const settingsLiFast = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRootFast, 5_000);
-              if (await settingsLiFast.isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) {
-                await page.waitForTimeout(2_000);
-                await hoverValidateClickLaunchEnvironmentSettingsLi(page, settingsLiFast, Math.min(t0, fastFailCap(45_000)));
-                await page.waitForTimeout(450);
-                try {
-                  await Promise.race([
-                    page.waitForURL(/\/envs\/.+\/settings/, { timeout: 15_000 }),
-                    page.waitForSelector('[data-testid="environment-settings-action-selector"]', { state: "detached", timeout: 15_000 }),
-                  ]);
-                } catch {
-                  // Hash recovery + second menu pass below handle slow SPA / flaky race.
-                }
-                if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(22_000) }).catch(() => false)) {
-                  await page.waitForTimeout(300);
-                  break;
-                }
-                // On env settings route but tab strip slow — one short wait + hash nudge (avoid duplicating 55s+40s blocks).
-                if (/\/envs\/.+\/settings/i.test(page.url())) {
-                  await page.waitForLoadState("domcontentloaded").catch(() => {});
-                  if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(28_000) }).catch(() => false)) {
-                    await page.waitForTimeout(300);
-                    break;
-                  }
-                  if (projFromUrl && envIdForHash) {
-                    await page
-                      .evaluate(
-                        (h) => {
-                          window.location.hash = h.startsWith("#") ? h : `#${h}`;
-                        },
-                        `#!/launch/projects/${projFromUrl}/envs/${envIdForHash}/settings/general`
-                      )
-                      .catch(() => {});
-                    await page.waitForTimeout(900);
-                    if (await settingsChromeFast.first().isVisible({ timeout: fastFailCap(22_000) }).catch(() => false)) {
-                      await page.waitForTimeout(300);
-                      break;
-                    }
-                  }
-                }
-              }
-            }
-          }
-          let menuSettingsHref: string | null = null;
-          if (!launchUrlIndicatesEnvDetailSettings(page)) {
-            const menuOpenBudget = Math.min(t0, 40_000);
-            let menu = await getOrReopenLaunchEnvironmentRowActionsMenu(page, menuOpenBudget, {
-              reopenRow: menuReopenRow,
-            });
-            await expect(menu).toBeVisible({ timeout: Math.min(t0, 18_000) });
-            menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
-            await expect(menu).toBeVisible({ timeout: Math.min(t0, 14_000) });
-            menuSettingsHref =
-              (await menu
-                .locator('a[href*="/envs/"][href*="settings" i]')
-                .first()
-                .getAttribute("href")
-                .catch(() => null)) ??
-              (await menu.locator('a[href*="/envs/"]').first().getAttribute("href").catch(() => null));
-            const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
-            await expect(actionsRoot).toBeVisible({ timeout: Math.min(t0, fastFailCap(12_000)) });
-            const settingsMenuItemLi = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRoot, 6_000);
-            const clickBudget = Math.min(t0, fastFailCap(18_000));
-            await page.waitForTimeout(2_000);
-            await hoverValidateClickLaunchEnvironmentSettingsLi(page, settingsMenuItemLi, clickBudget);
-            await page.waitForTimeout(900);
-            const hashPid = projFromUrl ?? page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
-            const hashEid =
-              envIdForHash ??
-              (menuReopenRow === "default"
-                ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
-                : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null));
-            if (!/\/envs\/.+\/settings/i.test(page.url()) && hashPid && hashEid) {
-              await page
-                .evaluate(
-                  (h) => {
-                    window.location.hash = h.startsWith("#") ? h : `#${h}`;
-                  },
-                  `#!/launch/projects/${hashPid}/envs/${hashEid}/settings/general`
-                )
-                .catch(() => {});
-              await page.waitForTimeout(900);
-            }
-            await page
-              .waitForFunction(
-                () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
-                null,
-                { timeout: fastFailCap(22_000) }
-              )
-              .catch(() => {});
-          } else {
-            await page
-              .waitForFunction(
-                () => /\/envs\/.+\/settings/i.test(String(window.location.href || "")),
-                null,
-                { timeout: fastFailCap(22_000) }
-              )
-              .catch(() => {});
-          }
+          // Menu is already open and Settings verified visible by the prior step — single click, no reopen/hash-nav fallback.
+          const menu = await resolveVisibleLaunchEnvironmentRowActionsMenu(page);
+          await expect(menu).toBeVisible({ timeout: Math.min(t0, 20_000) });
+          const actionsRoot = menu.locator('[data-test-id="cs-vertical-action-tooltip-actions"]');
+          await expect(actionsRoot).toBeVisible({ timeout: Math.min(t0, 15_000) });
+          const settingsMenuItemLi = await resolveLaunchEnvironmentSettingsMenuListItem(actionsRoot, 6_000);
+          await hoverValidateClickLaunchEnvironmentSettingsLi(page, settingsMenuItemLi, Math.min(t0, 30_000));
           // Environment settings (tabs + name-field) — not project Settings (`.../settings/general` alone).
           const settingsChrome = page.locator(
             '[data-testid="general-tab"], [data-testid="password-protection-tab"], [data-testid="environment-variables-tab"], [data-testid="deploy-hooks-tab"], [data-testid="deployments-tab"], [data-testid="domains-tab"], [data-testid="lytics-tab"], [data-testid="name-field"], label[data-testid="name-field"]'
           );
-          const tryNavToEnvSettingsHref = async (href: string | null) => {
-            if (!href || !/\/envs\//i.test(href)) return;
-            const origin = page.url().replace(/#.*$/, "");
-            const d = href.trim();
-            const fullUrl = d.startsWith("http")
-              ? d
-              : d.startsWith("#")
-                ? origin + d
-                : d.startsWith("/")
-                  ? `${origin}#!${d}`
-                  : `${origin}#${d.replace(/^#/, "")}`;
-            await page.goto(fullUrl, { waitUntil: "domcontentloaded", timeout: Math.min(t0, fastFailCap(60_000)) }).catch(() => {});
-            await page.waitForTimeout(700);
-            if (await settingsChrome.first().isVisible({ timeout: fastFailCap(14_000) }).catch(() => false)) return;
-            const hashM = d.match(/#(!(?:\/launch\/[^#'"]+))/i) || fullUrl.match(/#(!(?:\/launch\/[^#'"]+))/i);
-            const seg = hashM?.[1];
-            if (seg) {
-              await page
-                .evaluate((hash) => {
-                  window.location.hash = hash.startsWith("#") ? hash : `#${hash}`;
-                }, seg)
-                .catch(() => {});
-              await page.waitForTimeout(1100);
-            }
-          };
-          if (!(await settingsChrome.first().isVisible({ timeout: fastFailCap(20_000) }).catch(() => false))) {
-            await tryNavToEnvSettingsHref(menuSettingsHref);
-            const hashProj =
-              projFromUrl ?? page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
-            const envFromRoute =
-              envIdForHash ??
-              page.url().match(/\/envs\/([a-f0-9]{24})\b/i)?.[1] ??
-              page.url().match(/\/envs\/([a-f0-9-]{36})\b/i)?.[1] ??
-              (menuReopenRow === "default"
-                ? await extractLaunchDefaultEnvMongoIdFromDom(page).catch(() => null)
-                : await extractLaunchFirstEnvironmentRowEnvIdFromDom(page).catch(() => null));
-            if (hashProj && envFromRoute) {
-              await tryNavToEnvSettingsHref(`#!/launch/projects/${hashProj}/envs/${envFromRoute}/settings/general`);
-            }
-          }
-          if (
-            !(await settingsChrome.first().isVisible({ timeout: fastFailCap(8_000) }).catch(() => false)) &&
-            !launchUrlIndicatesEnvDetailSettings(page)
-          ) {
-            const row2 =
-              menuReopenRow === "default"
-                ? await resolveLaunchEnvironmentsDefaultEnvironmentRow(page, Math.min(t0, fastFailCap(45_000)))
-                : await resolveLaunchEnvironmentsFirstTableRow(page, Math.min(t0, fastFailCap(45_000)));
-            let deep = await row2
-              .locator('a[href*="/envs/"][href*="settings" i]')
-              .first()
-              .getAttribute("href")
-              .catch(() => null);
-            if (!deep) {
-              deep = await row2
-                .locator('a[href*="/envs/"]')
-                .first()
-                .getAttribute("href")
-                .catch(() => null);
-            }
-            if (!deep) {
-              deep = await row2
-                .evaluate((el) => {
-                  const a = el.querySelector(
-                    'a[href*="/envs/"][href*="settings" i], a[href*="/envs/"]'
-                  ) as HTMLAnchorElement | null;
-                  return a?.getAttribute("href") ?? null;
-                })
-                .catch(() => null);
-            }
-            if (deep && /\/envs\/.+\/settings/i.test(deep)) {
-              await tryNavToEnvSettingsHref(deep);
-            } else {
-              const rowHtml = await row2.evaluate((el) => (el as HTMLElement).outerHTML).catch(() => "");
-              const envId =
-                rowHtml.match(/\/envs\/([a-f0-9]{24})\b/i)?.[1] ??
-                rowHtml.match(/\/envs\/([a-f0-9-]{36})\b/i)?.[1] ??
-                rowHtml.match(/\/envs\/([^/"'\s>]+)/i)?.[1];
-              const projId = page.url().match(/launch\/projects\/([a-f0-9]{24})\b/i)?.[1];
-              if (envId && projId) {
-                await tryNavToEnvSettingsHref(`#!/launch/projects/${projId}/envs/${envId}/settings/general`);
-              }
-            }
-          }
-          await expect(settingsChrome.first()).toBeVisible({ timeout: Math.min(t0, fastFailCap(90_000)) });
-          await page.waitForTimeout(500);
+          await expect(settingsChrome.first()).toBeVisible({ timeout: Math.min(t0, fastFailCap(60_000)) });
+          await page.waitForTimeout(300);
           break;
         }
         if (
@@ -21585,6 +21219,17 @@ export async function performAction(
     }
 
     case "verify": {
+      // Custom domain creation is capped per environment — when the cap is already hit, clicking
+      // "New Domain" opens a "Domains Limit Reached" modal instead of "Create Custom Domain".
+      // Fail this step with a clear reason so the flow can warnAndSkipRest instead of hunting
+      // for a modal that will never appear.
+      if (step.target === "Create Custom Domain modal title (doc step)") {
+        const limitModal = page.locator('[role="dialog"]').filter({ hasText: /Domains Limit Reached/i }).first();
+        if (await limitModal.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          throw new Error("Limit reached and only one domain can be created.");
+        }
+      }
+
       // Delivery token form: "Create Preview Token toggle" sits below the Publishing Environments
       // radios inside a fixed-height scrollable panel — wait for it to attach, scroll it into
       // view, then assert visibility.

@@ -428,6 +428,22 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
         console.warn(`⚠️  Warn-and-skip-rest: "${step?.target}" — ${warnMsg} — skipping remaining steps.`);
         return;
       }
+      if ((step as any).warnAndFailRest) {
+        const warnMsg = (step as any).warnMessage || (err?.message ?? String(err));
+        recordDocStepWarning(documentUrl, flow.id, i, step as any, `warnAndFailRest: ${warnMsg}`);
+        console.warn(`⚠️  Warn-and-fail-rest: "${step?.target}" — ${warnMsg} — marking remaining steps as failed.`);
+        for (let j = i + 1; j < flow.steps.length; j++) {
+          const laterStep = flow.steps[j];
+          recordDocStepFailure(
+            documentUrl,
+            flow.id,
+            j,
+            laterStep,
+            `Not executed — blocked by step ${i + 1} ("${step?.target}"): ${warnMsg}`
+          );
+        }
+        return;
+      }
       const message = err?.message ?? String(err);
       const missingElementSummary = buildMissingElementSummary(step, message);
       let screenshotRelativePath: string | undefined;

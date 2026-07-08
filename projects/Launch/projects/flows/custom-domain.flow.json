@@ -87,7 +87,8 @@
         "modalTitle": "Create Custom Domain",
         "labelEquals": "Create Custom Domain",
         "labelMatch": "contains"
-      }
+      },
+      "warnAndFailRest": true
     },
     {
       "action": "enter",
