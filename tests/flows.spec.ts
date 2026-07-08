@@ -343,6 +343,24 @@ const PUBLISH_RULE_CHAIN_SERIAL: string[] = [
 /** Create → update → delete same custom role (shared UUID in role name; see core/usersRolesChain.ts). */
 const ROLES_CHAIN_SERIAL: string[] = ["create-a-role", "update-a-role", "delete-a-role"];
 
+/** quick-start-<framework> → delete-quick-start-<framework>-project: same browser context so the delete step reuses the create step's {unique} project name (see quickStartGuidesUnique in core/executor.ts). Each pair is its own serial chain/report, not a global lockstep. */
+const QUICK_START_GUIDES_FRAMEWORKS: string[] = [
+  "analog",
+  "angular",
+  "astro",
+  "gatsby",
+  "generic-csr",
+  "nextjs",
+  "nuxt",
+  "react",
+  "remix",
+  "vue",
+];
+const QUICK_START_GUIDES_CHAIN_PAIRS: Array<[string, string]> = QUICK_START_GUIDES_FRAMEWORKS.map((fw) => [
+  `quick-start-${fw}`,
+  `delete-quick-start-${fw}-project`,
+]);
+
 // After all flow tests: write doc-step failures for technical writers (which URL failed at which step, element not found, etc.)
 test.afterAll(() => {
   const failures = getDocStepFailures();
@@ -444,7 +462,11 @@ function groupFlowsByProjectModuleStage(flowList: any[]): Map<string, any[]> {
 }
 
 /** Flows that run in serial chains — excluded from module-parallel groups to avoid duplicate tests. */
-const SERIAL_CHAIN_FLOW_IDS = new Set<string>([...PUBLISH_RULE_CHAIN_SERIAL, ...ROLES_CHAIN_SERIAL]);
+const SERIAL_CHAIN_FLOW_IDS = new Set<string>([
+  ...PUBLISH_RULE_CHAIN_SERIAL,
+  ...ROLES_CHAIN_SERIAL,
+  ...QUICK_START_GUIDES_CHAIN_PAIRS.flat(),
+]);
 
 const flowsForParallel = flows.filter((f) => !SERIAL_CHAIN_FLOW_IDS.has(String(f.id || "")));
 const flowGroups = groupFlowsByProjectModuleStage(flowsForParallel);
@@ -660,5 +682,26 @@ if (!cmsRetryEnvPass || cmsRetryRolesChain) {
         await context.close();
       }
     });
+  });
+}
+
+// Each quick-start-<framework> paired with its own delete-quick-start-<framework>-project so create+cleanup report as one test/URL (not two), same context so {unique} project name carries over.
+if (!cmsRetryEnvPass) {
+  test.describe.serial("Launch quick-start-guides: create → delete project chains (serial)", () => {
+    for (const [createId, deleteId] of QUICK_START_GUIDES_CHAIN_PAIRS) {
+      test(`${createId} → ${deleteId}`, async ({ browser }) => {
+        test.setTimeout(900_000);
+        for (const id of [createId, deleteId]) {
+          const flow = flowsUnfilteredForChains.find((f) => f.id === id);
+          if (!flow) continue;
+          const flowId = flow.id || path.basename(flow.source || "unknown-flow");
+          ranFlowIds.add(flow.id || flowId);
+          const context = await browser.newContext({ storageState: "auth.json" });
+          const page = await context.newPage();
+          await executeFlow(page, flow);
+          await context.close();
+        }
+      });
+    }
   });
 }

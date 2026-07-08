@@ -26,6 +26,9 @@ import {
 /** One UUID per Playwright process for all `json-rich-text-editor` flows so customize + entry flows share the same CT name (`Shared JSON RTE Doc CT-{unique}`). */
 let jsonRichTextEditorModuleUnique: string | null = null;
 
+/** quick-start-guides: `delete-quick-start-<x>-project` (cleanup stage) reuses the unique token its sibling `quick-start-<x>` flow generated, so it targets the exact project that run created. */
+const quickStartGuidesUnique: Map<string, string> = new Map();
+
 function uniqueForFlow(flow: any): string {
   const mod = String(flow?.module || "").toLowerCase();
   if (mod === "json-rich-text-editor") {
@@ -40,6 +43,17 @@ function uniqueForFlow(flow: any): string {
     }
     if (id === "update-a-role" || id === "delete-a-role") {
       return ensureUsersRolesChainUnique();
+    }
+  }
+  if (mod === "quick-start-guides") {
+    if (id.startsWith("delete-") && id.endsWith("-project")) {
+      const baseId = id.replace(/^delete-/, "").replace(/-project$/, "");
+      const stored = quickStartGuidesUnique.get(baseId);
+      if (stored) return stored;
+    } else {
+      const u = crypto.randomUUID();
+      quickStartGuidesUnique.set(id, u);
+      return u;
     }
   }
   return crypto.randomUUID();
