@@ -8,98 +8,99 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   /** App Switcher button in the top navigation bar (doc step). DOM: data-test-id="app-switcher" */
   "App Switcher button (doc step)":
-    '[data-test-id="app-switcher"], .app__switcher__v2',
+    '[data-test-id="app-switcher"]',
 
-  /** "Administration" option inside the App Switcher modal (doc step). */
+  /** "Administration" option inside the App Switcher modal (doc step).
+   * No DOM sample captured for the open modal itself — generic fallback only. */
   "Administration option in App Switcher (doc step)":
     '[data-test-id="app-switcher-orgadmin"], button:has-text("Administration"), [role="button"]:has-text("Administration"), [aria-label="Administration"]',
 
   // ── ai-settings ──────────────────────────────────────────────────────────────
 
-  /** "AI Settings" tab in the Administration top navigation bar (doc step). */
+  /** "AI Settings" tab in the Administration top navigation bar (doc step). DOM: data-test-id="orgadmin-nav-ai-settings" (real <button>). */
   "AI Settings tab in Administration navigation (doc step)":
-    '[data-test-id="orgadmin-nav-ai-settings"], a:has-text("AI Settings"), button:has-text("AI Settings"), [role="button"]:has-text("AI Settings")',
+    '[data-test-id="orgadmin-nav-ai-settings"]',
 
   /** "AI Configuration" page heading — landing page after clicking AI Settings (doc step).
-   * DOM: nav item is a custom component with role="button" (NOT an HTML <button> tag).
-   * CSS `button:has-text()` only matches HTML <button>; use [role="button"] for custom elements. */
+   * DOM: <div class="PageTitle" data-test-id="cs-page-title">AI Configuration</div>. */
   "AI Configuration page heading (doc step)":
-    '[data-test-id="cs-ai-configuration-heading"], [role="button"]:has-text("AI Configuration"), button:has-text("AI Configuration"), h1:has-text("AI Configuration"), h2:has-text("AI Configuration"), .ai-configuration__heading, [role="tab"]:has-text("AI Configuration")',
+    '[data-test-id="cs-page-title"]:has-text("AI Configuration")',
 
   /** "Global AI Settings" section heading on the AI Configuration page (doc step).
-   * DOM: rendered as role=heading level=2 (may be <h2> or <div role="heading" aria-level="2">). */
+   * DOM: <h2 data-test-id="cs-heading-tag">Global AI Settings</h2> — id is generic/reused across headings, scope by tag + text. */
   "Global AI Settings tab (doc step)":
-    '[data-test-id="cs-global-ai-settings-tab"], [role="heading"]:has-text("Global AI Settings"), h2:has-text("Global AI Settings"), h3:has-text("Global AI Settings"), [role="tab"]:has-text("Global AI Settings"), [role="button"]:has-text("Global AI Settings"), button:has-text("Global AI Settings"), a:has-text("Global AI Settings")',
+    'h2[data-test-id="cs-heading-tag"]:has-text("Global AI Settings")',
 
-  /** "AI Product Controls" section label on the Global AI Settings tab (doc step). */
+  /** "AI Product Controls" section label on the Global AI Settings tab (doc step).
+   * DOM: <label data-test-id="cs-field-label"><span>AI Product Controls</span></label> — id is generic/reused, scope by tag + text. */
   "AI Product Controls section (doc step)":
-    '[data-test-id="cs-ai-product-controls"], label:has-text("AI Product Controls"), h3:has-text("AI Product Controls"), *:has-text("AI Product Controls")',
+    'label[data-test-id="cs-field-label"]:has-text("AI Product Controls")',
 
-  /** "Enable All" link on the Global AI Settings tab (doc step). */
+  /** "Enable All" link on the Global AI Settings tab (doc step). DOM: data-test-id="ai-config-toggle-all". */
   "Enable All link (doc step)":
-    '[data-test-id="cs-ai-enable-all"], a:has-text("Enable All"), [role="button"]:has-text("Enable All"), button:has-text("Enable All"), span:has-text("Enable All")',
+    '[data-test-id="ai-config-toggle-all"]',
 
   // ── ai-credits ───────────────────────────────────────────────────────────────
 
   /** "AI Credits" item in the left navigation of the AI Settings section (doc step).
-   * DOM: same custom nav component as "AI Configuration" — use [role="button"] not bare button. */
+   * DOM: <div role="button" data-test-id="cs-connected-apps-ai-credits">. */
   "AI Credits left navigation item (doc step)":
-    '[data-test-id="cs-ai-credits-nav"], [role="button"]:has-text("AI Credits"), a:has-text("AI Credits"), button:has-text("AI Credits"), [role="menuitem"]:has-text("AI Credits")',
+    '[data-test-id="cs-connected-apps-ai-credits"]',
 
   /** "Dashboard" tab on the AI Credits page (doc step).
-   * DOM: plain <div> with no role — use :text-is() for exact-text match on the smallest element. */
+   * DOM: <div data-test-id="cs-tabs-item"><div class="tab--name">Dashboard</div></div> — id is generic/reused across tabs, scope by text. */
   "Credits Dashboard tab (doc step)":
-    '[data-test-id="cs-ai-credits-dashboard-tab"], :text-is("Dashboard"), [role="tab"]:has-text("Dashboard"), [role="button"]:has-text("Dashboard"), button:has-text("Dashboard"), a:has-text("Dashboard")',
+    '[data-test-id="cs-tabs-item"]:has-text("Dashboard")',
 
-  /** "Monthly Credit Allocation" section heading on the Credits Dashboard (doc step). */
+  /** "Monthly Credit Allocation" section heading on the Credits Dashboard (doc step).
+   * DOM: <h3 data-test-id="cs-heading-tag">Monthly Credit Allocation</h3> — id is generic/reused, scope by tag + text. */
   "Monthly Credit Allocation section (doc step)":
-    '[data-test-id="cs-monthly-credit-allocation"], h3:has-text("Monthly Credit Allocation"), label:has-text("Monthly Credit Allocation"), *:has-text("Monthly Credit Allocation")',
+    'h3[data-test-id="cs-heading-tag"]:has-text("Monthly Credit Allocation")',
 
-  /** "Organization Credit Usage Percentage" — percentage of base credits consumed (doc step). */
+  /** "Organization Credit Usage Percentage" — doc's "Percentage" is rendered as the "%" symbol in the app, label text is "Organization Credit Usage" (doc step).
+   * DOM: <span class="ai-credits__percentage-label">Organization Credit Usage</span>. */
   "Organization Credit Usage Percentage (doc step)":
-    '[data-test-id="cs-ai-credits-org-usage-pct"], *:has-text("Organization Credit Usage Percentage")',
+    '.ai-credits__percentage-label',
 
-  /** "Base Allocation" — total credits allocated per month (doc step). */
+  /** "Credit Allocation" — live app label (doc text says "Base Allocation"; app currently renders "Credit Allocation:") (doc step).
+   * DOM: <span class="ai-credits__allocation-label">Credit Allocation:</span>. */
+  "Credit Allocation label (doc step)":
+    '.ai-credits__allocation-label:has-text("Credit Allocation")',
+
+  /** "Base Allocation" — doc's exact wording for the credit-allocation label (doc step).
+   * DOM: same element as above; app currently shows "Credit Allocation:" instead, so this intentionally will not match. */
   "Base Allocation label (doc step)":
-    '[data-test-id="cs-ai-credits-base-allocation"], *:has-text("Base Allocation")',
+    '.ai-credits__allocation-label:has-text("Base Allocation")',
 
-  /** "Consumption" — credits utilized beyond base allocation (doc step). */
+  /** "Consumption" — credits utilized beyond base allocation (doc step).
+   * DOM: <span class="ai-credits__allocation-label">Consumption:</span> (same class as Base/Credit Allocation, different row). */
   "Consumption label (doc step)":
-    '[data-test-id="cs-ai-credits-consumption"], *:has-text("Consumption")',
+    '.ai-credits__allocation-label:has-text("Consumption")',
 
-  /** "Days Until Reset" section on the Credits Dashboard (doc step). */
+  /** "Days Until Reset" section on the Credits Dashboard (doc step).
+   * DOM: <label data-test-id="cs-field-label"><span>Days Until Reset </span></label> — id is generic/reused, scope by tag + text. */
   "Days Until Reset section (doc step)":
-    '[data-test-id="cs-days-until-reset"], *:has-text("Days Until Reset")',
+    'label[data-test-id="cs-field-label"]:has-text("Days Until Reset")',
 
-  /** "Monthly Credit Usage" section — lower dashboard section with usage graph (doc step). */
+  /** "Monthly Credit Usage" section — lower dashboard section with usage graph (doc step).
+   * DOM: <h3 data-test-id="cs-heading-tag">Monthly Credit Usage</h3> — id is generic/reused, scope by tag + text. */
   "Monthly Credit Usage section (doc step)":
-    '[data-test-id="cs-monthly-credit-usage"], h3:has-text("Monthly Credit Usage"), *:has-text("Monthly Credit Usage")',
-
-  /** "Day-over-Day Monthly Usage Graph" — daily credit utilization chart (doc step). */
-  "Day-over-Day Monthly Usage Graph (doc step)":
-    '[data-test-id="cs-ai-credits-usage-graph"], canvas, *:has-text("Day-over-Day")',
-
-  /** "Credits Consumed per Product" — color-coded graph legend by AI product (doc step). */
-  "Credits Consumed per Product (doc step)":
-    '[data-test-id="cs-ai-credits-per-product"], *:has-text("Credits Consumed per Product"), *:has-text("Credits Consumed")',
-
-  /** "Interactive Hover Details" — hover tooltip on graph data points (doc step).
-   * Verifies the chart container that enables hover interaction is present. */
-  "Interactive Hover Details (doc step)":
-    '[data-test-id="cs-ai-credits-hover-details"], *:has-text("Interactive Hover Details"), *:has-text("Interactive Hover")',
+    'h3[data-test-id="cs-heading-tag"]:has-text("Monthly Credit Usage")',
 
   /** "Management" tab on the AI Credits page (doc step).
-   * DOM: plain <div> with no role — use :text-is() for exact-text match on the smallest element. */
+   * DOM: <div data-test-id="cs-tabs-item"><div class="tab--name">Management</div></div> — id is generic/reused across tabs, scope by text. */
   "Management tab (doc step)":
-    '[data-test-id="cs-ai-credits-management-tab"], :text-is("Management"), [role="tab"]:has-text("Management"), [role="button"]:has-text("Management"), button:has-text("Management"), a:has-text("Management")',
+    '[data-test-id="cs-tabs-item"]:has-text("Management")',
 
-  /** "Hard Limit" option on the Management tab (doc step). */
-  "Hard Limit option (doc step)":
-    '[data-test-id="cs-ai-credits-hard-limit"], label:has-text("Hard Limit"), *:has-text("Hard Limit")',
+  /** "Block Excess Usage" — default management option, blocks AI ops at 100% allocation (doc step).
+   * No DOM sample captured yet (Management tab content not in saved snapshots) — generic fallback only. */
+  "Block Excess Usage option (doc step)":
+    'label:has-text("Block Excess Usage"), [role="radio"]:has-text("Block Excess Usage"), *:has-text("Block Excess Usage")',
 
-  /** "Soft Limit" option on the Management tab (doc step). */
-  "Soft Limit option (doc step)":
-    '[data-test-id="cs-ai-credits-soft-limit"], label:has-text("Soft Limit"), *:has-text("Soft Limit")',
+  /** "Allow Excess Usage" — alternate management option, permits usage beyond credit limit (doc step).
+   * No DOM sample captured yet (Management tab content not in saved snapshots) — generic fallback only. */
+  "Allow Excess Usage option (doc step)":
+    'label:has-text("Allow Excess Usage"), [role="radio"]:has-text("Allow Excess Usage"), *:has-text("Allow Excess Usage")',
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {};

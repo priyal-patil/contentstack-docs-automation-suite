@@ -1869,10 +1869,12 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
       .evaluate((node) => {
         const self = node as HTMLElement;
         const dt = self?.getAttribute?.("data-test-id") || "";
-        if (dt === "cms-nav-tasks" || dt === "cs-help-center" || dt === "cs-icon") return true;
+        if (dt === "cms-nav-tasks" || dt === "cs-help-center" || dt === "cs-icon" || dt === "app-switcher") return true;
         if (self?.closest?.(".command-bar__help--large")) return true;
         // Administration Org Admin header — profile icon lives in .user-profile / cs-user-profile
         if (self?.closest?.('[data-test-id="cs-user-profile"], .user-profile, .header__list--chat-widget')) return true;
+        // App Switcher sits in a sibling header container next to .TopNavbar, not nested inside it.
+        if (self?.closest?.('.header__menus--app-switcher, [data-test-id="app-switcher"]')) return true;
         return !!self?.closest?.(
           'nav.TopNavbar, .TopNavbar, [data-test-id="cs-top-nav"], .command-bar, .TopNavbar__content__items__list, .TopNavbar__content__items__list__redirect'
         );

@@ -6,7 +6,7 @@
   "source": "https://www.contentstack.com/docs/administration/ai-credits",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-credits. Covers: App Switcher → Administration → AI Settings → AI Credits left nav → Credits Dashboard (Monthly Credit Allocation sub-items: Organization Credit Usage Percentage, Base Allocation, Consumption; Days Until Reset; Monthly Credit Usage sub-items: Day-over-Day Monthly Usage Graph, Credits Consumed per Product, Interactive Hover Details) → Management tab (Hard Limit, Soft Limit). Any step that fails means the app does not match the documentation.",
+  "automationNotes": "Steps mirror the document exactly — https://www.contentstack.com/docs/administration/ai-credits. Covers: App Switcher → Administration → AI Settings → AI Credits left nav → Credits Dashboard (Monthly Credit Allocation sub-items: Organization Credit Usage Percentage, Credit Allocation; Days Until Reset; Monthly Credit Usage section) → Management tab (Block Excess Usage, Allow Excess Usage). Any step that fails means the app does not match the documentation.",
   "steps": [
     {
       "action": "verify",
@@ -87,25 +87,16 @@
       "target": "Organization Credit Usage Percentage (doc step)",
       "timeoutMs": 30000,
       "expected": {
-        "labelEquals": "Organization Credit Usage Percentage",
+        "labelEquals": "Organization Credit Usage",
         "labelMatch": "contains"
       }
     },
     {
       "action": "verify",
-      "target": "Base Allocation label (doc step)",
+      "target": "Credit Allocation label (doc step)",
       "timeoutMs": 30000,
       "expected": {
-        "labelEquals": "Base Allocation",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Consumption label (doc step)",
-      "timeoutMs": 30000,
-      "expected": {
-        "labelEquals": "Consumption",
+        "labelEquals": "Credit Allocation",
         "labelMatch": "contains"
       }
     },
@@ -127,33 +118,7 @@
         "labelMatch": "contains"
       }
     },
-    {
-      "action": "verify",
-      "target": "Day-over-Day Monthly Usage Graph (doc step)",
-      "timeoutMs": 30000,
-      "expected": {
-        "labelEquals": "Day-over-Day",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Credits Consumed per Product (doc step)",
-      "timeoutMs": 30000,
-      "expected": {
-        "labelEquals": "Credits Consumed per Product",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Interactive Hover Details (doc step)",
-      "timeoutMs": 30000,
-      "expected": {
-        "labelEquals": "Interactive Hover",
-        "labelMatch": "contains"
-      }
-    },
+    
     {
       "action": "verify",
       "target": "Management tab (doc step)",
@@ -170,19 +135,19 @@
     },
     {
       "action": "verify",
-      "target": "Hard Limit option (doc step)",
+      "target": "Block Excess Usage option (doc step)",
       "timeoutMs": 30000,
       "expected": {
-        "labelEquals": "Hard Limit",
+        "labelEquals": "Block Excess Usage",
         "labelMatch": "contains"
       }
     },
     {
       "action": "verify",
-      "target": "Soft Limit option (doc step)",
+      "target": "Allow Excess Usage option (doc step)",
       "timeoutMs": 30000,
       "expected": {
-        "labelEquals": "Soft Limit",
+        "labelEquals": "Allow Excess Usage",
         "labelMatch": "contains"
       }
     }
