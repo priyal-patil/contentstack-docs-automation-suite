@@ -1,0 +1,1055 @@
+{
+  "id": "personalize",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/personalize",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Personalize-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Get All Audiences action option in Choose an Action",
+      "labelEquals": "Get All Audiences",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get All Experiences action option in Choose an Action",
+      "labelEquals": "Get All Experiences",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get All Versions action option in Choose an Action",
+      "labelEquals": "Get All Versions",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Audience action option in Choose an Action",
+      "labelEquals": "Get a Single Audience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Experience action option in Choose an Action",
+      "labelEquals": "Get a Single Experience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get Audience(s) of a Variant action option in Choose an Action",
+      "labelEquals": "Get Audience(s) of a Variant",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get All Audiences action option in Choose an Action",
+      "labelEquals": "Get All Audiences",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "detect",
+      "target": "personalize-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "onlyIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "OAuth permissions checkboxes",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in OAuth permissions dialog",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in OAuth permissions dialog",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "organization name in the organization selection pop-up",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Account Name field in account setup",
+      "labelEquals": "Account Name",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Account Name field in account setup",
+      "value": "Personalize Account",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "personalizeAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project Lookup field",
+      "labelEquals": "Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Audiences Lookup field after enabling Show Optional Fields",
+      "labelEquals": "Select Audiences",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get All Experiences action option in Choose an Action",
+      "labelEquals": "Get All Experiences",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get All Experiences action option in Choose an Action",
+      "labelEquals": "Get All Experiences",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project Lookup field",
+      "labelEquals": "Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get All Versions action option in Choose an Action",
+      "labelEquals": "Get All Versions",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get All Versions action option in Choose an Action",
+      "labelEquals": "Get All Versions",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project Lookup field",
+      "labelEquals": "Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Experience Lookup field",
+      "labelEquals": "Experience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Experience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any experience option in the Experience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Audience action option in Choose an Action",
+      "labelEquals": "Get a Single Audience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get a Single Audience action option in Choose an Action",
+      "labelEquals": "Get a Single Audience",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project Lookup field",
+      "labelEquals": "Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Audience Lookup field",
+      "labelEquals": "Audience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Audience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any audience option in the Audience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Experience action option in Choose an Action",
+      "labelEquals": "Get a Single Experience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get a Single Experience action option in Choose an Action",
+      "labelEquals": "Get a Single Experience",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project Lookup field",
+      "labelEquals": "Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Experience Lookup field",
+      "labelEquals": "Experience",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Experience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any experience option in the Experience Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Personalize option in the connector list",
+      "labelEquals": "Personalize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get Audience(s) of a Variant action option in Choose an Action",
+      "labelEquals": "Get Audience(s) of a Variant",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get Audience(s) of a Variant action option in Choose an Action",
+      "labelEquals": "Get Audience(s) of a Variant",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Personalize account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Variant Group Lookup field",
+      "labelEquals": "Variant Group",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Variant Group Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any variant group option in the Variant Group Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Variant Lookup field",
+      "labelEquals": "Variant",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Variant Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any variant option in the Variant Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Fetch audiences of the draft version checkbox after enabling Show Optional Fields",
+      "labelEquals": "Fetch audiences of the draft version",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

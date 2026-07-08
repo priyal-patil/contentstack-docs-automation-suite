@@ -40,6 +40,8 @@
     {
       "action": "verify",
       "target": "Email Notifications toggle (doc step)",
+      "docWarning": "Doc says 'Email Notifications' but UI shows 'Enable error notification for automation(s)' — doc/UI label mismatch.",
+      "warnOnly": true,
       "expected": { "labelEquals": "Email Notifications", "labelMatch": "equals" }
     },
     {
@@ -85,6 +87,8 @@
     {
       "action": "verify",
       "target": "Immediately option (doc step)",
+      "docWarning": "Doc says 'Immediately' but UI shows 'immediate' (lowercase) — doc/UI label casing mismatch.",
+      "warnOnly": true,
       "expected": { "labelEquals": "Immediately", "labelMatch": "contains" }
     },
     {

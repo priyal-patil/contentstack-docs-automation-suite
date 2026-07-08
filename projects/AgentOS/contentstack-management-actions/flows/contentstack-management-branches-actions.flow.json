@@ -1,0 +1,1077 @@
+{
+  "id": "contentstack-management-branches-actions",
+  "project": "AgentOS",
+  "module": "contentstack-management-actions",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/contentstack-management-branches-actions",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "CS-Branches-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create a Branch action option in Choose an Action",
+      "labelEquals": "Create a Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Delete a Branch action option in Choose an Action",
+      "labelEquals": "Delete a Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get All Branches action option in Choose an Action",
+      "labelEquals": "Get All Branches",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Branch action option in Choose an Action",
+      "labelEquals": "Get a Single Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Branch action option in Choose an Action",
+      "labelEquals": "Merge Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Merge Job action option in Choose an Action",
+      "labelEquals": "Get a Single Merge Job",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Create a Branch action option in Choose an Action",
+      "labelEquals": "Create a Branch",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup field",
+      "labelEquals": "Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any branch option in the Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Branch UID field label",
+      "labelEquals": "Branch UID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Branch UID input field",
+      "value": "testbranch",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Delete a Branch action option in Choose an Action",
+      "labelEquals": "Delete a Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Delete a Branch action option in Choose an Action",
+      "labelEquals": "Delete a Branch",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup field",
+      "labelEquals": "Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any branch option in the Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get All Branches action option in Choose an Action",
+      "labelEquals": "Get All Branches",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get All Branches action option in Choose an Action",
+      "labelEquals": "Get All Branches",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Branch Limit field after enabling Show Optional Fields",
+      "labelEquals": "Branch Limit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Skip Branch (Pagination) field after enabling Show Optional Fields",
+      "labelEquals": "Skip Branch (Pagination)",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Branch action option in Choose an Action",
+      "labelEquals": "Get a Single Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get a Single Branch action option in Choose an Action",
+      "labelEquals": "Get a Single Branch",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup field",
+      "labelEquals": "Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any branch option in the Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Merge Branch action option in Choose an Action",
+      "labelEquals": "Merge Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Merge Branch action option in Choose an Action",
+      "labelEquals": "Merge Branch",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Compare Branch Lookup field",
+      "labelEquals": "Compare Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Compare Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any branch option in the Compare Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Base Branch Lookup field",
+      "labelEquals": "Base Branch",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Base Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any branch option in the Base Branch Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Strategy field label",
+      "labelEquals": "Merge Strategy",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Merge Strategy dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Prefer Base option in Merge Strategy dropdown",
+      "labelEquals": "Merge Prefer Base",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Prefer Compare option in Merge Strategy dropdown",
+      "labelEquals": "Merge Prefer Compare",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Overwrite With Compare option in Merge Strategy dropdown",
+      "labelEquals": "Overwrite With Compare",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge New Only option in Merge Strategy dropdown",
+      "labelEquals": "Merge New Only",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Modified Only Prefer Base option in Merge Strategy dropdown",
+      "labelEquals": "Merge Modified Only Prefer Base",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Modified Only Prefer Compare option in Merge Strategy dropdown",
+      "labelEquals": "Merge Modified Only Prefer Compare",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Ignore option in Merge Strategy dropdown",
+      "labelEquals": "Ignore",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Merge Prefer Base option in Merge Strategy dropdown",
+      "labelEquals": "Merge Prefer Base",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Comment field label",
+      "labelEquals": "Merge Comment",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Merge Comment input field",
+      "value": "Merging test branch into main",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in the Choose Connector list",
+      "labelEquals": "Contentstack",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Contentstack Management option in the connector list",
+      "labelEquals": "Contentstack Management",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Get a Single Merge Job action option in Choose an Action",
+      "labelEquals": "Get a Single Merge Job",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Get a Single Merge Job action option in Choose an Action",
+      "labelEquals": "Get a Single Merge Job",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Contentstack Management account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup field",
+      "labelEquals": "Stack",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any stack option in the Stack Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge Job Lookup field",
+      "labelEquals": "Merge Job",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Merge Job Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any merge job option in the Merge Job Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

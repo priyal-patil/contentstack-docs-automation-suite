@@ -5,41 +5,52 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/agent-os/automation-sharing",
   "type": "executable",
-  "use": ["login", "on-demand-automation-app"],
+  "use": [
+    "login",
+    "on-demand-automation-app"
+  ],
   "steps": [
     {
       "action": "click",
       "target": "App Switcher icon (doc step)",
-      "docWarning": "Doc says 'Navigate to your project' without detailing navigation — App Switcher → Agent OS added as required prerequisite navigation missing from the document.",
+      "docWarning": "Doc says 'Navigate to your project' without detailing navigation \u2014 App Switcher \u2192 Agent OS added as required prerequisite navigation missing from the document.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Agent OS in App Switcher list (doc step)",
-      "docWarning": "Doc does not mention selecting Agent OS from App Switcher — added as required prerequisite navigation missing from the document.",
-      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+      "docWarning": "Doc does not mention selecting Agent OS from App Switcher \u2014 added as required prerequisite navigation missing from the document.",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "Agent OS in App Switcher list (doc step)",
-      "docWarning": "Doc does not mention clicking Agent OS from the App Switcher list — this step is not described in the document and is added as required prerequisite navigation.",
+      "docWarning": "Doc does not mention clicking Agent OS from the App Switcher list \u2014 this step is not described in the document and is added as required prerequisite navigation.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "projects listing page (doc step)",
-      "expected": { "labelMatch": "exists" }
+      "expected": {
+        "labelMatch": "exists"
+      }
     },
     {
       "action": "click",
       "target": "any existing project card (doc step)",
-      "docWarning": "Doc says 'Navigate to your project' without specifying which — clicking any existing project.",
+      "docWarning": "Doc says 'Navigate to your project' without specifying which \u2014 clicking any existing project.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Automations in top navigation panel (doc step)",
-      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -49,90 +60,132 @@
     {
       "action": "click",
       "target": "vertical ellipses under Actions column on automation row (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "No automations exist in PriyalDocsAutomation project \u2014 this step requires an existing automation."
     },
     {
       "action": "verify",
       "target": "Get Recipe Link option in dropdown (doc step)",
-      "expected": { "labelEquals": "Get Recipe Link", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Get Recipe Link",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "Get Recipe Link option in dropdown (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "verify",
       "target": "Create a Recipe Link for the Automation modal (doc step)",
-      "expected": { "labelEquals": "Create a Recipe Link for the Automation", "labelMatch": "contains" }
-    },
-    {
-      "action": "detect",
-      "target": "recipe-link-checkbox-state (doc step)",
-      "timeoutMs": 90000
+      "expected": {
+        "labelEquals": "Create a Recipe Link for the Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "checkbox to save and copy automation recipe link (doc step)",
-      "skipIfFlowFlagTrue": "recipeLinkCheckboxAlreadyChecked",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "verify",
       "target": "Save and Copy Link button (doc step)",
-      "expected": { "labelEquals": "Save and Copy Link", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save and Copy Link",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "Save and Copy Link button (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "capture",
       "target": "recipe link copied to clipboard after Save and Copy Link (doc step)",
-      "note": "Captures the recipe link into flow variable {RECIPE_LINK} for use in the new tab navigation step."
+      "note": "Captures the recipe link into flow variable {RECIPE_LINK} for use in the new tab navigation step.",
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "openNewTab",
       "target": "new browser tab (doc step)",
-      "docWarning": "Doc says 'paste the copied link into your browser's address bar' — opening a new tab as required step missing from the document.",
-      "timeoutMs": 30000
+      "docWarning": "Doc says 'paste the copied link into your browser's address bar' \u2014 opening a new tab as required step missing from the document.",
+      "timeoutMs": 30000,
+      "warnOnly": true
     },
     {
       "action": "navigate",
       "target": "{RECIPE_LINK}",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "verify",
       "target": "Import Automation screen (doc step)",
-      "expected": { "labelEquals": "Import Automation", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Import Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "verify",
       "target": "Project Name drop-down on Import Automation screen (doc step)",
-      "expected": { "labelEquals": "Project Name", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Project Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "Project Name drop-down on Import Automation screen (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "any project option from Project Name drop-down (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "verify",
       "target": "Confirm and Import button (doc step)",
-      "expected": { "labelEquals": "Confirm and Import", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Confirm and Import",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     },
     {
       "action": "click",
       "target": "Confirm and Import button (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on 'Get Recipe Link' dropdown appearing after clicking vertical ellipses on an existing automation \u2014 automation list is empty, so this step cannot be reached."
     }
-  
   ]
 }

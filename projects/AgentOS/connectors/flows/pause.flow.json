@@ -1,0 +1,245 @@
+{
+  "id": "pause",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/pause",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Pause-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Pause connector in the Choose Connector list",
+      "labelEquals": "Pause",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Pause connector in the Choose Connector list",
+      "labelEquals": "Pause",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Pause an Automation action option in Choose an Action",
+      "labelEquals": "Pause an Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Pause an Automation action option in Choose an Action",
+      "labelEquals": "Pause an Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Show optional fields toggle button",
+      "labelEquals": "Show optional fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show optional fields toggle button",
+      "labelEquals": "Show optional fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Property Name field after enabling Show optional fields",
+      "labelEquals": "Property Name",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Value dropdown field after enabling Show optional fields",
+      "labelEquals": "Value",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Query field after enabling Show optional fields",
+      "labelEquals": "Query",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Body field after enabling Show optional fields",
+      "labelEquals": "Body",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

@@ -1,0 +1,716 @@
+{
+  "id": "contentstack-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/contentstack-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "docWarning": "Doc does not describe navigation — App Switcher → Agent OS added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention selecting Agent OS from App Switcher — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "docWarning": "Doc does not specify which project to open — clicking any existing project as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "Contentstack-{unique5}",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document."
+    },
+    {
+      "action": "verify",
+      "target": "Create button in New Automation modal (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in New Automation modal (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on Configure Trigger page (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Choose Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Asset Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Asset Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Branch Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Branch Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Content Type Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Content Type Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Comment Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Entry Comment Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Entry Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Global Field Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Global Field Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Release Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Release Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Comment Trigger under Choose Trigger tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-trigger-account-selection-state (doc step)",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Contentstack account list (doc step)",
+      "onlyIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in account authentication modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Contentstack OAuth",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Management Token option in account authentication modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Management Token",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack OAuth option in account authentication modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in account authentication modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in account authentication modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Clicking Proceed launches the OAuth flow which requires a real Contentstack account — will not complete without valid credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Manage Permissions modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Manage Permissions modal appears after Proceed — depends on successful OAuth redirect which requires real Contentstack credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful OAuth redirect which requires real Contentstack credentials."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions modal (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Authorization requires valid Contentstack OAuth credentials — will fail without a real account."
+    },
+    {
+      "action": "click",
+      "target": "organization in the pop-up to complete authorization (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Selecting organization requires valid Contentstack OAuth credentials — will fail without a real account."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in module-specific access rights pop-up (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful OAuth flow which requires real Contentstack credentials."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in module-specific access rights pop-up (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Authorization requires valid Contentstack OAuth credentials — will fail without a real account."
+    },
+    {
+      "action": "verify",
+      "target": "Account Name field in account setup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Account Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful OAuth authorization which requires real Contentstack credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Account Name input in account setup (doc step)",
+      "value": "Contentstack-account-{unique5}",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Account Name requires a real Contentstack account — test value used; authorization will not succeed."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in account setup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful OAuth authorization which requires real Contentstack credentials."
+    },
+    {
+      "action": "click",
+      "target": "Save button in account setup (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Saving account requires valid Contentstack OAuth credentials — will fail without a real account."
+    },
+    {
+      "action": "verify",
+      "target": "Select Event field in Entry Comment Trigger Configure Trigger page (doc step)",
+      "expected": {
+        "labelEquals": "Select Event",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Select Event dropdown in Entry Comment Trigger Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Comment Created option in Select Event dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Entry Comment Created",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Comment Updated option in Select Event dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Entry Comment Updated",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry Comment Deleted option in Select Event dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Entry Comment Deleted",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "All option in Select Event dropdown (doc step)",
+      "expected": {
+        "labelEquals": "All",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Comment Created option in Select Event dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown in Entry Comment Trigger Configure Trigger page (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown in Entry Comment Trigger Configure Trigger page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "any Stack option in Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Branch Lookup dropdown in Entry Comment Trigger Configure Trigger page (doc step)",
+      "expected": {
+        "labelEquals": "Branch",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "Branch Lookup dropdown in Entry Comment Trigger Configure Trigger page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "any Branch option in Branch Lookup dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Content Type field in Entry Comment Trigger optional fields (doc step)",
+      "expected": {
+        "labelEquals": "Content Type",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Entry field in Entry Comment Trigger optional fields (doc step)",
+      "expected": {
+        "labelEquals": "Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Entry Comment Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Asset Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Asset Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Asset Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Asset Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Asset Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Asset Created option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Created", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Updated option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Updated", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Deleted option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Deleted", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Published option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Published", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Publish Failed option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Publish Failed", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Unpublished option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Unpublished", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Asset Unpublish Failed option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Asset Unpublish Failed", "labelMatch": "contains" } },
+    { "action": "verify", "target": "ALL option in Asset Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "ALL", "labelMatch": "contains" } },
+    { "action": "click", "target": "Asset Created option in Asset Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Asset Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Asset Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Asset Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Asset Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Asset Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Asset Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Asset Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Asset Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Environment field in Asset Trigger optional fields (doc step)", "expected": { "labelEquals": "Environment", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Asset Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Branch Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Branch Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Branch Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Created option in Branch Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Branch Created", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Branch Deleted option in Branch Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Branch Deleted", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Branch Alias Assigned option in Branch Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Branch Alias Assigned", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Branch Alias Unassigned option in Branch Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Branch Alias Unassigned", "labelMatch": "contains" } },
+    { "action": "verify", "target": "All option in Branch Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "All", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Created option in Branch Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Branch Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Branch Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Branch Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Branch Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Content Type Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Content Type Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Content Type Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Content Type Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Content Type Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Content Type Created option in Content Type Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Content Type Created", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Content Type Updated option in Content Type Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Content Type Updated", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Content Type Deleted option in Content Type Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Content Type Deleted", "labelMatch": "contains" } },
+    { "action": "verify", "target": "ALL option in Content Type Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "ALL", "labelMatch": "contains" } },
+    { "action": "click", "target": "Content Type Created option in Content Type Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Content Type Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Content Type Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Content Type Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Content Type Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Content Type Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Content Type Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Content Type Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Content Type Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Specific Content Type field in Content Type Trigger optional fields (doc step)", "expected": { "labelEquals": "Specific Content Type", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Content Type Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Entry Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Entry Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Entry Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Entry Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Entry Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Entry Created option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Created", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Updated option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Updated", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Deleted option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Deleted", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Published option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Published", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Unpublished option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Unpublished", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Publish Failed option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Publish Failed", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Entry Unpublish Failed option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Entry Unpublish Failed", "labelMatch": "contains" } },
+    { "action": "verify", "target": "ALL option in Entry Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "ALL", "labelMatch": "contains" } },
+    { "action": "click", "target": "Entry Created option in Entry Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Entry Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Entry Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Entry Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Entry Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Entry Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Entry Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Entry Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Entry Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Content Type field in Entry Trigger optional fields (doc step)", "expected": { "labelEquals": "Content Type", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Environment field in Entry Trigger optional fields (doc step)", "expected": { "labelEquals": "Environment", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Entry Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Global Field Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Global Field Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Global Field Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Global Field Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Global Field Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Global Field Created option in Global Field Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Global Field Created", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Global Field Updated option in Global Field Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Global Field Updated", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Global Field Deleted option in Global Field Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Global Field Deleted", "labelMatch": "contains" } },
+    { "action": "verify", "target": "ALL option in Global Field Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "ALL", "labelMatch": "contains" } },
+    { "action": "click", "target": "Global Field Created option in Global Field Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Global Field Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Global Field Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Global Field Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Global Field Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Global Field Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Global Field Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Global Field Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Global Field Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Specific Global Field field in Global Field Trigger optional fields (doc step)", "expected": { "labelEquals": "Specific Global Field", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Global Field Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Release Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Release Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Release Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Release Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Release Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Release Deployed option in Release Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Release Deployed", "labelMatch": "contains" } },
+    { "action": "click", "target": "Release Deployed option in Release Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Release Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Release Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Release Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Release Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Release Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Release Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Release Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Release Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Release field in Release Trigger optional fields (doc step)", "expected": { "labelEquals": "Release", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Environment field in Release Trigger optional fields (doc step)", "expected": { "labelEquals": "Environment", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+
+    { "action": "verify", "target": "Choose Trigger section at top of automation canvas (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "edit icon in front of Release Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Workflow Trigger in Choose Trigger tab (doc step)", "expected": { "labelEquals": "Workflow Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "Workflow Trigger in Choose Trigger tab (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Configure Trigger tab (doc step)", "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" } },
+    { "action": "click", "target": "default account displayed in Contentstack account list (doc step)", "timeoutMs": 90000, "warnOnly": true },
+    { "action": "verify", "target": "Select Event field in Workflow Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Select Event", "labelMatch": "contains" } },
+    { "action": "click", "target": "Select Event dropdown in Workflow Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Workflow Stage Changed option in Workflow Trigger Select Event dropdown (doc step)", "expected": { "labelEquals": "Workflow Stage Changed", "labelMatch": "contains" } },
+    { "action": "click", "target": "Workflow Stage Changed option in Workflow Trigger Select Event dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Stack Lookup dropdown in Workflow Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Stack", "labelMatch": "contains" } },
+    { "action": "click", "target": "Stack Lookup dropdown in Workflow Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Stack option in Workflow Trigger Stack Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Branch Lookup dropdown in Workflow Trigger Configure Trigger page (doc step)", "expected": { "labelEquals": "Branch", "labelMatch": "contains" } },
+    { "action": "click", "target": "Branch Lookup dropdown in Workflow Trigger Configure Trigger page (doc step)", "timeoutMs": 90000 },
+    { "action": "click", "target": "any Branch option in Workflow Trigger Branch Lookup dropdown (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Show Optional Fields toggle button in Workflow Trigger (doc step)", "expected": { "labelMatch": "exists" } },
+    { "action": "click", "target": "Show Optional Fields toggle button in Workflow Trigger (doc step)", "timeoutMs": 90000 },
+    { "action": "verify", "target": "Workflow Stage field in Workflow Trigger optional fields (doc step)", "expected": { "labelEquals": "Workflow Stage", "labelMatch": "contains" } },
+    { "action": "verify", "target": "Proceed button in Configure Trigger (doc step)", "expected": { "labelEquals": "Proceed", "labelMatch": "contains" } },
+    { "action": "click", "target": "Proceed button in Configure Trigger (doc step)", "timeoutMs": 90000 },
+
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful Contentstack account authorization."
+    }
+  ]
+}

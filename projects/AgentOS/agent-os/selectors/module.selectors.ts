@@ -43,7 +43,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   // view-execution-log-of-agent-os
   "Any existing project card (doc step)":
-    '[data-test-id="cs-stackcard"]',
+    '[data-test-id="cs-stackcard"]:has-text("PriyalDocsAutomation"), [data-test-id="cs-stackcard"]',
+  "PriyalDocsAutomation project card (doc step)":
+    '[data-test-id="cs-stackcard"]:has-text("PriyalDocsAutomation"), [data-test-id="cs-stacklist-card-PriyalDocsAutomation"]',
   "Project Dashboard loaded (doc step)":
     '[data-test-id="automate-nav-dashboard"], nav:has([data-test-id="automate-nav-settings"])',
   "Execution Log in left nav (doc step)":

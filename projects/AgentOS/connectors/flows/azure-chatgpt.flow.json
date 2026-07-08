@@ -1,0 +1,756 @@
+{
+  "id": "azure-chatgpt",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/azure-chatgpt",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "AzureChatGPT-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Chat action option in Choose an Action",
+      "labelEquals": "Chat",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Chat action option in Choose an Action",
+      "labelEquals": "Chat",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "detect",
+      "target": "azure-chatgpt-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Azure ChatGPT account in account list",
+      "onlyIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Title field in account setup",
+      "labelEquals": "Title",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Title field in account setup",
+      "value": "Azure ChatGPT Account",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Resource Name field in account setup",
+      "labelEquals": "Resource Name",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Resource Name field in account setup",
+      "value": "{{AZURE_CHATGPT_RESOURCE_NAME}}",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Azure Resource Name is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in account setup",
+      "labelEquals": "API Key",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "API Key field in account setup",
+      "value": "{{AZURE_CHATGPT_API_KEY}}",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Azure ChatGPT API Key is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "Deployment Name/ID field in account setup",
+      "labelEquals": "Deployment Name/ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Deployment Name/ID field in account setup",
+      "value": "{{AZURE_CHATGPT_DEPLOYMENT_NAME}}",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Azure Deployment Name/ID is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "API Version field in account setup",
+      "labelEquals": "API Version",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "API Version field in account setup",
+      "value": "{{AZURE_CHATGPT_API_VERSION}}",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Azure API Version is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "azureChatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Hello",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown field",
+      "labelEquals": "Role",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "system option in the Role dropdown",
+      "labelEquals": "system",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "assistant option in the Role dropdown",
+      "labelEquals": "assistant",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "user option in the Role dropdown",
+      "labelEquals": "user",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "user option in the Role dropdown",
+      "labelEquals": "user",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Chat Responses field after enabling Show Optional Fields",
+      "labelEquals": "Number of Chat Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Identifier field after enabling Show Optional Fields",
+      "labelEquals": "User Identifier",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Repeated Words field after enabling Show Optional Fields",
+      "labelEquals": "Frequency of Repeated Words",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Presence of Repeated Responses field after enabling Show Optional Fields",
+      "labelEquals": "Presence of Repeated Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Azure ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Hello",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Prompt Responses field after enabling Show Optional Fields",
+      "labelEquals": "Number of Prompt Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Identifier field after enabling Show Optional Fields",
+      "labelEquals": "User Identifier",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Repeated Words field after enabling Show Optional Fields",
+      "labelEquals": "Frequency of Repeated Words",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Presence of Repeated Responses field after enabling Show Optional Fields",
+      "labelEquals": "Presence of Repeated Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Azure ChatGPT connector in the Choose Connector list",
+      "labelEquals": "Azure ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "existing Azure ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Entry Data field",
+      "labelEquals": "Entry Data",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Entry Data field",
+      "value": "{}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Content Type Schema field",
+      "labelEquals": "Content Type Schema",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Content Type Schema field",
+      "value": "{}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Language dropdown field",
+      "labelEquals": "Select Language",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Language dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any language option in the Select Language dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field after enabling Show Optional Fields",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

@@ -1,0 +1,1558 @@
+{
+  "id": "chatgpt",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/chatgpt",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "ChatGPT-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Chat action option in Choose an Action",
+      "labelEquals": "Chat",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Chat with Vision action option in Choose an Action",
+      "labelEquals": "Chat with Vision",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "DALL-E 3 Image Generator action option in Choose an Action",
+      "labelEquals": "DALL-E 3 Image Generator",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling action option in Choose an Action",
+      "labelEquals": "Function Calling",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling Response action option in Choose an Action",
+      "labelEquals": "Function Calling Response",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Chat action option in Choose an Action",
+      "labelEquals": "Chat",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "chatgpt-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "onlyIfFlowFlagTrue": "chatGPTAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Title field in account setup",
+      "labelEquals": "Title",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Title field in account setup",
+      "value": "ChatGPT Account",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in account setup",
+      "labelEquals": "API Key",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "API Key field in account setup",
+      "value": "{{CHATGPT_API_KEY}}",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real ChatGPT API Key is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "Organization ID field in account setup",
+      "labelEquals": "Organization ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Organization ID field in account setup",
+      "value": "{{CHATGPT_ORGANIZATION_ID}}",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real ChatGPT Organization ID is required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "chatGPTAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Hello",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown field",
+      "labelEquals": "Role",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "user option in the Role dropdown",
+      "labelEquals": "user",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Input Query field",
+      "labelEquals": "Input Query",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Input Query field",
+      "value": "What is Contentstack?",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Response Type dropdown after enabling Show Optional Fields",
+      "labelEquals": "Response Type",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Response Type dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Text option in the Response Type dropdown",
+      "labelEquals": "Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "JSON option in the Response Type dropdown",
+      "labelEquals": "JSON",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Structured Output option in the Response Type dropdown",
+      "labelEquals": "Structured Output",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Text option in the Response Type dropdown",
+      "labelEquals": "Text",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Chat Responses field after enabling Show Optional Fields",
+      "labelEquals": "Number of Chat Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Repeated Words field after enabling Show Optional Fields",
+      "labelEquals": "Frequency of Repeated Words",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Presence of Repeated Responses field after enabling Show Optional Fields",
+      "labelEquals": "Presence of Repeated Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize Text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Chat with Vision action option in Choose an Action",
+      "labelEquals": "Chat with Vision",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Chat with Vision action option in Choose an Action",
+      "labelEquals": "Chat with Vision",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Prompt Text button",
+      "labelEquals": "+ Add Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add Prompt Text button",
+      "labelEquals": "+ Add Prompt Text",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Describe this image",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown field",
+      "labelEquals": "Role",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "user option in the Role dropdown",
+      "labelEquals": "user",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Chat Responses field after enabling Show Optional Fields",
+      "labelEquals": "Number of Chat Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Repeated Words field after enabling Show Optional Fields",
+      "labelEquals": "Frequency of Repeated Words",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Presence of Repeated Responses field after enabling Show Optional Fields",
+      "labelEquals": "Presence of Repeated Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize Text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "DALL-E 3 Image Generator action option in Choose an Action",
+      "labelEquals": "DALL-E 3 Image Generator",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "DALL-E 3 Image Generator action option in Choose an Action",
+      "labelEquals": "DALL-E 3 Image Generator",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "A futuristic city skyline",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Image Size dropdown field",
+      "labelEquals": "Select Image Size",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Image Size dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any image size option in the Select Image Size dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Style dropdown field",
+      "labelEquals": "Select Style",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Style dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Vivid option in the Select Style dropdown",
+      "labelEquals": "Vivid",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Quality dropdown field",
+      "labelEquals": "Select Quality",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Quality dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Standard option in the Select Quality dropdown",
+      "labelEquals": "Standard",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling action option in Choose an Action",
+      "labelEquals": "Function Calling",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Function Calling action option in Choose an Action",
+      "labelEquals": "Function Calling",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Hello",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown field",
+      "labelEquals": "Role",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "user option in the Role dropdown",
+      "labelEquals": "user",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Input Query field",
+      "labelEquals": "Input Query",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Input Query field",
+      "value": "What is Contentstack?",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Sub Automation button",
+      "labelEquals": "+ Add Sub Automation",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add Sub Automation button",
+      "labelEquals": "+ Add Sub Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize Text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling Response action option in Choose an Action",
+      "labelEquals": "Function Calling Response",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Function Calling Response action option in Choose an Action",
+      "labelEquals": "Function Calling Response",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling Response dropdown field",
+      "labelEquals": "Function Calling Response",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Function Calling Response dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any option in the Function Calling Response dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation Response dropdown field",
+      "labelEquals": "Sub Automation Response",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation Response dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any option in the Sub Automation Response dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize Text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Prompt action option in Choose an Action",
+      "labelEquals": "Prompt",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Prompt Text field",
+      "value": "Hello",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Prompt Responses field after enabling Show Optional Fields",
+      "labelEquals": "Number of Prompt Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Randomness of Responses field after enabling Show Optional Fields",
+      "labelEquals": "Randomness of Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Identifier field after enabling Show Optional Fields",
+      "labelEquals": "User Identifier",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Frequency of Repeated Words field after enabling Show Optional Fields",
+      "labelEquals": "Frequency of Repeated Words",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Presence of Repeated Responses field after enabling Show Optional Fields",
+      "labelEquals": "Presence of Repeated Responses",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sanitize Text checkbox after enabling Show Optional Fields",
+      "labelEquals": "Sanitize Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in the Choose Connector list",
+      "labelEquals": "ChatGPT",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Translate an Entry action option in Choose an Action",
+      "labelEquals": "Translate an Entry",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing ChatGPT account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown field",
+      "labelEquals": "API Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any model option in the API Model dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Entry Data field",
+      "labelEquals": "Entry Data",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Entry Data field",
+      "value": "{}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Content Type Schema field",
+      "labelEquals": "Content Type Schema",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Content Type Schema field",
+      "value": "{}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Language dropdown field",
+      "labelEquals": "Select Language",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Language dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any language option in the Select Language dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Prompt Text field after enabling Show Optional Fields",
+      "labelEquals": "Prompt Text",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Number of Tokens field after enabling Show Optional Fields",
+      "labelEquals": "Number of Tokens",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

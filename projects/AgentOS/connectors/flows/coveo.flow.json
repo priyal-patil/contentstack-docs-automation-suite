@@ -1,0 +1,532 @@
+{
+  "id": "coveo",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/coveo",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Coveo-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Coveo connector in the Choose Connector list",
+      "labelEquals": "Coveo",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Coveo connector in the Choose Connector list",
+      "labelEquals": "Coveo",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Delete Content action option in Choose an Action",
+      "labelEquals": "Delete Content",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Push Content action option in Choose an Action",
+      "labelEquals": "Push Content",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Delete Content action option in Choose an Action",
+      "labelEquals": "Delete Content",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "coveo-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Coveo account in account list",
+      "onlyIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Title field in account setup",
+      "labelEquals": "Title",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Title field in account setup",
+      "value": "Coveo Account",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in account setup",
+      "labelEquals": "API Key",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "API Key field in account setup",
+      "value": "{{COVEO_API_KEY}}",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Coveo API Key is required for this step; obtain it from Coveo Organization API Keys tab."
+    },
+    {
+      "action": "verify",
+      "target": "Organization ID field in account setup",
+      "labelEquals": "Organization ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Organization ID field in account setup",
+      "value": "{{COVEO_ORGANIZATION_ID}}",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Coveo Organization ID is required for this step; obtain it from Coveo Organization settings."
+    },
+    {
+      "action": "verify",
+      "target": "Select Region dropdown field in account setup",
+      "labelEquals": "Select Region",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Select Region dropdown in account setup",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "US option in the Select Region dropdown",
+      "labelEquals": "US",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "EU option in the Select Region dropdown",
+      "labelEquals": "EU",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "AU option in the Select Region dropdown",
+      "labelEquals": "AU",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "CA option in the Select Region dropdown",
+      "labelEquals": "CA",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "US option in the Select Region dropdown",
+      "labelEquals": "US",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "coveoAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Source dropdown field",
+      "labelEquals": "Source",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Source dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any source option in the Source dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Document ID field",
+      "labelEquals": "Document ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Document ID field",
+      "value": "https://example.com/doc1",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Remove all child elements from the document checkbox after enabling Show Optional Fields",
+      "labelEquals": "Remove all child elements from the document",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Coveo connector in the Choose Connector list",
+      "labelEquals": "Coveo",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Coveo connector in the Choose Connector list",
+      "labelEquals": "Coveo",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Push Content action option in Choose an Action",
+      "labelEquals": "Push Content",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Push Content action option in Choose an Action",
+      "labelEquals": "Push Content",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing Coveo account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Source dropdown field",
+      "labelEquals": "Source",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Source dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any source option in the Source dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Document ID field",
+      "labelEquals": "Document ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Document ID field",
+      "value": "https://example.com/doc1",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Document Body field",
+      "labelEquals": "Document Body",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Document Body field",
+      "value": "{\"data\": \"sample content\", \"title\": \"Sample Title\"}",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

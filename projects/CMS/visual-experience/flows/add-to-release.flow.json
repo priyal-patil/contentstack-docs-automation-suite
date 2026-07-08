@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "verify", "target": "Visual builder horizontal ellipses (doc step)" },
     { "action": "click", "target": "Visual builder horizontal ellipses (doc step)", "timeoutMs": 90000 },

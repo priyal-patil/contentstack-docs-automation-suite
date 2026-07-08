@@ -1,0 +1,239 @@
+{
+  "id": "get-started-with-polaris",
+  "project": "AgentOS",
+  "module": "polaris",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/get-started-with-polaris",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "stack (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "entry page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "content type (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing entry (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Polaris icon (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "docWarning": "Polaris icon is an SVG button with aria-label \"Polaris\" \u2014 no text content; verified by existence check only."
+    },
+    {
+      "action": "click",
+      "target": "Polaris icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Polaris panel (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "docWarning": "Polaris panel container uses data-polaris-sidebar=\"true\" \u2014 no visible text; verified by existence check only."
+    },
+    {
+      "action": "enter",
+      "target": "Polaris panel prompt input (doc step)",
+      "value": "Improve the tone and clarity of this entry to make it more engaging."
+    },
+    {
+      "action": "verify",
+      "target": "Polaris planning state (doc step)",
+      "docWarning": "AI-dependent state \u2014 requires Polaris to process the prompt and show a planning/thinking state. May not appear in all environments.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "preview showing current content and proposed improved version (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to return a preview of proposed changes. Skipped if AI did not respond.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Confirm",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "confirmation message in Polaris panel (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to show confirmation after applying suggestion.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Assets section (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing asset in Assets Editor (doc step)",
+      "docWarning": "Requires at least one asset in PriyalDocsStack. Assets list may be empty.",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "Polaris panel prompt input (doc step)",
+      "value": "Update metadata for this image to include SEO-friendly tags and publish the image to the development environment.",
+      "docWarning": "Polaris panel may not be open in Assets context (asset click step is warnOnly \u2014 PriyalDocsStack has no assets). Marking as warnOnly.",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Polaris planning state (doc step)",
+      "docWarning": "AI-dependent state \u2014 requires Polaris to process the prompt.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "preview showing existing asset metadata and proposed SEO-friendly tags (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to return a preview of proposed metadata changes.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Confirm",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "confirmation message in Polaris panel (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to confirm asset metadata update.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Visual Editor (doc step)",
+      "docWarning": "Visual Editor is part of the Compass starter app stack, not PriyalDocsStack. This step may fail if the stack does not have Visual Editor enabled.",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "page or experience in preview mode (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "content element on the Visual Editor canvas (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "Polaris panel prompt input (doc step)",
+      "value": "Shorten and sharpen the content on this page to improve readability.",
+      "docWarning": "Visual Editor steps above are warnOnly (Compass app stack required). Browser page may have closed or navigated away. Marking as warnOnly.",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Polaris planning state (doc step)",
+      "docWarning": "AI-dependent state \u2014 requires Polaris to process the Visual Editor prompt.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "preview showing current content and proposed shortened and refined version (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to return a preview of shortened content.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "expected": {
+        "labelEquals": "Confirm",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Confirm button (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "confirmation message in Polaris panel (doc step)",
+      "docWarning": "AI-dependent step \u2014 requires Polaris to confirm Visual Editor content update.",
+      "warnOnly": true,
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "timeoutMs": 90000
+    }
+  ]
+}

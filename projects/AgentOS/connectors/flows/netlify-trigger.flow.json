@@ -1,0 +1,325 @@
+{
+  "id": "netlify-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/netlify-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in new automation dialog"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in new automation dialog",
+      "value": "Netlify-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on Configure Trigger page"
+    },
+    {
+      "action": "verify",
+      "target": "Netlify connector in Choose Connector list",
+      "labelEquals": "Netlify",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Netlify connector in Choose Connector list",
+      "labelEquals": "Netlify",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab after selecting Netlify connector",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Netlify Trigger option in Choose Trigger tab",
+      "labelEquals": "Netlify Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Netlify Trigger option in Choose Trigger tab",
+      "labelEquals": "Netlify Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab after selecting Netlify Trigger",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "detect",
+      "target": "netlify-trigger-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Netlify account in account list",
+      "onlyIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "enter",
+      "target": "Title field in Netlify authorization modal",
+      "value": "Netlify Account",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Token field in Netlify authorization modal",
+      "value": "{{NETLIFY_TOKEN}}",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Real Netlify personal access token required (generate from User settings > Applications > New access token in the Netlify dashboard)."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Netlify authorization modal",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Netlify authorization modal",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "netlifyTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Site ID field label",
+      "labelEquals": "Site ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Site ID Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any site option in the Site ID dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select an Event field label",
+      "labelEquals": "Select an Event",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select an Event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment started option in Select an Event dropdown",
+      "labelEquals": "Deployment started",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment succeeded option in Select an Event dropdown",
+      "labelEquals": "Deployment succeeded",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment failed option in Select an Event dropdown",
+      "labelEquals": "Deployment failed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment locked option in Select an Event dropdown",
+      "labelEquals": "Deployment locked",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment unlocked option in Select an Event dropdown",
+      "labelEquals": "Deployment unlocked",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Form submission received option in Select an Event dropdown",
+      "labelEquals": "Form submission received",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Deployment started option in Select an Event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

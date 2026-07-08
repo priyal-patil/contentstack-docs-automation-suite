@@ -1,0 +1,268 @@
+{
+  "id": "sub-automation-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/sub-automation-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create)."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Sub-Automation-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation connector in the Choose Connector list",
+      "labelEquals": "Sub Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation connector in the Choose Connector list",
+      "labelEquals": "Sub Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab after selecting Sub Automation connector",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation Trigger option under Choose Trigger tab",
+      "labelEquals": "Sub Automation Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation Trigger option under Choose Trigger tab",
+      "labelEquals": "Sub Automation Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab after selecting Sub Automation Trigger",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in the Configure Trigger step",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Description field in the Configure Trigger step",
+      "value": "Convert a given text in German Language",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Schema field section in the Configure Trigger step",
+      "labelEquals": "Schema",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Key field label under the Schema section",
+      "labelEquals": "Key",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Key field under the Schema section",
+      "value": "text input",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Value field label under the Schema section",
+      "labelEquals": "Value",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Type dropdown under the Schema section",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "String option in the Type dropdown under the Schema section",
+      "labelEquals": "String",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "String option in the Type dropdown under the Schema section",
+      "labelEquals": "String",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Required field label under the Schema section",
+      "labelEquals": "Required",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Required checkbox under the Schema section",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Schema button in the Configure Trigger step",
+      "labelEquals": "+ Add Schema",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in the Configure Trigger step",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in the Configure Trigger step",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

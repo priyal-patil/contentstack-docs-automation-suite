@@ -1,0 +1,532 @@
+{
+  "id": "launch-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/launch-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → click Configure Trigger → select the Launch connector."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Launch-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on the Configure Trigger step"
+    },
+    {
+      "action": "verify",
+      "target": "Launch connector in the Choose Connector list",
+      "labelEquals": "Launch",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Launch connector in the Choose Connector list",
+      "labelEquals": "Launch",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab after selecting Launch connector",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Deployment Trigger in the Choose Trigger tab",
+      "labelEquals": "Deployment",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Deployment Trigger in the Choose Trigger tab",
+      "labelEquals": "Deployment",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab after selecting Deployment trigger",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "detect",
+      "target": "launch-trigger-account-selection-state (doc step)",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Launch account list (doc step)",
+      "onlyIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in the Configure Trigger tab",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in the Configure Trigger tab",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "checkbox for all OAuth permissions in the pop-up window",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "OAuth permissions checkbox requires valid Launch account authorization to proceed."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in the pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in the pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "organization option in the pop-up to complete authorization",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Account Name field in the account setup form",
+      "value": "Launch Account",
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Account Name field requires real Launch account credentials to proceed."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select an Event field label",
+      "labelEquals": "Select an Event",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select an Event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment Started option in Select an Event dropdown",
+      "labelEquals": "Deployment Started",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment Failed option in Select an Event dropdown",
+      "labelEquals": "Deployment Failed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Deployment Completed option in Select an Event dropdown",
+      "labelEquals": "Deployment Completed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "All option in Select an Event dropdown",
+      "labelEquals": "All",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "All option in Select an Event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select a Project field label",
+      "labelEquals": "Select a Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select a Project Lookup dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Select a Project dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on the Configure Trigger step",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on the Configure Trigger step",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel after Proceed",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "edit icon next to Deployment Trigger on the Configure Trigger page",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Clicking the edit icon next to Deployment Trigger to access the Environment Trigger configuration is not described in the document but is required to add a second trigger."
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab in trigger configuration",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Environment Trigger option in Choose Trigger tab",
+      "labelEquals": "Environment",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Environment Trigger option in Choose Trigger tab",
+      "labelEquals": "Environment",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "detect",
+      "target": "launch-env-trigger-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Launch account in account list for Environment Trigger",
+      "onlyIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Environment Trigger configuration",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Environment Trigger configuration",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "checkbox for all OAuth permissions in the pop-up window",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "OAuth permissions checkbox requires valid Launch account authorization to proceed."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in the pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in the pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "organization option in the pop-up to complete authorization",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Account Name field in the account setup form",
+      "value": "Launch Account",
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Account Name field requires real Launch account credentials to proceed."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "launchEnvTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select an Event field label in Environment Trigger",
+      "labelEquals": "Select an Event",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select an Event dropdown in Environment Trigger",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Environment Created option in Select an Event dropdown",
+      "labelEquals": "Environment Created",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Environment Deleted option in Select an Event dropdown",
+      "labelEquals": "Environment Deleted",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Environment Updated option in Select an Event dropdown",
+      "labelEquals": "Environment Updated",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "All option in Select an Event dropdown for Environment Trigger",
+      "labelEquals": "All",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "All option in Select an Event dropdown for Environment Trigger",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select a Project field label in Environment Trigger",
+      "labelEquals": "Select a Project",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select a Project Lookup dropdown in Environment Trigger",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Select a Project dropdown for Environment Trigger",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Environment Trigger configuration",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Environment Trigger configuration",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button on the trigger configuration step",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button to execute and test the configured trigger",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button after successful Test Trigger",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button after successful Test Trigger",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

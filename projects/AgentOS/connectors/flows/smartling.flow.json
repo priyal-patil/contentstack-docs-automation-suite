@@ -1,0 +1,520 @@
+{
+  "id": "smartling",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/smartling",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Smartling-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Smartling connector in the Choose Connector list",
+      "labelEquals": "Smartling",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Smartling connector in the Choose Connector list",
+      "labelEquals": "Smartling",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Download Translated Content action option in Choose an Action",
+      "labelEquals": "Download Translated Content",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Add Content to a Project action option in Choose an Action",
+      "labelEquals": "Add Content to a Project",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Download Translated Content action option in Choose an Action",
+      "labelEquals": "Download Translated Content",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "smartling-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Smartling account in account list",
+      "onlyIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Title field in account setup",
+      "labelEquals": "Title",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Title field in account setup",
+      "value": "Smartling Account",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "User Identifier field in account setup",
+      "labelEquals": "User Identifier",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "User Identifier field in account setup",
+      "value": "{{SMARTLING_USER_IDENTIFIER}}",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Smartling User Identifier is required; obtain it from Account Settings > API > Create Token."
+    },
+    {
+      "action": "verify",
+      "target": "User Secret ID field in account setup",
+      "labelEquals": "User Secret ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "User Secret ID field in account setup",
+      "value": "{{SMARTLING_USER_SECRET_ID}}",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Smartling User Secret ID is required; generate it via Account Settings > API > Create Token."
+    },
+    {
+      "action": "verify",
+      "target": "Account UID field in account setup",
+      "labelEquals": "Account UID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Account UID field in account setup",
+      "value": "{{SMARTLING_ACCOUNT_UID}}",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Smartling Account UID is required; generate it via Account Settings > API > Create Token."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "smartlingAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project ID dropdown field",
+      "labelEquals": "Project ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project ID dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project ID dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Locale to Download dropdown field",
+      "labelEquals": "Locale to Download",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Locale to Download dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any locale option in the Locale to Download dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "File URI field",
+      "labelEquals": "File URI",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "File URI field",
+      "value": "https://example.com/file.json",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Smartling connector in the Choose Connector list",
+      "labelEquals": "Smartling",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Smartling connector in the Choose Connector list",
+      "labelEquals": "Smartling",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Content to a Project action option in Choose an Action",
+      "labelEquals": "Add Content to a Project",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Add Content to a Project action option in Choose an Action",
+      "labelEquals": "Add Content to a Project",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing Smartling account in account list",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Project ID dropdown field",
+      "labelEquals": "Project ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Project ID dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any project option in the Project ID dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Locale dropdown field",
+      "labelEquals": "Locale",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Locale dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any locale option in the Locale dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Contents field",
+      "labelEquals": "Contents",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Contents field",
+      "value": "Sample content for translation",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Callback URL field",
+      "labelEquals": "Callback URL",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Callback URL field",
+      "value": "https://example.com/callback",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

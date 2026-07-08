@@ -1,0 +1,314 @@
+{
+  "id": "box-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/box-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: clicking the App Switcher icon to navigate to Agent OS."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying Agent OS is available in the App Switcher."
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: navigating to Agent OS via App Switcher."
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: selecting an existing project to enter the project workspace."
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying Automations link is present in the top navigation panel."
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: navigating to Automations section."
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying the New Automation button is present."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: creating a new automation."
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying the Automation Name field is present."
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field",
+      "value": "Box-{unique5}",
+      "docWarning": "Prerequisite step not described in the document: entering a unique automation name."
+    },
+    {
+      "action": "verify",
+      "target": "Create button in new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying the Create button is present."
+    },
+    {
+      "action": "click",
+      "target": "Create button in new automation dialog",
+      "timeoutMs": 90000,
+      "docWarning": "Prerequisite step not described in the document: confirming creation of the new automation."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains",
+      "docWarning": "Prerequisite step not described in the document: verifying the Choose Connector section is present after clicking Configure Trigger."
+    },
+    {
+      "action": "verify",
+      "target": "Box connector in Choose Connector list",
+      "labelEquals": "Box",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Box connector in Choose Connector list",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Box trigger in Choose Trigger tab",
+      "labelEquals": "Box",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Box trigger in Choose Trigger tab",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "detect",
+      "target": "box-trigger-account-selection-state (doc step)",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Box account list (doc step)",
+      "onlyIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "checkboxes to provide OAuth permissions for all values in Box OAuth",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "timeoutMs": 90000,
+      "docWarning": "Step requires real Box OAuth permissions to be checked — may not be automatable without a live Box account."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Authorize button",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "log in to Box account in the pop-up",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "timeoutMs": 90000,
+      "docWarning": "Step requires real Box account credentials to log in — may not be automatable without a live Box account."
+    },
+    {
+      "action": "verify",
+      "target": "Grant access to Box button in pop-up",
+      "labelEquals": "Grant access to Box",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Grant access to Box button in pop-up",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "enter",
+      "target": "Account Name field",
+      "value": "BoxAccount",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Step requires providing an account name — using a placeholder value; real credentials needed for full execution."
+    },
+    {
+      "action": "verify",
+      "target": "Save button for account name",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save button for account name",
+      "skipIfFlowFlagTrue": "boxTriggerAccountAlreadySelected",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select an Event drop-down (doc step)",
+      "expected": {
+        "labelEquals": "Select an Event",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select an Event drop-down (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any event option in Select an Event drop-down (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select Folder drop-down (doc step)",
+      "expected": {
+        "labelEquals": "Select Folder",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Select Folder drop-down (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any folder in Select Folder drop-down (doc step)",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    }
+  ]
+}

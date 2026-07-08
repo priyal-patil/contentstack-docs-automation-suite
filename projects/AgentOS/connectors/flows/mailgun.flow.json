@@ -1,0 +1,326 @@
+{
+  "id": "mailgun",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/mailgun",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Mailgun-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Mailgun connector in the Choose Connector list",
+      "labelEquals": "Mailgun",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Mailgun connector in the Choose Connector list",
+      "labelEquals": "Mailgun",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Send Email action option in Choose an Action",
+      "labelEquals": "Send Email",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Send Email action option in Choose an Action",
+      "labelEquals": "Send Email",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "mailgun-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Mailgun account in account list",
+      "onlyIfFlowFlagTrue": "mailgunAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Account API Key field in account setup",
+      "labelEquals": "Account API Key",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Account API Key field in account setup",
+      "value": "{{MAILGUN_ACCOUNT_API_KEY}}",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Mailgun API Key is required; find it in Mailgun → Account → Security → API Keys."
+    },
+    {
+      "action": "verify",
+      "target": "Domain field in account setup",
+      "labelEquals": "Domain",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Domain field in account setup",
+      "value": "{{MAILGUN_DOMAIN}}",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Mailgun domain is required; find it in Mailgun → Sending → Domains."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "mailgunAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "From field",
+      "labelEquals": "From",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "From field",
+      "value": "sender@example.com",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "To field",
+      "labelEquals": "To",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "To field",
+      "value": "recipient@example.com",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Subject field",
+      "labelEquals": "Subject",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Subject field",
+      "value": "Test Subject",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Message field",
+      "labelEquals": "Message",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "enter",
+      "target": "Message field",
+      "value": "Test message body.",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

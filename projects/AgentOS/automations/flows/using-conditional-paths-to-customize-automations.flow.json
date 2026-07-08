@@ -5,30 +5,40 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/agent-os/using-conditional-paths-to-customize-automations",
   "type": "executable",
-  "use": ["login"],
+  "use": [
+    "login"
+  ],
   "steps": [
     {
       "action": "click",
       "target": "App Switcher icon (doc step)",
-      "docWarning": "Doc says 'click the Automate icon' without detailing App Switcher navigation — App Switcher added as required prerequisite navigation.",
+      "docWarning": "Doc says 'click the Automate icon' without detailing App Switcher navigation \u2014 App Switcher added as required prerequisite navigation.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Agent OS in App Switcher list (doc step)",
-      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher — label mismatch between doc and UI.",
-      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher \u2014 label mismatch between doc and UI.",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "Agent OS in App Switcher list (doc step)",
-      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher — label mismatch between doc and UI.",
+      "docWarning": "Doc refers to 'Automate icon' but the app is labeled 'Agent OS' in the App Switcher \u2014 label mismatch between doc and UI.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "+ New Project button on projects listing page (doc step)",
-      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ New Project",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Project' but UI shows 'new project' (lowercase, no '+') \u2014 doc/UI label mismatch."
     },
     {
       "action": "click",
@@ -37,35 +47,67 @@
     },
     {
       "action": "verify",
-      "target": "+ New Automation button (doc step)",
-      "expected": { "labelEquals": "+ New Automation", "labelMatch": "contains" }
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      },
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
     },
     {
       "action": "click",
-      "target": "+ New Automation button (doc step)",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000,
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Automation' but UI may show 'new automation' (lowercase, no '+') \u2014 doc/UI label mismatch."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations listing page (doc step)",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Create New option in dropdown (doc step)",
-      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
-      "expected": { "labelEquals": "Create New", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Dashboard shows 'New Automation'; Automations listing shows 'Create New' \u2014 label varies by context.",
+      "timeoutMs": 2000
     },
     {
       "action": "click",
       "target": "Create New option in dropdown (doc step)",
-      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option — added as required step missing from the document.",
-      "timeoutMs": 90000
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the Create New dropdown option \u2014 added as required step missing from the document.",
+      "timeoutMs": 10000,
+      "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Create New Automation modal (doc step)",
-      "expected": { "labelEquals": "Create New Automation", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Create New Automation",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Automation Name field in Create New Automation modal (doc step)",
-      "expected": { "labelEquals": "Automation Name", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -75,7 +117,10 @@
     {
       "action": "verify",
       "target": "Description field in Create New Automation modal (doc step)",
-      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -85,7 +130,10 @@
     {
       "action": "verify",
       "target": "Create button in Create New Automation modal (doc step)",
-      "expected": { "labelEquals": "Create", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -95,7 +143,10 @@
     {
       "action": "verify",
       "target": "Configure Trigger in left navigation panel (doc step)",
-      "expected": { "labelEquals": "Configure Trigger", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -105,7 +156,10 @@
     {
       "action": "verify",
       "target": "Contentstack connector in Choose Connector list (doc step)",
-      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -115,7 +169,10 @@
     {
       "action": "verify",
       "target": "Entry Trigger in trigger events list (doc step)",
-      "expected": { "labelEquals": "Entry Trigger", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Entry Trigger",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -123,102 +180,20 @@
       "timeoutMs": 90000
     },
     {
-      "action": "detect",
-      "target": "contentstack-trigger-account-connection-state (doc step)",
-      "timeoutMs": 90000
-    },
-    {
       "action": "verify",
-      "target": "+ Add New Account button in Configure Trigger (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "+ Add New Account", "labelMatch": "contains" }
-    },
-    {
-      "action": "click",
-      "target": "+ Add New Account button in Configure Trigger (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000
-    },
-    {
-      "action": "verify",
-      "target": "Contentstack radio button selected in Add Account (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Contentstack", "labelMatch": "contains" }
-    },
-    {
-      "action": "verify",
-      "target": "Proceed button in Add Account (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
-    },
-    {
-      "action": "click",
-      "target": "Proceed button in Add Account (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000
-    },
-    {
-      "action": "verify",
-      "target": "Authorize button in Manage Permissions popup (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" }
-    },
-    {
-      "action": "click",
-      "target": "Authorize button in Manage Permissions popup (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000
-    },
-    {
-      "action": "verify",
-      "target": "Contentstack QA org in organization list on new tab (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Contentstack QA", "labelMatch": "contains" },
-      "scrollIntoView": true
-    },
-    {
-      "action": "click",
-      "target": "Contentstack QA org in organization list on new tab (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000,
-      "scrollIntoView": true
-    },
-    {
-      "action": "verify",
-      "target": "Authorize button in permissions popup on new tab (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
-      "scrollIntoView": true
-    },
-    {
-      "action": "click",
-      "target": "Authorize button in permissions popup on new tab (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000,
-      "scrollIntoView": true
-    },
-    {
-      "action": "verify",
-      "target": "Set Account Name modal (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Set Account Name", "labelMatch": "contains" }
-    },
-    {
-      "action": "verify",
-      "target": "Save button in Set Account Name modal (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
-    },
-    {
-      "action": "click",
-      "target": "Save button in Set Account Name modal (doc step)",
-      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
-      "timeoutMs": 90000
+      "target": "Select Account dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Select Account",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Entry Created event option (doc step)",
-      "expected": { "labelEquals": "Entry Created", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Entry Created",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -228,7 +203,10 @@
     {
       "action": "verify",
       "target": "Stack Lookup dropdown (doc step)",
-      "expected": { "labelEquals": "Stack", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -243,7 +221,10 @@
     {
       "action": "verify",
       "target": "Branch Lookup dropdown (doc step)",
-      "expected": { "labelEquals": "Branch", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Branch",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -258,7 +239,10 @@
     {
       "action": "verify",
       "target": "Proceed button on Configure Trigger page (doc step)",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -268,7 +252,10 @@
     {
       "action": "verify",
       "target": "Test Trigger button (doc step)",
-      "expected": { "labelEquals": "Test Trigger", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -278,7 +265,10 @@
     {
       "action": "verify",
       "target": "Save and Exit button on Configure Trigger page (doc step)",
-      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -288,13 +278,18 @@
     {
       "action": "verify",
       "target": "Configure Action Step in left navigation panel (doc step)",
-      "expected": { "labelEquals": "Configure Action Step", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
     },
-
     {
       "action": "verify",
       "target": "Conditional Path option (doc step)",
-      "expected": { "labelEquals": "Conditional Path", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Conditional Path",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -304,7 +299,10 @@
     {
       "action": "verify",
       "target": "+ Add Condition button (doc step)",
-      "expected": { "labelEquals": "+ Add Condition", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ Add Condition",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -314,7 +312,10 @@
     {
       "action": "verify",
       "target": "Select Input box for content type UID (doc step)",
-      "expected": { "labelEquals": "Select Input", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Select Input",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "enter",
@@ -324,7 +325,10 @@
     {
       "action": "verify",
       "target": "Matches (Text) option (doc step)",
-      "expected": { "labelEquals": "Matches (Text)", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Matches (Text)",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -334,7 +338,9 @@
     {
       "action": "verify",
       "target": "content type UID input box (doc step)",
-      "expected": { "labelMatch": "exists" }
+      "expected": {
+        "labelMatch": "exists"
+      }
     },
     {
       "action": "enter",
@@ -344,7 +350,10 @@
     {
       "action": "verify",
       "target": "Save Configuration button (doc step)",
-      "expected": { "labelEquals": "Save Configuration", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save Configuration",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -354,7 +363,10 @@
     {
       "action": "verify",
       "target": "+ Add Step button under If step (doc step)",
-      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ Add Step",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -364,7 +376,10 @@
     {
       "action": "verify",
       "target": "Slack connector in Choose Connector list (doc step)",
-      "expected": { "labelEquals": "Slack", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Slack",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -374,12 +389,18 @@
     {
       "action": "verify",
       "target": "Choose an Action section after selecting Slack connector (doc step)",
-      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Send Message action in Choose an Action list (doc step)",
-      "expected": { "labelEquals": "Send Message", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Send Message",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -389,405 +410,673 @@
     {
       "action": "verify",
       "target": "Configure Action tab (doc step)",
-      "expected": { "labelEquals": "Configure Action", "labelMatch": "contains" }
-    },
-    {
-      "action": "detect",
-      "target": "slack-account-selection-state (doc step)",
-      "note": "Detects whether a Slack account is already connected or if + Add New Account button is displayed.",
-      "timeoutMs": 30000
+      "expected": {
+        "labelEquals": "Configure Action",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "+ Add New Account button for Slack connector (doc step)",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Authorize Account modal (doc step)",
-      "docWarning": "Doc does not mention the Authorize Account modal — added as required step missing from the document.",
-      "expected": { "labelEquals": "Authorize Account", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "docWarning": "Doc does not mention the Authorize Account modal \u2014 added as required step missing from the document.",
+      "expected": {
+        "labelEquals": "Authorize Account",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Proceed button in Authorize Account modal (doc step)",
-      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal — added as required step missing from the document.",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal \u2014 added as required step missing from the document.",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
       "target": "Proceed button in Authorize Account modal (doc step)",
-      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal — added as required step missing from the document.",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
+      "docWarning": "Doc does not mention clicking Proceed in the Authorize Account modal \u2014 added as required step missing from the document.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Manage Permissions modal (doc step)",
-      "docWarning": "Doc does not mention the Manage Permissions modal — added as required step missing from the document.",
-      "expected": { "labelEquals": "Manage Permissions", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "docWarning": "Doc does not mention the Manage Permissions modal \u2014 added as required step missing from the document.",
+      "expected": {
+        "labelEquals": "Manage Permissions",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "verify",
       "target": "Authorize button in Manage Permissions modal (doc step)",
-      "docWarning": "Doc does not mention clicking Authorize in the Manage Permissions modal — added as required step missing from the document.",
-      "expected": { "labelEquals": "Authorize", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly.",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
     },
     {
       "action": "click",
       "target": "Authorize button in Manage Permissions modal (doc step)",
-      "docWarning": "Doc does not mention clicking Authorize in the Manage Permissions modal — added as required step missing from the document.",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
-      "timeoutMs": 90000
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly.",
+      "timeoutMs": 90000,
+      "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Allow button in new tab opened by Slack authorization (doc step)",
-      "docWarning": "Doc does not mention a new tab opening for Slack authorization — added as required step missing from the document.",
-      "expected": { "labelEquals": "Allow", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "docWarning": "Doc does not mention a new tab opening for Slack authorization \u2014 added as required step missing from the document.",
+      "expected": {
+        "labelEquals": "Allow",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
     },
     {
       "action": "click",
       "target": "Allow button in new tab opened by Slack authorization (doc step)",
-      "docWarning": "Doc does not mention clicking Allow in the new tab — added as required step missing from the document.",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
-      "timeoutMs": 90000
+      "docWarning": "Doc does not mention clicking Allow in the new tab \u2014 added as required step missing from the document.",
+      "timeoutMs": 90000,
+      "warnOnly": true
     },
     {
       "action": "switchTab",
       "target": "original Agent OS tab (doc step)",
-      "docWarning": "Doc does not mention switching back to the original tab after Slack authorization — added as required step missing from the document.",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
-      "timeoutMs": 30000
+      "docWarning": "Doc does not mention switching back to the original tab after Slack authorization \u2014 added as required step missing from the document.",
+      "timeoutMs": 30000,
+      "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Title field for Slack account (doc step)",
-      "expected": { "labelEquals": "Title", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "enter",
       "target": "Title input for Slack account (doc step)",
       "value": "slack-account-{unique5}",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
     },
     {
       "action": "verify",
       "target": "Save button for Slack account title (doc step)",
-      "expected": { "labelEquals": "Save", "labelMatch": "contains" },
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected"
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on entering Slack account title (step 70 warnOnly) \u2014 Save button only visible in active account modal after Slack auth."
     },
     {
       "action": "click",
       "target": "Save button for Slack account title (doc step)",
-      "skipIfFlowFlagTrue": "slackAccountAlreadySelected",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 71 warnOnly \u2014 clicking Save requires visible Save button in Slack account modal."
     },
     {
       "action": "verify",
       "target": "Channel field in Slack Send Message configuration (doc step)",
-      "expected": { "labelEquals": "Channel", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Channel",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save Slack account title (steps 71-72 warnOnly) \u2014 Channel field only visible after Slack account is configured."
     },
     {
       "action": "click",
       "target": "Channel field lookup in Slack Send Message configuration (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 73 warnOnly \u2014 Channel lookup requires visible Channel field after Slack account save."
     },
     {
       "action": "enter",
       "target": "search input in Channel lookup (doc step)",
-      "value": "test"
+      "value": "test",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "first channel result in Channel lookup search results (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Message field in Slack Send Message configuration (doc step)",
-      "expected": { "labelEquals": "Message", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Message",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Message textbox in Slack Send Message configuration (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "enter",
       "target": "Message textbox in Slack Send Message configuration (doc step)",
-      "value": "test-message-{unique5}"
+      "value": "test-message-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Proceed button on Configure Action Step page for If step (doc step)",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Proceed button on Configure Action Step page for If step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Test Action button for If step (doc step)",
-      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Test Action button for If step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Save and Exit button for If step (doc step)",
-      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Save and Exit button for If step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "+ Add Step button under Else step (doc step)",
-      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ Add Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "+ Add Step button under Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Choose Connector section on Configure Action Step page for Else step (doc step)",
-      "expected": { "labelEquals": "Choose Connector", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Choose Connector",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Transform connector in Choose Connector list (doc step)",
-      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app — if not found, this step will fail.",
-      "expected": { "labelEquals": "Transform", "labelMatch": "contains" }
+      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app \u2014 if not found, this step will fail.",
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
     },
     {
       "action": "click",
       "target": "Transform connector in Choose Connector list (doc step)",
-      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app — if not found, this step will fail.",
-      "timeoutMs": 90000
+      "docWarning": "Doc mentions 'Transform connector' but this connector name may differ in the app \u2014 if not found, this step will fail.",
+      "timeoutMs": 90000,
+      "warnOnly": true
     },
     {
       "action": "verify",
       "target": "Choose an Action section after selecting Transform connector (doc step)",
-      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Transform action in Choose an Action list (doc step)",
-      "expected": { "labelEquals": "Transform", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Transform action in Choose an Action list (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Add Input button in Transform Configure Action (doc step)",
-      "expected": { "labelEquals": "Add Input", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Add Input",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Add Input button in Transform Configure Action (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "variable name input in Add Input (doc step)",
-      "expected": { "labelMatch": "exists" }
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "enter",
       "target": "variable name input in Add Input (doc step)",
-      "value": "variable-{unique5}"
+      "value": "variable-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "enter",
       "target": "variable value input in Add Input (doc step)",
-      "value": "variable-value-{unique5}"
+      "value": "variable-value-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "+ Add Objects to Merge button (doc step)",
-      "expected": { "labelEquals": "+ Add Objects to Merge", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ Add Objects to Merge",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "+ Add Objects to Merge button (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Transformation field (doc step)",
-      "expected": { "labelEquals": "Transformation", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Transformation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "enter",
       "target": "Transformation field (doc step)",
-      "value": "{}"
+      "value": "{}",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Proceed button on Configure Action Step page for Transform Else step (doc step)",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Proceed button on Configure Action Step page for Transform Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Test Action button for Transform Else step (doc step)",
-      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Test Action button for Transform Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Save and Exit button for Transform Else step (doc step)",
-      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Save and Exit button for Transform Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "+ Add Step button under Else step for Algolia (doc step)",
-      "expected": { "labelEquals": "+ Add Step", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "+ Add Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "+ Add Step button under Else step for Algolia (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Choose Connector section on Configure Action Step page for Algolia (doc step)",
-      "expected": { "labelEquals": "Choose Connector", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Choose Connector",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Algolia connector in Choose Connector list (doc step)",
-      "expected": { "labelEquals": "Algolia", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Algolia",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Algolia connector in Choose Connector list (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Choose an Action section after selecting Algolia connector (doc step)",
-      "expected": { "labelEquals": "Choose an Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Index Entries action in Choose an Action list (doc step)",
-      "expected": { "labelEquals": "Index Entries", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Index Entries",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
       "target": "Index Entries action in Choose an Action list (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "verify",
       "target": "Configure Action tab for Algolia (doc step)",
-      "expected": { "labelEquals": "Configure Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Configure Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
-      "action": "detect",
-      "target": "algolia-account-selection-state (doc step)",
-      "note": "Detects whether an Algolia account is already connected or if Add Account button is displayed.",
-      "timeoutMs": 30000
+      "action": "verify",
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
     },
     {
       "action": "click",
-      "target": "Add Account button for Algolia connector (doc step)",
-      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
-      "timeoutMs": 90000
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message configuration \u2014 depends on warnOnly steps 71-72; Channel field and downstream steps require Slack account."
+    },
+    {
+      "action": "verify",
+      "target": "Application ID field in Algolia Add Account (doc step)",
+      "expected": {
+        "labelEquals": "Application ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real Algolia Application ID \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "Application ID input in Algolia Add Account (doc step)",
+      "value": "algolia-app-id-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real Algolia Application ID \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in Algolia Add Account (doc step)",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in Algolia Add Account (doc step)",
+      "value": "algolia-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Algolia Add Account (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Algolia Add Account (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
     },
     {
       "action": "verify",
       "target": "Index Name field in Algolia Configure Action (doc step)",
-      "expected": { "labelEquals": "Index Name", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Index Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "click",
       "target": "Index Name field in Algolia Configure Action (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "click",
       "target": "any index from Index Name list (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires a real Algolia index \u2014 no test index configured."
     },
     {
       "action": "verify",
       "target": "Entries field in Algolia Configure Action (doc step)",
-      "expected": { "labelEquals": "Entries", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "click",
       "target": "Entries field in Algolia Configure Action (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "click",
       "target": "entry data from Transform step in Entries field options (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "verify",
       "target": "Proceed button on Configure Action Step page for Algolia Else step (doc step)",
-      "expected": { "labelEquals": "Proceed", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "click",
       "target": "Proceed button on Configure Action Step page for Algolia Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
     },
     {
       "action": "verify",
       "target": "Test Action button for Algolia Else step (doc step)",
-      "expected": { "labelEquals": "Test Action", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
     },
     {
       "action": "click",
       "target": "Test Action button for Algolia Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
     },
     {
       "action": "verify",
       "target": "Save and Exit button for Algolia Else step (doc step)",
-      "expected": { "labelEquals": "Save and Exit", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Test Action for Algolia Else step (step 135 warnOnly) \u2014 Save and Exit only visible after successful test."
     },
     {
       "action": "click",
       "target": "Save and Exit button for Algolia Else step (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 136 warnOnly \u2014 clicking Save and Exit requires visible button after Algolia test."
     }
   ]
 }

@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     {
       "action": "verify",

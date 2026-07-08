@@ -1,0 +1,337 @@
+{
+  "id": "cloudinary-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/cloudinary-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field",
+      "value": "Cloudinary-{unique5}",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel",
+      "labelEquals": "Configure Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Cloudinary connector in Configure Trigger",
+      "labelEquals": "Cloudinary",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Cloudinary connector in Configure Trigger",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab",
+      "labelEquals": "Choose Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Asset Trigger option in Choose Trigger tab",
+      "labelEquals": "Asset Trigger",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Asset Trigger option in Choose Trigger tab",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "cloudinary-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Cloudinary account in account list",
+      "onlyIfFlowFlagTrue": "cloudinaryAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Authorize pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Cloud Name field in Authorize pop-up",
+      "value": "{{CLOUDINARY_CLOUD_NAME}}",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Cloudinary Cloud Name credentials are required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "enter",
+      "target": "API Key field in Authorize pop-up",
+      "value": "{{CLOUDINARY_API_KEY}}",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Cloudinary API Key credentials are required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "enter",
+      "target": "API Secret field in Authorize pop-up",
+      "value": "{{CLOUDINARY_API_SECRET}}",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Cloudinary API Secret credentials are required for this step; the test will warn if the value is not configured."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Authorize pop-up window",
+      "labelEquals": "Authorize",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Authorize pop-up window",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "cloudinaryAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "trigger event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Asset uploaded option in trigger event dropdown",
+      "labelEquals": "Asset uploaded",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Asset renamed (public ID changed) option in trigger event dropdown",
+      "labelEquals": "Asset renamed (public ID changed)",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Asset deleted option in trigger event dropdown",
+      "labelEquals": "Asset deleted",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Tags modified option in trigger event dropdown",
+      "labelEquals": "Tags modified",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Context modified option in trigger event dropdown",
+      "labelEquals": "Context modified",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Metadata modified option in trigger event dropdown",
+      "labelEquals": "Metadata modified",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Display name changed option in trigger event dropdown",
+      "labelEquals": "Display name changed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Folder created option in trigger event dropdown",
+      "labelEquals": "Folder created",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Asset moved between folders option in trigger event dropdown",
+      "labelEquals": "Asset moved between folders",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Asset folder moved/renamed option in trigger event dropdown",
+      "labelEquals": "Asset folder moved/renamed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Folder deleted option in trigger event dropdown",
+      "labelEquals": "Folder deleted",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Access control changed option in trigger event dropdown",
+      "labelEquals": "Access control changed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "All option in trigger event dropdown",
+      "labelEquals": "All",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Asset uploaded option in trigger event dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button",
+      "labelEquals": "Test Trigger",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

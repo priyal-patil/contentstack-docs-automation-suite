@@ -1,0 +1,343 @@
+{
+  "id": "bigcommerce-trigger",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/bigcommerce-trigger",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "docWarning": "Doc does not describe navigation — App Switcher → Agent OS added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "docWarning": "Doc does not mention selecting Agent OS from App Switcher — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "docWarning": "Doc does not specify which project to open — clicking any existing project as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "BigCommerce-trigger-{unique5}",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document."
+    },
+    {
+      "action": "verify",
+      "target": "Create button in New Automation (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in New Automation (doc step)",
+      "docWarning": "Doc does not describe creating a new automation — added as required prerequisite missing from the document.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section on Configure Trigger page (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "BigCommerce connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "BigCommerce",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "BigCommerce connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Choose Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "BigCommerce trigger under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "BigCommerce",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "BigCommerce trigger under Choose Trigger tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "detect",
+      "target": "bigcommerce-trigger-account-selection-state (doc step)",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in BigCommerce account list (doc step)",
+      "onlyIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button in Configure Trigger (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize pop-up window (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "expected": {
+        "labelMatch": "exists"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Store Hash field in Authorize pop-up (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Store Hash",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Store Hash input in Authorize pop-up (doc step)",
+      "value": "test-store-hash-{unique5}",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Store Hash requires a real BigCommerce account — test value used; authorization will not succeed."
+    },
+    {
+      "action": "verify",
+      "target": "Access Token field in Authorize pop-up (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Access Token",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Access Token input in Authorize pop-up (doc step)",
+      "value": "test-access-token-{unique5}",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "warnOnly": true,
+      "docWarning": "Access Token requires a real BigCommerce account — test value used; authorization will not succeed."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Authorize BigCommerce pop-up (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Authorize BigCommerce pop-up (doc step)",
+      "skipIfFlowFlagTrue": "bigcommerceAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Authorization requires valid BigCommerce credentials — will fail with test values."
+    },
+    {
+      "action": "verify",
+      "target": "Select an Event field (doc step)",
+      "expected": {
+        "labelEquals": "Select an Event",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "Select an Event dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "any event option in Select an Event dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Custom Header button (doc step)",
+      "expected": {
+        "labelEquals": "+ Add Custom Header",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Configure Trigger (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button in Configure Trigger (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful BigCommerce authorization."
+    }
+  ]
+}

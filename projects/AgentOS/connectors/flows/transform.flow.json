@@ -1,0 +1,1902 @@
+{
+  "id": "transform",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/transform",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown",
+      "labelEquals": "Create New",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true,
+      "docWarning": "Empty-state Automations listing opens modal directly — no dropdown shown. warnOnly since dropdown only appears in non-empty state."
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "Transform-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Aggregate Data action option in Choose an Action",
+      "labelEquals": "Aggregate Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Date and Time Transformer action option in Choose an Action",
+      "labelEquals": "Date and Time Transformer",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Filter Data action option in Choose an Action",
+      "labelEquals": "Filter Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "JSON Stringify action option in Choose an Action",
+      "labelEquals": "JSON Stringify",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Merge Data action option in Choose an Action",
+      "labelEquals": "Merge Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Modify Object Fields action option in Choose an Action",
+      "labelEquals": "Modify Object Fields",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Remove Duplicate Data action option in Choose an Action",
+      "labelEquals": "Remove Duplicate Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Sort Data action option in Choose an Action",
+      "labelEquals": "Sort Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform action option in Choose an Action",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Template action option in Choose an Action",
+      "labelEquals": "Template",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Aggregate Data action option in Choose an Action",
+      "labelEquals": "Aggregate Data",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "[]",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Field Name field",
+      "labelEquals": "Field Name",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Field Name field",
+      "value": "price",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Statistics dropdown field",
+      "labelEquals": "Statistics",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Statistics dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any option in the Statistics dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Null Value Handling dropdown after enabling Show Optional Fields",
+      "labelEquals": "Null Value Handling",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Null Value Handling dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Exclude option in the Null Value Handling dropdown",
+      "labelEquals": "Exclude",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Zero option in the Null Value Handling dropdown",
+      "labelEquals": "Zero",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Exclude option in the Null Value Handling dropdown",
+      "labelEquals": "Exclude",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Date and Time Transformer action option in Choose an Action",
+      "labelEquals": "Date and Time Transformer",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Date and Time Transformer action option in Choose an Action",
+      "labelEquals": "Date and Time Transformer",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "operation type dropdown in Date and Time Transformer",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "operation type dropdown in Date and Time Transformer",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Duration to Date option in the operation type dropdown",
+      "labelEquals": "Add Duration to Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Extract Part of Date option in the operation type dropdown",
+      "labelEquals": "Extract Part of Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Format Date option in the operation type dropdown",
+      "labelEquals": "Format Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Get Current Date option in the operation type dropdown",
+      "labelEquals": "Get Current Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Calculate Time Between Dates option in the operation type dropdown",
+      "labelEquals": "Calculate Time Between Dates",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Subtract from Date option in the operation type dropdown",
+      "labelEquals": "Subtract from Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Add Duration to Date option in the operation type dropdown",
+      "labelEquals": "Add Duration to Date",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Input Date field",
+      "labelEquals": "Input Date",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Date field",
+      "value": "2024-01-01T00:00:00Z",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Select Unit dropdown field",
+      "labelEquals": "Select Unit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Select Unit dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Minute option in the Select Unit dropdown",
+      "labelEquals": "Minute",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Hour option in the Select Unit dropdown",
+      "labelEquals": "Hour",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Day option in the Select Unit dropdown",
+      "labelEquals": "Day",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Week option in the Select Unit dropdown",
+      "labelEquals": "Week",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Month option in the Select Unit dropdown",
+      "labelEquals": "Month",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Year option in the Select Unit dropdown",
+      "labelEquals": "Year",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Day option in the Select Unit dropdown",
+      "labelEquals": "Day",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add Value field",
+      "labelEquals": "Add Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Add Value field",
+      "value": "1",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Select Output Format dropdown field",
+      "labelEquals": "Select Output Format",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Select Output Format dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any option in the Select Output Format dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Filter Data action option in Choose an Action",
+      "labelEquals": "Filter Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Filter Data action option in Choose an Action",
+      "labelEquals": "Filter Data",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "[]",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Filter Conditions section",
+      "labelEquals": "Filter Conditions",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Select Input field in Filter Conditions",
+      "labelEquals": "Select Input",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Operator dropdown in Filter Conditions",
+      "labelEquals": "Operator",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Value field in Filter Conditions",
+      "labelEquals": "Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "JSON Stringify action option in Choose an Action",
+      "labelEquals": "JSON Stringify",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "JSON Stringify action option in Choose an Action",
+      "labelEquals": "JSON Stringify",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "{}",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Indentation Spaces dropdown after enabling Show Optional Fields",
+      "labelEquals": "Select Indentation Spaces",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Merge Data action option in Choose an Action",
+      "labelEquals": "Merge Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Merge Data action option in Choose an Action",
+      "labelEquals": "Merge Data",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Name field",
+      "labelEquals": "Input Name",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Name field",
+      "value": "input1",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "[]",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Merge Method dropdown field",
+      "labelEquals": "Merge Method",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Merge Method dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Merge option in the Merge Method dropdown",
+      "labelEquals": "Merge",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Append option in the Merge Method dropdown",
+      "labelEquals": "Append",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Merge option in the Merge Method dropdown",
+      "labelEquals": "Merge",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Select Merge Option dropdown field",
+      "labelEquals": "Select Merge Option",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Select Merge Option dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Matching Fields option in the Select Merge Option dropdown",
+      "labelEquals": "Matching Fields",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Position option in the Select Merge Option dropdown",
+      "labelEquals": "Position",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "All Possible Combinations option in the Select Merge Option dropdown",
+      "labelEquals": "All Possible Combinations",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Matching Fields option in the Select Merge Option dropdown",
+      "labelEquals": "Matching Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Field Name field in Merge Data",
+      "labelEquals": "Field Name",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Match Options dropdown field",
+      "labelEquals": "Match Options",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Modify Object Fields action option in Choose an Action",
+      "labelEquals": "Modify Object Fields",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Modify Object Fields action option in Choose an Action",
+      "labelEquals": "Modify Object Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "{}",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Select Operations dropdown field",
+      "labelEquals": "Select Operations",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Select Operations dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Add New Field option in the Select Operations dropdown",
+      "labelEquals": "Add New Field",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Remove Field option in the Select Operations dropdown",
+      "labelEquals": "Remove Field",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Update Field option in the Select Operations dropdown",
+      "labelEquals": "Update Field",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Add New Field option in the Select Operations dropdown",
+      "labelEquals": "Add New Field",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Field Key field",
+      "labelEquals": "Field Key",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Field Value field",
+      "labelEquals": "Field Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Target Path field",
+      "labelEquals": "Target Path",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Remove Duplicate Data action option in Choose an Action",
+      "labelEquals": "Remove Duplicate Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Remove Duplicate Data action option in Choose an Action",
+      "labelEquals": "Remove Duplicate Data",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "[]",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Key/Nested Path field",
+      "labelEquals": "Key/Nested Path",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Key/Nested Path field",
+      "value": "id",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Case-sensitive comparison checkbox after enabling Show Optional Fields",
+      "labelEquals": "Case-sensitive comparison",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Sort Data action option in Choose an Action",
+      "labelEquals": "Sort Data",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Sort Data action option in Choose an Action",
+      "labelEquals": "Sort Data",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field",
+      "labelEquals": "Input Value",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Input Value field",
+      "value": "[]",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Field Name field",
+      "labelEquals": "Field Name",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Field Name field",
+      "value": "name",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Select Sort Direction dropdown field",
+      "labelEquals": "Select Sort Direction",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Select Sort Direction dropdown",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Ascending option in the Select Sort Direction dropdown",
+      "labelEquals": "Ascending",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Descending option in the Select Sort Direction dropdown",
+      "labelEquals": "Descending",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Ascending option in the Select Sort Direction dropdown",
+      "labelEquals": "Ascending",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Show Optional Fields toggle button",
+      "labelEquals": "Show Optional Fields",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Enable case-sensitive sorting checkbox after enabling Show Optional Fields",
+      "labelEquals": "Enable case-sensitive sorting",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Transform action option in Choose an Action",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform action option in Choose an Action",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Transformation field",
+      "labelEquals": "Transformation",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Transformation field",
+      "value": "{}",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Add Input button",
+      "labelEquals": "Add Input",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card at the bottom of the automation",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Action Step card at the bottom of the automation",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in the Choose Connector list",
+      "labelEquals": "Transform",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Template action option in Choose an Action",
+      "labelEquals": "Template",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Template action option in Choose an Action",
+      "labelEquals": "Template",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Template field",
+      "labelEquals": "Template",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "enter",
+      "target": "Template field",
+      "value": "<p>{{value}}</p>",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Add Input button",
+      "labelEquals": "Add Input",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true,
+      "timeoutMs": 5000
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    }
+  ]
+}

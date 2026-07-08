@@ -110,6 +110,8 @@
     {
       "action": "verify",
       "target": "Save Changes button (doc step)",
+      "docWarning": "Doc says 'Save Changes' but UI shows 'save' (lowercase, no 'Changes') — doc/UI label mismatch.",
+      "warnOnly": true,
       "expected": { "labelEquals": "Save Changes", "labelMatch": "contains" }
     },
     {

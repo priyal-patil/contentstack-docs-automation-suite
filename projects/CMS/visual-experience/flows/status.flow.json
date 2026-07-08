@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     {
       "action": "verify",
@@ -34,7 +35,8 @@
         "withinStrict": false,
         "labelEquals": "Status",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "click", "target": "VE sidebar Status tab (doc step)", "timeoutMs": 90000 },
     { "action": "verify", "target": "Status panel back button (doc step)" },

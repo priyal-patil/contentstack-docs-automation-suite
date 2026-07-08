@@ -1,0 +1,841 @@
+{
+  "id": "create-an-algolia-object-using-entry-uid",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/create-an-algolia-object-using-entry-uid",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "expected": {
+        "labelEquals": "App Switcher",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on Agent OS projects page (doc step)",
+      "expected": {
+        "labelEquals": "New Project",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Project' but button DOM text may be 'New Project' \u2014 '+' is CSS-generated."
+    },
+    {
+      "action": "click",
+      "target": "existing project on Agent OS projects page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      },
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000,
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations page (doc step)",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Automation' but UI button shows 'New Automation' — '+' may be a CSS icon prefix."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in + New Automation dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Dashboard shows 'New Automation'; Automations listing shows 'Create New' \u2014 label varies by context.",
+      "timeoutMs": 2000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in + New Automation dropdown (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true,
+      "docWarning": "Empty-state Automations listing opens modal directly via addNewAutomation button \u2014 no dropdown shown. warnOnly since dropdown only appears in non-empty state or from Dashboard."
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create New Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "algolia-object-entry-uid-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger step in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger option in Choose Trigger section (doc step)",
+      "docWarning": "Doc does not mention selecting 'Entry Trigger' from Choose Trigger section \u2014 this step may be missing from the doc.",
+      "expected": {
+        "labelEquals": "Entry Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Trigger option in Choose Trigger section (doc step)",
+      "docWarning": "Doc does not mention selecting 'Entry Trigger' from Choose Trigger section \u2014 this step may be missing from the doc.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "contentstack-trigger-account-connection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Contentstack trigger account list (doc step)",
+      "onlyIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Contentstack trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Contentstack trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in Add Account modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Contentstack OAuth",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Contentstack QA",
+        "labelMatch": "contains"
+      },
+      "timeoutMs": 60000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after OAuth authorization for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Set Account Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Set Account Name modal appearing (step 36 warnOnly) \u2014 modal only visible after successful OAuth with real Contentstack credentials."
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal for trigger (doc step)",
+      "skipIfFlowFlagTrue": "contentstackTriggerAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on Set Account Name modal (step 36-37 warnOnly) \u2014 Save button not accessible without valid modal."
+    },
+    {
+      "action": "verify",
+      "target": "Events field in Contentstack trigger configuration (doc step)",
+      "expected": {
+        "labelEquals": "Events",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on closing Set Account Name modal (step 37-38 warnOnly) \u2014 Events field only visible after account is set."
+    },
+    {
+      "action": "click",
+      "target": "Events field in Contentstack trigger configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "All option in trigger events list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack field in Contentstack trigger configuration (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stack field in Contentstack trigger configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack option from Stack dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button for Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button for Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Transform (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Transform (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Transform (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Transform action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Transform action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Input button in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Add Input",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Input button in Transform Configure Action (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Input Name field in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Input Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Input Name input in Transform Configure Action (doc step)",
+      "value": "uid"
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Input Value",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Input Value input in Transform Configure Action (doc step)",
+      "value": "1.body.data.entry.uid"
+    },
+    {
+      "action": "verify",
+      "target": "Transformation field in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Transformation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Transformation input in Transform Configure Action (doc step)",
+      "value": "{objectId: {uid}}"
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Transform Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Transform Configure Action page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Transform (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Transform (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Algolia (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Algolia (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Algolia (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Algolia (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Algolia (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Algolia",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Algolia connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Algolia (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Algolia (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Index Entries action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Index Entries",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Index Entries action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action tab for Algolia Index Entries (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "detect",
+      "target": "algolia-account-selection-state (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "default account displayed in Algolia account list (doc step)",
+      "onlyIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Algolia connector (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Application ID field in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Application ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real Algolia Application ID \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "Application ID input in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "value": "algolia-app-id-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real Algolia Application ID \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "value": "algolia-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Algolia Add Account modal (doc step)",
+      "skipIfFlowFlagTrue": "algoliaAccountAlreadySelected",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Index Name field in Algolia Index Entries Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Index Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Index Name field in Algolia Index Entries Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any index from Index Name list in Algolia Index Entries (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires a real Algolia index \u2014 no test index configured."
+    },
+    {
+      "action": "verify",
+      "target": "Entries field in Algolia Index Entries Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Entries field in Algolia Index Entries Configure Action (doc step)",
+      "value": "2.body.data",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Algolia Index Entries Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Algolia Index Entries Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Algolia Index Entries (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Algolia Index Entries (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Algolia Index Entries (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Algolia Index Entries (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Activate Automation toggle (doc step)",
+      "expected": {
+        "labelEquals": "Activate Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Activate Automation toggle (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    }
+  ]
+}

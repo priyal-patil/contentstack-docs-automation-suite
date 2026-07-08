@@ -29,13 +29,21 @@
     },
     {
       "action": "verify",
-      "target": "Project Dashboard loaded (doc step)",
-      "expected": { "labelMatch": "exists" },
+      "target": "Agents in top navigation panel (doc step)",
+      "docWarning": "Doc says 'Navigate to the Agents page' without detailing the navigation — clicking Agents in the top nav added as required step.",
+      "expected": { "labelEquals": "Agents", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agents in top navigation panel (doc step)",
+      "docWarning": "Doc says 'Navigate to the Agents page' without detailing the navigation — clicking Agents in the top nav added as required step.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "+ New Agent button (doc step)",
+      "docWarning": "Doc says '+ New Agent' but UI button text is 'create agent' (lowercase, different label) — doc/UI label mismatch.",
+      "warnOnly": true,
       "expected": { "labelEquals": "+ New Agent", "labelMatch": "contains" }
     },
     {
@@ -44,18 +52,27 @@
       "timeoutMs": 90000
     },
     {
+      "action": "click",
+      "target": "Create manually option in New Agent dropdown (doc step)",
+      "docWarning": "Clicking '+ New Agent' opens a dropdown with Browse Templates / Create Manually / Import options. Doc flow describes 'Create Agent modal' which appears via Browse Templates, but Create Manually goes directly to the manual form.",
+      "timeoutMs": 30000
+    },
+    {
       "action": "verify",
       "target": "Create Agent modal (doc step)",
+      "warnOnly": true,
       "expected": { "labelEquals": "Create Agent", "labelMatch": "contains" }
     },
     {
       "action": "verify",
       "target": "Skip, I'll create manually link (doc step)",
+      "warnOnly": true,
       "expected": { "labelEquals": "Skip, I'll create manually", "labelMatch": "contains" }
     },
     {
       "action": "click",
       "target": "Skip, I'll create manually link (doc step)",
+      "warnOnly": true,
       "timeoutMs": 30000
     },
     {

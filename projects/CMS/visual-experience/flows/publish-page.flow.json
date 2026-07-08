@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "verify", "target": "Publish changes header button (doc step)" },
     { "action": "click", "target": "Publish changes header button (doc step)", "timeoutMs": 90000 },

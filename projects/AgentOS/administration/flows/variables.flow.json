@@ -1,0 +1,126 @@
+{
+  "id": "variables",
+  "project": "AgentOS",
+  "module": "administration",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/variables",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "expected": { "labelEquals": "App Switcher", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "existing project on Agent OS projects page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Project Dashboard nav item (doc step)",
+      "docWarning": "After clicking a project card from the projects list, the browser lands on the Automations page (not the Project Dashboard). Variables settings are under Project Settings which requires navigating to the Project Dashboard first.",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Settings option in top navigation panel (doc step)",
+      "expected": { "labelEquals": "Settings", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Settings option in top navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Variables option in left navigation (doc step)",
+      "expected": { "labelEquals": "Variables", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Variables option in left navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ icon to add a new project variable (doc step)",
+      "expected": { "labelMatch": "exists" }
+    },
+    {
+      "action": "click",
+      "target": "+ icon to add a new project variable (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Variable Type field in add variable pop-up (doc step)",
+      "expected": { "labelEquals": "Variable Type", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Plain Text option in Variable Type dropdown (doc step)",
+      "docWarning": "Doc says 'dropdown' but Variable Type uses radio buttons (Plain Text / Secret), not a dropdown selector.",
+      "expected": { "labelEquals": "Plain Text", "labelMatch": "contains" }
+    },
+    {
+      "action": "verify",
+      "target": "Secret option in Variable Type dropdown (doc step)",
+      "expected": { "labelEquals": "Secret", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Plain Text option in Variable Type dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Key field in add variable pop-up (doc step)",
+      "expected": { "labelEquals": "Key", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Key input in add variable pop-up (doc step)",
+      "value": "var-key-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Value field in add variable pop-up (doc step)",
+      "expected": { "labelEquals": "Value", "labelMatch": "contains" }
+    },
+    {
+      "action": "enter",
+      "target": "Value input in add variable pop-up (doc step)",
+      "value": "var-value-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Save button in add variable pop-up (doc step)",
+      "expected": { "labelEquals": "Save", "labelMatch": "contains" }
+    },
+    {
+      "action": "click",
+      "target": "Save button in add variable pop-up (doc step)",
+      "docWarning": "Save button remains disabled after Playwright fill() — React controlled inputs require synthetic onChange events that fill() does not trigger, keeping form validation in invalid state.",
+      "warnOnly": true,
+      "timeoutMs": 90000
+    }
+
+  ]
+}

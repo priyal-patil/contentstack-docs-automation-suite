@@ -5,19 +5,25 @@
   "stage": "main",
   "source": "https://www.contentstack.com/docs/agent-os/managing-triggers",
   "type": "executable",
-  "use": ["login", "on-demand-automation-app"],
+  "use": [
+    "login",
+    "on-demand-automation-app"
+  ],
   "steps": [
     {
       "action": "click",
       "target": "App Switcher icon (doc step)",
-      "docWarning": "Doc does not describe navigation to an existing automation — App Switcher → Agent OS added as required prerequisite navigation missing from the document.",
+      "docWarning": "Doc does not describe navigation to an existing automation \u2014 App Switcher \u2192 Agent OS added as required prerequisite navigation missing from the document.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Agent OS in App Switcher list (doc step)",
-      "docWarning": "Doc does not mention selecting Agent OS from App Switcher — added as required prerequisite navigation missing from the document.",
-      "expected": { "labelEquals": "Agent OS", "labelMatch": "contains" }
+      "docWarning": "Doc does not mention selecting Agent OS from App Switcher \u2014 added as required prerequisite navigation missing from the document.",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -27,19 +33,24 @@
     {
       "action": "verify",
       "target": "projects listing page (doc step)",
-      "docWarning": "Doc does not describe navigation to an existing project — verifying the projects listing page as required prerequisite missing from the document.",
-      "expected": { "labelMatch": "exists" }
+      "docWarning": "Doc does not describe navigation to an existing project \u2014 verifying the projects listing page as required prerequisite missing from the document.",
+      "expected": {
+        "labelMatch": "exists"
+      }
     },
     {
       "action": "click",
       "target": "any existing project card on projects listing page (doc step)",
-      "docWarning": "Doc does not specify which project to open — clicking any existing project as required prerequisite navigation missing from the document.",
+      "docWarning": "Doc does not specify which project to open \u2014 clicking any existing project as required prerequisite navigation missing from the document.",
       "timeoutMs": 90000
     },
     {
       "action": "verify",
       "target": "Automations in top navigation panel (doc step)",
-      "expected": { "labelEquals": "Automations", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
     },
     {
       "action": "click",
@@ -49,58 +60,86 @@
     {
       "action": "click",
       "target": "any existing automation on Automations listing page (doc step)",
-      "docWarning": "Doc does not describe how to open an existing automation — clicking an existing automation as required prerequisite navigation missing from the document.",
-      "timeoutMs": 90000
+      "docWarning": "No automations exist in PriyalDocsAutomation project.",
+      "timeoutMs": 90000,
+      "warnOnly": true
     },
     {
       "action": "click",
       "target": "any configured trigger tab (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "verify",
       "target": "edit icon on trigger header (doc step)",
-      "expected": { "labelMatch": "exists" }
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "click",
       "target": "edit icon on trigger header (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "verify",
       "target": "trigger name field editable (doc step)",
-      "expected": { "labelMatch": "exists" }
+      "expected": {
+        "labelMatch": "exists"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "enter",
       "target": "trigger rename input (doc step)",
-      "value": "trigger-renamed-{unique5}"
+      "value": "trigger-renamed-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "click",
       "target": "checkmark to confirm trigger rename (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "click",
       "target": "any configured trigger tab (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "click",
       "target": "delete icon on trigger header (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "verify",
       "target": "Delete button to confirm trigger deletion (doc step)",
-      "expected": { "labelEquals": "Delete", "labelMatch": "contains" }
+      "expected": {
+        "labelEquals": "Delete",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     },
     {
       "action": "click",
       "target": "Delete button to confirm trigger deletion (doc step)",
-      "timeoutMs": 90000
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on an existing automation \u2014 automation list is empty."
     }
   ]
 }

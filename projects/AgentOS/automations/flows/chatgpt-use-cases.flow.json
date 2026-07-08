@@ -1,0 +1,1214 @@
+{
+  "id": "chatgpt-use-cases",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/chatgpt-use-cases",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "expected": {
+        "labelEquals": "+ New Project",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Project' but UI shows 'new project' (lowercase, no '+') \u2014 doc/UI label mismatch."
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations tab in top navigation (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Automations tab in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button (doc step)",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Automation' but UI may show 'new automation' (lowercase, no '+') \u2014 doc/UI label mismatch."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Dashboard shows 'New Automation'; Automations listing shows 'Create New' \u2014 label varies by context.",
+      "timeoutMs": 2000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true,
+      "docWarning": "Empty-state Automations listing opens modal directly via addNewAutomation button \u2014 no dropdown shown. warnOnly since dropdown only appears in non-empty state or from Dashboard."
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create New Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "chatgpt-function-calling-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in Create New Automation modal (doc step)",
+      "value": "chatgpt-function-calling-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger section on page (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "HTTP trigger connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "HTTP",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "HTTP trigger connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Method dropdown in HTTP trigger configuration (doc step)",
+      "expected": {
+        "labelEquals": "Method",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Method dropdown in HTTP trigger configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "GET/POST option in Method dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on HTTP trigger configuration page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on HTTP trigger configuration page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button for HTTP trigger (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button for HTTP trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for HTTP trigger (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for HTTP trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Function Calling (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Function Calling (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Function Calling (doc step)",
+      "docWarning": "Doc says 'click the ChatGPT connector' \u2014 if Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in Choose Connector list for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "ChatGPT",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in Choose Connector list for Function Calling (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Function Calling (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Function Calling",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Function Calling action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for ChatGPT Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for ChatGPT Function Calling (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Title field in ChatGPT Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Title input in ChatGPT Authorize modal (doc step)",
+      "value": "chatgpt-account-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in ChatGPT Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in ChatGPT Authorize modal (doc step)",
+      "value": "chatgpt-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Organization ID field in ChatGPT Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "Organization ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Organization ID input in ChatGPT Authorize modal (doc step)",
+      "value": "chatgpt-org-id-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in ChatGPT Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in ChatGPT Authorize modal (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown in Function Calling Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "API Model",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown in Function Calling Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any API model option from API Model dropdown in Function Calling (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Prompt Text button in Function Calling Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "+ Add Prompt Text",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "+ Add Prompt Text button in Function Calling Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Role dropdown in Function Calling Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Role",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Role dropdown in Function Calling Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any role option in Role dropdown for Function Calling (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Input Query field in Function Calling Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Input Query",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Input Query input in Function Calling Configure Action (doc step)",
+      "value": "Translate the following text: {unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Sub Automation button in Function Calling Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "+ Add Sub Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Function Calling Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Function Calling Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Function Calling (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Function Calling (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Function Calling (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Sub Automation (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save and Exit (step 70 warnOnly) \u2014 next Configure Action Step nav only reachable after successful Save and Exit."
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Sub Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 71 warnOnly \u2014 Configure Action Step nav requires successful Save and Exit."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Sub Automation (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Configure Action Step nav for Sub Automation (steps 71-72 warnOnly) \u2014 Action Step option only visible after navigation."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Sub Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 73 warnOnly \u2014 clicking requires visible Action Step option."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Sub Automation (doc step)",
+      "docWarning": "Doc says 'click the Sub Automation connector' \u2014 if Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Sub Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Sub Automation (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Sub Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation dropdown in Sub Automation Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Sub Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation dropdown in Sub Automation Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "any suggested value from Suggested Data Element(s) dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation Template field in Sub Automation Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Sub Automation Template",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation Template field in Sub Automation Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "any suggested value displayed in Sub Automation Template dropdown (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Sub Automation Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Sub Automation Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Sub Automation (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Sub Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Sub Automation (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Sub Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Function Calling Response (doc step)",
+      "docWarning": "Doc says 'click the ChatGPT connector' for Function Calling Response \u2014 if Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "ChatGPT connector in Choose Connector list for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "ChatGPT",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "ChatGPT connector in Choose Connector list for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling Response action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Function Calling Response",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "Function Calling Response action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for ChatGPT Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for ChatGPT Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "Title field in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Title",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "enter",
+      "target": "Title input in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "value": "chatgpt-account-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Sub Automation connector configuration \u2014 depends on warnOnly steps 71-74; entire block depends on ChatGPT Function Calling chain."
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "value": "chatgpt-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Organization ID field in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Organization ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Organization ID input in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "value": "chatgpt-org-id-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in ChatGPT Authorize modal for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "API Model dropdown in Function Calling Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "API Model",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "API Model dropdown in Function Calling Response Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any API model option from API Model dropdown in Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Function Calling Response field in Function Calling Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Function Calling Response",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Function Calling Response field in Function Calling Response Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "previous Function Calling action output in Function Calling Response field (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Sub Automation Response field in Function Calling Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Sub Automation Response",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Sub Automation Response field in Function Calling Response Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "sub automation action output in Sub Automation Response field (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Show Optional Fields toggle in Function Calling Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Show Optional Fields",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Function Calling Response Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Function Calling Response Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Function Calling Response (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Function Calling Response (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Response connector (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save and Exit (step 129 warnOnly) \u2014 Configure Action Step nav for Response only reachable after successful Save and Exit."
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Response connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 130 warnOnly \u2014 Configure Action Step nav requires successful Save and Exit."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Response connector (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Configure Action Step nav for Response (steps 130-131 warnOnly) \u2014 Action Step option only visible after navigation."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Response connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 132 warnOnly \u2014 clicking requires visible Action Step option."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Response connector (doc step)",
+      "docWarning": "Doc says 'click the Response connector' \u2014 if Configure Action Step section heading is not visible, the page may not have loaded correctly.",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Response connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Response",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Response connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Response connector (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Response action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Response",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Response action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Response Status field in Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Response Status",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "enter",
+      "target": "Response Status input in Response Configure Action (doc step)",
+      "value": "200",
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Response Body field in Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Response Body",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Response Body field in Response Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Function Calling Response action output data in Response Body field (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Response Headers field in Response Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Response Headers",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Response Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Response Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Response connector (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Response connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Response connector (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Response connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Response connector configuration \u2014 depends on warnOnly steps 130-133; entire block depends on Function Calling Response chain."
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "id": "salesforce-commerce-cloud",
+  "project": "AgentOS",
+  "module": "connectors",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/salesforce-commerce-cloud",
+  "type": "executable",
+  "use": ["login"],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon in the top navigation bar",
+      "timeoutMs": 90000,
+      "docWarning": "The following prerequisite steps are not described in the document but are required to reach the automation: open App Switcher → navigate to Agent OS → select an existing project → go to Automations → create a new automation (Name + Create) → configure a trigger → open Configure Action Step."
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list",
+      "labelEquals": "Agent OS",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on the projects listing page",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel",
+      "labelEquals": "Automations",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on the Automations listing page",
+      "labelEquals": "+ New Automation",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in the new automation dialog",
+      "labelEquals": "Automation Name",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name field in the new automation dialog",
+      "value": "SalesforceCommerceCloud-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Automation Description field",
+      "labelEquals": "Description",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Create button in the new automation dialog",
+      "labelEquals": "Create",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel",
+      "labelEquals": "Configure Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Action Step card in the automation canvas",
+      "labelEquals": "Action Step",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Choose Connector section heading",
+      "labelEquals": "Choose Connector",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Salesforce Commerce Cloud connector in the Choose Connector list",
+      "labelEquals": "Salesforce Commerce Cloud",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Salesforce Commerce Cloud connector in the Choose Connector list",
+      "labelEquals": "Salesforce Commerce Cloud",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action section",
+      "labelEquals": "Choose an Action",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "verify",
+      "target": "Get Product Details action option in Choose an Action",
+      "labelEquals": "Get Product Details",
+      "labelMatch": "contains"
+    },
+    {
+      "action": "click",
+      "target": "Get Product Details action option in Choose an Action",
+      "labelEquals": "Get Product Details",
+      "labelMatch": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "detect",
+      "target": "salesforce-commerce-cloud-account-selection-state",
+      "timeoutMs": 10000
+    },
+    {
+      "action": "click",
+      "target": "existing Salesforce Commerce Cloud account in account list",
+      "onlyIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button",
+      "labelEquals": "+ Add New Account",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "verify",
+      "target": "Organization ID field in account setup",
+      "labelEquals": "Organization ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Organization ID field in account setup",
+      "value": "{{SFCC_ORGANIZATION_ID}}",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Salesforce Commerce Cloud Organization ID is required; find it in Business Manager → Administration → Site Development → Salesforce Commerce API Settings."
+    },
+    {
+      "action": "verify",
+      "target": "Site ID field in account setup",
+      "labelEquals": "Site ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Site ID field in account setup",
+      "value": "{{SFCC_SITE_ID}}",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Salesforce Commerce Cloud Site ID is required; find it in Business Manager → Administration → Sites → Manage Sites."
+    },
+    {
+      "action": "verify",
+      "target": "Short Code field in account setup",
+      "labelEquals": "Short Code",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Short Code field in account setup",
+      "value": "{{SFCC_SHORT_CODE}}",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Salesforce Commerce Cloud Short Code is required; find it in Business Manager → Administration → Site Development → Salesforce Commerce API Settings."
+    },
+    {
+      "action": "verify",
+      "target": "Client ID field in account setup",
+      "labelEquals": "Client ID",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Client ID field in account setup",
+      "value": "{{SFCC_CLIENT_ID}}",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Salesforce Commerce Cloud Client ID is required; generate it in Account Manager → API Client → Add API Client."
+    },
+    {
+      "action": "verify",
+      "target": "Client Secret field in account setup",
+      "labelEquals": "Client Secret",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "enter",
+      "target": "Client Secret field in account setup",
+      "value": "{{SFCC_CLIENT_SECRET}}",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true,
+      "docWarning": "Real Salesforce Commerce Cloud Client Secret is required; generate it alongside the Client ID in Account Manager → API Client."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists"
+    },
+    {
+      "action": "click",
+      "target": "Save button in the account setup form",
+      "labelEquals": "Save",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "skipIfFlowFlagTrue": "salesforceCommerceCloudAccountAlreadyExists",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Product Category dropdown field",
+      "labelEquals": "Product Category",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Product Category dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any category option in the Product Category dropdown",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Product ID lookup field",
+      "labelEquals": "Product ID",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Product ID lookup field",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "any product option in the Product ID lookup",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Show optional fields toggle button",
+      "labelEquals": "Show optional fields",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Show optional fields toggle button",
+      "labelEquals": "Show optional fields",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Product Parameter(s) section after enabling Show optional fields",
+      "labelEquals": "Product Parameter(s)",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Image Model checkbox in Product Parameter(s)",
+      "labelEquals": "Image Model",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Price details checkbox in Product Parameter(s)",
+      "labelEquals": "Price details",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Proceed button",
+      "labelEquals": "Proceed",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Test Action button",
+      "labelEquals": "Test Action",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button",
+      "labelEquals": "Save and Exit",
+      "labelMatch": "contains",
+      "timeoutMs": 90000,
+      "warnOnly": true
+    }
+  ]
+}

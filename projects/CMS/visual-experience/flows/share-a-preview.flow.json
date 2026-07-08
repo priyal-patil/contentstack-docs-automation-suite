@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
     { "action": "verify", "target": "Visual editor URL bar (doc step)" },

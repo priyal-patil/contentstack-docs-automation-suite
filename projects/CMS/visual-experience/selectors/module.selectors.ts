@@ -107,7 +107,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   // --- navigating-your-website-in-visual-editor (capsule-tabs.html, editor-page.html, editor-sidebar.html, editor-sidebar-rail.html) ---
   /** Doc: bottom pill menu — click Editor. */
   "Visual editor bottom pill Editor tab (doc step)":
-    '[data-test-id="cs-tabs-item"]:has-text("Editor"), .capsule-tabs [data-test-id="cs-tabs-item"]:has-text("Editor"), [data-test-id="cs-tabs"] [data-test-id="cs-tabs-item"]:has-text("Editor")',
+    '[data-test-id="visual-builder-tab"], [data-test-id="cs-tabs-item"]:has-text("Editor"), .capsule-tabs [data-test-id="cs-tabs-item"]:has-text("Editor"), [data-test-id="cs-tabs"] [data-test-id="cs-tabs-item"]:has-text("Editor")',
   "Visual editor capsule tabs (doc step)":
     '[data-test-id="cs-tabs-item"], .capsule-tabs [data-test-id="cs-tabs-item"], [data-testid*="capsule" i], [class*="CapsuleTab"]',
   /** Doc: URL Bar — web pages list / structure, switch pages. */
@@ -254,7 +254,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
 
   // --- Sidebar rail (editor-sidebar-rail.html) — fall back to aria-label if test ids differ in app ---
   "VE sidebar Status tab (doc step)":
-    '[data-testid="cs-vb--sidebar-tab-status"], [data-testid*="sidebar-tab-status" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Status"], button[aria-label="Status"]',
+    '[data-test-id="cs-info-tab"], [data-testid="cs-vb--sidebar-tab-status"], [data-testid*="sidebar-tab-status" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Status"], button[aria-label="Status"]',
   "VE sidebar Form tab (doc step)":
     '[data-testid="cs-vb--sidebar-tab-form"], [data-testid*="sidebar-tab-form" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Form"], button[aria-label="Form"]',
   "VE sidebar Drafts tab (doc step)":
@@ -264,7 +264,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "VE sidebar Audiences tab (doc step)":
     '[data-testid="cs-vb--sidebar-tab-audiences"], [data-testid*="sidebar-tab-audiences" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Audiences"], button[aria-label="Audiences"]',
   "VE sidebar Widgets tab (doc step)":
-    '[data-testid="cs-vb--sidebar-tab-widgets"], [data-testid*="sidebar-tab-widgets" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Widgets"], button[aria-label="Widgets"]',
+    '[data-test-id="cs-widgets-tab"], [data-testid="cs-vb--sidebar-tab-widgets"], [data-testid*="sidebar-tab-widgets" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Widgets"], button[aria-label="Widgets"]',
   "VE sidebar Automate tab (doc step)":
     '[data-testid="cs-vb--sidebar-tab-automate"], [data-testid*="sidebar-tab-automate" i], [data-testid="cs-vb--editor-sidebar-rail"] button[aria-label="Automate"], button[aria-label="Automate"]',
 
@@ -349,7 +349,8 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id*="audience" i] button[aria-label*="Edit" i], [data-testid*="audience" i] button[aria-label*="Edit" i], [data-testid*="audiences" i] button[aria-label*="Edit" i], button[aria-label*="Edit variant" i], button:has-text("Edit")',
 
   // --- widgets (widgets-page.html) ---
-  "Widgets panel heading (doc step)": '[data-testid="cs-vb--entry-widgets-title"]',
+  "Widgets panel heading (doc step)":
+    '.SidebarWindow__content__title:has-text("Widgets"), [data-testid="cs-vb--entry-widgets-title"]',
   "Widgets dropdown trigger (doc step)":
     '[data-testid="cs-vb--entry-widgets-dropdown-header-icon"], [data-testid="cs-vb--entry-widgets-header-dropdown-arrow-icon"]',
   "Widgets dropdown selected app value (doc step)":

@@ -1,0 +1,434 @@
+{
+  "id": "backup-entries-or-assets-to-aws-s3",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/backup-entries-or-assets-to-aws-s3",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "App Switcher icon (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on projects listing page (doc step)",
+      "expected": {
+        "labelEquals": "New Project",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Project' but button DOM text may be 'New Project' \u2014 '+' is CSS-generated."
+    },
+    {
+      "action": "click",
+      "target": "any existing project card on projects listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations in top navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      },
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
+    },
+    {
+      "action": "click",
+      "target": "Automations in top navigation panel (doc step)",
+      "timeoutMs": 90000,
+      "docWarning": "Doc navigates to Automations \u2014 added to reach Automations listing page so '+ New Automation' dropdown shows 'Create New'/'Import' instead of Dashboard 'New Agent'/'New Automation'."
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Automation' but UI may show 'new automation' (lowercase, no '+') \u2014 doc/UI label mismatch."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations listing page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Dashboard shows 'New Automation'; Automations listing shows 'Create New' \u2014 label varies by context.",
+      "timeoutMs": 2000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in dropdown (doc step)",
+      "docWarning": "Doc says 'Click + New Automation' without mentioning the dropdown option \u2014 added as required step missing from the document.",
+      "timeoutMs": 10000,
+      "warnOnly": true
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in new automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in new automation modal (doc step)",
+      "value": "backup-to-aws-s3-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Description field in new automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Description",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Description input in new automation modal (doc step)",
+      "value": "backup-to-aws-s3-description-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in new automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in new automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack trigger connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack trigger connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger event under Choose Trigger tab (doc step)",
+      "expected": {
+        "labelEquals": "Entry Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Trigger event under Choose Trigger tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select Account dropdown in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Select Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Event dropdown in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Event",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Event dropdown in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any event option from Event dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stack Lookup dropdown in Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack from Stack Lookup dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button on Configure Trigger page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option to configure third-party services (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "AWS S3 connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "AWS S3",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "AWS S3 connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New Object action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Create New Object",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create New Object action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for AWS S3 connector (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for AWS S3 connector (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "Bucket name field in Create New Object Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Bucket name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "enter",
+      "target": "Bucket name input in Create New Object Configure Action (doc step)",
+      "value": "backup-bucket-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "File Name field in Create New Object Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "File Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "enter",
+      "target": "File Name input in Create New Object Configure Action (doc step)",
+      "value": "backup-file-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "Content field in Create New Object Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Content",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "enter",
+      "target": "Content input in Create New Object Configure Action (doc step)",
+      "value": "backup-content-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Create New Object Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Create New Object Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Create New Object (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Create New Object (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Create New Object (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Create New Object (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Requires real AWS S3 credentials \u2014 account creation and configuration unavailable without valid Access Key and Secret Key."
+    }
+  ]
+}

@@ -89,6 +89,8 @@
     {
       "action": "verify",
       "target": "Save Changes button (doc step)",
+      "docWarning": "Doc says 'Save Changes' but UI shows 'save' (lowercase, no 'Changes') — doc/UI label mismatch.",
+      "warnOnly": true,
       "expected": {
         "labelEquals": "Save Changes",
         "labelMatch": "contains"
@@ -119,6 +121,8 @@
     {
       "action": "verify",
       "target": "Invite Users button (doc step)",
+      "docWarning": "Invite Users button label may differ from doc or may not exist on Users settings page — page shows user list with generic button.",
+      "warnOnly": true,
       "expected": {
         "labelEquals": "Invite Users",
         "labelMatch": "contains"

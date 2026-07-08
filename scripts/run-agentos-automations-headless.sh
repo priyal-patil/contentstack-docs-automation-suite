@@ -9,15 +9,23 @@ REPORT_DIR="${REPORT_DIR:-$ROOT/reports/latest}"
 mkdir -p "$REPORT_DIR"
 
 AUTOMATIONS_FLOWS=(
+  "add-new-entries-to-algolia-s-search-index"
+  "automating-asset-management-with-contentstack-automate"
   "automation-sharing"
+  "backup-entries-or-assets-to-aws-s3"
+  "chatgpt-use-cases"
   "clone-an-automation"
+  "create-an-algolia-object-using-entry-uid"
   "executing-an-automation"
   "export-and-import-an-automation"
   "get-started-with-automations"
   "managing-automations"
   "managing-triggers"
   "on-demand-automation-app"
+  "send-newly-transformed-data-via-email"
+  "translate-data-using-smartling"
   "using-conditional-paths-to-customize-automations"
+  "using-repeat-paths-to-automate-repetitive-tasks"
 )
 
 PASS=0

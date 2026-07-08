@@ -1,0 +1,2301 @@
+{
+  "id": "translate-data-using-smartling",
+  "project": "AgentOS",
+  "module": "automations",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/agent-os/translate-data-using-smartling",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "verify",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "expected": {
+        "labelEquals": "App Switcher",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "App Switcher icon in top navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "expected": {
+        "labelEquals": "Agent OS",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Agent OS option in App Switcher list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Project button on Agent OS projects page (doc step)",
+      "expected": {
+        "labelEquals": "New Project",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Project' but button DOM text may be 'New Project' \u2014 '+' may be CSS-generated icon."
+    },
+    {
+      "action": "click",
+      "target": "existing project on Agent OS projects page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Automations tab in project navigation (doc step)",
+      "expected": {
+        "labelEquals": "Automations",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Automations tab in project navigation (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ New Automation button on Automations page (doc step)",
+      "expected": {
+        "labelEquals": "+ New Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Doc says '+ New Automation' but UI button shows 'New Automation' — '+' may be a CSS icon prefix."
+    },
+    {
+      "action": "click",
+      "target": "+ New Automation button on Automations page (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Create New option in + New Automation dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Create New",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Dashboard shows 'New Automation'; Automations listing shows 'Create New' \u2014 label varies by context.",
+      "timeoutMs": 2000
+    },
+    {
+      "action": "click",
+      "target": "Create New option in + New Automation dropdown (doc step)",
+      "timeoutMs": 10000,
+      "warnOnly": true,
+      "docWarning": "Empty-state Automations listing opens modal directly via addNewAutomation button \u2014 no dropdown shown. warnOnly since dropdown only appears in non-empty state or from Dashboard."
+    },
+    {
+      "action": "verify",
+      "target": "Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create New Automation",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Automation Name field in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Automation Name",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "enter",
+      "target": "Automation Name input in Create New Automation modal (doc step)",
+      "value": "translate-data-using-smartling-{unique5}"
+    },
+    {
+      "action": "verify",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "expected": {
+        "labelEquals": "Create",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Create button in Create New Automation modal (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Trigger step in left navigation panel (doc step)",
+      "expected": {
+        "labelEquals": "Configure Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Trigger step in left navigation panel (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Entry Trigger option in Choose Trigger section (doc step)",
+      "expected": {
+        "labelEquals": "Entry Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Entry Trigger option in Choose Trigger section (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Select Account dropdown (doc step)",
+      "expected": {
+        "labelEquals": "Select Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Events field in Contentstack trigger configuration (doc step)",
+      "expected": {
+        "labelEquals": "Events",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Events field in Contentstack trigger configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any event option from Events dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Stack field in Contentstack trigger configuration (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Stack field in Contentstack trigger configuration (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "any stack option from Stack dropdown (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button for Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Proceed button for Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Test Trigger button (doc step)",
+      "expected": {
+        "labelEquals": "Test Trigger",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Test Trigger button (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Configure Trigger (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Configure Trigger (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step in left navigation panel for Add Content to a Project (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Configure Action Step in left navigation panel for Add Content to a Project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Add Content to a Project (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Add Content to a Project (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Add Content to a Project (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Smartling connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Smartling",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Smartling connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Smartling Add Content (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Smartling Add Content (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Add Content to a Project action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Add Content to a Project",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Add Content to a Project action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Smartling Add Content (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Smartling Add Content (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Authorize modal for Smartling Add Content account (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in Smartling Add Content Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in Smartling Add Content Authorize modal (doc step)",
+      "value": "smartling-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Smartling Add Content Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Smartling Add Content Authorize modal (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Project ID field in Smartling Add Content Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Project ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Project ID input in Smartling Add Content Configure Action (doc step)",
+      "value": "smartling-project-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Locale field in Smartling Add Content Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Locale",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Locale field in Smartling Add Content Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any locale option from Locale dropdown in Smartling Add Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Contents field in Smartling Add Content Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Contents",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Contents input in Smartling Add Content Configure Action (doc step)",
+      "value": "sample-content-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Callback URL field in Smartling Add Content Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Callback URL",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Callback URL input in Smartling Add Content Configure Action (doc step)",
+      "value": "https://callback-url-{unique5}.example.com",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Smartling Add Content Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Smartling Add Content Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Smartling Add Content (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Smartling Add Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Smartling Add Content (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Smartling Add Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Pause (doc step)",
+      "docWarning": "Doc says to click '+ Add Step under Else step' \u2014 this implies a conditional Else branch; exact button label may differ in UI.",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Pause (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Pause (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on + Add New Step click (step 71 warnOnly) \u2014 Action Step option only visible after clicking + Add New Step."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Pause (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 72 warnOnly \u2014 Action Step option for Pause requires + Add New Step panel to be open."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Pause (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Action Step option for Pause (steps 72-73 warnOnly) \u2014 Configure Action Step heading only visible after action step selected."
+    },
+    {
+      "action": "verify",
+      "target": "Pause connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Pause",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on steps 72-74 warnOnly \u2014 Pause connector only visible after entering Configure Action Step."
+    },
+    {
+      "action": "click",
+      "target": "Pause connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Pause (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Pause (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Pause an Automation action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Pause an Automation",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Pause an Automation action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Preserve Previous Step Properties button in Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "+ Add Preserve Previous Step Properties",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add Preserve Previous Step Properties button in Pause an Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Property Name field in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "Property Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "first Property Name input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "file_uri",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Value field in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "Value",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "first Value input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "2.fileUri",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add Preserve Previous Step Properties button in Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "+ Add Preserve Previous Step Properties",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add Preserve Previous Step Properties button in Pause an Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "second Property Name input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "content_type",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "second Value input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "1.body.data.content_type.description",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add Preserve Previous Step Properties button in Pause an Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "third Property Name input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "entry_id",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "third Value input in Preserve Previous Step Properties section of Pause an Automation (doc step)",
+      "value": "1.body.data.entry.uid",
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Pause an Automation Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Pause an Automation Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Pause an Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Pause an Automation (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Pause an Automation (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Download Translated Content (doc step)",
+      "docWarning": "Doc says to click '+ Add Step under Else step' \u2014 this implies a conditional Else branch; exact button label may differ in UI.",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Download Translated Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Download Translated Content (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Download Translated Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Download Translated Content (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Smartling connector in Choose Connector list for Download Translated Content (doc step)",
+      "expected": {
+        "labelEquals": "Smartling",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Smartling connector in Choose Connector list for Download Translated Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Smartling Download Translated Content (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Smartling Download Translated Content (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Download Translated Content action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Download Translated Content",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Download Translated Content action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Smartling Download (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Smartling Download (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize modal for Smartling Download account (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Pause connector configuration \u2014 depends on warnOnly steps 72-73; entire Pause block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "API Key field in Smartling Download Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "API Key",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "enter",
+      "target": "API Key input in Smartling Download Authorize modal (doc step)",
+      "value": "smartling-api-key-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Requires real API key for third-party service \u2014 no test credential available."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Smartling Download Authorize modal (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Smartling Download Authorize modal (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Project ID field in Smartling Download Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Project ID",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "Project ID input in Smartling Download Configure Action (doc step)",
+      "value": "smartling-project-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Locale field in Smartling Download Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Locale",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Locale field in Smartling Download Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "any locale option from Locale dropdown in Smartling Download (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "File URI field in Smartling Download Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "File URI",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "enter",
+      "target": "File URI input in Smartling Download Configure Action (doc step)",
+      "value": "file-uri-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Smartling Download Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Smartling Download Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Smartling Download (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Smartling Download (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Smartling Download (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Smartling Download (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Transform (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Transform (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on + Add New Step click (step 132 warnOnly) \u2014 Action Step option only visible after clicking + Add New Step."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Transform (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 133 warnOnly \u2014 Action Step option for Transform requires + Add New Step panel to be open."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Action Step option for Transform (steps 133-134 warnOnly) \u2014 Configure Action Step heading only visible after action step selected."
+    },
+    {
+      "action": "verify",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on steps 133-135 warnOnly \u2014 Transform connector only visible after entering Configure Action Step."
+    },
+    {
+      "action": "click",
+      "target": "Transform connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Transform (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Transform action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Transform",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Transform action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Input Name field in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Input Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "Input Name input in Transform Configure Action (doc step)",
+      "value": "translated_data",
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Input Value field in Transform Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Input Value",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "enter",
+      "target": "Input Value input in Transform Configure Action (doc step)",
+      "value": "data1",
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Transform Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Transform Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Transform (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Transform (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Transform (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Localize Entry (doc step)",
+      "docWarning": "Doc says to click '+ Add Step under Else step' \u2014 this implies a conditional Else branch; exact button label may differ in UI.",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Localize Entry action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Localize Entry",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Localize Entry action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Contentstack Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Contentstack Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in Add Account modal for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack OAuth",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account modal for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account modal for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Transform connector configuration \u2014 depends on warnOnly steps 133-134; entire Transform block depends on + Add New Step chain."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack QA",
+        "labelMatch": "contains"
+      },
+      "timeoutMs": 60000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after OAuth authorization for Localize Entry (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Set Account Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Stack field in Localize Entry Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save button in Set Account Name modal (step 177 warnOnly) \u2014 Stack field only visible after saving account."
+    },
+    {
+      "action": "click",
+      "target": "Stack field in Localize Entry Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 178 warnOnly \u2014 Stack field for Localize Entry only accessible after successful account save."
+    },
+    {
+      "action": "click",
+      "target": "any stack option from Stack dropdown in Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on Stack field in Localize Entry (steps 178-179 warnOnly) \u2014 stack dropdown selection requires visible stack field."
+    },
+    {
+      "action": "verify",
+      "target": "Content Type field in Localize Entry Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Content Type",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Content Type field in Localize Entry Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any content type option from Content Type dropdown in Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Entry field in Localize Entry Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Entry",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Entry field in Localize Entry Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any entry option from Entry dropdown in Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Locale field in Localize Entry Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Locale",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Locale field in Localize Entry Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any locale option from Locale dropdown in Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Entry Data field in Localize Entry Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Entry Data",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "enter",
+      "target": "Entry Data input in Localize Entry Configure Action (doc step)",
+      "value": "transformed-data-{unique5}",
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Localize Entry Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Localize Entry Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Localize Entry (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Localize Entry (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Set Entry Workflow (doc step)",
+      "docWarning": "Doc says to click '+ Add Step under Else step' \u2014 this implies a conditional Else branch; exact button label may differ in UI.",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack connector in Choose Connector list for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Contentstack connector in Choose Connector list for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Set Entry Workflow action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Set Entry Workflow",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Set Entry Workflow action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Contentstack Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Contentstack Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack OAuth option in Add Account modal for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack OAuth",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button in Add Account modal for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button in Add Account modal for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Localize Entry Configure Action \u2014 depends on warnOnly steps 178-179; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Manage Permissions popup for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Manage Permissions popup for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Contentstack QA org in organization list on new tab for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack QA",
+        "labelMatch": "contains"
+      },
+      "timeoutMs": 60000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Contentstack QA org in organization list on new tab for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in permissions popup on new tab for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in permissions popup on new tab for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after OAuth authorization for Set Entry Workflow (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Set Account Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Stack field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Stack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save button in Set Entry Workflow (steps 222-223 warnOnly) \u2014 Stack field only visible after account save."
+    },
+    {
+      "action": "click",
+      "target": "Stack field in Set Entry Workflow Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on step 224 warnOnly \u2014 clicking Stack field requires it to be visible."
+    },
+    {
+      "action": "click",
+      "target": "any stack option from Stack dropdown in Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Content Type field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Content Type",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Content Type field in Set Entry Workflow Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any content type option from Content Type dropdown in Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Entry field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Entry",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Entry field in Set Entry Workflow Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any entry option from Entry dropdown in Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Stage field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Stage",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Workflow Stage field in Set Entry Workflow Configure Action (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "any workflow stage option from Workflow Stage dropdown in Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Assignee Name field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Assignee Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Assignee Role field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Assignee Role",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Set Due Date field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Set Due Date",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Notify via Email field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Notify via Email",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Locale field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Locale",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Workflow Comments field in Set Entry Workflow Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Workflow Comments",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Set Entry Workflow Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Set Entry Workflow Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Set Entry Workflow (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Set Entry Workflow (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Step button on automation canvas for Send Message (doc step)",
+      "docWarning": "Doc says to click '+ Add Step under Else step' \u2014 this implies a conditional Else branch; exact button label may differ in UI.",
+      "expected": {
+        "labelEquals": "+ Add New Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Step button on automation canvas for Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Action Step option for Send Message (doc step)",
+      "expected": {
+        "labelEquals": "Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Action Step option for Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Configure Action Step section heading for Send Message (doc step)",
+      "expected": {
+        "labelEquals": "Configure Action Step",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Slack connector in Choose Connector list (doc step)",
+      "expected": {
+        "labelEquals": "Slack",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Slack connector in Choose Connector list (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Choose an Action tab for Slack Send Message (doc step)",
+      "expected": {
+        "labelEquals": "Choose an Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Choose an Action tab for Slack Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Send Message action under Choose an Action tab (doc step)",
+      "expected": {
+        "labelEquals": "Send Message",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "Send Message action under Choose an Action tab (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "+ Add New Account button for Slack Send Message (doc step)",
+      "expected": {
+        "labelEquals": "+ Add New Account",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "click",
+      "target": "+ Add New Account button for Slack Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Set Entry Workflow Configure Action \u2014 depends on warnOnly steps 222-223; Stack/Branch/options all require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Authorize button in Slack Add Account modal (doc step)",
+      "expected": {
+        "labelEquals": "Authorize",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "click",
+      "target": "Authorize button in Slack Add Account modal (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Third-party OAuth/authorization requires real credentials \u2014 marking as warnOnly."
+    },
+    {
+      "action": "verify",
+      "target": "Slack org in organization list on new tab (doc step)",
+      "expected": {
+        "labelEquals": "Contentstack QA",
+        "labelMatch": "contains"
+      },
+      "timeoutMs": 60000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "click",
+      "target": "Slack org in organization list on new tab (doc step)",
+      "timeoutMs": 90000,
+      "scrollIntoView": true,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "switchTab",
+      "target": "original Agent OS tab after Slack OAuth authorization (doc step)",
+      "timeoutMs": 30000,
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Set Account Name modal for Slack (doc step)",
+      "expected": {
+        "labelEquals": "Set Account Name",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on successful third-party credential authorization \u2014 unavailable without real credentials."
+    },
+    {
+      "action": "verify",
+      "target": "Save button in Set Account Name modal for Slack (doc step)",
+      "expected": {
+        "labelEquals": "Save",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly steps \u2014 may not be reachable if earlier auth or action steps failed."
+    },
+    {
+      "action": "click",
+      "target": "Save button in Set Account Name modal for Slack (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Depends on preceding warnOnly auth/action steps \u2014 unavailable if earlier steps failed."
+    },
+    {
+      "action": "verify",
+      "target": "Slack Channel field in Send Message Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Slack Channel",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Depends on Save button in Slack (steps 267-268 warnOnly) \u2014 Slack Channel field only visible after Slack account save."
+    },
+    {
+      "action": "enter",
+      "target": "Slack Channel input in Send Message Configure Action (doc step)",
+      "value": "general",
+      "warnOnly": true,
+      "docWarning": "Depends on step 269 warnOnly \u2014 entering Slack Channel requires visible field after Slack account save."
+    },
+    {
+      "action": "verify",
+      "target": "Message field in Send Message Configure Action (doc step)",
+      "expected": {
+        "labelEquals": "Message",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "enter",
+      "target": "Message input in Send Message Configure Action (doc step)",
+      "value": "Translation complete for entry {unique5}",
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Proceed button on Send Message Configure Action page (doc step)",
+      "expected": {
+        "labelEquals": "Proceed",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "click",
+      "target": "Proceed button on Send Message Configure Action page (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Test Action button for Send Message (doc step)",
+      "expected": {
+        "labelEquals": "Test Action",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "click",
+      "target": "Test Action button for Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "verify",
+      "target": "Save and Exit button for Send Message (doc step)",
+      "expected": {
+        "labelEquals": "Save and Exit",
+        "labelMatch": "contains"
+      },
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    },
+    {
+      "action": "click",
+      "target": "Save and Exit button for Send Message (doc step)",
+      "timeoutMs": 90000,
+      "warnOnly": true,
+      "docWarning": "Slack Send Message Configure Action \u2014 depends on warnOnly steps 267-268; all Slack fields require account save."
+    }
+  ]
+}

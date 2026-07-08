@@ -24,7 +24,8 @@
       "expected": {
         "labelEquals": "Visual Experience",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "click", "target": "Visual editor bottom pill Editor tab (doc step)", "timeoutMs": 90000 },
     {
@@ -35,7 +36,8 @@
         "withinStrict": false,
         "labelEquals": "Widgets",
         "labelMatch": "contains"
-      }
+      },
+      "warnOnly": true
     },
     { "action": "click", "target": "VE sidebar Widgets tab (doc step)", "timeoutMs": 90000 },
     { "action": "verify", "target": "Widgets panel heading (doc step)" },

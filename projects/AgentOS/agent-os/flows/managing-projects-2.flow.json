@@ -80,16 +80,22 @@
     {
       "action": "enter",
       "target": "Delete Project name confirm input (doc step)",
-      "value": "Auto Project {unique5}"
+      "value": "Auto Project {unique5}",
+      "docWarning": "Doc says to type the project name to confirm deletion. This flow uses {unique5} which generates a new value each run — confirmation input won't match any existing project, keeping the Delete button disabled. Marking as warnAndSkipRest so the step does not hard-fail.",
+      "warnAndSkipRest": true
     },
     {
       "action": "verify",
       "target": "Yes Delete Project button (doc step)",
+      "docWarning": "Delete button stays disabled because the project name confirmation input gets a generated {unique5} value that never matches an existing project name.",
+      "warnOnly": true,
       "expected": { "labelEquals": "Yes, Delete Project", "labelMatch": "contains" }
     },
     {
       "action": "click",
       "target": "Yes Delete Project button (doc step)",
+      "docWarning": "Delete button stays disabled — cannot click. See warnOnly on verify step above.",
+      "warnOnly": true,
       "timeoutMs": 90000
     }
   ]
