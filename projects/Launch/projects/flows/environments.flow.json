@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/environments",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Prerequisite: at least one environment row in the project. Row ⋮ → Settings uses the first table row (list sort order). Branches after detect `launch-create-new-environment-modal-variant`: `launchCreateNewEnvIsGit` (create-new-env-git-m.html — Git Branch, Build/Output, Other/Angular → Server Command) vs `launchCreateNewEnvIsFileUpload` (create-new-env-upload-m.html — Framework Preset, Build/Output, Upload a file + zip from data/launch/fixtures/gatsby-starter-default-master.zip per import-project-using-file-upload). Common: success on list; Table Settings → Manage columns (Auto Deploy, Created At); row ⋮ → Settings; General: edit Environment Name; Git Branch only if Git project (`onlyIfFlowFlagTrue: launchCreateNewEnvIsGit`); Save Environment Details.",
   "steps": [
     {

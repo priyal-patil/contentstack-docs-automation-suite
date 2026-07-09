@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/disable-automatic-redeployment",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Doc: Launch → project card → Environments → row ⋮ → Settings → Deployments tab → Auto Deploy on Commits off → Save Deployment Settings. DOM: data/dom/Launch/env-deployments.html (deployments-tab, settings-save-button). Toggle click only turns off when currently on; Save skipped if button stays disabled (already saved).",
   "steps": [
     {

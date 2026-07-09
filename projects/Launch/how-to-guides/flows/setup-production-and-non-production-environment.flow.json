@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/setup-production-and-non-production-environment",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Doc: https://www.contentstack.com/docs/developers/launch/setup-production-and-non-production-environment — production path through open Production on Deployments. **Auto Deploy on Commits** / **Save Deployment Settings** (Deployments tab) are optional steps: the doc shows them for **Git-based** Launch projects; **file-upload** projects often omit that toggle (env-deployments.html). Optional steps skip when the control is absent. Domains → New Domain → dismiss modal; then Environments → Production row. If you extend this flow with a Development env, repeat optional auto-deploy enable for Git projects only.",
   "steps": [
     {
@@ -124,7 +125,8 @@
         "modalTitle": "Create Custom Domain",
         "labelEquals": "Create Custom Domain",
         "labelMatch": "contains"
-      }
+      },
+      "warnAndFailRest": true
     },
     { "action": "click", "target": "Launch Create Custom Domain modal dismiss without saving (doc step)", "timeoutMs": 90000 },
     { "action": "click", "target": "Launch left navigation Environments entry (doc step)", "timeoutMs": 90000 },

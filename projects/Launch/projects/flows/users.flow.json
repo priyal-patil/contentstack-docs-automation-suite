@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/users",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Invite: optional Message (`invitation-message-input`). Remove: after Invite, the UI stays on Project Settings → Users; we verify left-nav Settings shell + Users row (doc placement), Actions, invitee row, then ⋮ → Remove → Yes, Remove per users-ver-*.html / remove-user-m.html. Doc wording for Remove uses “left navigation” for Settings — product enters settings via top bar, then left sidebar shows the Settings section.",
   "steps": [
     {

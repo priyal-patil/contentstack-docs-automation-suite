@@ -291,30 +291,12 @@ async function prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page: Page
     return;
   }
   await assertPageOpen(page, "prepare:default");
-  const safeWait = (ms: number) =>
-    page.isClosed() ? Promise.resolve() : page.waitForTimeout(ms).catch(() => {});
-  const pressEscape = async () => {
-    if (page.isClosed()) return;
-    await page.keyboard.press("Escape").catch(() => {});
-  };
-  await pressEscape();
-  await assertPageOpen(page, "prepare:default");
-  await safeWait(200);
-  await pressEscape();
-  await assertPageOpen(page, "prepare:default");
-  await safeWait(200);
-  if (page.isClosed()) {
-    throw new Error(
-      "Launch environments: browser page closed during table prep (close the run only after the flow finishes, or avoid closing the Playwright window mid-test)."
-    );
-  }
+  await page.keyboard.press("Escape").catch(() => {});
   const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
   if (await searchInput.isVisible({ timeout: 12_000 }).catch(() => false)) {
-    await searchInput.click({ timeout: 10_000 }).catch(() => {});
-    await searchInput.fill("").catch(() => {});
     await searchInput.fill("Default").catch(() => {});
     await searchInput.press("Enter").catch(() => {});
-    await safeWait(900);
+    await page.waitForTimeout(700);
   }
 }
 
@@ -331,44 +313,15 @@ function locatorLaunchEnvironmentsDefaultEnvironmentTableRow(page: Page): Locato
     .filter({ has: page.locator(".env-column-name").filter({ hasText: /^Default$/i }) });
 }
 
-async function resolveLaunchEnvironmentsDefaultEnvironmentRow(
-  page: Page,
-  timeoutMs: number,
-  opts?: { skipTablePrep?: boolean; minimalResolve?: boolean }
-): Promise<Locator> {
+async function resolveLaunchEnvironmentsDefaultEnvironmentRow(page: Page, timeoutMs: number): Promise<Locator> {
   if (launchUrlIndicatesEnvDetailSettings(page)) {
     throw new Error(
       `[Launch] Cannot resolve Default environment row on env settings SPA (no listings table). URL: ${page.url().slice(0, 340)}`
     );
   }
   const t = Math.min(timeoutMs, 90_000);
-  if (!opts?.skipTablePrep) {
-    await prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page);
-  }
+  await prepareLaunchEnvironmentsTableForDefaultEnvironmentRow(page);
   let row = locatorLaunchEnvironmentsDefaultEnvironmentBodyRow(page).first();
-  if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
-    await row.scrollIntoViewIfNeeded().catch(() => {});
-    await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });
-    return row;
-  }
-  if (opts?.minimalResolve) {
-    row = locatorLaunchEnvironmentsDefaultEnvironmentTableRow(page).first();
-    await row.scrollIntoViewIfNeeded().catch(() => {});
-    await expect(
-      row,
-      'Launch doc flow needs an environment named exactly "Default". If your project no longer has it, rename or recreate that environment, then re-run.'
-    ).toBeVisible({ timeout: t });
-    return row;
-  }
-  const searchInput = page.locator('[data-test-id="cs-search-input-field"]');
-  await searchInput.fill("").catch(() => {});
-  await page.locator('[data-test-id="cs-table-refresh-icon"]').click({ timeout: 15_000 }).catch(() => {});
-  await page.waitForTimeout(1000);
-  await searchInput.click({ timeout: 10_000 }).catch(() => {});
-  await searchInput.fill("Default");
-  await searchInput.press("Enter").catch(() => {});
-  await page.waitForTimeout(1200);
-  row = locatorLaunchEnvironmentsDefaultEnvironmentBodyRow(page).first();
   if (await row.isVisible({ timeout: Math.min(18_000, t) }).catch(() => false)) {
     await row.scrollIntoViewIfNeeded().catch(() => {});
     await expect(row).toBeVisible({ timeout: Math.min(20_000, t) });

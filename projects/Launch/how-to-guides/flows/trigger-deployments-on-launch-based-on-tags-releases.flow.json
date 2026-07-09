@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/trigger-deployments-on-launch-based-on-tags-releases",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Doc § Create a Launch Deploy Hook: Launch → project → Environment Settings → new Deploy Hook → copy hook URL. Same Launch UI as deploy-hooks / redeploy-on-CMS. GitHub Action YAML and repo workflow steps are out of product scope and not automated here.",
   "steps": [
     {

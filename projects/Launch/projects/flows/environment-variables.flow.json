@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/environment-variables",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Doc steps: Launch landing → project card → Environments list → first row Actions ⋮ → Settings → under Settings open Environment Variables tab → Add Keys and Values → + Add Environment Variable → key/value → Save. DOM: data/dom/Launch/common/env-env-variable-tab.html (tabs, inputs, Save Environment Variables). Uses the first environment row in the table.",
   "steps": [
     {

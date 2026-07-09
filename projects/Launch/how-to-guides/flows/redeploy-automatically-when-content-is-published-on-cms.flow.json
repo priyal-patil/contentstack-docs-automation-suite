@@ -6,6 +6,7 @@
   "source": "https://www.contentstack.com/docs/developers/launch/redeploy-automatically-when-content-is-published-on-CMS",
   "type": "executable",
   "use": ["login", "orgDashboard"],
+  "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
   "automationNotes": "Launch: create Deploy Hook; Launch redeploy doc store deploy hook URL and copy persists the hook URL on the flow. URL To Notify is filled from that stored URL (enter step value is a placeholder). CMS: DEFAULT_STACK in .env — ensureOnStacksAndSelectStack. Stack: More → Settings → Webhooks → + New Webhook → Name, URL To Notify, auth, triggers, Enable Webhook, Save. Then Entries → first row entry → Save → Publish → Environment(s) / Language(s) → Send per doc.",
   "steps": [
     {

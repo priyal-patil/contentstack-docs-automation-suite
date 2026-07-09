@@ -63,6 +63,7 @@ import { buildMissingElementSummary, recordDocStepFailure, recordDocStepWarning 
 import { ensureTrashHasDeletedGlobalFieldIfNeeded } from "./preflightTrashGlobalField";
 import { ensureTrashHasDeletedEntryIfNeeded } from "./preflightTrashEntries";
 import { ensureTrashHasDeletedAssetFolderIfNeeded, ensureTrashHasDeletedFileAssetIfNeeded } from "./preflightTrashAssets";
+import { ensureLaunchProjectExists } from "./preflightLaunchProject";
 
 /** Prefer the current page; if it is already closed, try any other open page in the same context. */
 async function captureFailureScreenshotBestEffort(page: Page, absShot: string): Promise<boolean> {
@@ -236,6 +237,13 @@ export async function executeFlow(page: Page, flow: any, options?: ExecuteFlowOp
   const preflightDeletedAssetsId = flow?.preflight?.runFlowWhenTrashDeletedAssetsEmpty;
   if (typeof preflightDeletedAssetsId === "string" && preflightDeletedAssetsId.trim()) {
     await ensureTrashHasDeletedFileAssetIfNeeded(page, preflightDeletedAssetsId.trim());
+  }
+
+  // Launch flows that click "Launch first project card (doc step)": ensure at least one project
+  // exists first, else create one via the given flow (e.g. import-project-using-github).
+  const preflightEnsureLaunchProjectId = flow?.preflight?.ensureLaunchProjectExists;
+  if (typeof preflightEnsureLaunchProjectId === "string" && preflightEnsureLaunchProjectId.trim()) {
+    await ensureLaunchProjectExists(page, preflightEnsureLaunchProjectId.trim());
   }
 
   // Run another flow on the same page/session (e.g. file upload through Deploy, then validate Deployments doc on the next screen).
