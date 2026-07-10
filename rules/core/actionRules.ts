@@ -12247,13 +12247,24 @@ export async function performAction(
         await card.scrollIntoViewIfNeeded().catch(() => {});
         await page.waitForTimeout(300);
         const titleArea = card.locator("h3:has-text('Product Listing Page'), .ContentModel__Body--title:has-text('Product Listing Page')").first();
-        if (await titleArea.isVisible().catch(() => false)) {
-          await titleArea.click({ timeout: 5_000, force: true });
-        } else {
-          await card.locator(".ContentModel__Body").first().click({ timeout: 5_000, force: true }).catch(() => card.click({ timeout: 5_000, force: true }));
-        }
+        const clickTarget = (await titleArea.isVisible().catch(() => false)) ? titleArea : card.locator(".ContentModel__Body").first();
+        const detailsModal = page.locator('[data-test-id="content-model-details-modal"]').first();
+        await clickTarget.click({ timeout: 5_000, force: true }).catch(() => {});
         await page.waitForTimeout(1_200);
-        await page.locator('[data-test-id="content-model-details-modal"]').first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+        // Hovering the card reveals an Import button but does not open the details modal; if the
+        // Playwright click didn't register a real click on the app (only the :hover state applied),
+        // dispatch a native click event, then fall back to clicking the raw card container.
+        if (!(await detailsModal.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          await clickTarget
+            .evaluate((n) => n.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window })))
+            .catch(() => {});
+          await page.waitForTimeout(1_200);
+        }
+        if (!(await detailsModal.isVisible({ timeout: 3_000 }).catch(() => false))) {
+          await card.click({ timeout: 5_000, force: true }).catch(() => {});
+          await page.waitForTimeout(1_200);
+        }
+        await detailsModal.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
         break;
       }
 
