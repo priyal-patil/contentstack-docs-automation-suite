@@ -20530,7 +20530,7 @@ export async function performAction(
             break;
           }
         }
-        if (step.target === "Create New (doc step)") {
+        if (step.target === "Create New (doc step)" || step.target === "Create New") {
           const createNewSel = '[data-test-id="cs-cb-new-ct-child"]';
           const newCtBtnSel =
             '[data-test-id="cs-cb-new-ct"], button:has-text("+ New Content Type"), button:has-text("New Content Type")';
