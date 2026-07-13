@@ -399,6 +399,28 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-test-id="cs-users-org-role"], [data-test-id="cs-org-role-select"], [data-test-id="cs-edit-user-org-role"], select[name*="role" i], [aria-label*="organization role" i]',
 
   /**
+   * "Edit User" screen heading, reached via the row actions ⋮ menu > Edit
+   * (doc step: "On the Edit User screen, update the following as required").
+   * DOM not yet captured for this screen; selector derived from page-title naming pattern.
+   */
+  "Edit User screen heading (doc step)":
+    '[data-test-id="cs-page-title"]:has-text("Edit User"), h1:has-text("Edit User"), h2:has-text("Edit User")',
+
+  /**
+   * "Administration" roles row within Manage Product Roles on the Edit User screen
+   * (doc step bullet: "The organization-level Administration roles").
+   */
+  "Administration roles section on Edit User screen (doc step)":
+    '[data-test-id*="administration" i]:has-text("Administration"), li:has-text("Administration"):has-text("Manage Administration roles"), div:has-text("Manage Administration roles")',
+
+  /**
+   * "CMS" product roles row within Manage Product Roles on the Edit User screen
+   * (doc step bullet: "The product roles for each product, such as the CMS, Assets, and AgentOS").
+   */
+  "CMS product roles section on Edit User screen (doc step)":
+    '[data-test-id*="cms" i]:has-text("CMS"), li:has-text("CMS"):has-text("Manage CMS roles"), div:has-text("Manage CMS roles")',
+
+  /**
    * Stack Role section on the Edit user page
    * (doc step: "You can also change the Stack Role of the user").
    */
