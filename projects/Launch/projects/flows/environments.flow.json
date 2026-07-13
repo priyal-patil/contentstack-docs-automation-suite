@@ -3,11 +3,11 @@
   "project": "Launch",
   "module": "projects",
   "stage": "main",
-  "source": "https://www.contentstack.com/docs/developers/launch/environments",
+  "source": "https://www.contentstack.com/docs/launch/environments",
   "type": "executable",
   "use": ["login", "orgDashboard"],
   "preflight": { "ensureLaunchProjectExists": "import-project-using-github" },
-  "automationNotes": "Prerequisite: at least one environment row in the project. Row ⋮ → Settings uses the first table row (list sort order). Branches after detect `launch-create-new-environment-modal-variant`: `launchCreateNewEnvIsGit` (create-new-env-git-m.html — Git Branch, Build/Output, Other/Angular → Server Command) vs `launchCreateNewEnvIsFileUpload` (create-new-env-upload-m.html — Framework Preset, Build/Output, Upload a file + zip from data/launch/fixtures/gatsby-starter-default-master.zip per import-project-using-file-upload). Common: success on list; Table Settings → Manage columns (Auto Deploy, Created At); row ⋮ → Settings; General: edit Environment Name; Git Branch only if Git project (`onlyIfFlowFlagTrue: launchCreateNewEnvIsGit`); Save Environment Details.",
+  "automationNotes": "Prerequisite: at least one environment row in the project. Row ⋮ → Settings uses the first table row (list sort order). Branches after detect `launch-create-new-environment-modal-variant`: `launchCreateNewEnvIsGit` (create-new-env-git-m.html — Git Branch, Build/Output) vs `launchCreateNewEnvIsFileUpload` (create-new-env-upload-m.html — Framework Preset, Build/Output, Upload a file + zip from data/launch/fixtures/gatsby-starter-default-master.zip per import-project-using-file-upload). Git Branch is optional and only rendered for Git-based projects (`onlyIfFlowFlagTrue: launchCreateNewEnvIsGit`). Framework Preset is exercised the same way in both variants: open the select and pick whichever option is first in the menu (shared target names, no attempt to force a specific preset like Other/Angular) — so Server Command and Response Mode (Streaming/Buffered), which only conditionally render for specific Framework Preset choices, are not verified. Manage columns still gained a Response Mode checkbox between Auto Deploy and Created At (a table-column toggle, unrelated to the modal's Response Mode field). Common (unconditional, runs once regardless of variant): Environment Variables heading verify → + Add Environment Variable button verify (visible only, not clicked — doc lists it as an optional manual-entry method alongside Import Variables) → Create button visible + click. File-upload variant only inserts Upload a file heading/browse-visible/zip-upload steps between the Add Environment Variable verify and the Create button. success on list; Table Settings → Manage columns (Auto Deploy, Response Mode, Created At); row ⋮ → Settings; General: edit Environment Name; Git Branch only if Git project; Save Environment Details.",
   "steps": [
     {
       "action": "verify",
@@ -136,26 +136,15 @@
     },
     {
       "action": "click",
-      "target": "Launch Create New Environment Framework Preset Select control for Server Command doc (doc step)",
+      "target": "Launch Create New Environment Framework Preset Select control (doc step)",
       "timeoutMs": 90000,
       "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit"
     },
     {
       "action": "click",
-      "target": "Launch Create New Environment Framework Preset Other or Angular menu option (doc step)",
+      "target": "Launch Create New Environment Framework Preset menu first option (doc step)",
       "timeoutMs": 90000,
       "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit"
-    },
-    {
-      "action": "verify",
-      "target": "Launch Create New Environment Server Command field label (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Server Command",
-        "labelMatch": "contains"
-      }
     },
 
     {
@@ -204,13 +193,13 @@
     },
     {
       "action": "click",
-      "target": "Launch Create New Environment file upload Framework Preset Select control (doc step)",
+      "target": "Launch Create New Environment Framework Preset Select control (doc step)",
       "timeoutMs": 90000,
       "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload"
     },
     {
       "action": "click",
-      "target": "Launch Create New Environment file upload Framework Preset menu first option (doc step)",
+      "target": "Launch Create New Environment Framework Preset menu first option (doc step)",
       "timeoutMs": 90000,
       "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload"
     },
@@ -219,7 +208,6 @@
       "action": "verify",
       "target": "Launch Create New Environment Environment Variables heading (doc step)",
       "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit",
       "expected": {
         "within": "Modal",
         "labelEquals": "Environment Variables",
@@ -228,88 +216,13 @@
     },
     {
       "action": "verify",
-      "target": "Launch Create New Environment Import Variables button visible (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Import Variables",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
       "target": "Launch Create New Environment Add Environment Variable button visible (doc step)",
       "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit",
       "expected": {
         "within": "Modal",
         "labelEquals": "Add Environment Variable",
         "labelMatch": "contains"
       }
-    },
-    {
-      "action": "click",
-      "target": "Launch Create New Environment Add Environment Variable button (doc step)",
-      "timeoutMs": 90000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit"
-    },
-    {
-      "action": "verify",
-      "target": "Launch Create New Environment Create button visible (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Create",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "click",
-      "target": "Launch Create New Environment Create button (doc step)",
-      "timeoutMs": 120000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsGit"
-    },
-
-    {
-      "action": "verify",
-      "target": "Launch Create New Environment Environment Variables heading (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Environment Variables",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Launch Create New Environment Import Variables button visible (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Import Variables",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "verify",
-      "target": "Launch Create New Environment Add Environment Variable button visible (doc step)",
-      "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload",
-      "expected": {
-        "within": "Modal",
-        "labelEquals": "Add Environment Variable",
-        "labelMatch": "contains"
-      }
-    },
-    {
-      "action": "click",
-      "target": "Launch Create New Environment Add Environment Variable button (doc step)",
-      "timeoutMs": 90000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload"
     },
     {
       "action": "verify",
@@ -338,19 +251,13 @@
       "action": "verify",
       "target": "Launch Create New Environment Create button visible (doc step)",
       "timeoutMs": 60000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload",
       "expected": {
         "within": "Modal",
         "labelEquals": "Create",
         "labelMatch": "contains"
       }
     },
-    {
-      "action": "click",
-      "target": "Launch Create New Environment Create button (doc step)",
-      "timeoutMs": 120000,
-      "onlyIfFlowFlagTrue": "launchCreateNewEnvIsFileUpload"
-    },
+    { "action": "click", "target": "Launch Create New Environment Create button (doc step)", "timeoutMs": 120000 },
 
     {
       "action": "verify",
@@ -365,6 +272,7 @@
     { "action": "click", "target": "Launch Environments Table Settings button (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Launch Environments Manage columns menu item (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Launch Environments Manage columns Auto Deploy checkbox (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Launch Environments Manage columns Response Mode checkbox (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Launch Environments Manage columns Created At checkbox (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",

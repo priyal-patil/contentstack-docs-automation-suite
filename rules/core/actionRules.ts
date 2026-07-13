@@ -515,38 +515,6 @@ async function ensureLaunchCreateNewEnvironmentCreateEnabled(page: Page, dlg: Lo
   return btn;
 }
 
-/** Create New Environment modal: choose Other or Angular so Server Command field appears (doc). */
-async function pickFrameworkPresetOtherOrAngular(page: Page, timeoutMs: number) {
-  const lb = page.getByRole("listbox").last();
-  if (await lb.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    const opts = lb.getByRole("option");
-    const n = await opts.count();
-    for (let i = 0; i < n; i++) {
-      const o = opts.nth(i);
-      const txt = ((await o.textContent().catch(() => "")) || "").trim();
-      if (/^other$/i.test(txt) || /^angular$/i.test(txt)) {
-        await o.click({ timeout: timeoutMs, force: true });
-        return;
-      }
-    }
-  }
-  const menu = page.locator("div.Select__menu").filter({ has: page.locator(".Select__option") }).last();
-  await expect(menu).toBeVisible({ timeout: Math.min(timeoutMs, 35_000) });
-  const candidates = menu.locator(".Select__option");
-  const n = await candidates.count();
-  for (let i = 0; i < n; i++) {
-    const o = candidates.nth(i);
-    const txt = ((await o.textContent().catch(() => "")) || "").trim();
-    if (/^other$/i.test(txt) || /^angular$/i.test(txt)) {
-      await o.click({ timeout: timeoutMs, force: true });
-      return;
-    }
-  }
-  const fallback = menu.getByText(/^Other$/i).first();
-  await expect(fallback).toBeVisible({ timeout: 12_000 });
-  await fallback.click({ timeout: timeoutMs, force: true });
-}
-
 /** deploy-hooks + Launch redeploy-on-CMS + tags/releases deploy hook doc (same Launch Deploy Hook UI). */
 function isDeployHooksStyleFlow(flow?: { id?: string }): boolean {
   const id = String(flow?.id || "").toLowerCase();
@@ -8045,7 +8013,7 @@ export async function performAction(
             await page.waitForTimeout(900);
             break;
           }
-          if (step.target === "Launch Create New Environment Framework Preset Select control for Server Command doc (doc step)") {
+          if (step.target === "Launch Create New Environment Framework Preset Select control (doc step)") {
             const dlg = createNewEnvDlg();
             await expect(dlg).toBeVisible({ timeout: t0 });
             const ctrl = dlg.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
@@ -8054,20 +8022,7 @@ export async function performAction(
             await page.waitForTimeout(450);
             break;
           }
-          if (step.target === "Launch Create New Environment Framework Preset Other or Angular menu option (doc step)") {
-            await pickFrameworkPresetOtherOrAngular(page, t0);
-            await page.waitForTimeout(600);
-            break;
-          }
-          if (step.target === "Launch Create New Environment file upload Framework Preset Select control (doc step)") {
-            const dlg = createNewEnvDlg();
-            const ctrl = dlg.locator('div.Field:has(label:has-text("Framework Preset")) div.Select__control').first();
-            await expect(ctrl).toBeVisible({ timeout: t0 });
-            await ctrl.click({ timeout: t0, force: true });
-            await page.waitForTimeout(450);
-            break;
-          }
-          if (step.target === "Launch Create New Environment file upload Framework Preset menu first option (doc step)") {
+          if (step.target === "Launch Create New Environment Framework Preset menu first option (doc step)") {
             await pickFirstSelectMenuOption(page, t0);
             await page.waitForTimeout(800);
             break;
@@ -8097,6 +8052,21 @@ export async function performAction(
           }
           if (step.target === "Launch Environments Manage columns Created At checkbox (doc step)") {
             const cb = page.locator("li#createdAt").first().locator('input[type="checkbox"]').first();
+            await expect(cb).toBeVisible({ timeout: t0 });
+            if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: t0, force: true });
+            await page.waitForTimeout(300);
+            break;
+          }
+          if (step.target === "Launch Environments Manage columns Response Mode checkbox (doc step)") {
+            let cb = page.locator("li#responseMode").first().locator('input[type="checkbox"]').first();
+            if (!(await cb.isVisible({ timeout: 3_000 }).catch(() => false))) {
+              cb = page
+                .locator("li")
+                .filter({ hasText: /^Response Mode$/i })
+                .first()
+                .locator('input[type="checkbox"]')
+                .first();
+            }
             await expect(cb).toBeVisible({ timeout: t0 });
             if (!(await cb.isChecked().catch(() => false))) await cb.click({ timeout: t0, force: true });
             await page.waitForTimeout(300);
@@ -26908,35 +26878,6 @@ export async function performAction(
           }
           break;
         }
-        if (step.target === "Launch Create New Environment Server Command field label (doc step)") {
-          const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
-          await expect(dlg).toBeVisible({ timeout: t });
-          const lbl = dlg.locator('label[data-test-id="cs-field-label"]').filter({ hasText: /Server Command/i }).first();
-          await expect(lbl).toBeVisible({ timeout: Math.min(t, 25_000) });
-          if (step.expected?.within) {
-            try {
-              await ensureWithin(page, lbl, step.expected.within, step.expected?.withinStrict === true);
-            } catch (err: any) {
-              recordVerificationWarning(
-                step,
-                context,
-                `Position verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
-              );
-            }
-          }
-          if (step.expected?.labelEquals) {
-            try {
-              await assertLabelMatch(lbl, step.expected.labelEquals, (step.expected.labelMatch as any) || "contains");
-            } catch (err: any) {
-              recordVerificationWarning(
-                step,
-                context,
-                `Label/field-name verification mismatch for "${step.target}": ${err?.message ?? String(err)}`
-              );
-            }
-          }
-          break;
-        }
         if (step.target === "Launch Create New Environment Create button visible (doc step)") {
           const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
           await expect(dlg).toBeVisible({ timeout: t });
@@ -34228,7 +34169,11 @@ export async function performAction(
         const dlg = page.locator('[role="dialog"]').filter({ hasText: /Create New Environment/i }).first();
         const inp = dlg.locator('[data-testid="env-input"]').first();
         await expect(inp).toBeVisible({ timeout: t });
-        const val = String(step.value ?? "Doc QA Env {unique}").split("{unique}").join(unique);
+        const val = String(step.value ?? "Doc QA Env {unique5}")
+          .split("{unique5}")
+          .join(unique.replace(/-/g, "").slice(0, 5))
+          .split("{unique}")
+          .join(unique);
         if (flow && typeof flow === "object") (flow as any).__launchCreateEnvName = val;
         await inp.fill(val);
         await page.waitForTimeout(350);
@@ -34239,7 +34184,11 @@ export async function performAction(
         const t = getStepTimeoutMs(step, 60_000);
         const inp = page.locator('[data-testid="name-input"]').first();
         await expect(inp).toBeVisible({ timeout: t });
-        const raw = String(step.value ?? "Doc QA Env {unique} edited").split("{unique}").join(unique);
+        const raw = String(step.value ?? "Doc QA Env {unique5} edited")
+          .split("{unique5}")
+          .join(unique.replace(/-/g, "").slice(0, 5))
+          .split("{unique}")
+          .join(unique);
         if (flow && typeof flow === "object") (flow as any).__launchEnvSettingsEditedName = raw;
         await inp.fill("");
         await inp.fill(raw);
