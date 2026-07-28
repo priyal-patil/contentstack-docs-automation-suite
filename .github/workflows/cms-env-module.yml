@@ -226,3 +226,39 @@ jobs:
               --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Environment Module — ${ENV_OUTCOME:-unknown}* | Duration: ${DURATION} | 3 flows (add, edit, delete) | <${RUN_URL}|Open run>\"}" \
               | grep -q '"ok":true' && echo "Slack posted." || echo "::warning::Slack API call failed."
           fi
+
+      - name: Publish report to dashboard (CMS Environment Module)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.DASHBOARD_DATA_TOKEN }}
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BATCH_START_EPOCH: ${{ steps.run_start.outputs.start_epoch }}
+        run: |
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::warning::Publish to dashboard skipped — DASHBOARD_DATA_TOKEN secret not configured."
+            exit 0
+          fi
+          if [[ ! -f "${REPORT_DIR}/flows-results.json" ]]; then
+            echo "::warning::Publish to dashboard skipped — flows-results.json not found."
+            exit 0
+          fi
+          ELAPSED=$(( $(date +%s) - BATCH_START_EPOCH ))
+          DURATION_SECONDS="${ELAPSED}" npx ts-node scripts/publishToDashboard.ts \
+            --reportDir "${REPORT_DIR}" \
+            --suite cms-environment \
+            --suiteLabel "CMS Environment Module" \
+            --out /tmp/dashboard-cms-environment.json \
+            2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
+          cd /tmp/dashboard-data
+          node scripts/publish.js /tmp/dashboard-cms-environment.json
+          git config user.name "dashboard-publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish docs-contentstack-ai-automation/cms-environment report ($GITHUB_RUN_ID)" || exit 0
+          for i in 1 2 3 4 5; do
+            git push origin main && break
+            git pull --rebase origin main
+            sleep $((RANDOM % 5 + 1))
+          done
