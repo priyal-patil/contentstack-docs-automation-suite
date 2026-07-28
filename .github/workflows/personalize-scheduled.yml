@@ -1,0 +1,159 @@
+# =============================================================================
+# Personalize — all flows (23 URLs, 4 workers, ~15 min/flow cap)
+# =============================================================================
+#
+# Runs all Personalize project flows via run-generic-project-headless.sh Personalize.
+# Single job — no batch splitting required.
+#
+# Trigger: workflow_dispatch (manual) or schedule (configurable below).
+# =============================================================================
+
+name: Personalize — all flows
+
+on:
+  schedule:
+    # 6:00 AM IST (UTC+5:30) = 00:30 UTC
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_slack:
+        description: "Skip Slack notifications"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  personalize:
+    name: "Personalize — 23 flows (4 workers, ~15 min/flow)"
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
+      options: --user root
+    timeout-minutes: 120
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      SKIP_OPEN_DASHBOARD: "1"
+      PW_WORKERS: "4"
+      PW_SLOWMO: "0"
+      PW_FLOW_MAX_MINUTES: "15"
+      SKIP_SLACK: "1"
+      REPORT_DIR: ${{ github.workspace }}/reports/personalize-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}" && : "${DEFAULT_STACK:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      - name: Record start time
+        id: run_start
+        run: |
+          echo "start_epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
+          echo "start_iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          mkdir -p "${{ env.REPORT_DIR }}"
+
+      - name: Run Personalize flows
+        id: personalize_run
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          DOCS_AUDIT_BACKGROUND: "0"
+        run: bash scripts/run-generic-project-headless.sh Personalize
+
+      - name: Generate reports (always)
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          BATCH_START_EPOCH: ${{ steps.run_start.outputs.start_epoch }}
+        run: |
+          END=$(date +%s); SECS=$(( END - BATCH_START_EPOCH ))
+          echo "Duration: $(( SECS/60 ))m $(( SECS%60 ))s" | tee -a "$REPORT_DIR/personalize-run.log"
+          if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
+            npx ts-node scripts/generateDashboardReport.ts --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateUnifiedReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+          fi
+
+      - name: Upload Personalize reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: personalize-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/personalize-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: personalize-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/**/test-failed-*.png
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Post Slack — Personalize
+        if: always()
+        env:
+          REPORT_DIR: ${{ env.REPORT_DIR }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          PERSONALIZE_STEP_OUTCOME: ${{ steps.personalize_run.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SKIP_SLACK: ${{ github.event.inputs.skip_slack || '0' }}
+        run: |
+          [[ "${SKIP_SLACK}" == "true" || -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]] && exit 0
+          START="${{ steps.run_start.outputs.start_epoch }}"
+          ELAPSED=$(( $(date +%s) - START ))
+          DURATION="$(( ELAPSED/60 ))m $(( ELAPSED%60 ))s"
+          if [[ -f "${REPORT_DIR}/flows-results.json" ]]; then
+            CMS_SLACK_TITLE="Personalize — URL run summary" \
+            CMS_BATCH_DURATION_LABEL="Personalize (${DURATION})" \
+              npx ts-node scripts/urlRunSummaryAndSlack.ts --reportDir "${REPORT_DIR}" 2>&1 || true
+          else
+            ICON=":x:"; [[ "${PERSONALIZE_STEP_OUTCOME}" == "success" ]] && ICON=":white_check_mark:"
+            curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *Personalize — ${PERSONALIZE_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 23 flows | 4 workers. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+          fi
