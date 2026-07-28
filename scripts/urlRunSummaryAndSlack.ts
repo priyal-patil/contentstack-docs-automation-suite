@@ -50,8 +50,10 @@ function hasFlag(argv: string[], name: string): boolean {
   return argv.includes(name);
 }
 
-/** Collect flow tests from Playwright JSON (same shape as scripts/generateDashboardReport.ts). */
-function collectFlowResults(pw: any): Array<{ id: string; status: string; error?: string }> {
+/** Collect flow tests from Playwright JSON (same shape as scripts/generateDashboardReport.ts).
+ *  Exported so other scripts (e.g. scripts/publishToDashboard.ts) reuse this parsing
+ *  instead of re-deriving stats from raw Playwright JSON. */
+export function collectFlowResults(pw: any): Array<{ id: string; status: string; error?: string }> {
   const rows: Array<{ id: string; status: string; error?: string }> = [];
   function walk(suite: any) {
     for (const spec of suite?.specs || []) {
@@ -625,8 +627,12 @@ async function main(): Promise<void> {
   console.log("✅ Posted summary to Slack");
 }
 
-main().catch((e) => {
-  // eslint-disable-next-line no-console
-  console.error(e?.stack || String(e));
-  process.exitCode = 1;
-});
+// Guard so other scripts can `import { collectFlowResults } from "./urlRunSummaryAndSlack"`
+// (e.g. scripts/publishToDashboard.ts) without triggering this script's own Slack-posting main().
+if (require.main === module) {
+  main().catch((e) => {
+    // eslint-disable-next-line no-console
+    console.error(e?.stack || String(e));
+    process.exitCode = 1;
+  });
+}
