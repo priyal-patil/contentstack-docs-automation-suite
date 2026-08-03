@@ -23,6 +23,14 @@ function mustGetEnv(name: string): string {
 }
 
 export default async () => {
+  // The `healing` project holds pure unit tests for the self-healing matcher: they parse HTML fixtures
+  // with cheerio and never open the app, so logging in would be wasted time (and would fail without
+  // credentials). Set by `npm run test:healing`.
+  if (process.env.SKIP_GLOBAL_SETUP === "1") {
+    console.log("⏭️  SKIP_GLOBAL_SETUP=1 — skipping login (unit-test run).");
+    return;
+  }
+
   // Reset per-run doc-step JSONL so getDocStepFailures() does not merge failures from earlier Playwright invocations (same 2h window).
   const reportDir = process.env.REPORT_DIR || path.resolve(process.cwd(), "reports/latest");
   const docStepWorkerDir = path.join(reportDir, ".doc-step-workers");
@@ -77,7 +85,14 @@ export default async () => {
 
   // If already authenticated, /#!/stacks stays in stack context.
   // If unauthenticated, Contentstack redirects to /#!/login.
-  if (!page.url().includes("/#!/login")) {
+  //
+  // `waitUntil: "commit"` resolves BEFORE that client-side redirect has run, so page.url() still reads
+  // /#!/stacks here even on a brand-new unauthenticated context. Checking the URL alone therefore
+  // reports "already authenticated", saves an EMPTY storage state, and prints success — leaving every
+  // subsequent flow to run logged out. Require real cookies as the actual proof of a session.
+  await page.waitForLoadState("domcontentloaded").catch(() => {});
+  const sessionCookies = await page.context().cookies();
+  if (!page.url().includes("/#!/login") && sessionCookies.length > 0) {
     await page.context().storageState({ path: storagePath });
     console.log("✅ Saved auth state to:", storagePath);
     await browser.close();
