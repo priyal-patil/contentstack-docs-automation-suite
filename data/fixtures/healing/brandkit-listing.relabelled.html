@@ -1,0 +1,27 @@
+<!--
+  Drift case 3 — CHANGED LABEL TEXT, all stable attributes gone.
+  data-test-id and aria-label were both removed and the visible label was pluralised
+  ("New Brand Kit" -> "New Brand Kits"). Only tier 4 (fuzzy text against the doc's expected label) can
+  recover this, and only because the change is small — which is the intended behaviour.
+-->
+<html>
+  <body>
+    <div class="cs-layout">
+      <nav role="navigation" class="cs-sidebar">
+        <a href="/brand-kit">Brand Kit</a>
+      </nav>
+      <main class="cs-main">
+        <div class="cs-page-header">
+          <h1>Brand Kits</h1>
+          <div class="cs-page-header__actions">
+            <button class="cs-btn cs-btn--primary">New Brand Kits</button>
+          </div>
+        </div>
+        <table class="cs-table">
+          <tr><th>Name</th><th>Stacks</th></tr>
+          <tr><td>Acme Brand</td><td>2</td></tr>
+        </table>
+      </main>
+    </div>
+  </body>
+</html>

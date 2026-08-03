@@ -1,0 +1,227 @@
+# =============================================================================
+# Self-healing docs QA agent
+# =============================================================================
+#
+# Consumes a failed scheduled run's `doc-step-failures.json`, retries each failed flow with a
+# DOM-assisted element-recovery loop, and separates self-healed locator drift from genuine doc/app
+# mismatch.
+#
+# Triggers
+#   workflow_dispatch  — manual, against any prior run id (the default while this is being proven)
+#   workflow_run       — automatically after "BrandKit — all flows" fails. Disabled by default: set
+#                        repository variable HEALING_AUTO_TRIGGER=1 to enable.
+#
+# Safety
+#   - Opens a PR; never pushes to main. Auto-merge is deliberately not wired up.
+#   - Each fix APPENDS the recovered selector to the existing chain, so the original locator still
+#     matches first and a wrong heal is inert rather than destructive.
+#   - The agent's write path is restricted to projects/**/selectors/*.selectors.ts — it can never
+#     modify documentation or flow definitions.
+# =============================================================================
+
+name: Self-healing agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "GHA run id of the FAILED run whose reports should be healed"
+        required: true
+        type: string
+      artifact_name:
+        description: "Reports artifact name (default: brandkit-reports-<run_id>-1)"
+        required: false
+        type: string
+      project:
+        description: "Only heal flows from this project"
+        required: false
+        default: "BrandKit"
+        type: string
+      max_attempts:
+        description: "Attempt budget for idempotent flows"
+        required: false
+        default: "5"
+        type: string
+      dry_run:
+        description: "Find and verify heals but write nothing"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      open_pr:
+        description: "Commit fixes and open a PR"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      enable_llm:
+        description: "Consult the LLM tier when rule-based matching misses"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+  workflow_run:
+    workflows: ["BrandKit — all flows"]
+    types: [completed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  heal:
+    name: "Heal failed doc flows"
+    # Manual runs always proceed. Automatic runs require the upstream run to have FAILED and the
+    # HEALING_AUTO_TRIGGER variable to be set, so enabling automation is an explicit opt-in.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'failure' && vars.HEALING_AUTO_TRIGGER == '1')
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
+      options: --user root
+    timeout-minutes: 120
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      OPEN_FLOW_REPORT: "false"
+      SKIP_OPEN_DASHBOARD: "1"
+      SKIP_SLACK: "1"
+      PW_WORKERS: "1"
+      SOURCE_RUN_ID: ${{ github.event.inputs.run_id || github.event.workflow_run.id }}
+      REPORT_DIR: ${{ github.workspace }}/reports/healing-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Full history so the healing branch can be created and pushed.
+          fetch-depth: 0
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # Mirrors the .env step in brandkit-scheduled.yml exactly — same secret names, same hard-fail on
+      # missing credentials, same 600 perms. Healing logs into the live app, so this must match.
+      - name: Write .env
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?}" && : "${CS_PASSWORD:?}" && : "${DEFAULT_STACK:?}"
+          { echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"; echo "CS_PASSWORD=${CS_PASSWORD}"
+            echo "DEFAULT_STACK=${DEFAULT_STACK}"
+            [[ -n "${SLACK_BOT_TOKEN:-}" ]] && echo "SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}" || true
+            [[ -n "${SLACK_CHANNEL_ID:-}" ]] && echo "SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}" || true
+          } > .env && chmod 600 .env
+
+      # The matcher is the riskiest component; if its unit tests fail, do not touch any selector file.
+      - name: Unit-test the element matcher (gate)
+        run: SKIP_GLOBAL_SETUP=1 npx playwright test --project=healing --reporter=list
+
+      - name: Download reports from the failed run
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.inputs.artifact_name || format('brandkit-reports-{0}-1', env.SOURCE_RUN_ID) }}
+          path: ${{ env.REPORT_DIR }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show what will be healed
+        run: |
+          echo "Report dir: ${REPORT_DIR}"
+          ls -la "${REPORT_DIR}" || true
+          if [[ ! -f "${REPORT_DIR}/doc-step-failures.json" ]]; then
+            echo "::error::No doc-step-failures.json in the downloaded artifact — nothing to heal."
+            exit 1
+          fi
+          node -e "const f=require('${REPORT_DIR}/doc-step-failures.json');const a=Array.isArray(f)?f:(f.failures||[]);console.log('failure records:',a.length)"
+
+      - name: Run the self-healing agent
+        id: heal
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          ARGS=( --reportDir "${REPORT_DIR}" --max-attempts "${{ github.event.inputs.max_attempts || '5' }}" )
+          [[ -n "${{ github.event.inputs.project || 'BrandKit' }}" ]] && ARGS+=( --project "${{ github.event.inputs.project || 'BrandKit' }}" )
+          [[ "${{ github.event.inputs.dry_run }}" == "true" ]] && ARGS+=( --dry-run )
+          [[ "${{ github.event.inputs.enable_llm }}" == "true" ]] && ARGS+=( --llm )
+          [[ "${{ github.event.inputs.open_pr || 'true' }}" == "true" && "${{ github.event.inputs.dry_run }}" != "true" ]] && ARGS+=( --pr )
+
+          # --transpile-only: rules/core/actionRules.ts carries 5 pre-existing type errors that would
+          # otherwise abort any ts-node script importing it. `playwright test` already transpiles
+          # without checking, so this matches how the suite runs today.
+          echo "Running: npx ts-node --transpile-only scripts/healFailedFlows.ts ${ARGS[*]}"
+          npx ts-node --transpile-only scripts/healFailedFlows.ts "${ARGS[@]}"
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Job summary
+        if: always()
+        run: |
+          SUM="${REPORT_DIR}/healing/healing-report.md"
+          if [[ -f "$SUM" ]]; then cat "$SUM" >> "$GITHUB_STEP_SUMMARY"; else echo "No healing report produced." >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Upload healing artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: healing-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.REPORT_DIR }}/healing
+            data/dom/healing
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Post Slack summary
+        if: always() && github.event.inputs.dry_run != 'true'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          [[ -z "${SLACK_BOT_TOKEN:-}" || -z "${SLACK_CHANNEL_ID:-}" ]] && { echo "Slack not configured; skipping."; exit 0; }
+          SUMMARY="${REPORT_DIR}/healing/healing-summary.json"
+          [[ -f "$SUMMARY" ]] || { echo "No summary to post."; exit 0; }
+          HEALED=$(node -e "console.log(require('$SUMMARY').counts.healed)")
+          GENUINE=$(node -e "console.log(require('$SUMMARY').counts.genuine)")
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          curl -sS -X POST "https://slack.com/api/chat.postMessage" \
+            -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+            -H "Content-type: application/json; charset=utf-8" \
+            --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"🔧 *Self-healing agent* — ${HEALED} auto-healed, ${GENUINE} genuine doc/app mismatch(es). <${RUN_URL}|Open run>\"}" \
+            | grep -q '"ok":true' || echo "Slack post rejected (non-fatal)."
+
+      # Genuine doc/app drift exits 2 — a real finding for technical writers, not an agent bug.
+      - name: Fail the job when genuine doc/app drift was found
+        if: always() && steps.heal.outputs.exit_code == '2'
+        run: |
+          echo "::warning::Genuine doc/app mismatch found — see the job summary and the healing artifact."
+          exit 1

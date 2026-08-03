@@ -1,0 +1,30 @@
+<!--
+  Drift case 4 — ELEMENT REMOVED ENTIRELY. This is the most important fixture in the set.
+
+  The "New Brand Kit" control is genuinely gone: the feature moved behind a different flow, so the doc
+  is now wrong. The matcher MUST return no candidate. A false positive here is the worst failure mode
+  the agent has — it would hide real documentation drift behind a fake heal — so the remaining controls
+  are deliberately plausible-but-wrong neighbours.
+-->
+<html>
+  <body>
+    <div class="cs-layout">
+      <nav role="navigation" class="cs-sidebar">
+        <a href="/brand-kit" aria-label="Brand Kit">Brand Kit</a>
+      </nav>
+      <main class="cs-main">
+        <div class="cs-page-header">
+          <h1>Brand Kits</h1>
+          <div class="cs-page-header__actions">
+            <button class="cs-btn cs-btn--ghost" aria-label="Filter results">Filter</button>
+            <button class="cs-btn cs-btn--ghost" aria-label="Sort results">Sort</button>
+            <a class="cs-link" href="/docs/brand-kit">Learn more</a>
+          </div>
+        </div>
+        <div class="cs-empty-state">
+          <p>Brand Kits are now created from the Studio workspace.</p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

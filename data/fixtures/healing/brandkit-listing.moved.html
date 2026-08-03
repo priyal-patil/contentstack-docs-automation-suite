@@ -1,0 +1,30 @@
+<!--
+  Drift case 2 — MOVED ELEMENT with data-test-id DROPPED.
+  The control was relocated out of the page header into a new toolbar, and lost its test id, but keeps
+  its aria-label. Tier 2 should recover it via aria-label; the DOM path is now different, so this also
+  exercises the fact that structural matching alone would have failed.
+-->
+<html>
+  <body>
+    <div class="cs-layout">
+      <nav role="navigation" class="cs-sidebar">
+        <a href="/brand-kit" aria-label="Brand Kit">Brand Kit</a>
+      </nav>
+      <div class="cs-toolbar">
+        <div class="cs-toolbar__group">
+          <button class="cs-btn cs-btn--ghost" aria-label="Filter">Filter</button>
+          <button class="cs-btn cs-btn--primary" aria-label="New Brand Kit">New Brand Kit</button>
+        </div>
+      </div>
+      <main class="cs-main">
+        <div class="cs-page-header">
+          <h1>Brand Kits</h1>
+        </div>
+        <table class="cs-table">
+          <tr><th>Name</th><th>Stacks</th></tr>
+          <tr><td>Acme Brand</td><td>2</td></tr>
+        </table>
+      </main>
+    </div>
+  </body>
+</html>

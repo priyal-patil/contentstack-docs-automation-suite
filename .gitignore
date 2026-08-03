@@ -2,11 +2,16 @@
 .env.*
 !.env.example
 auth.json
+optimizely-auth.json
+optimizely-after-login.png
 encryption_data.xlsx
 node_modules/
 playwright-report/
 test-results/
 reports/
 tools/out/
+# Per-attempt DOM snapshots written by the self-healing agent. Large (tens of MB per run) and fully
+# regenerable. The curated reference snapshots in data/dom/<Project>/ stay tracked deliberately.
+data/dom/healing/
 .DS_Store
 *.log

@@ -1,0 +1,413 @@
+// core/healing/reportParser.ts
+/**
+ * Turns a run's `doc-step-failures.json` into `HealTarget[]`.
+ *
+ * Two details that matter and are easy to get wrong:
+ *
+ *  1. **Cascade entries must be dropped.** `core/executor.ts` records every step after a
+ *     `warnAndFailRest` step as `"Not executed — blocked by step N …"`. Those are not real failures;
+ *     healing them would be meaningless. Only genuine step failures are kept.
+ *
+ *  2. **One target per flow.** The executor stops a flow at its first hard failure, so a flow has at
+ *     most one real failure point per run. If several are present, the earliest step wins — later
+ *     ones are downstream noise.
+ */
+import fs from "fs";
+import path from "path";
+import { classifyFlow } from "./flowClassifier";
+import { resolveCurrentSelector } from "./selectorLayers";
+import type { HealTarget } from "./types";
+import {
+  fetchDocContent,
+  parseLabelMismatch,
+  parseContainerMismatch,
+  reconcile,
+  renderDocCheck,
+  docPhrasesFromLocator,
+  type DocCheck,
+  type DriftKind,
+} from "./docVerifier";
+
+const REPO_ROOT = path.resolve(__dirname, "../..");
+
+type RawFailure = {
+  documentUrl?: string;
+  flowId?: string;
+  stepIndex?: number;
+  stepNumber?: number;
+  action?: string;
+  target?: string;
+  errorMessage?: string;
+  missingElementSummary?: string;
+  screenshotRelativePath?: string;
+  step?: Record<string, unknown>;
+};
+
+/** Cascade markers written by executor.ts when a warn-and-fail-rest step blocks the remainder. */
+const CASCADE = /^Not executed — blocked by step \d+/;
+
+/** Locate a flow JSON by id anywhere under projects/. */
+function findFlowPath(flowId: string): string | undefined {
+  const root = path.join(REPO_ROOT, "projects");
+  const stack = [root];
+  while (stack.length) {
+    const dir = stack.pop()!;
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const e of entries) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) stack.push(p);
+      else if (e.name === `${flowId}.flow.json`) return p;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Human-facing doc title for the commit subject. Prefers the `Doc: <title> —` prefix the repo uses in
+ * `automationNotes`, else derives a title from the doc URL slug.
+ */
+export function deriveDocTitle(flow: any, documentUrl: string): string {
+  const notes = String(flow?.automationNotes ?? "");
+  const m = /^\s*Doc:\s*([^—\-\n]+)/i.exec(notes);
+  if (m?.[1]?.trim()) return m[1].trim();
+
+  const slug = documentUrl.split("?")[0].replace(/\/$/, "").split("/").pop() ?? flow?.id ?? "unknown";
+  return slug
+    .split("-")
+    .map((w: string) => (w.length > 2 ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+}
+
+/** Saved failure DOM that `core/executor.ts` persisted for this step, if it exists. */
+function findSavedSnapshot(
+  project: string,
+  moduleName: string,
+  flowId: string,
+  stepNumber: number,
+  reportDir: string
+): string | undefined {
+  const safe = flowId.replace(/[^a-zA-Z0-9_.-]/g, "_");
+  const candidates = [
+    path.join(REPO_ROOT, "data/dom", project, moduleName, `${safe}-step-${stepNumber}-failure.html`),
+    path.join(reportDir, "flow-screenshots", `${safe}-step-${stepNumber}.html`),
+  ];
+  return candidates.find((p) => fs.existsSync(p));
+}
+
+export function parseFailureReport(
+  reportDir: string,
+  opts?: { projectFilter?: string; flowFilter?: string[] }
+): HealTarget[] {
+  const file = path.isAbsolute(reportDir)
+    ? path.join(reportDir, "doc-step-failures.json")
+    : path.join(REPO_ROOT, reportDir, "doc-step-failures.json");
+
+  if (!fs.existsSync(file)) {
+    throw new Error(`No doc-step-failures.json found at ${file}`);
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+  const raw: RawFailure[] = Array.isArray(parsed) ? parsed : (parsed.failures ?? []);
+
+  // Earliest real failure per flow.
+  const earliest = new Map<string, RawFailure>();
+  for (const f of raw) {
+    if (!f.flowId || typeof f.stepIndex !== "number") continue;
+    if (CASCADE.test(String(f.errorMessage ?? ""))) continue;
+    const prev = earliest.get(f.flowId);
+    if (!prev || (prev.stepIndex ?? Infinity) > f.stepIndex) earliest.set(f.flowId, f);
+  }
+
+  const out: HealTarget[] = [];
+  for (const [flowId, f] of earliest) {
+    if (opts?.flowFilter?.length && !opts.flowFilter.includes(flowId)) continue;
+
+    const flowPath = findFlowPath(flowId);
+    if (!flowPath) continue;
+
+    let flow: any;
+    try {
+      flow = JSON.parse(fs.readFileSync(flowPath, "utf8"));
+    } catch {
+      continue;
+    }
+
+    const project = String(flow.project ?? "");
+    const moduleName = String(flow.module ?? "");
+    if (opts?.projectFilter && project !== opts.projectFilter) continue;
+
+    const documentUrl = String(f.documentUrl ?? flow.source ?? "");
+    const stepNumber = f.stepNumber ?? (f.stepIndex ?? 0) + 1;
+    const target = String(f.target ?? "");
+
+    const resolved = resolveCurrentSelector(project, moduleName, flowId, target);
+
+    out.push({
+      flowId,
+      project,
+      module: moduleName,
+      documentUrl,
+      docTitle: deriveDocTitle(flow, documentUrl),
+      stepIndex: f.stepIndex as number,
+      stepNumber,
+      action: String(f.action ?? ""),
+      target,
+      errorMessage: String(f.errorMessage ?? ""),
+      currentSelector: resolved.selector,
+      currentSelectorLayer: resolved.layer,
+      screenshotPath: f.screenshotRelativePath
+        ? path.join(reportDir, f.screenshotRelativePath)
+        : undefined,
+      snapshotPath: findSavedSnapshot(project, moduleName, flowId, stepNumber, reportDir),
+      mutability: classifyFlow(flow),
+      flowPath,
+      step: f.step ?? {},
+    });
+  }
+
+  return out.sort((a, b) => a.flowId.localeCompare(b.flowId));
+}
+
+/**
+ * Extract the locator string Playwright reported, so the audit trail records what was actually tried
+ * even though `DocStepFailure` has no dedicated `selectorUsed` field.
+ */
+export function extractAttemptedLocator(errorMessage: string): string | undefined {
+  const m = /Locator:\s*locator\((['"])([\s\S]*?)\1\)/.exec(errorMessage);
+  return m?.[2];
+}
+
+/**
+ * A documented behaviour the app no longer matches, which the flow tolerated instead of failing on.
+ *
+ * These are real doc/app drift and the highest-signal output for technical writers, but they are easy
+ * to lose: flows mark them `alwaysWarn` / `warnOnly` and fall back to an alternative route, so the run
+ * goes green. `create-a-brand-kit` is the worked example — the doc says Brand Kit appears in the left
+ * navigation, the app only exposes it via the Organization dashboard tile, and the flow warns and takes
+ * the tile. Nothing fails, so nothing was ever reported.
+ */
+export type DocDriftWarning = {
+  flowId: string;
+  project: string;
+  module: string;
+  documentUrl: string;
+  docTitle: string;
+  stepNumber: number;
+  action: string;
+  target: string;
+  warningMessage: string;
+  /** Which of doc / flow-JSON / app is wrong. Filled in by `verifyWarningsAgainstDocs()`. */
+  docCheck?: DocCheck;
+};
+
+/**
+ * Parse `doc-step-warnings.json` into doc-drift warnings.
+ *
+ * Deliberately separate from healing: a warning means the documented element was absent but the flow
+ * carried on, so there is no failing selector to repair — only a discrepancy for a human to judge.
+ */
+export function parseWarningReport(
+  reportDir: string,
+  opts?: { projectFilter?: string; flowFilter?: string[] }
+): DocDriftWarning[] {
+  const file = path.isAbsolute(reportDir)
+    ? path.join(reportDir, "doc-step-warnings.json")
+    : path.join(REPO_ROOT, reportDir, "doc-step-warnings.json");
+
+  if (!fs.existsSync(file)) return [];
+
+  let raw: Array<Record<string, any>>;
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    raw = Array.isArray(parsed) ? parsed : (parsed.warnings ?? []);
+  } catch {
+    return [];
+  }
+
+  const out: DocDriftWarning[] = [];
+  const seen = new Set<string>();
+
+  for (const w of raw) {
+    const flowId = String(w.flowId ?? "");
+    if (!flowId) continue;
+    if (opts?.flowFilter?.length && !opts.flowFilter.includes(flowId)) continue;
+
+    // Flows can warn on the same step across retries; report each (flow, step, message) once.
+    const key = `${flowId}::${w.stepNumber}::${w.warningMessage}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const flowPath = findFlowPath(flowId);
+    let flow: any = {};
+    let project = "";
+    let moduleName = "";
+    if (flowPath) {
+      try {
+        flow = JSON.parse(fs.readFileSync(flowPath, "utf8"));
+        project = String(flow.project ?? "");
+        moduleName = String(flow.module ?? "");
+      } catch {
+        /* fall through with blanks */
+      }
+    }
+    if (opts?.projectFilter && project && project !== opts.projectFilter) continue;
+
+    const documentUrl = String(w.documentUrl ?? flow.source ?? "");
+    out.push({
+      flowId,
+      project,
+      module: moduleName,
+      documentUrl,
+      docTitle: deriveDocTitle(flow, documentUrl),
+      stepNumber: Number(w.stepNumber ?? (Number(w.stepIndex ?? 0) + 1)),
+      action: String(w.action ?? ""),
+      target: String(w.target ?? ""),
+      warningMessage: String(w.warningMessage ?? ""),
+    });
+  }
+
+  return out.sort((a, b) => a.flowId.localeCompare(b.flowId) || a.stepNumber - b.stepNumber);
+}
+
+/**
+ * Condense a raw framework warning into one readable line.
+ *
+ * The raw messages embed a full Playwright failure — ANSI colour codes, `Expected: visible`, a
+ * `Call log:` block and the whole selector chain — which buries the part a technical writer needs. The
+ * genuinely useful signal is either an explicit mismatch ("expected X, got Y") or simply "not found,
+ * here is what we looked for".
+ */
+export function summariseWarning(raw: string): string {
+  // eslint-disable-next-line no-control-regex
+  const plain = raw.replace(/\[[0-9;]*m/g, "");
+
+  // Explicit mismatches are already human-readable — keep them, minus any Playwright tail.
+  const mismatch = /((?:Doc container mismatch|Label validation failed)[^\n]*)/.exec(plain);
+  if (mismatch) return mismatch[1].replace(/\s+/g, " ").trim();
+
+  const locator = extractAttemptedLocator(plain);
+  const prefix = plain.split(/expect\(/)[0].replace(/[\s—-]+$/, "").replace(/\s+/g, " ").trim();
+
+  if (locator) {
+    // Show the first couple of alternatives from the chain; the rest is noise at this level.
+    const parts = locator.split(",").map((p) => p.trim()).filter(Boolean);
+    const shown = parts.slice(0, 2).join(", ");
+    const more = parts.length > 2 ? ` (+${parts.length - 2} more)` : "";
+    return `${prefix || "element not found"} — looked for: \`${shown}\`${more}`;
+  }
+
+  return (prefix || plain).replace(/\s+/g, " ").trim().slice(0, 240);
+}
+
+/**
+ * Classify what kind of difference a warning describes. A wrong name is a warning; a step that cannot
+ * be performed is a failure — so this drives severity, not just wording.
+ */
+export function classifyDrift(message: string): DriftKind {
+  if (parseLabelMismatch(message)) return "label-mismatch";
+  if (parseContainerMismatch(message)) return "container-mismatch";
+  return "element-missing";
+}
+
+/**
+ * Go back to the source document for every warning and decide which side is stale.
+ *
+ * This is the step that turns "a selector did not match" into something a technical writer can act on:
+ * it distinguishes "the doc is wrong" from "our transcription of the doc is wrong".
+ */
+export async function verifyWarningsAgainstDocs(
+  warnings: DocDriftWarning[]
+): Promise<DocDriftWarning[]> {
+  const out: DocDriftWarning[] = [];
+  for (const w of warnings) {
+    const kind = classifyDrift(w.warningMessage);
+    const doc = await fetchDocContent(w.documentUrl);
+
+    const label = parseLabelMismatch(w.warningMessage);
+    const container = parseContainerMismatch(w.warningMessage);
+
+    // For a plain "not found", the flow's own expectation is the best statement of what the doc claims.
+    const expectedByFlow = label?.expected ?? container?.expected;
+    const seenInApp = label?.got ?? container?.resolved;
+    // For a plain "not found", the doc-facing wording is inside the locator's text predicates, not in
+    // our internal target name — which the doc would never contain verbatim.
+    const expectedCandidates = [
+      ...docPhrasesFromLocator(extractAttemptedLocator(w.warningMessage)),
+      w.target.replace(/\s*\(doc step\)\s*$/i, "").trim(),
+    ];
+
+    out.push({
+      ...w,
+      docCheck: reconcile({
+        docText: doc.text,
+        docUrl: w.documentUrl,
+        docError: doc.error,
+        expectedByFlow,
+        expectedCandidates,
+        seenInApp,
+        kind,
+      }),
+    });
+  }
+  return out;
+}
+
+/**
+ * Markdown for the doc-drift section, split by severity.
+ *
+ * Policy: a wrong or misplaced *name* is a warning — report it and move on. A step that cannot be
+ * performed at all is a failure, because the documented procedure is genuinely broken for a reader.
+ * The framework logs both as `warnOnly`, so the split is applied here rather than inherited.
+ */
+export function renderWarningsMarkdown(warnings: DocDriftWarning[]): string[] {
+  if (!warnings.length) return [];
+
+  const failures = warnings.filter((w) => w.docCheck?.severity === "failure");
+  const minor = warnings.filter((w) => w.docCheck?.severity !== "failure");
+
+  const section = (title: string, blurb: string[], items: DocDriftWarning[]): string[] => {
+    if (!items.length) return [];
+    const byFlow = new Map<string, DocDriftWarning[]>();
+    for (const w of items) {
+      const list = byFlow.get(w.flowId) ?? [];
+      list.push(w);
+      byFlow.set(w.flowId, list);
+    }
+    const lines: string[] = [title, ``, ...blurb, ``];
+    for (const [flowId, ws] of byFlow) {
+      lines.push(`### ${ws[0].docTitle} — \`${flowId}\``);
+      lines.push(`- **Doc:** ${ws[0].documentUrl}`);
+      for (const w of ws) {
+        lines.push(`- **step ${w.stepNumber}** (${w.action}) — ${summariseWarning(w.warningMessage)}`);
+        if (w.docCheck) lines.push(`  - ${renderDocCheck(w.docCheck).replace(/\n/g, "\n  ")}`);
+      }
+      lines.push(``);
+    }
+    return lines;
+  };
+
+  return [
+    ...section(
+      `## Documented steps that cannot be performed (failures)`,
+      [
+        `The documented element could not be found in the app at all, so a reader following this page`,
+        `would get stuck. Each entry names whether the **doc** or our **flow definition** is out of date.`,
+      ],
+      failures
+    ),
+    ...section(
+      `## Documentation drift (warnings)`,
+      [
+        `The step still works, but a name, label or location does not match the doc. Reported so the`,
+        `wording can be corrected; the flow continued past it.`,
+      ],
+      minor
+    ),
+  ];
+}
+
