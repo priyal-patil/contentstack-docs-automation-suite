@@ -301,10 +301,15 @@ jobs:
             --suite cms-releases \
             --suiteLabel "CMS Releases" \
             --out /tmp/dashboard-cms-releases.json \
+            --reportsOutDir /tmp/reports-cms-releases \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-cms-releases.json
+          if [ -d /tmp/reports-cms-releases ]; then
+            node scripts/publish.js /tmp/dashboard-cms-releases.json:/tmp/reports-cms-releases
+          else
+            node scripts/publish.js /tmp/dashboard-cms-releases.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A

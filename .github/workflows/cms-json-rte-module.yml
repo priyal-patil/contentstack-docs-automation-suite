@@ -309,10 +309,15 @@ jobs:
             --suite cms-json-rte \
             --suiteLabel "CMS JSON Rich Text Editor Module" \
             --out /tmp/dashboard-cms-json-rte.json \
+            --reportsOutDir /tmp/reports-cms-json-rte \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-cms-json-rte.json
+          if [ -d /tmp/reports-cms-json-rte ]; then
+            node scripts/publish.js /tmp/dashboard-cms-json-rte.json:/tmp/reports-cms-json-rte
+          else
+            node scripts/publish.js /tmp/dashboard-cms-json-rte.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
