@@ -174,6 +174,77 @@ export function parseFailureReport(
 }
 
 /**
+ * Doc-wording mismatches recorded as *failures*, from **every** record — not just the earliest.
+ *
+ * `parseFailureReport` deliberately keeps only the earliest failure per flow, because the executor
+ * stops a flow at its first hard failure and later entries are downstream noise. That is right for
+ * healing and wrong for drift detection, and it cost us the single most valuable finding in a real
+ * BrandKit run: `get-started-with-brand-kit` failed at step 14 (a stale-fixture click timeout) *and*
+ * step 16, where the doc documents "+ New Voice Profile" but the app renders it without the "+".
+ * Keeping only step 14 discarded the one thing a technical writer could act on.
+ *
+ * A label mismatch can never be repaired by changing a selector — both sides were found, they simply
+ * disagree — so these are routed to the drift report rather than the heal queue.
+ */
+export function parseFailureDrift(
+  reportDir: string,
+  opts?: { projectFilter?: string; flowFilter?: string[] }
+): DocDriftWarning[] {
+  const file = path.isAbsolute(reportDir)
+    ? path.join(reportDir, "doc-step-failures.json")
+    : path.join(REPO_ROOT, reportDir, "doc-step-failures.json");
+  if (!fs.existsSync(file)) return [];
+
+  let raw: RawFailure[];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    raw = Array.isArray(parsed) ? parsed : (parsed.failures ?? []);
+  } catch {
+    return [];
+  }
+
+  const out: DocDriftWarning[] = [];
+  const seen = new Set<string>();
+
+  for (const f of raw) {
+    if (!f.flowId) continue;
+    if (CASCADE.test(String(f.errorMessage ?? ""))) continue;
+    if (opts?.flowFilter?.length && !opts.flowFilter.includes(f.flowId)) continue;
+
+    // Only wording disagreements. Missing elements are heal targets and are handled elsewhere.
+    if (classifyDrift(String(f.errorMessage ?? "")) !== "label-mismatch") continue;
+
+    const key = `${f.flowId}::${f.stepNumber}::${f.errorMessage}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const flowPath = findFlowPath(f.flowId);
+    let flow: any = {};
+    try {
+      if (flowPath) flow = JSON.parse(fs.readFileSync(flowPath, "utf8"));
+    } catch {
+      /* fall through with blanks */
+    }
+    const project = String(flow.project ?? "");
+    if (opts?.projectFilter && project && project !== opts.projectFilter) continue;
+
+    const documentUrl = String(f.documentUrl ?? flow.source ?? "");
+    out.push({
+      flowId: f.flowId,
+      project,
+      module: String(flow.module ?? ""),
+      documentUrl,
+      docTitle: deriveDocTitle(flow, documentUrl),
+      stepNumber: f.stepNumber ?? (f.stepIndex ?? 0) + 1,
+      action: String(f.action ?? ""),
+      target: String(f.target ?? ""),
+      warningMessage: String(f.errorMessage ?? ""),
+    });
+  }
+  return out;
+}
+
+/**
  * Extract the locator string Playwright reported, so the audit trail records what was actually tried
  * even though `DocStepFailure` has no dedicated `selectorUsed` field.
  */
@@ -367,8 +438,12 @@ export async function verifyWarningsAgainstDocs(
 export function renderWarningsMarkdown(warnings: DocDriftWarning[]): string[] {
   if (!warnings.length) return [];
 
-  const failures = warnings.filter((w) => w.docCheck?.severity === "failure");
-  const minor = warnings.filter((w) => w.docCheck?.severity !== "failure");
+  // Anything the doc check settled as "not drift" (selector-scoping assertions, identical sides) is an
+  // automation concern. It must not appear in the writers' sections at all, or the signal drowns.
+  const notDrift = warnings.filter((w) => w.docCheck?.verdict === "no-drift");
+  const real = warnings.filter((w) => w.docCheck?.verdict !== "no-drift");
+  const failures = real.filter((w) => w.docCheck?.severity === "failure");
+  const minor = real.filter((w) => w.docCheck?.severity !== "failure");
 
   const section = (title: string, blurb: string[], items: DocDriftWarning[]): string[] => {
     if (!items.length) return [];
@@ -403,10 +478,18 @@ export function renderWarningsMarkdown(warnings: DocDriftWarning[]): string[] {
     ...section(
       `## Documentation drift (warnings)`,
       [
-        `The step still works, but a name, label or location does not match the doc. Reported so the`,
-        `wording can be corrected; the flow continued past it.`,
+        `The step still works, but a name or label does not match the doc. Reported so the wording can`,
+        `be corrected; the flow continued past it.`,
       ],
       minor
+    ),
+    ...section(
+      `## Not documentation drift (for the automation team)`,
+      [
+        `Selector-scoping assertions and same-string mismatches. Nothing here is about the docs — listed`,
+        `only so the count reconciles.`,
+      ],
+      notDrift
     ),
   ];
 }

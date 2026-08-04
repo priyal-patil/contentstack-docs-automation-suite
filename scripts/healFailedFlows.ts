@@ -37,9 +37,12 @@ import {
   parseWarningReport,
   renderWarningsMarkdown,
   verifyWarningsAgainstDocs,
+  extractAttemptedLocator,
+  parseFailureDrift,
 } from "../core/healing/reportParser";
 import { repairLoop } from "../core/healing/repairLoop";
 import { flowSelectorPath } from "../core/healing/selectorLayers";
+import { checkFixtureFailure, type FixtureVerdict } from "../core/healing/fixtureCheck";
 import { escalateToLlm } from "../core/healing/escalate";
 import {
   buildGenuineFailureReport,
@@ -114,12 +117,18 @@ async function main(): Promise<void> {
   // the highest-signal output for technical writers, so it is always reported even when nothing failed.
   // Every warning is then checked back against the source document, so the report can say which of the
   // three — doc, flow JSON, or app — is actually out of date.
-  const driftWarnings = await verifyWarningsAgainstDocs(
-    parseWarningReport(reportDir, {
+  // Wording mismatches recorded as failures count as drift too, and must come from EVERY failure
+  // record — the heal queue keeps only the earliest per flow, which would discard later doc findings.
+  const driftWarnings = await verifyWarningsAgainstDocs([
+    ...parseWarningReport(reportDir, {
       projectFilter: opt("project"),
       flowFilter: optAll("flow"),
-    })
-  );
+    }),
+    ...parseFailureDrift(reportDir, {
+      projectFilter: opt("project"),
+      flowFilter: optAll("flow"),
+    }),
+  ]);
 
   audit.runStarted({
     reportDir,
@@ -155,11 +164,26 @@ async function main(): Promise<void> {
   const skipped: HealResult[] = [];
   const ineffective: HealResult[] = [];
   const envFailures: HealResult[] = [];
+  const fixtureFailures: Array<{ target: HealTarget; verdict: FixtureVerdict }> = [];
 
   try {
     // Serial per flow: parallel healing would clobber each other's DOM snapshots and app state.
     for (const target of browser ? targets : []) {
       log(`\n──── ${target.flowId} · step ${target.stepNumber} ────`);
+
+      // Missing test data is not drift and cannot be healed: skip before spending a browser replay
+      // budget, and keep it out of the technical writers' findings entirely.
+      const fixture = checkFixtureFailure({
+        errorMessage: target.errorMessage,
+        attemptedLocator: target.currentSelector ?? extractAttemptedLocator(target.errorMessage),
+        snapshotPath: target.snapshotPath,
+      });
+      if (fixture.isFixtureFailure) {
+        log(`🧪 missing test fixture (${fixture.confidence}) — ${fixture.reason}`);
+        log(`   not healable and not doc drift; skipping`);
+        fixtureFailures.push({ target, verdict: fixture });
+        continue;
+      }
       const result = await repairLoop(target, cfg, {
         browser: browser!,
         audit,
@@ -266,6 +290,7 @@ async function main(): Promise<void> {
       environmentFailures: envFailures.length,
       skipped: skipped.length,
       overrideIneffective: ineffective.length,
+      fixtureFailures: fixtureFailures.length,
       driftWarnings: driftWarnings.length,
       docOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-confirms-flow").length,
       flowJsonOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-matches-app").length,
@@ -279,6 +304,13 @@ async function main(): Promise<void> {
       newChain: h.chain,
       file: path.relative(REPO_ROOT, h.file),
       attempts: h.result.attempts.length,
+    })),
+    fixtureFailures: fixtureFailures.map((f) => ({
+      flowId: f.target.flowId,
+      stepNumber: f.target.stepNumber,
+      fixtureToken: f.verdict.fixtureToken,
+      confidence: f.verdict.confidence,
+      reason: f.verdict.reason,
     })),
     docDriftWarnings: driftWarnings,
     genuineFailures: genuine,
@@ -300,6 +332,7 @@ async function main(): Promise<void> {
     `| Auto-healed (locator drift) | ${healed.length} |`,
     `| Genuine doc/app mismatch | ${genuine.length} |`,
     `| Documentation drift (warning, not healable) | ${driftWarnings.length} |`,
+    `| Missing test fixture (not doc drift) | ${fixtureFailures.length} |`,
     `| Environment failure (not doc drift) | ${envFailures.length} |`,
     `| Skipped | ${skipped.length} |`,
     `| Override ineffective | ${ineffective.length} |`,
@@ -323,6 +356,20 @@ async function main(): Promise<void> {
         ]
       : []),
     ...(genuine.length ? [`## Genuine doc/app mismatch`, ``, ...genuine.map(renderGenuineFailureMarkdown), ``] : []),
+    ...(fixtureFailures.length
+      ? [
+          `## Missing test fixtures (not documentation drift)`,
+          ``,
+          `These steps looked for test data a sibling flow was supposed to create. The UI and the docs`,
+          `are fine — the fixture was absent, so no selector change could help. For the automation team.`,
+          ``,
+          ...fixtureFailures.map(
+            (f) =>
+              `- \`${f.target.flowId}\` step ${f.target.stepNumber} — looked for \`${f.verdict.fixtureToken}\` (${f.verdict.confidence})`
+          ),
+          ``,
+        ]
+      : []),
     ...renderWarningsMarkdown(driftWarnings),
   ].join("\n");
   fs.writeFileSync(path.join(outDir, "healing-report.md"), md, "utf8");
@@ -330,7 +377,9 @@ async function main(): Promise<void> {
   audit.runFinished(summary.counts);
 
   log(`\n${"─".repeat(60)}`);
-  log(`✅ healed: ${healed.length}   ❌ genuine: ${genuine.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`);
+  log(
+    `✅ healed: ${healed.length}   ❌ genuine doc/app: ${genuine.length}   🧪 fixture: ${fixtureFailures.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`
+  );
   log(`📄 ${path.relative(REPO_ROOT, path.join(outDir, "healing-report.md"))}`);
   log(`🧾 ${path.relative(REPO_ROOT, audit.path)}`);
 

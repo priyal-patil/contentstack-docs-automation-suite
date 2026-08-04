@@ -25,6 +25,7 @@ import {
   synthesiseSelector,
 } from "../../core/healing/elementMatcher";
 import { referenceFromSelector, enrichFromSnapshot } from "../../core/healing/reference";
+import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
 import {
   reconcile,
   isSourcedFromDoc,
@@ -404,6 +405,72 @@ test.describe("doc reconciliation — the document is the spec for the flow JSON
     });
     expect(c.verdict).toBe("doc-unavailable");
     expect(c.proposedFlowUpdate).toBeUndefined();
+  });
+});
+
+test.describe("missing test fixtures are not documentation drift", () => {
+  /** Verbatim from the failed BrandKit run 30776076221 (13 of 14 failures were this). */
+  const REAL_ERROR =
+    "expect(locator).toBeVisible() failed\n\n" +
+    "Locator: locator('a.brand-kit-card-link').filter({ hasText: /AUTO-CBK-/i }).first()\n" +
+    "Expected: visible\nTimeout: 120000ms\nError: element(s) not found";
+
+  test("recognises a generated fixture id in the failure", () => {
+    expect(extractFixtureToken(REAL_ERROR)).toBe("AUTO-CBK-");
+    expect(extractFixtureToken('locator("button:has-text(\\"Publish\\")")')).toBeUndefined();
+  });
+
+  test("an un-substituted template token counts as a fixture problem", () => {
+    expect(extractFixtureToken('hasText: "AUTO-BK-{unique5}"')).toBe("{unique5}");
+  });
+
+  test("classifies the real BrandKit failure as a fixture problem, not drift", () => {
+    const v = checkFixtureFailure({
+      errorMessage: REAL_ERROR,
+      attemptedLocator: "a.brand-kit-card-link",
+    });
+    expect(v.isFixtureFailure).toBe(true);
+    expect(v.fixtureToken).toBe("AUTO-CBK-");
+  });
+
+  test("ordinary locator drift is NOT misread as a fixture problem", () => {
+    // Must not swallow the case the agent exists to fix.
+    const v = checkFixtureFailure({
+      errorMessage:
+        'expect(locator).toBeVisible() failed\n\nLocator: locator(\'[data-test-id="brand-kit-OBSOLETE"]\')\nError: element(s) not found',
+      attemptedLocator: '[data-test-id="brand-kit-OBSOLETE"]',
+    });
+    expect(v.isFixtureFailure).toBe(false);
+    expect(v.confidence).toBe("none");
+  });
+
+  test("a doc-wording mismatch is NOT misread as a fixture problem", () => {
+    const v = checkFixtureFailure({
+      errorMessage: 'Label validation failed: expected "+ New Voice Profile" (contains), got "new voice profile".',
+    });
+    expect(v.isFixtureFailure).toBe(false);
+  });
+
+  test("saved DOM upgrades the verdict to confirmed when the UI is intact", () => {
+    // Base selector's token IS present, fixture id is NOT — the UI works, only the data is missing.
+    const snap = path.join(FIXTURES, "brandkit-fixture-missing.html");
+    const v = checkFixtureFailure({
+      errorMessage: REAL_ERROR,
+      attemptedLocator: "a.brand-kit-card-link",
+      snapshotPath: snap,
+    });
+    expect(v.isFixtureFailure).toBe(true);
+    expect(v.confidence).toBe("confirmed");
+  });
+
+  test("if the fixture IS on the page, it is real drift rather than missing data", () => {
+    const snap = path.join(FIXTURES, "brandkit-fixture-present.html");
+    const v = checkFixtureFailure({
+      errorMessage: REAL_ERROR,
+      attemptedLocator: "a.brand-kit-card-link",
+      snapshotPath: snap,
+    });
+    expect(v.isFixtureFailure).toBe(false);
   });
 });
 
