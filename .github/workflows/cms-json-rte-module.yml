@@ -218,6 +218,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
             npx ts-node scripts/urlRunSummaryAndSlack.ts    --reportDir "$REPORT_DIR" 2>&1 | tee -a "$LOG" || true
           fi
 

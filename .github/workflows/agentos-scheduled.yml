@@ -112,6 +112,7 @@ jobs:
           if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
             npx ts-node scripts/generateDashboardReport.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload AgentOS reports

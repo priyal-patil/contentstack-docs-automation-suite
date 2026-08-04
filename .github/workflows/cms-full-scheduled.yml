@@ -143,6 +143,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 1 reports
@@ -318,6 +319,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 2 reports
@@ -492,6 +494,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 3 reports

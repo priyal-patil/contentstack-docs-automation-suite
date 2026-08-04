@@ -154,6 +154,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts  --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts     --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/urlRunSummaryAndSlack.ts      --reportDir "$REPORT_DIR" 2>&1 || true
           else
             echo "::warning::flows-results.json not found — report generation skipped."
