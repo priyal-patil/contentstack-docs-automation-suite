@@ -16,7 +16,10 @@ import { extractFromSnapshotFile } from "./domExtract";
 
 /** Pull `data-test-id` / `data-testid` values out of a CSS chain. */
 function attr(chain: string, name: string): string | undefined {
-  const re = new RegExp(`\\[${name}\\s*[~^$*|]?=\\s*(['"])(.*?)\\1`, "i");
+  // EXACT matches only. `[data-test-id^="uilocation-field-modifier-"]` is a *prefix*, and treating its
+  // value as a full id made the matcher search for an element whose data-test-id equals the prefix —
+  // which never exists. Partial operators (^= $= *= ~= |=) are deliberately ignored.
+  const re = new RegExp(`\\[${name}\\s*=\\s*(['"])(.*?)\\1`, "i");
   return re.exec(chain)?.[2];
 }
 
@@ -123,4 +126,49 @@ export function expectedLabelForStep(step: Record<string, unknown>, target: stri
   const explicit = expected?.["labelEquals"] ?? expected?.["modalTitle"];
   if (typeof explicit === "string" && explicit.trim()) return explicit.trim();
   return target.replace(/\s*\(doc step\)\s*$/i, "").trim();
+}
+
+/**
+ * Does this string plausibly name something a user can see?
+ *
+ * Step targets are internal identifiers, not UI labels. "Developer Hub Basic Information restore version
+ * Yes Restore prompt" is our own naming — no control on any page is called that. Feeding it to the fuzzy
+ * tier meant comparing it against ~100 real accessible names, matching nothing, and then reporting a
+ * genuine doc/app mismatch. Real labels are short and unqualified: "Releases", "New Brand Kit", "Save".
+ */
+export function looksLikeUiLabel(s: string | undefined): boolean {
+  if (!s) return false;
+  const t = s.trim();
+  if (!t || t.includes(":")) return false;
+  return t.split(/\s+/).length <= 5;
+}
+
+export type LabelSource = "expected" | "locator-text" | "target" | "none";
+
+/**
+ * The doc-facing label the matcher should search for, and where it came from.
+ *
+ * Priority is by trustworthiness, not convenience:
+ *   1. `expected.labelEquals` / `expected.modalTitle` — the flow author's transcription of the doc
+ *   2. the locator's own `:has-text(...)` predicates — wording chosen to match the UI
+ *   3. the step target, ONLY if it reads like a real label
+ *   4. nothing — in which case the caller must say "no usable search term" rather than
+ *      "no candidate found". Those are different claims and only the second is about the product.
+ */
+export function docFacingLabel(
+  step: Record<string, unknown>,
+  target: string,
+  selectorChain?: string
+): { label?: string; source: LabelSource } {
+  const expected = step?.["expected"] as Record<string, unknown> | undefined;
+  const explicit = expected?.["labelEquals"] ?? expected?.["modalTitle"];
+  if (typeof explicit === "string" && explicit.trim()) return { label: explicit.trim(), source: "expected" };
+
+  const fromLocator = hasText(selectorChain ?? "");
+  if (fromLocator) return { label: fromLocator, source: "locator-text" };
+
+  const bare = target.replace(/\s*\(doc step\)\s*$/i, "").trim();
+  if (looksLikeUiLabel(bare)) return { label: bare, source: "target" };
+
+  return { source: "none" };
 }

@@ -20,7 +20,7 @@ import { executeFlow } from "../executor";
 import { clearDocStepFailures } from "../docStepFailureReporter";
 import { extractFromPage, saveAttemptSnapshot, latestAttemptSnapshot } from "./domExtract";
 import { findCandidates, rankAll } from "./elementMatcher";
-import { referenceFromSelector, enrichFromSnapshot, expectedLabelForStep } from "./reference";
+import { referenceFromSelector, enrichFromSnapshot, expectedLabelForStep, docFacingLabel } from "./reference";
 import { attemptBudget } from "./flowClassifier";
 import { appendCandidate, flowSelectorPath } from "./selectorLayers";
 import type { AuditLog } from "./auditLog";
@@ -151,6 +151,32 @@ export async function repairLoop(
 
   deps.audit.targetStarted(target.flowId, target.stepNumber, target.target, budget);
 
+  // A heal needs something to search WITH: either a doc-facing label, or a stable attribute carried in
+  // the failed selector. With neither, the fuzzy tier ends up comparing an internal identifier against
+  // real accessible names, matches nothing, and the result is misreported as genuine doc/app drift.
+  // Five attempts of ~60s polling are spent proving nothing. Decide this before opening a browser.
+  {
+    const step0 = flow.steps?.[target.stepIndex] ?? {};
+    const { label, source } = docFacingLabel(step0, target.target, target.currentSelector);
+    const ref0 = referenceFromSelector(target.currentSelector, label);
+    const hasAnchor = !!(ref0?.testId || ref0?.ariaLabel || ref0?.name || ref0?.id);
+    if (!label && !hasAnchor) {
+      const result: HealResult = {
+        target,
+        outcome: "skipped",
+        attempts,
+        genuineFailureReason:
+          `No usable search term: the step has no expected label, its selector has no text predicate, ` +
+          `and "${target.target}" is an internal identifier rather than a UI label. This is NOT a ` +
+          `documentation finding — the agent had nothing to search for. Add expected.labelEquals to the ` +
+          `step, or a :has-text() predicate to its selector, to make it healable.`,
+      };
+      log(`⏭️  no usable search term (label source: ${source}) — not attempted, and not reported as drift`);
+      deps.audit.targetFinished(result);
+      return result;
+    }
+  }
+
   const blocked = unsafeToTruncate(flow, target.stepIndex);
   if (blocked) {
     const result: HealResult = {
@@ -191,7 +217,10 @@ export async function repairLoop(
 
     try {
       const step = flow.steps[resumeStep];
-      const expectedLabel = expectedLabelForStep(step, target.target);
+      // Doc-facing label only — never the raw internal target. See docFacingLabel().
+      const expectedLabel =
+        docFacingLabel(step, target.target, target.currentSelector).label ??
+        expectedLabelForStep(step, target.target);
       // Shared across the prefix and remainder runs of THIS attempt so flow-object state survives.
       const work = makeWorkFlow(flow);
 

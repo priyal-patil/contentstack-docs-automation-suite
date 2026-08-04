@@ -24,7 +24,12 @@ import {
   similarity,
   synthesiseSelector,
 } from "../../core/healing/elementMatcher";
-import { referenceFromSelector, enrichFromSnapshot } from "../../core/healing/reference";
+import {
+  referenceFromSelector,
+  enrichFromSnapshot,
+  docFacingLabel,
+  looksLikeUiLabel,
+} from "../../core/healing/reference";
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
 import { checkPrecondition } from "../../core/healing/preconditionCheck";
 import {
@@ -560,6 +565,59 @@ test.describe("leading '+' is an icon glyph, not doc drift (regression)", () => 
     });
     expect(c.verdict).toBe("doc-confirms-flow");
     expect(c.recommendation).toContain("DOC IS OUT OF DATE");
+  });
+});
+
+test.describe("the matcher must search for a DOC-FACING label (regression)", () => {
+  /**
+   * Real Developer-Hub targets. Feeding the internal identifier to the fuzzy tier meant comparing it
+   * against ~100 real accessible names, matching nothing, and reporting genuine doc/app drift after five
+   * ~60s attempts. Two of three "findings" in that run were this bug, not the product.
+   */
+  test("internal identifiers are not mistaken for UI labels", () => {
+    expect(looksLikeUiLabel("Releases")).toBe(true);
+    expect(looksLikeUiLabel("New Brand Kit")).toBe(true);
+    expect(looksLikeUiLabel("Developer Hub Basic Information restore version Yes Restore prompt")).toBe(false);
+    expect(looksLikeUiLabel("Developer Hub UI location Field Modifier Allowed Field Types dropdown")).toBe(false);
+    expect(looksLikeUiLabel("Invite Collaborators flow: collaborators table Actions column header")).toBe(false);
+  });
+
+  test("expected.labelEquals wins — it is the author's transcription of the doc", () => {
+    const r = docFacingLabel(
+      { expected: { labelEquals: "New Brand Kit" } },
+      "Brand Kits page New Brand Kit primary (doc step)",
+      '[data-test-id="x"]'
+    );
+    expect(r).toEqual({ label: "New Brand Kit", source: "expected" });
+  });
+
+  test("falls back to the locator's own text predicate", () => {
+    const r = docFacingLabel({}, "Some Internal Target Name That Is Long (doc step)", 'button:has-text("Publish")');
+    expect(r).toEqual({ label: "Publish", source: "locator-text" });
+  });
+
+  test("a short target is accepted as a label", () => {
+    expect(docFacingLabel({}, "Releases (doc step)", undefined)).toEqual({ label: "Releases", source: "target" });
+  });
+
+  test("with nothing doc-facing it reports NO label rather than inventing one", () => {
+    const r = docFacingLabel(
+      {},
+      "Developer Hub Basic Information restore version Yes Restore prompt (doc step)",
+      undefined
+    );
+    expect(r.label).toBeUndefined();
+    expect(r.source).toBe("none");
+  });
+
+  test("a partial attribute selector is not treated as an exact test id", () => {
+    // [data-test-id^="uilocation-field-modifier-"] is a PREFIX; using it as a full id searches for an
+    // element that cannot exist.
+    const partial = referenceFromSelector('[data-test-id^="uilocation-field-modifier-"] div.Select__control', "x");
+    expect(partial?.testId).toBeUndefined();
+    // An exact match is still picked up.
+    const exact = referenceFromSelector('[data-test-id="new-app-cta"]', "x");
+    expect(exact?.testId).toBe("new-app-cta");
   });
 });
 
