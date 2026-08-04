@@ -172,9 +172,20 @@ jobs:
 
           ARGS=( --reportDir "${REPORT_DIR}" --max-attempts "${{ github.event.inputs.max_attempts || '5' }}" )
           [[ -n "${{ github.event.inputs.project || 'BrandKit' }}" ]] && ARGS+=( --project "${{ github.event.inputs.project || 'BrandKit' }}" )
-          [[ "${{ github.event.inputs.dry_run }}" == "true" ]] && ARGS+=( --dry-run )
+
+          # Any trigger other than an explicit manual dispatch is forced to dry-run.
+          # `github.event.inputs.*` is EMPTY for workflow_run (and for push, if ever added), so the old
+          # `open_pr || 'true'` default meant the automatic path would commit and open a PR unattended on
+          # its very first fire — the opposite of the human-merge-gate this workflow is supposed to have.
+          DRY="${{ github.event.inputs.dry_run }}"
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+            DRY="true"
+            echo "::notice::Non-dispatch trigger (${{ github.event_name }}) — forcing --dry-run; no commits or PRs."
+          fi
+
+          [[ "$DRY" == "true" ]] && ARGS+=( --dry-run )
           [[ "${{ github.event.inputs.enable_llm }}" == "true" ]] && ARGS+=( --llm )
-          [[ "${{ github.event.inputs.open_pr || 'true' }}" == "true" && "${{ github.event.inputs.dry_run }}" != "true" ]] && ARGS+=( --pr )
+          [[ "${{ github.event.inputs.open_pr || 'false' }}" == "true" && "$DRY" != "true" ]] && ARGS+=( --pr )
 
           # --transpile-only: rules/core/actionRules.ts carries 5 pre-existing type errors that would
           # otherwise abort any ts-node script importing it. `playwright test` already transpiles
@@ -200,8 +211,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      # Requires an explicit manual dispatch. `inputs.dry_run != 'true'` alone was true for an EMPTY
+      # input, so an automatic trigger would have posted to Slack unattended.
       - name: Post Slack summary
-        if: always() && github.event.inputs.dry_run != 'true'
+        if: always() && github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
