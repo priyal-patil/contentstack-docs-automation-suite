@@ -35,11 +35,35 @@ export type FixtureVerdict = {
   reason: string;
 };
 
+/**
+ * Message shapes that mean "a specific named test object was not on the page", independent of naming
+ * convention.
+ *
+ * The `AUTO-*` pattern above is BrandKit/CMS-shaped. Developer-Hub generates slugs like `Mc55a2cb6`,
+ * so a token-only detector missed `global-full-page`'s "could not open an app containing …" failure and
+ * passed it through as a heal candidate. Keying on the shape of the complaint generalises across
+ * projects.
+ */
+const FIXTURE_MESSAGE = [
+  /could not (?:open|find|locate) (?:an?|the) [\w-]+ containing\s+"([^"]+)"/i,
+  /Ensure that slug appears/i,
+  /row containing\s+"([^"]+)"\s+(?:was\s+)?not found/i,
+];
+
 /** The fixture identifier a failure was looking for, if any. */
 export function extractFixtureToken(text: string | undefined): string | undefined {
   if (!text) return undefined;
   if (TEMPLATE_TOKEN.test(text)) return TEMPLATE_TOKEN.exec(text)![0];
-  return FIXTURE_TOKEN.exec(text)?.[0];
+
+  const byToken = FIXTURE_TOKEN.exec(text)?.[0];
+  if (byToken) return byToken;
+
+  // Fall back to the quoted identifier inside a "could not find X containing 'Y'" complaint.
+  for (const re of FIXTURE_MESSAGE) {
+    const m = re.exec(text);
+    if (m) return m[1] ?? "(named test object)";
+  }
+  return undefined;
 }
 
 /** Base selector with any Playwright `.filter({...})` / `.first()` chaining stripped off. */

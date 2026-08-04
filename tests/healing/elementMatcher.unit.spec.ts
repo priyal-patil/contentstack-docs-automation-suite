@@ -26,11 +26,13 @@ import {
 } from "../../core/healing/elementMatcher";
 import { referenceFromSelector, enrichFromSnapshot } from "../../core/healing/reference";
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
+import { checkPrecondition } from "../../core/healing/preconditionCheck";
 import {
   reconcile,
   isSourcedFromDoc,
   docPhrasesFromLocator,
   isFrameworkContainerWord,
+  sameIgnoringIconGlyph,
 } from "../../core/healing/docVerifier";
 
 const FIXTURES = path.resolve(__dirname, "../../data/fixtures/healing");
@@ -254,12 +256,14 @@ test.describe("doc reconciliation — the document is the spec for the flow JSON
     "Go to your stack, click the Content Models icon in the left navigation panel, and click the " +
     "+ New Content Type button. If you want to create a new content type, select Create New.";
 
+  // NB: deliberately not a "+ …" label. A leading-glyph difference is a transcription artefact, not
+  // drift — see the icon-glyph describe block below.
   test("doc agrees with our flow → the DOC is the stale side, JSON untouched", () => {
     const c = reconcile({
       docText: DOC,
       docUrl: "https://example.test/doc",
-      expectedByFlow: "+ New Content Type",
-      seenInApp: "new content type",
+      expectedByFlow: "Create New",
+      seenInApp: "make new",
       kind: "label-mismatch",
     });
     expect(c.verdict).toBe("doc-confirms-flow");
@@ -270,13 +274,13 @@ test.describe("doc reconciliation — the document is the spec for the flow JSON
   });
 
   test("precedence: the app's wording being a substring must not flip the verdict", () => {
-    // "New Content Type" is a substring of the doc's "+ New Content Type". Checking the app's wording
-    // first would report doc-matches-app and wrongly rewrite a correct flow JSON.
+    // "Create" is a substring of the doc's "Create New". Checking the app's wording first would report
+    // doc-matches-app and wrongly rewrite a flow JSON that was correct.
     const c = reconcile({
       docText: DOC,
       docUrl: "https://example.test/doc",
-      expectedByFlow: "+ New Content Type",
-      seenInApp: "New Content Type",
+      expectedByFlow: "Create New",
+      seenInApp: "Create",
       kind: "label-mismatch",
     });
     expect(c.verdict).toBe("doc-confirms-flow");
@@ -471,6 +475,91 @@ test.describe("missing test fixtures are not documentation drift", () => {
       snapshotPath: snap,
     });
     expect(v.isFixtureFailure).toBe(false);
+  });
+});
+
+test.describe("found-but-unusable is not drift (Developer-Hub run 30870235729)", () => {
+  /** Verbatim: 6 of 13 failures in that run were this shape. */
+  const APP_LIMIT =
+    'Developer Hub "+ New App" (button[data-test-id="new-app-cta"]) did not become enabled. ' +
+    "If this persists, check org Developer Hub app limits, plan entitlements, or any dashboard banner " +
+    "explaining disabled creation. expect(locator).toBeEnabled() failed\n\n" +
+    "Locator:  locator('button[data-test-id=\"new-app-cta\"]').first()\n" +
+    "Expected: enabled\nReceived: disabled";
+
+  test("a disabled control is not a heal candidate", () => {
+    const v = checkPrecondition({ errorMessage: APP_LIMIT });
+    expect(v.isPrecondition).toBe(true);
+    expect(v.kind).toBe("control-disabled");
+    // The framework's own explanation is the actionable part — surface it.
+    expect(v.hint).toContain("app limits");
+  });
+
+  test("a disabled Save button surfaces what must be provided", () => {
+    const v = checkPrecondition({
+      errorMessage:
+        "Managing webhooks doc: manifest **Save** stayed disabled — provide **URL to Notify** and required event selections.",
+    });
+    expect(v.isPrecondition).toBe(true);
+    expect(v.kind).toBe("control-disabled");
+  });
+
+  test("a wrong toggle state is a behaviour difference, not a locator problem", () => {
+    const v = checkPrecondition({ errorMessage: "expect(locator).toBeChecked() failed\nExpected: checked" });
+    expect(v.isPrecondition).toBe(true);
+    expect(v.kind).toBe("wrong-ui-state");
+  });
+
+  test("a genuinely missing element is still a heal candidate", () => {
+    // Must not swallow the case the agent exists for.
+    const v = checkPrecondition({
+      errorMessage: "expect(locator).toBeVisible() failed\nError: element(s) not found",
+    });
+    expect(v.isPrecondition).toBe(false);
+  });
+
+  test("fixture detection generalises beyond BrandKit's AUTO-* convention", () => {
+    // Developer-Hub generates slugs like Mc55a2cb6, which a token-only detector missed entirely.
+    const msg =
+      'Developer Hub listing: could not open an app containing "Mc55a2cb6". Ensure that slug appears on an app card.';
+    expect(extractFixtureToken(msg)).toBe("Mc55a2cb6");
+    expect(checkFixtureFailure({ errorMessage: msg }).isFixtureFailure).toBe(true);
+  });
+});
+
+test.describe("leading '+' is an icon glyph, not doc drift (regression)", () => {
+  const DOC = "Click the + New App button. To set the App URL, click the View Hosting Settings link.";
+
+  test("a difference that is only the leading glyph is not drift", () => {
+    expect(sameIgnoringIconGlyph("+ New App", "new app")).toBe(true);
+    expect(sameIgnoringIconGlyph("+ New Voice Profile", "new voice profile")).toBe(true);
+    // Unrelated labels must not be collapsed.
+    expect(sameIgnoringIconGlyph("View Hosting Settings", "view hosting")).toBe(false);
+    expect(sameIgnoringIconGlyph("+ New App", "delete app")).toBe(false);
+  });
+
+  test("reconcile stops calling the 416 glyph steps documentation drift", () => {
+    const c = reconcile({
+      docText: DOC,
+      docUrl: "https://example.test/doc",
+      expectedByFlow: "+ New App",
+      seenInApp: "new app",
+      kind: "label-mismatch",
+    });
+    expect(c.verdict).toBe("no-drift");
+    expect(c.recommendation).toContain("plus icon");
+  });
+
+  test("a genuine label change is still reported as drift", () => {
+    const c = reconcile({
+      docText: DOC,
+      docUrl: "https://example.test/doc",
+      expectedByFlow: "View Hosting Settings",
+      seenInApp: "view hosting",
+      kind: "label-mismatch",
+    });
+    expect(c.verdict).toBe("doc-confirms-flow");
+    expect(c.recommendation).toContain("DOC IS OUT OF DATE");
   });
 });
 

@@ -131,6 +131,24 @@ export function isFrameworkContainerWord(s: string | undefined): boolean {
   return !!s && FRAMEWORK_CONTAINER.test(s.trim());
 }
 
+/**
+ * Leading icon glyphs that docs use to depict a button's icon rather than its text.
+ * Stripped only for the artefact comparison in `reconcile`, never when searching the document.
+ */
+const LEADING_ICON = /^\s*[+＋➕·•]\s*/;
+
+/** True when two labels differ only by a leading icon glyph (and case/whitespace). */
+export function sameIgnoringIconGlyph(a: string | undefined, b: string | undefined): boolean {
+  if (!a || !b) return false;
+  const norm = (s: string) =>
+    s.replace(LEADING_ICON, "").replace(/\s+/g, " ").trim().toLowerCase();
+  const na = norm(a);
+  const nb = norm(b);
+  if (!na || !nb) return false;
+  // Only when the glyph is what differs — not for unrelated strings that happen to be substrings.
+  return na === nb && a.replace(/\s+/g, " ").trim().toLowerCase() !== b.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 /** Case/whitespace-insensitive containment, punctuation preserved — the "+" in a label is meaningful. */
 export function docContains(docText: string, phrase: string | undefined): boolean {
   if (!phrase) return false;
@@ -244,6 +262,30 @@ export function reconcile(args: {
       expectedByFlow: args.expectedByFlow,
       seenInApp,
       recommendation: `Not documentation drift — the step resolved outside the expected container ("${args.expectedByFlow}" → "${seenInApp}"). This is a selector-scoping assertion in the flow, so review the step's \`expected.within\`, not the doc.`,
+    };
+  }
+
+  // Docs write a leading "+" to depict the plus ICON on a button ("Click the + New App button"), and the
+  // flows transcribe that glyph into `labelEquals` as if it were text. The app renders only the words, so
+  // every such step reports a mismatch that looks like high-confidence doc drift.
+  //
+  // This is not a handful of cases: 416 steps across all nine projects assert a leading "+"
+  // (160 × "+ New Automation", 115 × "+ Add New Account", …). "The docs are wrong 416 times" is far less
+  // likely than "the transcription includes the icon", so a difference that disappears once the glyph is
+  // removed is treated as a transcription artefact, not documentation drift. Reporting these to technical
+  // writers would have buried the genuine findings under hundreds of false ones.
+  if (sameIgnoringIconGlyph(args.expectedByFlow, seenInApp)) {
+    return {
+      verdict: "no-drift",
+      kind,
+      severity: "warning",
+      docUrl,
+      expectedByFlow: args.expectedByFlow,
+      seenInApp,
+      recommendation:
+        `Not documentation drift — the doc's leading "+" depicts the plus icon, and the app renders only ` +
+        `the words ("${args.expectedByFlow}" vs "${seenInApp}"). The flow step asserts the glyph as text; ` +
+        `fix the step's expected label, not the doc.`,
     };
   }
 

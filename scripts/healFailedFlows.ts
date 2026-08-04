@@ -43,6 +43,7 @@ import {
 import { repairLoop } from "../core/healing/repairLoop";
 import { flowSelectorPath } from "../core/healing/selectorLayers";
 import { checkFixtureFailure, type FixtureVerdict } from "../core/healing/fixtureCheck";
+import { checkPrecondition, type PreconditionVerdict } from "../core/healing/preconditionCheck";
 import { escalateToLlm } from "../core/healing/escalate";
 import {
   buildGenuineFailureReport,
@@ -165,11 +166,22 @@ async function main(): Promise<void> {
   const ineffective: HealResult[] = [];
   const envFailures: HealResult[] = [];
   const fixtureFailures: Array<{ target: HealTarget; verdict: FixtureVerdict }> = [];
+  const preconditionFailures: Array<{ target: HealTarget; verdict: PreconditionVerdict }> = [];
 
   try {
     // Serial per flow: parallel healing would clobber each other's DOM snapshots and app state.
     for (const target of browser ? targets : []) {
       log(`\n──── ${target.flowId} · step ${target.stepNumber} ────`);
+
+      // The element was found but is disabled or in the wrong state. Nothing is missing, so searching
+      // for another selector is wasted work and reporting it as doc drift is simply wrong.
+      const precondition = checkPrecondition({ errorMessage: target.errorMessage });
+      if (precondition.isPrecondition) {
+        log(`🚫 ${precondition.kind} — ${precondition.reason}`);
+        log(`   not healable and not doc drift; skipping`);
+        preconditionFailures.push({ target, verdict: precondition });
+        continue;
+      }
 
       // Missing test data is not drift and cannot be healed: skip before spending a browser replay
       // budget, and keep it out of the technical writers' findings entirely.
@@ -291,6 +303,7 @@ async function main(): Promise<void> {
       skipped: skipped.length,
       overrideIneffective: ineffective.length,
       fixtureFailures: fixtureFailures.length,
+      preconditionFailures: preconditionFailures.length,
       driftWarnings: driftWarnings.length,
       docOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-confirms-flow").length,
       flowJsonOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-matches-app").length,
@@ -304,6 +317,13 @@ async function main(): Promise<void> {
       newChain: h.chain,
       file: path.relative(REPO_ROOT, h.file),
       attempts: h.result.attempts.length,
+    })),
+    preconditionFailures: preconditionFailures.map((f) => ({
+      flowId: f.target.flowId,
+      stepNumber: f.target.stepNumber,
+      kind: f.verdict.kind,
+      hint: f.verdict.hint,
+      reason: f.verdict.reason,
     })),
     fixtureFailures: fixtureFailures.map((f) => ({
       flowId: f.target.flowId,
@@ -332,6 +352,7 @@ async function main(): Promise<void> {
     `| Auto-healed (locator drift) | ${healed.length} |`,
     `| Genuine doc/app mismatch | ${genuine.length} |`,
     `| Documentation drift (warning, not healable) | ${driftWarnings.length} |`,
+    `| Control found but disabled / wrong state | ${preconditionFailures.length} |`,
     `| Missing test fixture (not doc drift) | ${fixtureFailures.length} |`,
     `| Environment failure (not doc drift) | ${envFailures.length} |`,
     `| Skipped | ${skipped.length} |`,
@@ -356,6 +377,21 @@ async function main(): Promise<void> {
         ]
       : []),
     ...(genuine.length ? [`## Genuine doc/app mismatch`, ``, ...genuine.map(renderGenuineFailureMarkdown), ``] : []),
+    ...(preconditionFailures.length
+      ? [
+          `## Control found but not usable (not documentation drift)`,
+          ``,
+          `The element was located and visible but disabled, or held the wrong state. No selector change`,
+          `can fix these — an unmet precondition is blocking them. For the automation team.`,
+          ``,
+          ...preconditionFailures.map(
+            (f) =>
+              `- \`${f.target.flowId}\` step ${f.target.stepNumber} — ${f.verdict.kind}` +
+              (f.verdict.hint ? `\n  - hint: ${f.verdict.hint}` : "")
+          ),
+          ``,
+        ]
+      : []),
     ...(fixtureFailures.length
       ? [
           `## Missing test fixtures (not documentation drift)`,
@@ -378,7 +414,7 @@ async function main(): Promise<void> {
 
   log(`\n${"─".repeat(60)}`);
   log(
-    `✅ healed: ${healed.length}   ❌ genuine doc/app: ${genuine.length}   🧪 fixture: ${fixtureFailures.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`
+    `✅ healed: ${healed.length}   ❌ genuine doc/app: ${genuine.length}   🚫 precondition: ${preconditionFailures.length}   🧪 fixture: ${fixtureFailures.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`
   );
   log(`📄 ${path.relative(REPO_ROOT, path.join(outDir, "healing-report.md"))}`);
   log(`🧾 ${path.relative(REPO_ROOT, audit.path)}`);
