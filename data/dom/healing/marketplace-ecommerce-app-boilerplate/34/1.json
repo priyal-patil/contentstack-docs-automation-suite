@@ -1,0 +1,1315 @@
+[
+  {
+    "tag": "div",
+    "role": "status",
+    "id": "signup-verify-entry-shell",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings {{ M53f518e2 Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location Cancel Save",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Settings {{ M53f518e2",
+    "id": "topnav",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings {{ M53f518e2 Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location Cancel Save",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "link",
+    "id": "TopNavbar__content__product__button__with_svg",
+    "classes": [
+      "Button",
+      "TopNavbar__content__product__button__with_svg",
+      "flex-v-center",
+      "Button--tertiary",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-developer hub-button",
+    "ariaLabel": "developer hub",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TopNavbar__content__product__button-svg-logo",
+      "flex-v-center"
+    ],
+    "testId": "TopNavbar__content__product__button-svg-logo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductLogoDeveloperHub",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Settings",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/developerhub/app/6a047fc33a03c82bb99daa79/info",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Settings",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button__isSelected",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "developerhub-nav-settings",
+    "ariaLabel": "Settings",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductSettings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "cs-polaris-access-gate-stack-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "stackListHeaderNewPolaris",
+    "classes": [
+      "flex-h-center",
+      "flex-right",
+      "orch-agent-icon-container-stack-list",
+      "orch-agent-icon-container-stack-list-new-nav"
+    ],
+    "ariaLabel": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-polaris-icon-new",
+    "name": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "org-notifications",
+      "header__list--notification",
+      "header__list--notification__no--sidenav",
+      "with__app__switcher",
+      "flex-v-center",
+      "flex-h-center"
+    ],
+    "testId": "cs-notification-bellicon",
+    "ariaLabel": "Notification",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Notification__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-notification-bell-icon",
+    "name": "NotificationAlert",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "help-center-dropdown__trigger"
+    ],
+    "testId": "cs-help-center",
+    "ariaLabel": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "HelpLarge__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "HelpExtraLarge",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "app__switcher__v2"
+    ],
+    "testId": "app-switcher",
+    "ariaLabel": "App Switcher",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "app-switcher-toolbar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "AppDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [],
+    "testId": "cs-user-profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "role": "button",
+    "text": "{{",
+    "classes": [
+      "user-profile-tab-index"
+    ],
+    "ariaLabel": "User Profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M53f518e2",
+    "id": "breadcrumb",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Settings {{ M53f518e2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M53f518e2",
+    "classes": [
+      "Breadcrumb--v2-main-wrapper"
+    ],
+    "testId": "cs-breadcrumb",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M53f518e2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M53f518e2",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "Breadcrumb--v2__unlink-last-item",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M53f518e2",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "DeveloperTools",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M53f518e2",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M53f518e2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M53f518e2",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M53f518e2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location …",
+    "id": "content",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Settings {{ M53f518e2 Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location Cancel Save",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location …",
+    "classes": [
+      "PageLayout",
+      "PageLayout--secondary",
+      "PageLayout--secondary--no__sidenav",
+      "PageLayout--secondary--breadcrumb__margin",
+      "UI_locations_configuration_page_layout",
+      "PageLayout--content-fullpage"
+    ],
+    "testId": "cs-page-layout",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location Cancel Save",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field Documentation",
+    "classes": [
+      "PageLayout__head"
+    ],
+    "testId": "cs-page-layout-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field Documentation Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location Add Location Cancel Save",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "PageLayout__head__backArrow",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-page-layout-go-back",
+    "ariaLabel": "Go back",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field Documentation",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "LeftArrow",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field Documentation",
+    "classes": [
+      "PageHeader"
+    ],
+    "testId": "cs-page-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field Documentation",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [],
+    "testId": "uilocation-custom-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Documentation",
+    "classes": [
+      "Link",
+      "mr-20",
+      "New__tab__color",
+      "ExternalLink",
+      "Link--regular",
+      "Link--large",
+      "Link--link"
+    ],
+    "testId": "cs-link",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Documentation",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Documentation",
+    "classes": [
+      "flex-v-center"
+    ],
+    "href": "https://www.contentstack.com/docs/developers/developer-hub/custom-field-location/",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Documentation",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-8",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "NewTab",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>a:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Documentation",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location",
+    "classes": [
+      "Accordion",
+      "Accordion--backgroundColor"
+    ],
+    "testId": "cs-accordion",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field 1 Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field 1",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field 1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Custom Field 1",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Custom Field 1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "ml-8",
+      "Accordion__heading__toggle"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "rotate-180",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ChevronDownMedium",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "Line",
+      "Line--Dashed"
+    ],
+    "testId": "cs-line",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Name",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Name",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TextInput",
+      "TextInput--full"
+    ],
+    "testId": "uilocation-custom-field-1-name",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "TextInput__input"
+    ],
+    "ariaLabel": "name",
+    "name": "name",
+    "placeholder": "Enter the name of the UI location",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Path",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Path",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Path",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Path",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TextInput",
+      "TextInput--full"
+    ],
+    "testId": "uilocation-custom-field-1-path",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Path",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "TextInput__input"
+    ],
+    "ariaLabel": "path",
+    "name": "path",
+    "placeholder": "Enter the path",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Signed",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Signed",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Signed",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Signed",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Signed",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Help",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Question",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "uilocation-custom-field-1-signed",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "toggle-switch"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "classes": [],
+    "ariaLabel": "signed",
+    "name": "signed",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Enabled",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Enabled",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Enabled",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Enabled",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Enabled",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Help",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Question",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "uilocation-custom-field-1-enabled",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "toggle-switch"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "classes": [],
+    "ariaLabel": "enabled",
+    "name": "enabled",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Data Type * JSON",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Data Type * JSON",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Data Type *",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Data Type * JSON",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "text": "*",
+    "classes": [
+      "FieldLabel__required-text",
+      "false"
+    ],
+    "testId": "cs-field-label-required",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Data Type *",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Data Type * JSON",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Help",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Question",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "JSON",
+    "classes": [
+      "Select",
+      "Select--selected"
+    ],
+    "testId": "uilocation-custom-field-1-data-type",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Data Type * JSON",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "id": "react-select-2-input",
+    "classes": [],
+    "ariaLabel": "cs-select-aria",
+    "type": "text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [],
+    "name": "data_type",
+    "type": "hidden",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "JSON",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Multiple Multiple",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Multiple Multiple",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Multiple",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Multiple Multiple",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Multiple Multiple",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Help",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Question",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Multiple",
+    "id": "checkbox",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "uilocation-custom-field-1-multiple",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Multiple",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "checkbox",
+    "classes": [],
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Multiple",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "text": "Multiple",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "uilocation-custom-field-1-multiple-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Multiple",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Description 0 / 120",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(7)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description 0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Description",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(7)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description 0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "0 / 120",
+    "classes": [
+      "Textarea",
+      "Textarea--full",
+      "Textarea--with-count"
+    ],
+    "testId": "uilocation-custom-field-1-description",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(7)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description 0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "textarea",
+    "role": "textbox",
+    "classes": [
+      "Textarea__textarea"
+    ],
+    "ariaLabel": "description",
+    "name": "description",
+    "placeholder": "Provide a suitable description for the UI Location",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(7)>div:nth-of-type(1)>div:nth-of-type(1)>textarea:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Required",
+    "classes": [
+      "Field",
+      "Field--full"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Required",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Required",
+    "classes": [
+      "FieldLabel"
+    ],
+    "testId": "cs-field-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Required",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Required",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Help",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Question",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "uilocation-custom-field-1-required",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "toggle-switch"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "classes": [],
+    "ariaLabel": "required",
+    "name": "required",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Remove Location",
+    "classes": [
+      "Button",
+      "Action_button",
+      "Remove_Location",
+      "Button--tertiary-outline",
+      "Button--size-large"
+    ],
+    "testId": "uilocation-custom-field-1-remove-location-cta",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Path Signed Enabled Data Type * JSON Multiple Multiple Description 0 / 120 Required Remove Location",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "DeleteAsset",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Remove Location",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Add Location",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Add Location",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Add Location",
+    "classes": [
+      "Button",
+      "Action_button",
+      "Button--tertiary-outline",
+      "Button--size-large"
+    ],
+    "testId": "uilocation-custom-field-add-location-cta",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Add Location",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "PlusSign",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Add Location",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Cancel",
+    "classes": [
+      "Button",
+      "Button--light",
+      "Button--size-small"
+    ],
+    "testId": "app-cancel-save-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Cancel Save",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Save",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Cancel Save",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Save",
+    "classes": [
+      "Button",
+      "Button-save",
+      "Button--primary",
+      "Button--size-small",
+      "Button--icon-alignment-left"
+    ],
+    "testId": "app-save-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Save",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "SaveWhite",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Save",
+    "visible": true
+  }
+]

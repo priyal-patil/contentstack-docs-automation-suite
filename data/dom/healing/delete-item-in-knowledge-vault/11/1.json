@@ -1,0 +1,3208 @@
+[
+  {
+    "tag": "div",
+    "role": "status",
+    "id": "signup-verify-entry-shell",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-1…",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd",
+    "id": "topnav",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-1…",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "link",
+    "id": "TopNavbar__content__product__button__with_svg",
+    "classes": [
+      "Button",
+      "TopNavbar__content__product__button__with_svg",
+      "flex-v-center",
+      "Button--tertiary",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-brand kit-button",
+    "ariaLabel": "brand kit",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TopNavbar__content__product__button-svg-logo",
+      "flex-v-center"
+    ],
+    "testId": "TopNavbar__content__product__button-svg-logo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductLogoBrandKit",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Rulesets",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/rulesets",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Rulesets",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-rulesets",
+    "ariaLabel": "Rulesets",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "EnvironmentColor",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Knowledge Vault",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/knowledge-vault",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Knowledge Vault",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button__isSelected",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-knowledge-vault",
+    "ariaLabel": "Knowledge Vault",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "KnowledgeVaultSecondary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Settings",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/settings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Settings",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-settings",
+    "ariaLabel": "Settings",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductSettings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "cs-polaris-access-gate-stack-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "stackListHeaderNewPolaris",
+    "classes": [
+      "flex-h-center",
+      "flex-right",
+      "orch-agent-icon-container-stack-list",
+      "orch-agent-icon-container-stack-list-new-nav"
+    ],
+    "ariaLabel": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-polaris-icon-new",
+    "name": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "org-notifications",
+      "header__list--notification",
+      "header__list--notification__no--sidenav",
+      "with__app__switcher",
+      "flex-v-center",
+      "flex-h-center"
+    ],
+    "testId": "cs-notification-bellicon",
+    "ariaLabel": "Notification",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Notification__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-notification-bell-icon",
+    "name": "NotificationAlert",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "help-center-dropdown__trigger"
+    ],
+    "testId": "cs-help-center",
+    "ariaLabel": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "HelpLarge__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "HelpExtraLarge",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "app__switcher__v2"
+    ],
+    "testId": "app-switcher",
+    "ariaLabel": "App Switcher",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "app-switcher-toolbar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "AppDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [],
+    "testId": "cs-user-profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "role": "button",
+    "text": "{{",
+    "classes": [
+      "user-profile-tab-index"
+    ],
+    "ariaLabel": "User Profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "id": "breadcrumb",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "Breadcrumb--v2-main-wrapper"
+    ],
+    "testId": "cs-breadcrumb",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "Breadcrumb--v2__unlink-last-item",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "BrandKitLogo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04,…",
+    "id": "content",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-1…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04,…",
+    "classes": [
+      "PageLayout",
+      "PageLayout--primary",
+      "PageLayout--primary--no__sidenav",
+      "PageLayout--primary--breadcrumb__margin",
+      "PageLayout--primary--v2"
+    ],
+    "testId": "cs-page-layout",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Knowledge Vault New Item",
+    "classes": [
+      "PageLayout__head"
+    ],
+    "testId": "cs-page-layout-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM …",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "PageLayout__head__backArrow",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-page-layout-go-back",
+    "ariaLabel": "Go back",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault New Item",
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "LeftArrow",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Knowledge Vault New Item",
+    "classes": [
+      "PageHeader",
+      "knowledge-vault-page-title"
+    ],
+    "testId": "cs-page-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault New Item",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Knowledge Vault",
+    "classes": [
+      "PageTitle"
+    ],
+    "testId": "cs-page-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "entries_page_header_learn_more",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "classes": [
+      "LearnMore__icon"
+    ],
+    "ariaLabel": "Navigates to the docs",
+    "href": "https://www.contentstack.com/docs/content-managers/brand-kit/about-knowledge-vault",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "learnmore-help-icon-button",
+      "Button--size-medium",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Item",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium",
+      "Icon--active"
+    ],
+    "testId": "cs-icon",
+    "name": "FolderSimplePlus",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "New Item",
+    "classes": [
+      "Button",
+      "new-item-button",
+      "Button--primary",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--v2"
+    ],
+    "testId": "brand-kit-click-btn-primary-action-items-list-add-item",
+    "ariaLabel": "New Item",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Item",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Plus",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Item",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04,…",
+    "classes": [
+      "PageLayout__body",
+      "PageLayout__body--no__sideNav"
+    ],
+    "testId": "cs-page-layout-contentBody",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Knowledge Vault New Item Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04,…",
+    "classes": [
+      "knowledge-vault-items-table-entries"
+    ],
+    "testId": "items-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04,…",
+    "classes": [],
+    "testId": "cs-table",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "Search",
+      "Search--full",
+      "Search--primary"
+    ],
+    "testId": "cs-search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-search-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Search__search-icon",
+      "Icon--mini"
+    ],
+    "testId": "cs-icon",
+    "name": "Search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "Search__input",
+      "regular-corners"
+    ],
+    "testId": "cs-search-input-field",
+    "ariaLabel": "Search",
+    "placeholder": "Search in Knowledge Vault",
+    "type": "primary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "TablePanel__list-count",
+      "flex-v-center"
+    ],
+    "testId": "cs-table-list-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "ml-10",
+      "refresh-wrapper",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-refresh-icon",
+    "ariaLabel": "Refresh List",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Refresh",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "table",
+    "text": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04,…",
+    "classes": [
+      "Table",
+      "TableColumnSticky",
+      "TableWithPaginated",
+      "TableWithRowAction",
+      "TableFreezeCheckbox"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "rowgroup",
+    "text": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04,…",
+    "classes": [
+      "Table__rowgroup"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "Name Created By Modified By Actions",
+    "classes": [
+      "Table__head__row",
+      "Table__head__row_action",
+      "Table__head_rowwidth"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "classes": [
+      "Table-select-head",
+      "flex-v-center",
+      "freezed"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "Bulk select Items",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Name",
+    "classes": [
+      "Table__head__column",
+      "name-column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Name",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--1",
+    "ariaLabel": "Name sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Name",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Created By",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Created By",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Created By",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--2",
+    "ariaLabel": "Created By sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Created By",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Created By",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Modified By",
+    "classes": [
+      "Table__head__column",
+      "Table__head__cell--sorted",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Modified By",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Modified By",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--3",
+    "ariaLabel": "Modified By sort by descending",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Modified By",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "SortingDesc",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Modified By",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover",
+      "Table__head__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column-cell--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "Name Created By Modified By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-row-action-column-text--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-0",
+    "ariaLabel": "row 1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "select row 1",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-MANUAL-13fcf",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-13fcf",
+    "classes": [
+      "folder-name"
+    ],
+    "testId": "item-name-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-13fcf",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-13fcf",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:16 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:31 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:31 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction",
+      "Table__body__cell--firstTableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 1 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-1",
+    "ariaLabel": "row 2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-FOLDER-13fcf",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Folder",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FOLDER-13fcf",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FOLDER-13fcf",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:16 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:16 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 2 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-2",
+    "ariaLabel": "row 3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "select row 3",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-FILE-13fcf",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-13fcf",
+    "classes": [
+      "folder-name"
+    ],
+    "testId": "item-name-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "TXT",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-13fcf",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-13fcf",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-13fcf",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:16 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:16 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:16 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 3 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-3",
+    "ariaLabel": "row 4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-FOLDER-32550",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Folder",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FOLDER-32550",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FOLDER-32550",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FOLDER-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-FOLDER-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 4 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-4",
+    "ariaLabel": "row 5",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "select row 5",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-FILE-32550",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-32550",
+    "classes": [
+      "folder-name"
+    ],
+    "testId": "item-name-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-32550",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "TXT",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-32550",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-FILE-32550",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-FILE-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-FILE-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 5 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-5",
+    "ariaLabel": "row 6",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)",
+    "siblingIndex": 5,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "select row 6",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "AUTO-KV-MANUAL-32550",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-32550",
+    "classes": [
+      "folder-name"
+    ],
+    "testId": "item-name-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-32550",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-KV-MANUAL-32550",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-KV-MANUAL-32550",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Aug 04, 2026 01:01 AM Me",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Aug 04, 2026 01:01 AM",
+    "classes": [
+      "DateLabel",
+      "DateLabel--large"
+    ],
+    "testId": "cs-date-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Me",
+    "classes": [
+      "InstructionText",
+      "instruction-text"
+    ],
+    "testId": "cs-instruction-text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Me",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Me",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "AUTO-KV-MANUAL-32550 Aug 04, 2026 01:01 AM Me Aug 04, 2026 01:01 AM Me",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 6 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action",
+      "Table__empty__row"
+    ],
+    "testId": "cs-table-body-row-6",
+    "ariaLabel": "row 7",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)",
+    "siblingIndex": 6,
+    "surroundingText": "AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 0…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table-select-body",
+      "flex-v-center",
+      "freezed"
+    ],
+    "testId": "cs-table-row-selection",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "name-column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Showing 30 1 to 6 of 6 records 1",
+    "classes": [
+      "TablePagination"
+    ],
+    "testId": "cs-table-Paginate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "listbox",
+    "text": "30",
+    "id": "cs-dropdown-6c18",
+    "classes": [
+      "Dropdown--hover",
+      "Dropdown",
+      "Dropdown--primary",
+      "Dropdown--position-top",
+      "Dropdown__v2"
+    ],
+    "testId": "paginate-page-size-option",
+    "ariaLabel": "Showing 30 records",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Showing 30 1 to 6 of 6 records",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "30",
+    "classes": [
+      "Dropdown__header__value"
+    ],
+    "testId": "paginate-page-size-option-value",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "30",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-4",
+      "Dropdown__chevron",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretDownNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "30",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "text": "1 to 6 of 6 records",
+    "classes": [],
+    "testId": "cs-table-Paginate-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Showing 30 1 to 6 of 6 records",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-first",
+    "ariaLabel": "Go to the First Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleDoubleLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-previous",
+    "ariaLabel": "Previous Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "listbox",
+    "text": "1",
+    "id": "cs-dropdown-de24",
+    "classes": [
+      "Dropdown--hover",
+      "Dropdown",
+      "Dropdown--primary",
+      "Dropdown--position-top",
+      "Dropdown__v2",
+      "TablePagination__dropdown--disabled"
+    ],
+    "testId": "paginate-page-options",
+    "ariaLabel": "Page 1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "1",
+    "classes": [
+      "Dropdown__header__value"
+    ],
+    "testId": "paginate-page-options-value",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-4",
+      "Dropdown__chevron",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretDownNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-next",
+    "ariaLabel": "Next Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-last",
+    "ariaLabel": "Go to the Last Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleDoubleRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "PageLayout__body--left-drawer"
+    ],
+    "testId": "cs-page-layout-leftDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Name Created By Modified By Actions AUTO-KV-MANUAL-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:31 AM Me AUTO-KV-FOLDER-13fcf Aug 04, 2026 01:16 AM Me Aug 04, 2026 01:16 AM Me AUTO-KV-FILE-13fcf Aug…",
+    "visible": true
+  }
+]

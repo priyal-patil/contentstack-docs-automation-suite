@@ -1,0 +1,3374 @@
+[
+  {
+    "tag": "div",
+    "role": "status",
+    "id": "signup-verify-entry-shell",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accept…",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd",
+    "id": "topnav",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accept…",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "link",
+    "id": "TopNavbar__content__product__button__with_svg",
+    "classes": [
+      "Button",
+      "TopNavbar__content__product__button__with_svg",
+      "flex-v-center",
+      "Button--tertiary",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-brand kit-button",
+    "ariaLabel": "brand kit",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TopNavbar__content__product__button-svg-logo",
+      "flex-v-center"
+    ],
+    "testId": "TopNavbar__content__product__button-svg-logo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductLogoBrandKit",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Rulesets",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/rulesets",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Rulesets",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-rulesets",
+    "ariaLabel": "Rulesets",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "EnvironmentColor",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Knowledge Vault",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/knowledge-vault",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Knowledge Vault",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-knowledge-vault",
+    "ariaLabel": "Knowledge Vault",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "KnowledgeVaultSecondary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Settings",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/csba269c1cc7da43/settings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Settings",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button__isSelected",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-settings",
+    "ariaLabel": "Settings",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductSettings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "cs-polaris-access-gate-stack-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "stackListHeaderNewPolaris",
+    "classes": [
+      "flex-h-center",
+      "flex-right",
+      "orch-agent-icon-container-stack-list",
+      "orch-agent-icon-container-stack-list-new-nav"
+    ],
+    "ariaLabel": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-polaris-icon-new",
+    "name": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "org-notifications",
+      "header__list--notification",
+      "header__list--notification__no--sidenav",
+      "with__app__switcher",
+      "flex-v-center",
+      "flex-h-center"
+    ],
+    "testId": "cs-notification-bellicon",
+    "ariaLabel": "Notification",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Notification__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-notification-bell-icon",
+    "name": "NotificationAlert",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "help-center-dropdown__trigger"
+    ],
+    "testId": "cs-help-center",
+    "ariaLabel": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "HelpLarge__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "HelpExtraLarge",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "app__switcher__v2"
+    ],
+    "testId": "app-switcher",
+    "ariaLabel": "App Switcher",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "app-switcher-toolbar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "AppDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [],
+    "testId": "cs-user-profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "role": "button",
+    "text": "{{",
+    "classes": [
+      "user-profile-tab-index"
+    ],
+    "ariaLabel": "User Profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "id": "breadcrumb",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "Breadcrumb--v2-main-wrapper"
+    ],
+    "testId": "cs-breadcrumb",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "Breadcrumb--v2__unlink-last-item",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "BrandKitLogo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-CBK-3f1fd",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-CBK-3f1fd",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-co…",
+    "id": "content",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-CBK-3f1fd Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accept…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-co…",
+    "classes": [
+      "PageLayout",
+      "PageLayout--primary",
+      "PageLayout--primary--no__sidenav",
+      "PageLayout--primary--breadcrumb__margin",
+      "PageLayout--primary--v2"
+    ],
+    "testId": "general-settings-left-sidenav",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Settings General Collaborators",
+    "classes": [
+      "PageLayout__leftSidebar",
+      "PageLayout--primary--breadcrumb__margin",
+      "PageLayout__leftSidebar--show"
+    ],
+    "testId": "general-settings-left-sidenav-leftSidebar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings General Collaborators Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Settings",
+    "classes": [
+      "SectionHeader",
+      "SectionHeader--extra-bold",
+      "SectionHeader--medium",
+      "SectionHeader--black",
+      "SectionHeader--v2"
+    ],
+    "testId": "cs-section-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings General Collaborators",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "General",
+    "id": "general",
+    "classes": [
+      "ListRowV2"
+    ],
+    "testId": "brand-kit-click-menu-settings-general",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "General Collaborators",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Stacks",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "General",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "General",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "General",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "General",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators",
+    "id": "collaborators",
+    "classes": [
+      "ListRowV2",
+      "ListRowV2--active"
+    ],
+    "testId": "brand-kit-click-menu-settings-collaborators",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "General Collaborators",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Users",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ListRowV2__right-icon",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Right",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65…",
+    "classes": [
+      "PageLayout__body",
+      "PageLayout__body--no__sideNav"
+    ],
+    "testId": "cs-page-layout-contentBody",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators Invite Collaborator",
+    "classes": [
+      "PageLayout__head"
+    ],
+    "testId": "cs-leftnavheader-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators Invite Collaborator",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "id": "PageLayout-hamburger",
+    "classes": [
+      "PageLayout__head__hamburger"
+    ],
+    "testId": "cs-leftnavheader-hamburger",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators Invite Collaborator",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators Invite Collaborator",
+    "classes": [
+      "PageHeader"
+    ],
+    "testId": "cs-page-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Collaborators Invite Collaborator",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Collaborators",
+    "classes": [
+      "PageTitle"
+    ],
+    "testId": "cs-page-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Collaborators",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Invite Collaborator",
+    "classes": [
+      "Button",
+      "Button--primary",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--v2"
+    ],
+    "testId": "invite-users-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Invite Collaborator",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Plus",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Invite Collaborator",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pendi…",
+    "classes": [
+      "collaborators-table"
+    ],
+    "testId": "collaborator-table-test-id",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pendi…",
+    "classes": [],
+    "testId": "cs-table",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "Search",
+      "Search--full",
+      "Search--primary"
+    ],
+    "testId": "cs-search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-search-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Search__search-icon",
+      "Icon--mini"
+    ],
+    "testId": "cs-icon",
+    "name": "Search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "Search__input",
+      "regular-corners"
+    ],
+    "testId": "cs-search-input-field",
+    "ariaLabel": "Search",
+    "placeholder": "Search collaborators",
+    "type": "primary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "TablePanel__list-count",
+      "flex-v-center"
+    ],
+    "testId": "cs-table-list-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "ml-10",
+      "refresh-wrapper",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-refresh-icon",
+    "ariaLabel": "Refresh List",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Refresh",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "table",
+    "text": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pendi…",
+    "classes": [
+      "Table",
+      "TableColumnSticky",
+      "TableWithPaginated",
+      "TableWithRowAction"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "rowgroup",
+    "text": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pendi…",
+    "classes": [
+      "Table__rowgroup"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "Email Address Roles Status Invited By Actions",
+    "classes": [
+      "Table__head__row",
+      "Table__head__row_action",
+      "Table__head_rowwidth"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Email Address",
+    "classes": [
+      "Table__head__column",
+      "Table__head__cell--sorted",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Email Address",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--0",
+    "ariaLabel": "Email Address sort by descending",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Email Address",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "SortingDesc",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Email Address",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Roles",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Roles",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Roles",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--1",
+    "ariaLabel": "Roles sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Roles",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Roles",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Status",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Status",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Status",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--2",
+    "ariaLabel": "Status sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Status",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Status",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Invited By",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Invited By",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Invited By",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--3",
+    "ariaLabel": "Invited By sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Invited By",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "separator",
+    "classes": [
+      "resizer"
+    ],
+    "testId": "cs-table-head-resizer-3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Invited By",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover",
+      "Table__head__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column-cell--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "Email Address Roles Status Invited By Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-row-action-column-text--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "qa.test@contentstack.com admin Accepted",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-0",
+    "ariaLabel": "row 1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "qa.test@contentstack.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "qa.test@contentstack.com admin Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "qa.test@contentstack.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "qa.test@contentstack.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "qa.test@contentstack.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "qa.test@contentstack.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "qa.test@contentstack.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "qa.test@contentstack.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "qa.test@contentstack.com admin Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Accepted",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "qa.test@contentstack.com admin Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Accepted",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-accepted"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Accepted",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "qa.test@contentstack.com admin Accepted",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction",
+      "Table__body__cell--firstTableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "qa.test@contentstack.com admin Accepted",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 1 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-1",
+    "ariaLabel": "row 2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 2 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-2",
+    "ariaLabel": "row 3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 3 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-3",
+    "ariaLabel": "row 4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-e5ad4b5b-0c82-4ab9-8cd7-90c2b1872440@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 4 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-4",
+    "ariaLabel": "row 5",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-a5cad23b-d83d-4a1e-991c-531b65fad749@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 5 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(5)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-5",
+    "ariaLabel": "row 6",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)",
+    "siblingIndex": 5,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-5794ba43-1b73-47d8-8a23-a52b693d6b2a@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 6 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(6)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-6",
+    "ariaLabel": "row 7",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)",
+    "siblingIndex": 6,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-5ec60fa0-7c44-46ac-939b-92f9c19471f6@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 7 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(7)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action"
+    ],
+    "testId": "cs-table-body-row-7",
+    "ariaLabel": "row 8",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)",
+    "siblingIndex": 7,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "classes": [],
+    "testId": "email-address-test",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "admin",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "admin",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "admin",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "Pending",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "id": "cs-pill",
+    "classes": [
+      "Pill",
+      "Pill__chip",
+      "Pill--single",
+      "brand-kit-collaborator-status",
+      "brand-kit-collaborator-status-pending"
+    ],
+    "testId": "cs-pill",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Pending",
+    "classes": [
+      "PillItem",
+      "flex-center",
+      "PillItem__chip"
+    ],
+    "testId": "cs-pill-item-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Pending",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "blt235d9802bda3240f",
+    "classes": [
+      "middle-truncate-start"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "doc-bk-collab-c10b73a9-b921-4031-961e-811e3a8faca7@example.com admin Pending blt235d9802bda3240f",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "menu",
+    "classes": [
+      "Button",
+      "three-dots-vertical-icon",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-action-options",
+    "ariaLabel": "row 8 action",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(5)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "DotsThreeLargeVertical",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(8)>div:nth-of-type(5)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "classes": [
+      "Table__body__row",
+      "Table__body__row_action",
+      "Table__empty__row"
+    ],
+    "testId": "cs-table-body-row-8",
+    "ariaLabel": "row 9",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)",
+    "siblingIndex": 8,
+    "surroundingText": "qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59bc160-f540-45b3-8810-5cbe31697991@example.com …",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column--sorted",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "cell",
+    "classes": [
+      "Table__body__column",
+      "Table__body__column__resize",
+      "Table__body__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(9)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Showing 30 1 to 8 of 8 records 1",
+    "classes": [
+      "TablePagination"
+    ],
+    "testId": "cs-table-Paginate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt235d9802bda3240f doc-bk-collab-e59…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "listbox",
+    "text": "30",
+    "id": "cs-dropdown-6a18",
+    "classes": [
+      "Dropdown--hover",
+      "Dropdown",
+      "Dropdown--primary",
+      "Dropdown--position-top",
+      "Dropdown__v2"
+    ],
+    "testId": "paginate-page-size-option",
+    "ariaLabel": "Showing 30 records",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Showing 30 1 to 8 of 8 records",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "30",
+    "classes": [
+      "Dropdown__header__value"
+    ],
+    "testId": "paginate-page-size-option-value",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "30",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-4",
+      "Dropdown__chevron",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretDownNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "30",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "text": "1 to 8 of 8 records",
+    "classes": [],
+    "testId": "cs-table-Paginate-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Showing 30 1 to 8 of 8 records",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-first",
+    "ariaLabel": "Go to the First Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleDoubleLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-previous",
+    "ariaLabel": "Previous Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "listbox",
+    "text": "1",
+    "id": "cs-dropdown-d748",
+    "classes": [
+      "Dropdown--hover",
+      "Dropdown",
+      "Dropdown--primary",
+      "Dropdown--position-top",
+      "Dropdown__v2",
+      "TablePagination__dropdown--disabled"
+    ],
+    "testId": "paginate-page-options",
+    "ariaLabel": "Page 1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "1",
+    "classes": [
+      "Dropdown__header__value"
+    ],
+    "testId": "paginate-page-options-value",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-4",
+      "Dropdown__chevron",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretDownNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-next",
+    "ariaLabel": "Next Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "paginate-move-last",
+    "ariaLabel": "Go to the Last Page",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "1",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretCircleDoubleRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "PageLayout__body--left-drawer"
+    ],
+    "testId": "cs-page-layout-leftDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Collaborators Invite Collaborator Email Address Roles Status Invited By Actions qa.test@contentstack.com admin Accepted doc-bk-collab-81dc4630-63b9-4296-9010-65148203940e@example.com admin Pending blt…",
+    "visible": true
+  }
+]
