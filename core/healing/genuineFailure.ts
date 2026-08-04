@@ -11,6 +11,13 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import type { Candidate, HealResult } from "./types";
 import { extractAttemptedLocator } from "./reportParser";
+import {
+  fetchDocContent,
+  docPhrasesFromLocator,
+  reconcile,
+  renderDocCheck,
+  type DocCheck,
+} from "./docVerifier";
 
 export type DocEvidence = {
   url: string;
@@ -69,12 +76,33 @@ export type GenuineFailureReport = {
   screenshotPath?: string;
   snapshotPath?: string;
   docEvidence: DocEvidence;
+  /**
+   * Doc reconciliation using the step's DOC-FACING phrases rather than our internal target name.
+   * The internal name ("Invite Collaborators flow: collaborators table Actions column header") never
+   * appears in a document, so checking it produced a meaningless "not mentioned in the doc" verdict on
+   * the writers' primary report.
+   */
+  docCheck?: DocCheck;
 };
 
 export async function buildGenuineFailureReport(result: HealResult): Promise<GenuineFailureReport> {
   const t = result.target;
   const searchedFor = t.target.replace(/\s*\(doc step\)\s*$/i, "").trim();
-  const docEvidence = await fetchDocEvidence(t.documentUrl, searchedFor);
+  const attemptedLocator = t.currentSelector ?? extractAttemptedLocator(t.errorMessage);
+
+  // Doc-facing wording lives in the locator's text predicates, not in our internal target name.
+  const expectedCandidates = [...docPhrasesFromLocator(attemptedLocator), searchedFor];
+  const doc = await fetchDocContent(t.documentUrl);
+  const docCheck = reconcile({
+    docText: doc.text,
+    docUrl: t.documentUrl,
+    docError: doc.error,
+    expectedCandidates,
+    kind: "element-missing",
+  });
+
+  // Quote whichever phrasing the doc actually uses, so the report cites real evidence.
+  const docEvidence = await fetchDocEvidence(t.documentUrl, docCheck.expectedByFlow ?? searchedFor);
 
   const lastSnapshot = [...result.attempts].reverse().find((a) => a.snapshotSaved)?.snapshotSaved;
 
@@ -101,6 +129,7 @@ export async function buildGenuineFailureReport(result: HealResult): Promise<Gen
     screenshotPath: t.screenshotPath,
     snapshotPath: lastSnapshot ?? t.snapshotPath,
     docEvidence,
+    docCheck,
   };
 }
 
@@ -114,6 +143,7 @@ export function renderGenuineFailureMarkdown(r: GenuineFailureReport): string {
   lines.push(`- **Step:** ${r.stepDescription}`);
   lines.push(`- **Searched for:** \`${r.searchedFor}\``);
   if (r.attemptedLocator) lines.push(`- **Locator tried:** \`${r.attemptedLocator}\``);
+  if (r.docCheck?.expectedByFlow) lines.push(`- **Doc wording matched:** \`${r.docCheck.expectedByFlow}\``);
   lines.push(`- **Heal attempts:** ${r.attempts} — ${r.reason}`);
 
   if (r.docEvidence.mentions.length) {
@@ -126,10 +156,11 @@ export function renderGenuineFailureMarkdown(r: GenuineFailureReport): string {
     );
   } else if (r.docEvidence.error) {
     lines.push(`- _Doc re-fetch failed: ${r.docEvidence.error}_`);
-  } else {
-    lines.push(
-      `- _The phrase "${r.searchedFor}" was not found in the doc body either — the flow step may be stale rather than the app._`
-    );
+  }
+
+  if (r.docCheck) {
+    lines.push("");
+    lines.push(renderDocCheck(r.docCheck));
   }
 
   if (r.closestCandidates.length) {

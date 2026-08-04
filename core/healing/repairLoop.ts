@@ -54,11 +54,27 @@ function invalidateSelectorCache(absPath: string): void {
   }
 }
 
-/** Shallow-clone a flow with a truncated step list. */
-const sliceFlow = (flow: any, from: number, to?: number) => ({
-  ...flow,
-  steps: (flow.steps ?? []).slice(from, to),
-});
+/**
+ * One working clone per attempt, whose `steps` window is moved between calls.
+ *
+ * Critically NOT a fresh clone per `executeFlow` call. Flows stash cross-step state directly on the
+ * flow object — `invite-collaborators` writes the generated invite address to
+ * `flow.__brandKitInviteCollaboratorEmail` in an early step and later steps throw
+ * "no invite email on flow" without it (rules/core/actionRules.ts). Cloning per call sent the prefix's
+ * state to one object and the remainder's read to another, so the remainder always failed. That made
+ * the empirical gate reject a candidate the matcher had correctly found at 0.95 confidence — a false
+ * negative created entirely by the replay harness.
+ */
+function makeWorkFlow(flow: any): { flow: any; window: (from: number, to?: number) => any } {
+  const work: any = { ...flow };
+  return {
+    flow: work,
+    window: (from: number, to?: number) => {
+      work.steps = (flow.steps ?? []).slice(from, to);
+      return work;
+    },
+  };
+}
 
 /**
  * Is the page in a state where searching for a documented element is meaningless?
@@ -176,11 +192,13 @@ export async function repairLoop(
     try {
       const step = flow.steps[resumeStep];
       const expectedLabel = expectedLabelForStep(step, target.target);
+      // Shared across the prefix and remainder runs of THIS attempt so flow-object state survives.
+      const work = makeWorkFlow(flow);
 
       // ---- Replay the already-passing prefix through the real executor --------------------------
       if (resumeStep > 0) {
         clearDocStepFailures();
-        await executeFlow(page, sliceFlow(flow, 0, resumeStep));
+        await executeFlow(page, work.window(0, resumeStep));
         clearDocStepFailures(); // replay failures must not pollute the original report
       }
 
@@ -340,7 +358,7 @@ export async function repairLoop(
       clearDocStepFailures();
       try {
         // Includes the previously failing step, which now resolves through the written override.
-        await executeFlow(page, sliceFlow(flow, resumeStep), { skipSharedSteps: true });
+        await executeFlow(page, work.window(resumeStep), { skipSharedSteps: true });
         record.remainderPassed = true;
       } catch (err: any) {
         record.remainderPassed = false;
