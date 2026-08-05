@@ -42,7 +42,7 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.58.0-noble
       options: --user root
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       CI: "true"
       PLAYWRIGHT_HEADLESS: "1"
@@ -51,7 +51,12 @@ jobs:
       SKIP_OPEN_DASHBOARD: "1"
       PW_WORKERS: "3"
       PW_SLOWMO: "0"
-      PW_FLOW_MAX_MINUTES: "15"
+      # 3 of 15 flows were killed at exactly 15.0 min: add-item-in-knowledge-vault (died step 51/57)
+      # and edit-a-brand-kit (28/30) were still progressing and should now finish.
+      # delete-a-voice-profile (10/13) spent 15 min on 10 steps — that is a hang, not slowness, so it
+      # is expected to keep failing and needs separate investigation rather than more time.
+      # Developer-Hub deliberately NOT raised: its longest flow is 4.2 min and none approach the cap.
+      PW_FLOW_MAX_MINUTES: "30"
       SKIP_SLACK: "1"
       REPORT_DIR: ${{ github.workspace }}/reports/brandkit-${{ github.run_id }}-${{ github.run_attempt }}
 
