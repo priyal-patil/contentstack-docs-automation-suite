@@ -36,6 +36,7 @@ import { extractDocSteps, compareDocSequence } from "../../core/healing/docSeque
 import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
+  renderDocCheck,
   isSourcedFromDoc,
   docPhrasesFromLocator,
   isFrameworkContainerWord,
@@ -610,6 +611,100 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     );
     expect(r.label).toBeUndefined();
     expect(r.source).toBe("none");
+  });
+
+  test("an internal step identifier is never reported as a documentation finding", () => {
+    // The real string from Personalize delete-experience step 12. Looking a document up by this can only
+    // fail, and the report used to say "the doc does not mention <this>" in the writer-facing section.
+    const check = reconcile({
+      docText: "Click the Actions icon and select Delete to remove the experience.",
+      docUrl: "https://www.contentstack.com/docs/personalize/delete-experience",
+      expectedByFlow: "Delete Experience doc: verify row Actions vertical tooltip Delete menu item label",
+      kind: "element-missing",
+    });
+    expect(check.verdict).toBe("no-usable-doc-phrase");
+    expect(check.recommendation).toContain("NOT A DOCUMENTATION FINDING");
+    expect(renderDocCheck(check)).not.toContain("NEEDS REVIEW");
+  });
+
+  test("a real doc-facing label is still reconciled normally", () => {
+    // The guard must not silence genuine findings: this wording IS doc-facing and IS in the document.
+    const check = reconcile({
+      docText: "Click the Save Draft button to store your changes.",
+      docUrl: "https://example.test/doc",
+      expectedByFlow: "Save Draft",
+      seenInApp: "Activate Draft",
+      kind: "label-mismatch",
+    });
+    expect(check.verdict).toBe("doc-confirms-flow");
+    expect(check.recommendation).toContain("THE DOC IS OUT OF DATE");
+  });
+
+  test("an internal identifier alongside a real label uses the real label", () => {
+    const check = reconcile({
+      docText: "Click the Save Draft button to store your changes.",
+      expectedByFlow: "Edit Experience doc: verify Configuration footer Save Draft button (doc step)",
+      expectedCandidates: ["Save Draft"],
+      docUrl: "https://example.test/doc",
+      seenInApp: "Activate Draft",
+      kind: "label-mismatch",
+    });
+    expect(check.verdict).toBe("doc-confirms-flow");
+    expect(check.recommendation).toContain("Save Draft");
+  });
+
+  test("a descendant chain describes the TARGET, not the container that scopes it", () => {
+    // The bug this pins: five Personalize flows "healed" onto the actions <ul> (text "Edit Delete")
+    // because the reference took the first data-test-id in the chain — the menu's, not the item's.
+    const ref = referenceFromSelector(
+      '[data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-delete"]',
+      undefined
+    );
+    expect(ref?.testId).toBe("cs-ct-action-delete");
+    expect(ref?.testId).not.toBe("cs-vertical-action-tooltip-actions");
+    expect(ref?.tag).toBe("li");
+  });
+
+  test("child, adjacent and sibling combinators all resolve to the right-hand element", () => {
+    for (const combinator of [">", "+", "~"]) {
+      const ref = referenceFromSelector(
+        `div[data-test-id="wrapper"] ${combinator} button[data-test-id="submit-cta"]`,
+        undefined
+      );
+      expect(ref?.testId, `combinator ${combinator}`).toBe("submit-cta");
+      expect(ref?.tag, `combinator ${combinator}`).toBe("button");
+    }
+  });
+
+  test("a container-only chain yields no test id rather than borrowing the container's", () => {
+    // Falling through to the text tiers is correct here; claiming the container's identity is not.
+    const ref = referenceFromSelector('[data-test-id="cs-vertical-action-tooltip-actions"] li', "Delete");
+    expect(ref?.testId).toBeUndefined();
+    expect(ref?.text).toBe("Delete");
+  });
+
+  test("separators inside quotes, brackets and parens are not treated as combinators", () => {
+    const ref = referenceFromSelector('ul[data-test-id="menu"] li:has-text("Edit, Delete")', undefined);
+    expect(ref?.text).toBe("Edit, Delete");
+    expect(ref?.tag).toBe("li");
+
+    const quoted = referenceFromSelector('div[title="a > b"] span[data-test-id="leaf"]', undefined);
+    expect(quoted?.testId).toBe("leaf");
+  });
+
+  test("comma alternatives are each reduced to their own target", () => {
+    const ref = referenceFromSelector(
+      '[data-test-id="menu"] li[data-test-id="row-delete"], li:has-text("Delete")',
+      undefined
+    );
+    expect(ref?.testId).toBe("row-delete");
+    expect(ref?.text).toBe("Delete");
+  });
+
+  test("a single-element chain is unchanged by target resolution", () => {
+    const ref = referenceFromSelector('button[data-test-id="new-app-cta"]', "New App");
+    expect(ref?.testId).toBe("new-app-cta");
+    expect(ref?.tag).toBe("button");
   });
 
   test("a partial attribute selector is not treated as an exact test id", () => {

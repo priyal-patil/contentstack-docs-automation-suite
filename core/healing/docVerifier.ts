@@ -25,6 +25,7 @@
  */
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { looksLikeUiLabel } from "./reference";
 
 export type DocVerdict =
   /** The two sides are the same string — a framework artefact, not drift. */
@@ -33,6 +34,17 @@ export type DocVerdict =
   | "doc-confirms-flow"
   /** The doc matches the app, not our transcription — our flow JSON is out of date. */
   | "doc-matches-app"
+  /**
+   * The step offered no doc-facing wording to look up — only an internal identifier. NOT a finding.
+   *
+   * `expectedByFlow` is sometimes the step's `target`, which is an internal name like
+   * "Delete Experience doc: verify row Actions vertical tooltip Delete menu item label". Searching the
+   * document for that string always fails, and the old code then reported "the doc does not mention
+   * <internal identifier> … needs a human" in the writer-facing section. That is a false finding by
+   * construction: no document would ever contain it. The skip path already refused these; this branch
+   * did not, so they reached the report anyway.
+   */
+  | "no-usable-doc-phrase"
   /** The doc mentions neither wording; a human has to look. */
   | "doc-mentions-neither"
   /** Could not read the doc, so no conclusion is drawn. */
@@ -232,9 +244,12 @@ export function reconcile(args: {
   kind: DriftKind;
 }): DocCheck {
   const { docText, docUrl, docError, seenInApp, kind } = args;
-  const candidates = [args.expectedByFlow, ...(args.expectedCandidates ?? [])].filter(
+  const allCandidates = [args.expectedByFlow, ...(args.expectedCandidates ?? [])].filter(
     (s): s is string => !!s && s.trim().length > 0 && !isFrameworkContainerWord(s)
   );
+  // Only phrases that could plausibly appear in a document are looked up in one. `looksLikeUiLabel` is
+  // the same test the skip path uses, so both paths agree on what counts as doc-facing.
+  const candidates = allCandidates.filter((s) => looksLikeUiLabel(s));
   const expectedByFlow = args.expectedByFlow;
 
   // A missing step blocks the flow; a wrong name does not.
@@ -313,6 +328,25 @@ export function reconcile(args: {
     };
   }
 
+  // Nothing doc-facing to look up. Report it as a gap in the flow definition, NOT as a doc defect —
+  // searching a document for an internal identifier can only ever fail, and saying "the doc does not
+  // mention <internal identifier>" sends a technical writer to edit a page that is very likely correct.
+  if (!candidates.length) {
+    return {
+      verdict: "no-usable-doc-phrase",
+      kind,
+      severity: "warning",
+      docUrl,
+      expectedByFlow,
+      seenInApp,
+      recommendation:
+        `NOT A DOCUMENTATION FINDING — this step offers no doc-facing wording to check` +
+        (allCandidates.length ? `, only the internal identifier "${allCandidates[0]}"` : ``) +
+        `. Add \`expected.labelEquals\` (or a \`:has-text()\` predicate to the selector) so the step can be ` +
+        `compared with the document at all.`,
+    };
+  }
+
   // First phrasing the doc actually uses wins; see the precedence note above.
   const matched = candidates.find((c) => docContains(docText, c));
   const docHasApp = docContains(docText, seenInApp);
@@ -380,6 +414,8 @@ export function reconcile(args: {
 /** One-line rendering for the report. */
 export function renderDocCheck(c: DocCheck): string {
   if (c.verdict === "no-drift") return `**NO DRIFT** — ${c.recommendation}`;
+  // Must not carry a writer-facing tag: there is no documentation claim being made here.
+  if (c.verdict === "no-usable-doc-phrase") return `**NOT A DOC FINDING** — ${c.recommendation}`;
   const tag =
     c.verdict === "doc-confirms-flow"
       // A confident verdict needs both sides. See the note in `reconcile`.

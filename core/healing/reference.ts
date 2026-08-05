@@ -14,24 +14,105 @@
 import type { StructuredElement } from "./types";
 import { extractFromSnapshotFile } from "./domExtract";
 
-/** Pull `data-test-id` / `data-testid` values out of a CSS chain. */
-function attr(chain: string, name: string): string | undefined {
+/**
+ * Split on top-level separator characters, ignoring anything inside quotes, `[…]` or `(…)`.
+ *
+ * Needed because selector text legitimately contains the separators being split on:
+ * `:has-text("Edit, Delete")` holds a comma, `[title="a > b"]` holds a child combinator, and
+ * `:nth-of-type(2n+1)` holds a `+`. A plain `.split()` would tear those apart.
+ */
+function splitTopLevel(input: string, isSep: (ch: string) => boolean): string[] {
+  const out: string[] = [];
+  let buf = "";
+  let depth = 0;
+  let quote: string | undefined;
+
+  for (const ch of input) {
+    if (quote) {
+      buf += ch;
+      if (ch === quote) quote = undefined;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      buf += ch;
+      continue;
+    }
+    if (ch === "[" || ch === "(") depth += 1;
+    else if (ch === "]" || ch === ")") depth = Math.max(0, depth - 1);
+    else if (depth === 0 && isSep(ch)) {
+      out.push(buf);
+      buf = "";
+      continue;
+    }
+    buf += ch;
+  }
+  out.push(buf);
+  return out.map((s) => s.trim()).filter(Boolean);
+}
+
+const isAlternativeSeparator = (ch: string) => ch === ",";
+const isCombinator = (ch: string) =>
+  ch === " " || ch === "\t" || ch === "\n" || ch === ">" || ch === "+" || ch === "~";
+
+/**
+ * The final compound of each comma-alternative — the element the chain actually TARGETS.
+ *
+ * `A B`, `A > B`, `A + B` and `A ~ B` all target B; A only scopes the search. This distinction is the
+ * whole point of the function. Reading attributes from the raw chain took the FIRST regex match, which
+ * for a descendant chain is the ANCESTOR's, so
+ *
+ *   [data-test-id="cs-vertical-action-tooltip-actions"] li[data-test-id="cs-ct-action-delete"]
+ *
+ * produced a reference describing the actions *menu* instead of the Delete *item* inside it. The matcher
+ * then found that menu — which still exists — scored it 0.95 "data-test-id unchanged", and beat the
+ * correct `li:has-text("Delete")` candidate at 0.85. Five Personalize flows "healed" onto the containing
+ * `<ul>` (text "Edit Delete"), which passes the replay gate for a verify step while asserting something
+ * strictly weaker than the step meant to assert.
+ *
+ * When the target compound carries no usable identity the reference is left undefined rather than
+ * borrowing the ancestor's, so matching falls through to the text tiers — which is the right answer.
+ */
+export function targetCompounds(chain: string): string[] {
+  return splitTopLevel(chain, isAlternativeSeparator)
+    .map((alternative) => {
+      const parts = splitTopLevel(alternative, isCombinator);
+      return parts[parts.length - 1];
+    })
+    .filter(Boolean);
+}
+
+/** Pull a `data-test-id`-style value out of ONE compound selector. */
+function attr(compound: string, name: string): string | undefined {
   // EXACT matches only. `[data-test-id^="uilocation-field-modifier-"]` is a *prefix*, and treating its
   // value as a full id made the matcher search for an element whose data-test-id equals the prefix —
   // which never exists. Partial operators (^= $= *= ~= |=) are deliberately ignored.
   const re = new RegExp(`\\[${name}\\s*=\\s*(['"])(.*?)\\1`, "i");
-  return re.exec(chain)?.[2];
+  return re.exec(compound)?.[2];
 }
 
-/** Pull the first `:has-text("…")` / `:text-is("…")` argument. */
-function hasText(chain: string): string | undefined {
-  return /:(?:has-text|text-is|text)\((['"])(.*?)\1\)/i.exec(chain)?.[2];
+/** First target compound that names this attribute exactly. */
+function attrOfTarget(compounds: string[], name: string): string | undefined {
+  for (const compound of compounds) {
+    const value = attr(compound, name);
+    if (value) return value;
+  }
+  return undefined;
 }
 
-/** First plain tag name at the start of any alternative in the chain. */
-function leadingTag(chain: string): string | undefined {
-  for (const part of chain.split(",")) {
-    const m = /^\s*([a-z][a-z0-9]*)\b/i.exec(part);
+/** Pull the first `:has-text("…")` / `:text-is("…")` argument off a target compound. */
+function hasTextOfTarget(compounds: string[]): string | undefined {
+  for (const compound of compounds) {
+    const m = /:(?:has-text|text-is|text)\((['"])(.*?)\1\)/i.exec(compound);
+    if (m) return m[2];
+  }
+  return undefined;
+}
+
+/** Tag name of the first target compound that starts with one. */
+function tagOfTarget(compounds: string[]): string | undefined {
+  for (const compound of compounds) {
+    const m = /^([a-z][a-z0-9]*)\b/i.exec(compound);
     if (m) return m[1].toLowerCase();
   }
   return undefined;
@@ -53,13 +134,15 @@ export function referenceFromSelector(
   if (!chain && !expectedLabel) return undefined;
   const c = chain ?? "";
 
-  const testId = attr(c, "data-test-id") ?? attr(c, "data-testid");
-  const ariaLabel = attr(c, "aria-label");
-  const name = attr(c, "name");
-  const title = attr(c, "title");
-  const placeholder = attr(c, "placeholder");
-  const text = hasText(c) ?? expectedLabel;
-  const tag = leadingTag(c) ?? "*";
+  // Attributes are read from the TARGET compound only — never from an ancestor that merely scopes it.
+  const targets = targetCompounds(c);
+  const testId = attrOfTarget(targets, "data-test-id") ?? attrOfTarget(targets, "data-testid");
+  const ariaLabel = attrOfTarget(targets, "aria-label");
+  const name = attrOfTarget(targets, "name");
+  const title = attrOfTarget(targets, "title");
+  const placeholder = attrOfTarget(targets, "placeholder");
+  const text = hasTextOfTarget(targets) ?? expectedLabel;
+  const tag = tagOfTarget(targets) ?? "*";
 
   if (!testId && !ariaLabel && !name && !text && !title && !placeholder) return undefined;
 
@@ -164,7 +247,9 @@ export function docFacingLabel(
   const explicit = expected?.["labelEquals"] ?? expected?.["modalTitle"];
   if (typeof explicit === "string" && explicit.trim()) return { label: explicit.trim(), source: "expected" };
 
-  const fromLocator = hasText(selectorChain ?? "");
+  // The TARGET's own text predicate, not an ancestor's. In `tr:has-text("AUTO-VP-1") td button` the
+  // ancestor's text is a test-fixture name, and searching the app for it would look like doc drift.
+  const fromLocator = hasTextOfTarget(targetCompounds(selectorChain ?? ""));
   if (fromLocator) return { label: fromLocator, source: "locator-text" };
 
   const bare = target.replace(/\s*\(doc step\)\s*$/i, "").trim();
