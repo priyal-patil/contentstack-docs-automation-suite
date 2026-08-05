@@ -25597,6 +25597,47 @@ export async function performAction(
           break;
         }
 
+        // The import doc's closing instruction: "You will get a success message after the Voice Profile
+        // is imported." Without this step the flow ended at "click Proceed" and PASSED even when the
+        // import produced nothing — a false pass that made `delete-a-voice-profile` look like locator
+        // drift when the row it wanted had never been created. Unlike the `edit-a-voice-profile` idiom
+        // above this ASSERTS rather than warns: the document states the outcome, so its absence means the
+        // documented step did not happen, and a green flow that imported nothing is worse than a red one.
+        if (fidC === "import-a-voice-profile" && step.target === "Import Voice Profile success message (doc step)") {
+          const tImp = getStepTimeoutMs(step, 45_000);
+          await page.waitForTimeout(800);
+          // Broad on purpose: the doc promises a success message but never quotes its copy, so matching
+          // exact wording would assert something the document does not actually specify.
+          const successLike = page.getByText(/imported|success|created/i).first();
+          const toast = page
+            .locator(".Toastify__toast, [class*='Toastify'], [role='alert']")
+            .filter({ hasText: /imported|success|created/i })
+            .first();
+          let okImp = false;
+          const deadlineImp = Date.now() + Math.min(tImp, 30_000);
+          while (Date.now() < deadlineImp) {
+            if (await successLike.isVisible().catch(() => false)) {
+              okImp = true;
+              break;
+            }
+            if (await toast.isVisible().catch(() => false)) {
+              okImp = true;
+              break;
+            }
+            await page.waitForTimeout(400);
+          }
+          if (!okImp) {
+            throw new Error(
+              `Import a Voice Profile (doc): the document states "You will get a success message after the ` +
+                `Voice Profile is imported", but no success message appeared within ${Math.min(tImp, 30_000)}ms ` +
+                `of clicking Proceed. The import did not complete, so the flow must not report success. ` +
+                `Check the uploaded JSON is a valid Contentstack Voice Profile and that this account owns ` +
+                `the Brand Kit (the doc notes only Brand Kit Owners can import).`
+            );
+          }
+          break;
+        }
+
         if (
           fidC === "create-a-voice-profile" &&
           step.target === "Playground Clear Prompt beside Generate Response row (doc step)"
