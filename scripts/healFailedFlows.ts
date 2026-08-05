@@ -43,7 +43,7 @@ import {
 import { repairLoop } from "../core/healing/repairLoop";
 import { flowSelectorPath } from "../core/healing/selectorLayers";
 import { checkFixtureFailure, type FixtureVerdict } from "../core/healing/fixtureCheck";
-import { checkPrecondition, checkVerifiedThenAbsent, type PreconditionVerdict } from "../core/healing/preconditionCheck";
+import { checkPrecondition, checkActionTimedOutAfterVerify, type PreconditionVerdict } from "../core/healing/preconditionCheck";
 import { applyFlowLabelUpdate, type FlowUpdateResult } from "../core/healing/flowJsonWriter";
 import { fetchDocContent } from "../core/healing/docVerifier";
 import { escalateToLlm } from "../core/healing/escalate";
@@ -200,13 +200,13 @@ async function main(): Promise<void> {
       log(`\n──── ${target.flowId} · step ${target.stepNumber} ────`);
 
       // Verified present one step earlier, gone by the time the action ran. No selector can fix that.
-      const transient = checkVerifiedThenAbsent({
+      const transient = checkActionTimedOutAfterVerify({
         flow: JSON.parse(fs.readFileSync(target.flowPath, "utf8")),
         stepIndex: target.stepIndex,
         errorMessage: target.errorMessage,
       });
-      if (transient.isTransient) {
-        log(`⏳ verified-then-absent — ${transient.reason.slice(0, 150)}`);
+      if (transient.timedOutAfterVerify) {
+        log(`⏳ action timed out after a passing verify — ${transient.reason.slice(0, 150)}`);
         log(`   not healable and not doc drift; skipping`);
         preconditionFailures.push({
           target,

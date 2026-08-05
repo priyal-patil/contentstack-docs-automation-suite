@@ -31,7 +31,7 @@ import {
   looksLikeUiLabel,
 } from "../../core/healing/reference";
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
-import { checkPrecondition, checkVerifiedThenAbsent } from "../../core/healing/preconditionCheck";
+import { checkPrecondition, checkActionTimedOutAfterVerify } from "../../core/healing/preconditionCheck";
 import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
@@ -730,7 +730,7 @@ test.describe("flow JSON is corrected to the DOCUMENT, never the app", () => {
   });
 });
 
-test.describe("verified-then-absent is not drift (BrandKit delete-a-voice-profile)", () => {
+test.describe("an action timing out after a passing verify is not drift (BrandKit delete-a-voice-profile)", () => {
   /** The real shape: a verify and an action on the SAME target, back to back. */
   const FLOW = {
     steps: [
@@ -741,51 +741,51 @@ test.describe("verified-then-absent is not drift (BrandKit delete-a-voice-profil
   };
 
   test("catches the real signature: verify passed, action waited out its timeout", () => {
-    const v = checkVerifiedThenAbsent({
+    const v = checkActionTimedOutAfterVerify({
       flow: FLOW,
       stepIndex: 2,
       errorMessage: "locator.click: Target page, context or browser has been closed",
     });
-    expect(v.isTransient).toBe(true);
-    expect(v.reason).toContain("present and then was not");
+    expect(v.timedOutAfterVerify).toBe(true);
+    expect(v.reason).toContain("present");
   });
 
   test("also catches a plain action timeout", () => {
-    const v = checkVerifiedThenAbsent({
+    const v = checkActionTimedOutAfterVerify({
       flow: FLOW,
       stepIndex: 2,
       errorMessage: "locator.click: Timeout 45000ms exceeded.",
     });
-    expect(v.isTransient).toBe(true);
+    expect(v.timedOutAfterVerify).toBe(true);
   });
 
   test("a genuinely missing element is NOT reclassified", () => {
     // No preceding verify on the same target, so the agent should still try to heal it.
-    const v = checkVerifiedThenAbsent({
+    const v = checkActionTimedOutAfterVerify({
       flow: { steps: [{ action: "click", target: "Something Else" }, { action: "click", target: "Delete" }] },
       stepIndex: 1,
       errorMessage: "expect(locator).toBeVisible() failed\nError: element(s) not found",
     });
-    expect(v.isTransient).toBe(false);
+    expect(v.timedOutAfterVerify).toBe(false);
   });
 
   test("a preceding verify on a DIFFERENT target does not qualify", () => {
-    const v = checkVerifiedThenAbsent({
+    const v = checkActionTimedOutAfterVerify({
       flow: { steps: [{ action: "verify", target: "Actions" }, { action: "click", target: "Delete" }] },
       stepIndex: 1,
       errorMessage: "locator.click: Timeout 45000ms exceeded.",
     });
-    expect(v.isTransient).toBe(false);
+    expect(v.timedOutAfterVerify).toBe(false);
     expect(v.reason).toContain("targets something else");
   });
 
   test("a failing verify step is not treated as an action", () => {
-    const v = checkVerifiedThenAbsent({
+    const v = checkActionTimedOutAfterVerify({
       flow: FLOW,
       stepIndex: 1,
       errorMessage: "locator.click: Timeout 45000ms exceeded.",
     });
-    expect(v.isTransient).toBe(false);
+    expect(v.timedOutAfterVerify).toBe(false);
   });
 });
 

@@ -96,26 +96,33 @@ export function checkPrecondition(args: {
 }
 
 /**
- * The element was verified present moments earlier, then was absent when the action ran.
+ * An action timed out on a target that a `verify` had just passed.
  *
- * Found on BrandKit's `delete-a-voice-profile`. Step 9 `verify "Delete"` PASSES; step 10 `click "Delete"`
- * on the identical target waits out the whole test timeout and dies as "Target page, context or browser
- * has been closed". The captured DOM at step 10 contains zero elements matching "Delete" — so nothing was
- * clickable, and no better selector could have helped.
+ * Named for what is OBSERVED, not for a mechanism. An earlier version of this was called
+ * "verifiedThenAbsent" and claimed the element had disappeared — that claim was false. Screenshotting
+ * BrandKit's `delete-a-voice-profile` immediately after step 9 showed the menu OPEN, with the Delete item
+ * present, and still present 20 seconds later. The earlier "element is gone" reading came from the healing
+ * agent's own ~58s settle wait: by the time it captured the DOM, the page had moved on. The instrumentation
+ * distorted the evidence.
  *
- * The underlying cause there was an ambiguous row scope: `rowContains: "AUTO-VP-"` is a prefix matching
- * every generated profile, so once a second one existed the locator never resolved. Whatever the cause,
- * the signature is the same and the conclusion is identical — this is neither locator drift nor
- * documentation drift, so it must not reach the technical writers.
+ * What is actually true: step 9 `verify "Delete"` passes, step 10 `click "Delete"` waits out its entire
+ * timeout, and the element exists throughout. The likeliest cause is that the ACTION's locator resolves to
+ * something different from the one that was verified — in that flow, `rowContains: "AUTO-VP-"` is a prefix
+ * matching two rows, so the click can scope to a row whose menu is closed while the verify matched the row
+ * whose menu is open.
+ *
+ * Either way the conclusion is the same and is the only thing this classifier asserts: the target is not
+ * missing, so no selector replacement applies, and nothing here is documentation drift. It must not reach
+ * the technical writers.
  *
  * Detection relies on a guarantee from `parseFailureReport`: it keeps only the EARLIEST real failure per
  * flow, so if the target is step N then step N-1 did not fail. A preceding `verify` on the same target is
- * therefore known to have passed, and no extra bookkeeping is needed.
- */
-export type TransientVerdict = {
-  isTransient: boolean;
+ * therefore known to have passed.
+ */export type ActionTimeoutVerdict = {
+  /** True when an action waited out its timeout on a target a preceding verify had passed. */
+  timedOutAfterVerify: boolean;
   reason: string;
-  /** The verify step that passed on the same target, 1-based, when there is one. */
+  /** The verify step that passed on the same target, 1-based. */
   verifiedAtStep?: number;
 };
 
@@ -128,40 +135,40 @@ const WAITED_OUT = [
 
 const ACTION_STEP = /^(click|enter|select|upload|press|hover|drag)$/i;
 
-export function checkVerifiedThenAbsent(args: {
+export function checkActionTimedOutAfterVerify(args: {
   /** The flow definition, so the preceding step can be inspected. */
   flow: { steps?: Array<Record<string, unknown>> };
   /** Zero-based index of the failing step. */
   stepIndex: number;
   errorMessage?: string;
-}): TransientVerdict {
+}): ActionTimeoutVerdict {
   const steps = args.flow?.steps ?? [];
   const step = steps[args.stepIndex];
   const prev = args.stepIndex > 0 ? steps[args.stepIndex - 1] : undefined;
   const msg = args.errorMessage ?? "";
 
-  if (!step || !prev) return { isTransient: false, reason: "no preceding step to compare" };
+  if (!step || !prev) return { timedOutAfterVerify: false, reason: "no preceding step to compare" };
   if (!ACTION_STEP.test(String(step["action"] ?? ""))) {
-    return { isTransient: false, reason: "failing step is not an action" };
+    return { timedOutAfterVerify: false, reason: "failing step is not an action" };
   }
   if (!WAITED_OUT.some((re) => re.test(msg))) {
-    return { isTransient: false, reason: "error is not a wait-timeout signature" };
+    return { timedOutAfterVerify: false, reason: "error is not a wait-timeout signature" };
   }
   if (String(prev["action"] ?? "").toLowerCase() !== "verify") {
-    return { isTransient: false, reason: "preceding step is not a verify" };
+    return { timedOutAfterVerify: false, reason: "preceding step is not a verify" };
   }
   if (String(prev["target"] ?? "") !== String(step["target"] ?? "")) {
-    return { isTransient: false, reason: "preceding verify targets something else" };
+    return { timedOutAfterVerify: false, reason: "preceding verify targets something else" };
   }
 
   return {
-    isTransient: true,
+    timedOutAfterVerify: true,
     verifiedAtStep: args.stepIndex,
     reason:
       `step ${args.stepIndex} verified "${step["target"]}" and passed, then step ${args.stepIndex + 1} ` +
-      `waited out its timeout acting on the same target — the element was present and then was not. ` +
-      `Not locator drift and not documentation drift: no selector change can fix a element that is ` +
-      `absent at action time. Look for an ambiguous scope (a prefix matching several rows) or a surface ` +
-      `that closes between the two steps.`,
+      `waited out its timeout acting on the same target. The element is therefore present — what fails is ` +
+      `the action's own locator resolution, most often an ambiguous scope (a row hint matching several ` +
+      `rows, so the action targets a different element than the verify did). Not locator drift and not ` +
+      `documentation drift: the target exists, so no selector replacement applies.`,
   };
 }

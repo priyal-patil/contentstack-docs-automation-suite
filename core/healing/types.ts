@@ -118,6 +118,8 @@ export type AttemptRecord = {
   /** Did the remainder of the flow pass? Only then is the heal real. */
   remainderPassed?: boolean;
   snapshotSaved?: string;
+  /** Screenshot of the page at match time — the only image that exists for timeout-killed steps. */
+  screenshotSaved?: string;
   error?: string;
 };
 

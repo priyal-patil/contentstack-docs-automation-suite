@@ -250,6 +250,7 @@ export async function repairLoop(
           attempt,
         });
         record.snapshotSaved = saved?.htmlPath;
+        record.screenshotSaved = saved?.pngPath;
         attempts.push(record);
         deps.audit.attempt(target.flowId, record);
         log(`🌐 attempt ${attempt}: ${envProblem}`);
@@ -332,6 +333,7 @@ export async function repairLoop(
           attempt,
         });
         record.snapshotSaved = saved?.htmlPath;
+        record.screenshotSaved = saved?.pngPath;
         attempts.push(record);
         deps.audit.attempt(target.flowId, record);
         continue;
@@ -411,6 +413,7 @@ export async function repairLoop(
         attempt,
       });
       record.snapshotSaved = saved?.htmlPath;
+        record.screenshotSaved = saved?.pngPath;
 
       if (record.remainderPassed) {
         attempts.push(record);

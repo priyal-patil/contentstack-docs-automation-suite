@@ -250,13 +250,19 @@ export async function extractFromPage(page: Page): Promise<StructuredElement[]> 
  * the app may have changed again between runs, so the most recent failure state is always the
  * reference for the next attempt.
  *
- * Keyed `{snapshotDir}/healing/{flowId}/{stepIndex}/{attempt}.{html,json}` so it survives process
+ * Keyed `{snapshotDir}/healing/{flowId}/{stepIndex}/{attempt}.{html,json,png}` so it survives process
  * restarts, which is required: "next attempt" may be a separate process.
+ *
+ * The PNG matters as much as the markup. When a step is killed by the per-flow timeout, `core/executor.ts`
+ * captures nothing at all — its screenshot and `page.content()` calls both live inside the failure handler
+ * and fail silently once the context is closed. So for exactly the failures that are hardest to diagnose
+ * there is no image anywhere, and a human is left reading 18 MB of HTML. Captured here, before the action
+ * is attempted, so the context is still alive.
  */
 export async function saveAttemptSnapshot(
   page: Page,
   opts: { snapshotDir: string; flowId: string; stepIndex: number; attempt: number }
-): Promise<{ htmlPath: string; jsonPath: string } | undefined> {
+): Promise<{ htmlPath: string; jsonPath: string; pngPath?: string } | undefined> {
   try {
     const dir = path.join(
       opts.snapshotDir,
@@ -268,6 +274,7 @@ export async function saveAttemptSnapshot(
 
     const htmlPath = path.join(dir, `${opts.attempt}.html`);
     const jsonPath = path.join(dir, `${opts.attempt}.json`);
+    const pngPath = path.join(dir, `${opts.attempt}.png`);
 
     const html = await page.content().catch(() => "");
     if (!html) return undefined;
@@ -277,7 +284,13 @@ export async function saveAttemptSnapshot(
     const structured = await extractFromPage(page);
     fs.writeFileSync(jsonPath, JSON.stringify(structured, null, 2), "utf8");
 
-    return { htmlPath, jsonPath };
+    // Best-effort: a failed screenshot must not lose the markup we already have.
+    const shot = await page
+      .screenshot({ path: pngPath, fullPage: true })
+      .then(() => true)
+      .catch(() => false);
+
+    return { htmlPath, jsonPath, ...(shot ? { pngPath } : {}) };
   } catch {
     return undefined;
   }
