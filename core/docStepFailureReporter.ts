@@ -106,10 +106,15 @@ export function buildMissingElementSummary(step: Record<string, unknown>, errorM
   else if (action === "verify") kind = "Element/label/modal to verify";
   else if (action === "upload") kind = "File input/control";
 
+  // These keyword hints refine the report wording only. They must be WORD-bounded: `/switch/` alone also
+  // matches "App Switcher", which made every App-Switcher step — the first step of most flows in most
+  // projects — report as a "Toggle/checkbox not found". That is actively misleading when reading a failure,
+  // and it cost real debugging time chasing a toggle that was never involved.
   const tl = target.toLowerCase();
-  if (/\(doc step\)/i.test(target) && /modal/i.test(tl)) kind = "Modal/dialog";
-  else if (/\(doc step\)/i.test(target) && /toggle|checkbox|switch/i.test(tl)) kind = "Toggle/checkbox";
-  else if (/\(doc step\)/i.test(target) && /dropdown|select|menu/i.test(tl)) kind = "Dropdown/menu";
+  const has = (re: RegExp) => /\(doc step\)/i.test(target) && re.test(tl);
+  if (has(/\bmodal\b|\bdialog\b/)) kind = "Modal/dialog";
+  else if (has(/\btoggle\b|\bcheckbox\b|\bswitch\b/)) kind = "Toggle/checkbox";
+  else if (has(/\bdropdown\b|\bselect\b|\bmenu\b/)) kind = "Dropdown/menu";
 
   let locatorHint = "";
   const locLine = msg.match(/Locator:\s*([^\n]+)/i);
