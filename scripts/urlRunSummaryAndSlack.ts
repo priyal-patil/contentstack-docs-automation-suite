@@ -362,10 +362,40 @@ async function postSlackChatPostMessage(
   try {
     data = JSON.parse(raw) as { ok?: boolean; error?: string };
   } catch {
+    const detail = `invalid JSON response (HTTP ${res.status})`;
+    announceSlackFailure(detail);
     throw new Error(`Slack API: invalid JSON (HTTP ${res.status}): ${raw.slice(0, 300)}`);
   }
   if (!data.ok) {
-    throw new Error(`Slack API chat.postMessage: ${data.error || "unknown error"} (HTTP ${res.status})`);
+    const detail = `${data.error || "unknown error"} (HTTP ${res.status})`;
+    announceSlackFailure(detail);
+    throw new Error(`Slack API chat.postMessage: ${detail}`);
+  }
+}
+
+/**
+ * Make a Slack delivery failure VISIBLE in the GitHub Actions UI.
+ *
+ * Every workflow invokes this script as `... || true`, which is reasonable — a reporting hiccup should
+ * not fail an otherwise valid test run — but it also meant a real outage was completely silent. The
+ * Slack bot token went `account_inactive` on 4 Aug 2026 and eight projects reported nothing for over a
+ * day while every "Post Slack" step still showed a green tick.
+ *
+ * `|| true` swallows the exit code, not the output: a workflow command annotation still surfaces on the
+ * run, in the job log, and in the step summary. So the failure is announced here, at the point it is
+ * detected, rather than relying on 45 call sites across 31 workflows each remembering to check.
+ */
+function announceSlackFailure(detail: string): void {
+  const msg = `Slack delivery FAILED: ${detail}. Reports were not posted. Check the SLACK_BOT_TOKEN secret and that the bot is still installed and in the channel.`;
+  // Recognised by GitHub Actions regardless of the step's exit code.
+  console.log(`::error title=Slack delivery failed::${msg}`);
+  const summary = process.env.GITHUB_STEP_SUMMARY;
+  if (summary) {
+    try {
+      fs.appendFileSync(summary, `\n> **Slack delivery failed** — ${detail}. Reports were not posted.\n`);
+    } catch {
+      /* summary is best-effort */
+    }
   }
 }
 
@@ -392,7 +422,9 @@ async function postSlackConnectivityTest(botToken: string, channelId: string): P
       throw new Error(`Slack API: invalid JSON (HTTP ${res.status}): ${raw.slice(0, 300)}`);
     }
     if (!data.ok) {
-      throw new Error(`Slack API chat.postMessage: ${data.error || "unknown error"} (HTTP ${res.status})`);
+      const detail = `${data.error || "unknown error"} (HTTP ${res.status})`;
+      announceSlackFailure(detail);
+      throw new Error(`Slack API chat.postMessage: ${detail}`);
     }
   } finally {
     clearTimeout(timer);
