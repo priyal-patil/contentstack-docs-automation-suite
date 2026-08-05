@@ -239,6 +239,8 @@ export function parseFailureDrift(
       action: String(f.action ?? ""),
       target: String(f.target ?? ""),
       warningMessage: String(f.errorMessage ?? ""),
+      flowPath,
+      stepIndex: f.stepIndex ?? (f.stepNumber ?? 1) - 1,
     });
   }
   return out;
@@ -274,6 +276,10 @@ export type DocDriftWarning = {
   warningMessage: string;
   /** Which of doc / flow-JSON / app is wrong. Filled in by `verifyWarningsAgainstDocs()`. */
   docCheck?: DocCheck;
+  /** Absolute path of the flow definition, so a doc-sourced label correction can be applied. */
+  flowPath?: string;
+  /** Zero-based step index within that flow. */
+  stepIndex?: number;
 };
 
 /**
@@ -339,6 +345,8 @@ export function parseWarningReport(
       action: String(w.action ?? ""),
       target: String(w.target ?? ""),
       warningMessage: String(w.warningMessage ?? ""),
+      flowPath,
+      stepIndex: Number(w.stepIndex ?? Number(w.stepNumber ?? 1) - 1),
     });
   }
 

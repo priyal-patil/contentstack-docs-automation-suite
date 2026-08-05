@@ -31,7 +31,8 @@ import {
   looksLikeUiLabel,
 } from "../../core/healing/reference";
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
-import { checkPrecondition } from "../../core/healing/preconditionCheck";
+import { checkPrecondition, checkVerifiedThenAbsent } from "../../core/healing/preconditionCheck";
+import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
   isSourcedFromDoc,
@@ -618,6 +619,173 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     // An exact match is still picked up.
     const exact = referenceFromSelector('[data-test-id="new-app-cta"]', "x");
     expect(exact?.testId).toBe("new-app-cta");
+  });
+});
+
+test.describe("flow JSON is corrected to the DOCUMENT, never the app", () => {
+  const TMP = path.resolve(__dirname, "../../projects/__tmp-test__/mod/flows/tmp-label.flow.json");
+  const DOC = "On the Dashboard, click the Create Experience button to begin.";
+
+  const seed = () => {
+    fs.mkdirSync(path.dirname(TMP), { recursive: true });
+    // Two steps share the same expected label — a naive global replace would corrupt the other.
+    fs.writeFileSync(
+      TMP,
+      JSON.stringify(
+        {
+          id: "tmp-label",
+          steps: [
+            { action: "verify", target: "a", expected: { labelEquals: "New Experience" } },
+            { action: "verify", target: "b", expected: { labelEquals: "New Experience" } },
+          ],
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+  };
+  const read = () => JSON.parse(fs.readFileSync(TMP, "utf8"));
+  const cleanup = () => fs.rmSync(path.resolve(__dirname, "../../projects/__tmp-test__"), { recursive: true, force: true });
+
+  test("applies a doc-sourced correction to the right step only", () => {
+    seed();
+    try {
+      const r = applyFlowLabelUpdate({
+        flowPath: TMP,
+        stepIndex: 1,
+        from: "New Experience",
+        to: "Create Experience",
+        docText: DOC,
+      });
+      expect(r.applied).toBe(true);
+      const f = read();
+      // Only step 2 changed.
+      expect(f.steps[0].expected.labelEquals).toBe("New Experience");
+      expect(f.steps[1].expected.labelEquals).toBe("Create Experience");
+    } finally {
+      cleanup();
+    }
+  });
+
+  test("REFUSES a value that does not appear in the document", () => {
+    seed();
+    try {
+      const r = applyFlowLabelUpdate({
+        flowPath: TMP,
+        stepIndex: 0,
+        from: "New Experience",
+        to: "Whatever The App Says Now", // app-sourced, absent from the doc
+        docText: DOC,
+      });
+      expect(r.applied).toBe(false);
+      expect(r.reason).toContain("does not appear in the document");
+      expect(read().steps[0].expected.labelEquals).toBe("New Experience");
+    } finally {
+      cleanup();
+    }
+  });
+
+  test("refuses when the step does not currently expect the stated value", () => {
+    seed();
+    try {
+      const r = applyFlowLabelUpdate({
+        flowPath: TMP,
+        stepIndex: 0,
+        from: "Something Else",
+        to: "Create Experience",
+        docText: DOC,
+      });
+      expect(r.applied).toBe(false);
+      expect(r.reason).toContain("refusing to guess");
+    } finally {
+      cleanup();
+    }
+  });
+
+  test("dry run changes nothing on disk", () => {
+    seed();
+    try {
+      const r = applyFlowLabelUpdate({
+        flowPath: TMP,
+        stepIndex: 0,
+        from: "New Experience",
+        to: "Create Experience",
+        docText: DOC,
+        dryRun: true,
+      });
+      expect(r.applied).toBe(false);
+      expect(r.reason).toContain("dry run");
+      expect(read().steps[0].expected.labelEquals).toBe("New Experience");
+    } finally {
+      cleanup();
+    }
+  });
+
+  test("write path is restricted to flow definitions", () => {
+    expect(() => assertFlowWritable("/tmp/evil.json")).toThrow(/Refusing to write/);
+    expect(() =>
+      assertFlowWritable(path.resolve(__dirname, "../../projects/P/m/selectors/x.selectors.ts"))
+    ).toThrow(/Refusing to write/);
+  });
+});
+
+test.describe("verified-then-absent is not drift (BrandKit delete-a-voice-profile)", () => {
+  /** The real shape: a verify and an action on the SAME target, back to back. */
+  const FLOW = {
+    steps: [
+      { action: "click", target: "vertical ellipsis" },
+      { action: "verify", target: "Delete" },
+      { action: "click", target: "Delete" },
+    ],
+  };
+
+  test("catches the real signature: verify passed, action waited out its timeout", () => {
+    const v = checkVerifiedThenAbsent({
+      flow: FLOW,
+      stepIndex: 2,
+      errorMessage: "locator.click: Target page, context or browser has been closed",
+    });
+    expect(v.isTransient).toBe(true);
+    expect(v.reason).toContain("present and then was not");
+  });
+
+  test("also catches a plain action timeout", () => {
+    const v = checkVerifiedThenAbsent({
+      flow: FLOW,
+      stepIndex: 2,
+      errorMessage: "locator.click: Timeout 45000ms exceeded.",
+    });
+    expect(v.isTransient).toBe(true);
+  });
+
+  test("a genuinely missing element is NOT reclassified", () => {
+    // No preceding verify on the same target, so the agent should still try to heal it.
+    const v = checkVerifiedThenAbsent({
+      flow: { steps: [{ action: "click", target: "Something Else" }, { action: "click", target: "Delete" }] },
+      stepIndex: 1,
+      errorMessage: "expect(locator).toBeVisible() failed\nError: element(s) not found",
+    });
+    expect(v.isTransient).toBe(false);
+  });
+
+  test("a preceding verify on a DIFFERENT target does not qualify", () => {
+    const v = checkVerifiedThenAbsent({
+      flow: { steps: [{ action: "verify", target: "Actions" }, { action: "click", target: "Delete" }] },
+      stepIndex: 1,
+      errorMessage: "locator.click: Timeout 45000ms exceeded.",
+    });
+    expect(v.isTransient).toBe(false);
+    expect(v.reason).toContain("targets something else");
+  });
+
+  test("a failing verify step is not treated as an action", () => {
+    const v = checkVerifiedThenAbsent({
+      flow: FLOW,
+      stepIndex: 1,
+      errorMessage: "locator.click: Timeout 45000ms exceeded.",
+    });
+    expect(v.isTransient).toBe(false);
   });
 });
 

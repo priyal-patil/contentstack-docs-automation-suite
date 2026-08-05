@@ -43,7 +43,9 @@ import {
 import { repairLoop } from "../core/healing/repairLoop";
 import { flowSelectorPath } from "../core/healing/selectorLayers";
 import { checkFixtureFailure, type FixtureVerdict } from "../core/healing/fixtureCheck";
-import { checkPrecondition, type PreconditionVerdict } from "../core/healing/preconditionCheck";
+import { checkPrecondition, checkVerifiedThenAbsent, type PreconditionVerdict } from "../core/healing/preconditionCheck";
+import { applyFlowLabelUpdate, type FlowUpdateResult } from "../core/healing/flowJsonWriter";
+import { fetchDocContent } from "../core/healing/docVerifier";
 import { escalateToLlm } from "../core/healing/escalate";
 import {
   buildGenuineFailureReport,
@@ -74,6 +76,8 @@ const doCommit = flag("commit") || flag("pr");
 const doPr = flag("pr");
 const doSlack = flag("slack");
 const dryRun = flag("dry-run");
+/** Correct a flow JSON's expected label when the DOCUMENT disagrees with it. Off by default. */
+const updateFlows = flag("update-flows");
 
 const cfg: HealConfig = {
   ...DEFAULT_HEAL_CONFIG,
@@ -146,6 +150,28 @@ async function main(): Promise<void> {
     log(`     ${jsonStale} where our FLOW JSON is out of date → fix the flow definition`);
     log(`     ${driftWarnings.length - docStale - jsonStale} needing review\n`);
   }
+  // Where the DOCUMENT and our flow JSON disagree, the JSON is the stale side — the document is its
+  // specification. Correct it to the DOC's wording (never the app's; flowJsonWriter re-checks that).
+  const flowUpdates: FlowUpdateResult[] = [];
+  for (const w of driftWarnings) {
+    const upd = w.docCheck?.proposedFlowUpdate;
+    if (!upd || !w.flowPath || typeof w.stepIndex !== "number") continue;
+    const doc = await fetchDocContent(w.documentUrl);
+    const res = applyFlowLabelUpdate({
+      flowPath: w.flowPath,
+      stepIndex: w.stepIndex,
+      from: upd.from,
+      to: upd.to,
+      docText: doc.text,
+      dryRun: cfg.dryRun || !updateFlows,
+    });
+    flowUpdates.push(res);
+    log(`${res.applied ? "✍️ " : "🧪"} flow JSON ${w.flowId} step ${w.stepNumber}: ${res.reason}`);
+  }
+  if (driftWarnings.some((w) => w.docCheck?.proposedFlowUpdate) && !updateFlows) {
+    log(`   (pass --update-flows to apply these; the value is always taken from the doc)\n`);
+  }
+
   if (!targets.length) log("Nothing to heal.");
   for (const t of targets) {
     log(
@@ -172,6 +198,22 @@ async function main(): Promise<void> {
     // Serial per flow: parallel healing would clobber each other's DOM snapshots and app state.
     for (const target of browser ? targets : []) {
       log(`\n──── ${target.flowId} · step ${target.stepNumber} ────`);
+
+      // Verified present one step earlier, gone by the time the action ran. No selector can fix that.
+      const transient = checkVerifiedThenAbsent({
+        flow: JSON.parse(fs.readFileSync(target.flowPath, "utf8")),
+        stepIndex: target.stepIndex,
+        errorMessage: target.errorMessage,
+      });
+      if (transient.isTransient) {
+        log(`⏳ verified-then-absent — ${transient.reason.slice(0, 150)}`);
+        log(`   not healable and not doc drift; skipping`);
+        preconditionFailures.push({
+          target,
+          verdict: { isPrecondition: true, kind: "wrong-ui-state", reason: transient.reason },
+        });
+        continue;
+      }
 
       // The element was found but is disabled or in the wrong state. Nothing is missing, so searching
       // for another selector is wasted work and reporting it as doc drift is simply wrong.
@@ -305,6 +347,7 @@ async function main(): Promise<void> {
       fixtureFailures: fixtureFailures.length,
       preconditionFailures: preconditionFailures.length,
       driftWarnings: driftWarnings.length,
+      flowJsonUpdatesApplied: flowUpdates.filter((u) => u.applied).length,
       docOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-confirms-flow").length,
       flowJsonOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-matches-app").length,
     },
@@ -332,6 +375,7 @@ async function main(): Promise<void> {
       confidence: f.verdict.confidence,
       reason: f.verdict.reason,
     })),
+    flowJsonUpdates: flowUpdates,
     docDriftWarnings: driftWarnings,
     genuineFailures: genuine,
     environmentFailures: envFailures.map((e) => ({
