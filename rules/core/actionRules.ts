@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { Page, expect, Locator } from "@playwright/test";
 import { recordDocStepWarning } from "../../core/docStepFailureReporter";
+import { labelMatches } from "../../core/labelMatch";
 import {
   getUsersRolesChainRolePrimaryLabel,
   getUsersRolesChainUnique,
@@ -1846,12 +1847,12 @@ async function extractElementLabel(el: Locator): Promise<string> {
 async function assertLabelMatch(el: Locator, expectedLabel: string, mode: "exact" | "contains" = "contains") {
   const actualRaw = await extractElementLabel(el);
   const actual = normalizeLabelText(actualRaw);
-  const expected = normalizeLabelText(expectedLabel);
   if (!actual) {
     throw new Error(`Label validation failed: element has no text/aria-label/title, expected "${expectedLabel}".`);
   }
-  const ok = mode === "exact" ? actual === expected : actual.includes(expected);
-  if (!ok) {
+  // See `core/labelMatch.ts`: the documented leading `+` denotes a plus ICON, so it is optional on the
+  // expected side. Comparing it as literal text failed steps whose button was present and correct.
+  if (!labelMatches(actualRaw, expectedLabel, mode)) {
     throw new Error(`Label validation failed: expected "${expectedLabel}" (${mode}), got "${actual}".`);
   }
 }
