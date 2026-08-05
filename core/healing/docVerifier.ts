@@ -27,6 +27,38 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { looksLikeUiLabel } from "./reference";
 
+/**
+ * Nouns naming a KIND of control rather than a control's label.
+ *
+ * A document names the control — "click **Save Draft**" — while our step targets describe it —
+ * "Save Draft **button**". Only the former can be found in a document.
+ */
+const CONTROL_KIND = /\b(field|button|dropdown|icon|modal|panel|row|tab|menu|link|checkbox|toggle|tooltip|column|section|page|label)$/i;
+
+/**
+ * Does this phrase describe a control instead of naming one?
+ *
+ * The last surviving false writer-facing finding in a real Personalize sweep was
+ * "Personalize New Project Name field" — five words, no colon, so `looksLikeUiLabel` accepted it, and
+ * the report said "the doc does not mention <that>" in the section technical writers act on. The
+ * document's actual label is "Name"; the rest is the screen name and the control's kind, glued together
+ * by whoever wrote the step. No heuristic can recover "Name" from that string, so the honest outcome is
+ * to admit there is nothing to look up.
+ *
+ * Deliberately biased toward false negatives. Wrongly rejecting a phrase downgrades a *possible* finding
+ * to a non-finding; wrongly accepting one sends a writer to edit a page that is very likely correct.
+ * Given this agent exists to produce trustworthy findings, the first error is much the cheaper one.
+ *
+ * A bare kind word ("Delete", "Actions") is not affected — only multi-word phrases ENDING in one, which
+ * is the shape of a description. Real labels are the control's name, so a genuine `expected.labelEquals`
+ * ("Save Draft", "Invite User", "New Voice Profile") passes through untouched.
+ */
+export function describesAControl(s: string): boolean {
+  const t = s.trim();
+  if (t.split(/\s+/).length < 2) return false;
+  return CONTROL_KIND.test(t);
+}
+
 export type DocVerdict =
   /** The two sides are the same string — a framework artefact, not drift. */
   | "no-drift"
@@ -249,7 +281,7 @@ export function reconcile(args: {
   );
   // Only phrases that could plausibly appear in a document are looked up in one. `looksLikeUiLabel` is
   // the same test the skip path uses, so both paths agree on what counts as doc-facing.
-  const candidates = allCandidates.filter((s) => looksLikeUiLabel(s));
+  const candidates = allCandidates.filter((s) => looksLikeUiLabel(s) && !describesAControl(s));
   const expectedByFlow = args.expectedByFlow;
 
   // A missing step blocks the flow; a wrong name does not.

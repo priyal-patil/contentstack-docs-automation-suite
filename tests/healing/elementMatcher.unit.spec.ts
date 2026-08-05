@@ -37,6 +37,7 @@ import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flo
 import {
   reconcile,
   renderDocCheck,
+  describesAControl,
   isSourcedFromDoc,
   docPhrasesFromLocator,
   isFrameworkContainerWord,
@@ -611,6 +612,34 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     );
     expect(r.label).toBeUndefined();
     expect(r.source).toBe("none");
+  });
+
+  test("a phrase describing a control is not reported as a documentation finding", () => {
+    // The last false writer-facing finding in a real Personalize sweep. Five words, no colon, so the
+    // looksLikeUiLabel check alone let it through to "the doc does not mention <internal composite>".
+    const check = reconcile({
+      docText: "In the New Personalize Project modal, enter a Name and click Create.",
+      docUrl: "https://www.contentstack.com/docs/personalize/get-started",
+      expectedByFlow: "Personalize New Project Name field",
+      kind: "element-missing",
+    });
+    expect(check.verdict).toBe("no-usable-doc-phrase");
+    expect(renderDocCheck(check)).not.toContain("NEEDS REVIEW");
+  });
+
+  test("describesAControl separates descriptions from real labels", () => {
+    for (const description of [
+      "Personalize New Project Name field",
+      "Save Draft button",
+      "row Actions vertical tooltip",
+      "Configuration tab",
+    ]) {
+      expect(describesAControl(description), description).toBe(true);
+    }
+    // Real labels — including bare words that happen to BE kind words — must survive.
+    for (const label of ["Save Draft", "Invite User", "New Voice Profile", "Delete", "Actions", "Proceed"]) {
+      expect(describesAControl(label), label).toBe(false);
+    }
   });
 
   test("an internal step identifier is never reported as a documentation finding", () => {
