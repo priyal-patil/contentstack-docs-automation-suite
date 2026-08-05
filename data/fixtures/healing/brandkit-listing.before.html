@@ -1,0 +1,31 @@
+<!--
+  Known-good reference DOM: Brand Kits listing page, "New Brand Kit" primary control present with the
+  selector chain the flow was authored against. Modelled on data/dom/BrandKit/brandkits-listingpage.html.
+-->
+<html>
+  <body>
+    <div class="cs-layout">
+      <nav role="navigation" class="cs-sidebar">
+        <a href="/brand-kit" aria-label="Brand Kit">Brand Kit</a>
+      </nav>
+      <main class="cs-main">
+        <div class="cs-page-header">
+          <h1>Brand Kits</h1>
+          <div class="cs-page-header__actions">
+            <button
+              class="cs-btn cs-btn--primary"
+              data-test-id="brand-kit-click-btn-primary-action-homepage-add-brand-kit"
+              aria-label="New Brand Kit"
+            >
+              New Brand Kit
+            </button>
+          </div>
+        </div>
+        <table class="cs-table">
+          <tr><th>Name</th><th>Stacks</th></tr>
+          <tr><td>Acme Brand</td><td>2</td></tr>
+        </table>
+      </main>
+    </div>
+  </body>
+</html>

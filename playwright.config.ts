@@ -157,8 +157,21 @@ export default defineConfig({
       },
     },
     {
+      // Pure unit tests for the self-healing element matcher. No browser, no live app — they parse the
+      // DOM fixture pairs in data/fixtures/healing/ with cheerio.
+      name: "healing",
+      testMatch: /healing\/.*\.unit\.spec\.ts/,
+      use: { headless: true },
+    },
+    {
       name: "default",
-      testIgnore: [/docs-audit\.spec\.ts/, /crawl\/crawl\.spec\.ts/, /flows\.spec\.ts/, /data-and-insights-lytics-dal-then-job\.spec\.ts/],
+      testIgnore: [
+        /docs-audit\.spec\.ts/,
+        /crawl\/crawl\.spec\.ts/,
+        /flows\.spec\.ts/,
+        /data-and-insights-lytics-dal-then-job\.spec\.ts/,
+        /healing\/.*\.unit\.spec\.ts/,
+      ],
       use: {
         storageState: "auth.json",
         headless: useHeadless,
