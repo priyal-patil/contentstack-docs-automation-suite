@@ -33,6 +33,7 @@ import {
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
 import { checkPrecondition, checkActionTimedOutAfterVerify } from "../../core/healing/preconditionCheck";
 import { extractDocSteps, compareDocSequence } from "../../core/healing/docSequence";
+import { readFlowOutcomes, describeOutcome } from "../../core/healing/runOutcome";
 import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
@@ -744,6 +745,73 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     // An exact match is still picked up.
     const exact = referenceFromSelector('[data-test-id="new-app-cta"]', "x");
     expect(exact?.testId).toBe("new-app-cta");
+  });
+});
+
+test.describe("a flow that passed on retry is not a failure", () => {
+  const TMP = path.resolve(__dirname, "../../reports/__tmp-outcome-test__");
+
+  /** The real shape from the Personalize run: context on an ancestor suite, flow id as the spec title. */
+  const write = (specs: Array<{ id: string; ok: boolean; statuses: string[] }>) => {
+    fs.mkdirSync(TMP, { recursive: true });
+    fs.writeFileSync(
+      path.join(TMP, "flows-results.json"),
+      JSON.stringify({
+        suites: [
+          {
+            title: "flows.spec.ts",
+            suites: [
+              {
+                title: "Project=Personalize Module=set-up-personalize Stage=main",
+                specs: specs.map((s) => ({
+                  title: s.id,
+                  ok: s.ok,
+                  tests: [{ results: s.statuses.map((status) => ({ status })) }],
+                })),
+              },
+            ],
+          },
+        ],
+      })
+    );
+  };
+
+  test.afterAll(() => fs.rmSync(TMP, { recursive: true, force: true }));
+
+  test("distinguishes failed-both-attempts from failed-then-passed", () => {
+    write([
+      { id: "edit-audience", ok: true, statuses: ["failed", "passed"] },
+      { id: "delete-audience", ok: false, statuses: ["failed", "failed"] },
+      { id: "create-audience", ok: true, statuses: ["passed"] },
+    ]);
+    const outcomes = readFlowOutcomes(TMP);
+
+    expect(outcomes.get("edit-audience")?.passedOnRetry, "flaky").toBe(true);
+    expect(outcomes.get("edit-audience")?.ok).toBe(true);
+    // The genuine failure must NOT be excused as flaky.
+    expect(outcomes.get("delete-audience")?.passedOnRetry).toBe(false);
+    expect(outcomes.get("delete-audience")?.ok).toBe(false);
+    // A clean pass is not flaky either.
+    expect(outcomes.get("create-audience")?.passedOnRetry).toBe(false);
+  });
+
+  test("a timedOut attempt counts as a failure for flakiness", () => {
+    write([{ id: "x", ok: true, statuses: ["timedOut", "passed"] }]);
+    expect(readFlowOutcomes(TMP).get("x")?.passedOnRetry).toBe(true);
+  });
+
+  test("describeOutcome states plainly that the run ended green", () => {
+    write([{ id: "edit-experience", ok: true, statuses: ["failed", "passed"] }]);
+    const text = describeOutcome(readFlowOutcomes(TMP).get("edit-experience"));
+    expect(text).toContain("FLAKY");
+    expect(text).toContain("GREEN");
+  });
+
+  test("a missing flows-results.json yields an empty map, so callers fall back safely", () => {
+    // Must be empty rather than throwing: with no outcome data the agent has to treat every recorded
+    // failure as a failure, which is the pre-existing behaviour.
+    expect(readFlowOutcomes(path.join(TMP, "does-not-exist")).size).toBe(0);
+    expect(describeOutcome(undefined)).toContain("unknown");
   });
 });
 

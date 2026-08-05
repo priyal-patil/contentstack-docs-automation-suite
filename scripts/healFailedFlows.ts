@@ -16,6 +16,7 @@
  *   --reportDir <p>     Run directory containing doc-step-failures.json  (default reports/latest)
  *   --project <name>    Only heal flows from this project
  *   --flow <id>         Repeatable. Only heal these flow ids
+ *   --include-flaky     Also heal flows that failed an attempt but PASSED on retry (excluded by default)
  *   --max-attempts <n>  Budget for idempotent flows (default 5)
  *   --dry-run           Find and verify heals but write nothing
  *   --llm               Enable the LLM tier when rules miss (needs ANTHROPIC_API_KEY)
@@ -33,6 +34,7 @@ import { execSync } from "child_process";
 import axios from "axios";
 import { chromium } from "@playwright/test";
 import { AuditLog } from "../core/healing/auditLog";
+import { readFlowOutcomes, describeOutcome } from "../core/healing/runOutcome";
 import {
   parseFailureReport,
   parseWarningReport,
@@ -117,10 +119,46 @@ function sh(cmd: string): string {
 
 async function main(): Promise<void> {
   const audit = new AuditLog(reportDir);
-  const targets = parseFailureReport(reportDir, {
+  const allTargets = parseFailureReport(reportDir, {
     projectFilter: opt("project"),
     flowFilter: optAll("flow"),
   });
+
+  // Separate flows that FAILED from flows that failed an attempt and then PASSED on retry.
+  //
+  // Targets come from `doc-step-failures.json`, which records every failed step as it happens and knows
+  // nothing about retries. Playwright retries flows, so a flow can fail on attempt 0, pass on retry 1 and
+  // end up green — with its attempt-0 failures still in that file. In a real Personalize run this made the
+  // agent work 13 flows while the run had 12 failures, and the 3 extras (`edit-audience`,
+  // `edit-custom-attribute`, `edit-experience`) had all PASSED. Worse, those 3 were three of the five
+  // flows where the matcher proposed a WEAKER selector, so the agent was rewriting selectors that worked.
+  //
+  // Flakiness is genuine signal, so these are reported rather than dropped — but they are not failures and
+  // by default they are not healed. `--include-flaky` opts in.
+  const outcomes = readFlowOutcomes(reportDir);
+  const includeFlaky = argv.includes("--include-flaky");
+  const flakyTargets = outcomes.size ? allTargets.filter((t) => outcomes.get(t.flowId)?.passedOnRetry) : [];
+  const targets = includeFlaky || !outcomes.size ? allTargets : allTargets.filter((t) => !outcomes.get(t.flowId)?.passedOnRetry);
+
+  if (flakyTargets.length) {
+    const flows = [...new Set(flakyTargets.map((t) => t.flowId))];
+    log(
+      `\n⚠️  ${flows.length} flow(s) failed an attempt but PASSED on retry — flaky, not failing:\n` +
+        flows.map((f) => `     • ${f} — ${describeOutcome(outcomes.get(f))}`).join("\n") +
+        `\n   ${
+          includeFlaky
+            ? "Included because --include-flaky was passed."
+            : "Excluded from healing (pass --include-flaky to attempt them). Their selectors demonstrably work, so " +
+              "a rewrite risks replacing a precise selector with a looser one."
+        }\n`
+    );
+  }
+  if (!outcomes.size) {
+    log(
+      `\nℹ️  No flows-results.json in ${reportDir} — cannot tell a failure from a retry-pass, so every ` +
+        `recorded failure is being treated as a failure.\n`
+    );
+  }
 
   // Doc drift the flows tolerated as warnings. Not healable — there is no broken selector — but it is
   // the highest-signal output for technical writers, so it is always reported even when nothing failed.
@@ -435,6 +473,13 @@ async function main(): Promise<void> {
     jsonCorrected,
     flowJsonUpdates: flowUpdates,
     docDriftWarnings: driftWarnings,
+    // Flows whose failures came from an attempt the retry then passed. Recorded so a reader can see
+    // they were deliberately not treated as failures, rather than silently missing from the run.
+    flakyPassedOnRetry: [...new Set(flakyTargets.map((t) => t.flowId))].map((flowId) => ({
+      flowId,
+      outcome: describeOutcome(outcomes.get(flowId)),
+      healed: includeFlaky,
+    })),
     genuineFailures: genuine,
     environmentFailures: envFailures.map((e) => ({
       flowId: e.target.flowId,
