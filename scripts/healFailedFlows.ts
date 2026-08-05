@@ -30,6 +30,7 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
+import axios from "axios";
 import { chromium } from "@playwright/test";
 import { AuditLog } from "../core/healing/auditLog";
 import {
@@ -40,11 +41,12 @@ import {
   extractAttemptedLocator,
   parseFailureDrift,
 } from "../core/healing/reportParser";
-import { repairLoop } from "../core/healing/repairLoop";
+import { repairLoop, replayFlowAfterCorrection } from "../core/healing/repairLoop";
 import { flowSelectorPath } from "../core/healing/selectorLayers";
 import { checkFixtureFailure, type FixtureVerdict } from "../core/healing/fixtureCheck";
 import { checkPrecondition, checkActionTimedOutAfterVerify, type PreconditionVerdict } from "../core/healing/preconditionCheck";
 import { applyFlowLabelUpdate, type FlowUpdateResult } from "../core/healing/flowJsonWriter";
+import { compareDocSequence, renderSequenceFindings, type SequenceReport } from "../core/healing/docSequence";
 import { fetchDocContent } from "../core/healing/docVerifier";
 import { escalateToLlm } from "../core/healing/escalate";
 import {
@@ -78,6 +80,8 @@ const doSlack = flag("slack");
 const dryRun = flag("dry-run");
 /** Correct a flow JSON's expected label when the DOCUMENT disagrees with it. Off by default. */
 const updateFlows = flag("update-flows");
+/** Also report documented instructions nothing verifies. Advisory coverage data; fetches each doc. */
+const docSequence = flag("doc-sequence");
 
 const cfg: HealConfig = {
   ...DEFAULT_HEAL_CONFIG,
@@ -172,6 +176,28 @@ async function main(): Promise<void> {
     log(`   (pass --update-flows to apply these; the value is always taken from the doc)\n`);
   }
 
+  // Coverage: documented instructions no flow step performs. Opt-in — it fetches every doc, and it is
+  // advisory rather than a defect list, so it is kept out of the default run.
+  const sequenceReports: SequenceReport[] = [];
+  if (docSequence) {
+    const seen = new Set<string>();
+    for (const t of targets) {
+      if (!t.documentUrl || seen.has(t.documentUrl)) continue;
+      seen.add(t.documentUrl);
+      try {
+        const flow = JSON.parse(fs.readFileSync(t.flowPath, "utf8"));
+        const res = await axios.get(t.documentUrl, { timeout: 20_000, headers: { "User-Agent": "docs-qa-healing-agent" } });
+        sequenceReports.push(
+          compareDocSequence({ docUrl: t.documentUrl, html: String(res.data), flowSteps: flow.steps ?? [] })
+        );
+      } catch {
+        /* a doc we cannot fetch simply yields no coverage data */
+      }
+    }
+    const n = sequenceReports.reduce((a, r) => a + r.findings.length, 0);
+    if (n) log(`📋 ${n} documented instruction(s) nothing verifies (coverage, not drift)\n`);
+  }
+
   if (!targets.length) log("Nothing to heal.");
   for (const t of targets) {
     log(
@@ -183,7 +209,9 @@ async function main(): Promise<void> {
   const headed = flag("headed");
   // No targets still falls through to the report: a green run can hide doc drift recorded as warnings,
   // and that report is the whole point. Only launch a browser if there is something to heal.
-  const browser = targets.length ? await chromium.launch({ headless: !headed }) : undefined;
+  const appliedCorrections = flowUpdates.filter((u) => u.applied);
+  const browser =
+    targets.length || appliedCorrections.length ? await chromium.launch({ headless: !headed }) : undefined;
   const deadline = Date.now() + cfg.globalTimeoutMs;
 
   const healed: Array<{ result: HealResult; chain: string; file: string }> = [];
@@ -193,10 +221,37 @@ async function main(): Promise<void> {
   const envFailures: HealResult[] = [];
   const fixtureFailures: Array<{ target: HealTarget; verdict: FixtureVerdict }> = [];
   const preconditionFailures: Array<{ target: HealTarget; verdict: PreconditionVerdict }> = [];
+  const jsonCorrected: Array<{ flowId: string; stepNumber: number; from?: string; to?: string; file: string }> = [];
+
+  // A corrected JSON step must be RE-RUN, not assumed fixed. If the flow now completes the outcome is
+  // JSON CORRECTED (a test-authoring fix, flagged for review in case the DOC was the wrong side after all).
+  // If it still fails the correction did not help, and the target stays in the heal queue below.
+  const correctedAndPassing = new Set<string>();
+  if (browser && appliedCorrections.length) {
+    for (const upd of appliedCorrections) {
+      const w = driftWarnings.find((x) => x.flowPath === upd.file && x.docCheck?.proposedFlowUpdate);
+      if (!w?.flowPath) continue;
+      log(`\n──── re-running ${w.flowId} after correcting step ${w.stepNumber} ────`);
+      const res = await replayFlowAfterCorrection({ browser, flowPath: w.flowPath, log });
+      if (res.passed) {
+        log(`✅ JSON CORRECTED — flow passes with the doc's wording`);
+        jsonCorrected.push({
+          flowId: w.flowId,
+          stepNumber: w.stepNumber,
+          from: upd.from,
+          to: upd.to,
+          file: upd.file,
+        });
+        correctedAndPassing.add(w.flowId);
+      } else {
+        log(`↩️  still failing after the correction (step ${res.failedStepNumber ?? "?"}) — continuing to heal`);
+      }
+    }
+  }
 
   try {
     // Serial per flow: parallel healing would clobber each other's DOM snapshots and app state.
-    for (const target of browser ? targets : []) {
+    for (const target of (browser ? targets : []).filter((t) => !correctedAndPassing.has(t.flowId))) {
       log(`\n──── ${target.flowId} · step ${target.stepNumber} ────`);
 
       // Verified present one step earlier, gone by the time the action ran. No selector can fix that.
@@ -348,6 +403,7 @@ async function main(): Promise<void> {
       preconditionFailures: preconditionFailures.length,
       driftWarnings: driftWarnings.length,
       flowJsonUpdatesApplied: flowUpdates.filter((u) => u.applied).length,
+      jsonCorrected: jsonCorrected.length,
       docOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-confirms-flow").length,
       flowJsonOutOfDate: driftWarnings.filter((w) => w.docCheck?.verdict === "doc-matches-app").length,
     },
@@ -375,6 +431,8 @@ async function main(): Promise<void> {
       confidence: f.verdict.confidence,
       reason: f.verdict.reason,
     })),
+    docCoverageFindings: sequenceReports.filter((r) => r.findings.length),
+    jsonCorrected,
     flowJsonUpdates: flowUpdates,
     docDriftWarnings: driftWarnings,
     genuineFailures: genuine,
@@ -394,6 +452,7 @@ async function main(): Promise<void> {
     `| | count |`,
     `|---|---|`,
     `| Auto-healed (locator drift) | ${healed.length} |`,
+    `| JSON corrected from the doc (then passed) | ${jsonCorrected.length} |`,
     `| Genuine doc/app mismatch | ${genuine.length} |`,
     `| Documentation drift (warning, not healable) | ${driftWarnings.length} |`,
     `| Control found but disabled / wrong state | ${preconditionFailures.length} |`,
@@ -421,6 +480,20 @@ async function main(): Promise<void> {
         ]
       : []),
     ...(genuine.length ? [`## Genuine doc/app mismatch`, ``, ...genuine.map(renderGenuineFailureMarkdown), ``] : []),
+    ...(jsonCorrected.length
+      ? [
+          `## Flow JSON corrected from the documentation`,
+          ``,
+          `Our test file disagreed with the doc. It was corrected to the DOC's wording and the flow then`,
+          `passed — a test-authoring fix, not a doc defect. Flagged for review in case the DOC is actually`,
+          `the side that should change.`,
+          ``,
+          ...jsonCorrected.map(
+            (j) => `- \`${j.flowId}\` step ${j.stepNumber}: "${j.from}" → "${j.to}"`
+          ),
+          ``,
+        ]
+      : []),
     ...(preconditionFailures.length
       ? [
           `## Control found but not usable (not documentation drift)`,
@@ -451,6 +524,7 @@ async function main(): Promise<void> {
         ]
       : []),
     ...renderWarningsMarkdown(driftWarnings),
+    ...renderSequenceFindings(sequenceReports),
   ].join("\n");
   fs.writeFileSync(path.join(outDir, "healing-report.md"), md, "utf8");
 
@@ -458,7 +532,7 @@ async function main(): Promise<void> {
 
   log(`\n${"─".repeat(60)}`);
   log(
-    `✅ healed: ${healed.length}   ❌ genuine doc/app: ${genuine.length}   🚫 precondition: ${preconditionFailures.length}   🧪 fixture: ${fixtureFailures.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`
+    `✅ healed: ${healed.length}   📝 json-corrected: ${jsonCorrected.length}   ❌ genuine doc/app: ${genuine.length}   🚫 precondition: ${preconditionFailures.length}   🧪 fixture: ${fixtureFailures.length}   ⚠️  doc-drift warnings: ${driftWarnings.length}   ⏭️  skipped: ${skipped.length}`
   );
   log(`📄 ${path.relative(REPO_ROOT, path.join(outDir, "healing-report.md"))}`);
   log(`🧾 ${path.relative(REPO_ROOT, audit.path)}`);

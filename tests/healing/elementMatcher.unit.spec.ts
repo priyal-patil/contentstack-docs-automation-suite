@@ -32,6 +32,7 @@ import {
 } from "../../core/healing/reference";
 import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fixtureCheck";
 import { checkPrecondition, checkActionTimedOutAfterVerify } from "../../core/healing/preconditionCheck";
+import { extractDocSteps, compareDocSequence } from "../../core/healing/docSequence";
 import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
@@ -786,6 +787,85 @@ test.describe("an action timing out after a passing verify is not drift (BrandKi
       errorMessage: "locator.click: Timeout 45000ms exceeded.",
     });
     expect(v.timedOutAfterVerify).toBe(false);
+  });
+});
+
+test.describe("doc-sequence coverage check", () => {
+  /**
+   * These pages open with an objectives list whose items read like instructions. Picking that list instead
+   * of the procedure produced false "not automated" findings, so extraction must anchor on the
+   * "Steps for Execution" heading.
+   */
+  const PAGE = `
+    <main>
+      <h2>What You Will Learn</h2>
+      <ol>
+        <li><b>Create a Brand Kit</b>: Create a centralized repository for your identity.</li>
+        <li><b>Define a Voice Profile</b>: Keep a consistent brand voice.</li>
+      </ol>
+      <h2>Steps for Execution</h2>
+      <ol>
+        <li>Click the <b>New Voice Profile</b> button.</li>
+        <li>Enter a <b>Voice Profile Name</b> and click <b>Save</b>.</li>
+        <li>You will get a success message.</li>
+      </ol>
+    </main>`;
+
+  test("extracts the procedure list, not the objectives list", () => {
+    const { steps, reliable } = extractDocSteps(PAGE);
+    expect(reliable).toBe(true);
+    expect(steps.length).toBe(3);
+    expect(steps[0].labels).toContain("New Voice Profile");
+    // The objectives entries must not appear.
+    expect(JSON.stringify(steps)).not.toContain("centralized repository");
+  });
+
+  test("reports a documented control that no flow step targets", () => {
+    const r = compareDocSequence({
+      docUrl: "https://example.test/doc",
+      html: PAGE,
+      flowSteps: [{ target: "New Voice Profile (doc step)" }], // "Save" is never targeted
+    });
+    const labels = r.findings.flatMap((f) => ("labels" in f ? f.labels : []));
+    expect(labels).toContain("Save");
+    expect(r.findings.every((f) => f.kind === "not-covered-by-automation")).toBe(true);
+  });
+
+  test("a fully covered procedure yields no findings", () => {
+    const r = compareDocSequence({
+      docUrl: "https://example.test/doc",
+      html: PAGE,
+      flowSteps: [
+        { target: "New Voice Profile (doc step)" },
+        { target: "Voice Profile Name (doc step)" },
+        { target: "Save (doc step)" },
+      ],
+    });
+    expect(r.findings).toHaveLength(0);
+  });
+
+  test("prose-only instructions are not treated as defects", () => {
+    // "You will get a success message" names no control, so it must never be reported.
+    const r = compareDocSequence({
+      docUrl: "https://example.test/doc",
+      html: PAGE,
+      flowSteps: [
+        { target: "New Voice Profile (doc step)" },
+        { target: "Voice Profile Name (doc step)" },
+        { target: "Save (doc step)" },
+      ],
+    });
+    expect(JSON.stringify(r.findings)).not.toContain("success message");
+  });
+
+  test("order differences are NOT reported (matching is too greedy to trust)", () => {
+    const r = compareDocSequence({
+      docUrl: "https://example.test/doc",
+      html: PAGE,
+      // Deliberately reversed relative to the doc.
+      flowSteps: [{ target: "Save (doc step)" }, { target: "New Voice Profile (doc step)" }],
+    });
+    expect(r.findings.some((f) => (f as any).kind === "order-differs")).toBe(false);
   });
 });
 

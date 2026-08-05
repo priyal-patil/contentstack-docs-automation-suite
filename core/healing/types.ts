@@ -102,6 +102,8 @@ export type SelectorLayer =
  */
 export type HealOutcome =
   | "healed"
+  /** Our flow JSON disagreed with the document; corrected to the DOC's wording and the flow then passed. */
+  | "json-corrected"
   | "genuine-failure"
   | "environment-failure"
   | "skipped"

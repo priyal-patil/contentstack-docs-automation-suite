@@ -138,6 +138,49 @@ export type RepairDeps = {
   log?: (msg: string) => void;
 };
 
+/**
+ * Replay a whole flow and report whether it completes.
+ *
+ * Used to verify a doc-sourced flow-JSON correction. Applying the edit is not evidence that it worked:
+ * the spec this implements requires re-running the corrected step, and a correction that still fails is a
+ * genuine documentation defect rather than a fixed test. Without this the agent would claim a fix it had
+ * never exercised.
+ */
+export async function replayFlowAfterCorrection(args: {
+  browser: Browser;
+  flowPath: string;
+  log?: (m: string) => void;
+}): Promise<{ passed: boolean; failedStepNumber?: number; error?: string }> {
+  const flow = JSON.parse(fs.readFileSync(args.flowPath, "utf8"));
+  invalidateSelectorCache(
+    flowSelectorPath(String(flow.project ?? ""), String(flow.module ?? ""), String(flow.id ?? ""))
+  );
+
+  const context = await args.browser.newContext({
+    storageState: fs.existsSync(path.join(REPO_ROOT, "auth.json"))
+      ? path.join(REPO_ROOT, "auth.json")
+      : undefined,
+  });
+  const page = await context.newPage();
+
+  clearDocStepFailures();
+  try {
+    await executeFlow(page, flow);
+    return { passed: true };
+  } catch (err: any) {
+    const { getDocStepFailures } = require("../docStepFailureReporter");
+    const fails = (getDocStepFailures?.() ?? []) as Array<{ stepNumber?: number }>;
+    return {
+      passed: false,
+      failedStepNumber: fails.find((f) => typeof f.stepNumber === "number")?.stepNumber,
+      error: String(err?.message ?? err).split("\n")[0],
+    };
+  } finally {
+    clearDocStepFailures();
+    await context.close().catch(() => {});
+  }
+}
+
 export async function repairLoop(
   target: HealTarget,
   cfg: HealConfig,
