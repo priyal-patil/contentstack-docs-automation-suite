@@ -30,8 +30,23 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) h2:has-text("Freeform Composition")',
   "Freeform Composition create link (doc step)":
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
+  /**
+   * The compositions-list CTA. The document is explicit that no button says "New Composition":
+   *
+   *   "The button at the top changes label per tab: **+ New Template** vs **+ New Section**."
+   *   — https://www.contentstack.com/docs/studio/manage-a-composition
+   *
+   * The flow transcription invented "New Composition", so both this selector and the step's
+   * `expected.labelEquals` looked for a control the documented UI does not have, and the step could never
+   * pass. Corrected to the document's wording. Templates is the default tab, so "+ New Template" is what a
+   * reader following the page sees first; "+ New Section" is matched too, for the Sections tab.
+   *
+   * NOT YET VERIFIED AGAINST THE APP: this org has no usable Studio project, so the compositions list never
+   * renders (step 4 lands on "Studio Project not found"). Doc-sourced and correct on that basis, but the
+   * app's actual button text is unconfirmed.
+   */
   "Studio New Composition button visible (doc step)":
-    'main button:has-text("New Composition"), [data-test-id="cs-page-layout-main"] button:has-text("New Composition")',
+    'main button:has-text("New Template"), [data-test-id="cs-page-layout-main"] button:has-text("New Template"), main button:has-text("New Section"), [data-test-id="cs-page-layout-main"] button:has-text("New Section")',
   "Studio Create Linked Composition primary button visible (doc step)":
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create Linked Composition")',
   "Studio Create a Freeform Composition link visible (doc step)":

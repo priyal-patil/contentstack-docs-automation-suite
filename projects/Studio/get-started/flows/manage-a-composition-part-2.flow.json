@@ -21,7 +21,7 @@
       "action": "verify",
       "target": "Studio New Composition button visible (doc step)",
       "timeoutMs": 60000,
-      "expected": { "labelEquals": "New Composition", "labelMatch": "equals" }
+      "expected": { "labelEquals": "+ New Template", "labelMatch": "equals" }
     },
     { "action": "click", "target": "Studio New Composition button (doc step)", "timeoutMs": 60000 },
     {
