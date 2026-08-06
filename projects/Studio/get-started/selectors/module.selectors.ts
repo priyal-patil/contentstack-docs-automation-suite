@@ -41,12 +41,25 @@ export const CLICK_SELECTORS: Record<string, string> = {
    * pass. Corrected to the document's wording. Templates is the default tab, so "+ New Template" is what a
    * reader following the page sees first; "+ New Section" is matched too, for the Sections tab.
    *
-   * NOT YET VERIFIED AGAINST THE APP: this org has no usable Studio project, so the compositions list never
-   * renders (step 4 lands on "Studio Project not found"). Doc-sourced and correct on that basis, but the
-   * app's actual button text is unconfirmed.
+   * CONFIRMED against the app once a Studio project existed. The compositions list renders
+   *
+   *   <button data-test-id="cs-click-btn-primary-action-compositions-list-new-composition"
+   *           class="… Button--icon-alignment-left" aria-label="aria-button">
+   *     <svg name="Plus" …/>New Template
+   *   </button>
+   *
+   * so the document is right: the visible label is "New Template", and the plus is an icon.
+   *
+   * Note where the flow's wrong label came from — the button's TEST ID still says "new-composition" while
+   * its label says "New Template". Whoever transcribed this read the test id rather than the UI.
+   *
+   * Matched by that stable test id rather than by text scope. The earlier attempt scoped text matches to
+   * `main` / `[data-test-id="cs-page-layout-main"]`, and NEITHER container exists on this page (the button
+   * lives in `PageHeader > PageTitleWrapper > PageTitle > .actions`), so it could not match even with the
+   * label corrected. Text alternatives are kept for the Sections tab and as a hedge if the id changes.
    */
   "Studio New Composition button visible (doc step)":
-    'main button:has-text("New Template"), [data-test-id="cs-page-layout-main"] button:has-text("New Template"), main button:has-text("New Section"), [data-test-id="cs-page-layout-main"] button:has-text("New Section")',
+    '[data-test-id="cs-click-btn-primary-action-compositions-list-new-composition"], button:has-text("New Template"), button:has-text("New Section")',
   "Studio Create Linked Composition primary button visible (doc step)":
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create Linked Composition")',
   "Studio Create a Freeform Composition link visible (doc step)":

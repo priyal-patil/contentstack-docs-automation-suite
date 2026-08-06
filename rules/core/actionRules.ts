@@ -16005,9 +16005,24 @@ export async function performAction(
           break;
         }
         if ((fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") && step.target === "Studio New Composition button (doc step)") {
-          let btn = page.locator("button").filter({ hasText: /New Composition/i }).first();
+          // No button says "New Composition". The document is explicit — "the button at the top changes
+          // label per tab: + New Template vs + New Section" — and the live compositions list confirms it:
+          //
+          //   <button data-test-id="cs-click-btn-primary-action-compositions-list-new-composition">
+          //     <svg name="Plus" …/>New Template
+          //   </button>
+          //
+          // The TEST ID still says "new-composition" while the label says "New Template", which is where
+          // the wrong label in this handler and in the flow JSON came from: the test id was read instead of
+          // the UI. Match the stable id first, then the two real labels.
+          let btn = page
+            .locator('[data-test-id="cs-click-btn-primary-action-compositions-list-new-composition"]')
+            .first();
           if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
-            btn = page.getByRole("button", { name: /^New Composition$/i }).first();
+            btn = page.locator("button").filter({ hasText: /New Template|New Section/i }).first();
+          }
+          if (!(await btn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+            btn = page.getByRole("button", { name: /^\+?\s*New (Template|Section)$/i }).first();
           }
           await btn.scrollIntoViewIfNeeded().catch(() => {});
           await expect(btn).toBeVisible({ timeout: t0 });
