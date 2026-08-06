@@ -15889,11 +15889,23 @@ export async function performAction(
           if (!stack) {
             throw new Error("DEFAULT_STACK must be set in .env for Studio create-a-project (doc: select Contentstack stack).");
           }
-          const menu = page.locator(".Select__menu, [role='listbox']").last();
+          // The stack picker is a react-select instance with the `Portal` classNamePrefix, so its menu is
+          // `.Portal__menu` and its options carry `data-test-id="cs-select-element"`. Neither
+          // `.Select__menu` nor `[role=listbox]`/`[role=option]` exists here, so this step timed out even
+          // though the dropdown was open. From the saved step-13 DOM:
+          //
+          //   <div class="Portal__control Portal__control--is-focused Portal__control--menu-is-open">
+          //   … "option cli-automation-… focused, 1 of 33. 33 results available."
+          //   data-test-id="cs-select-element" x33
+          //
+          // `.Portal__menu` is already used for this component at actionRules.ts:4883; this call site was
+          // simply missed. The previous selectors are kept as fallbacks rather than replaced, since other
+          // screens may still render the react-select defaults.
+          const menu = page.locator(".Portal__menu, .Select__menu, [role='listbox']").last();
           await expect(menu).toBeVisible({ timeout: t0 });
           const needle = stack.slice(0, Math.min(28, stack.length));
           const opt = menu
-            .locator("[role=option], .Select__option")
+            .locator('[data-test-id="cs-select-element"], .Portal__option, [role=option], .Select__option')
             .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
             .first();
           if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
