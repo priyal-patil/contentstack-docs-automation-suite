@@ -23,13 +23,13 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Studio Projects page heading (doc step)":
     '[data-test-id="cs-page-title"]:has-text("Studio Projects"), .projectListingHeader__title-PFVCkU:has-text("Studio Projects")',
   "Create New Composition modal heading (doc step)":
-    '[data-test-id="cs-modal-title-create-new-composition"]',
+    '[data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]',
   "Linked Composition type heading (doc step)":
-    '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) h2:has-text("Linked Composition")',
+    '[role="dialog"]:has([data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]) h2:has-text("Linked Composition")',
   "Freeform Composition type heading (doc step)":
-    '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) h2:has-text("Freeform Composition")',
+    '[role="dialog"]:has([data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]) h2:has-text("Freeform Composition")',
   "Freeform Composition create link (doc step)":
-    '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
+    '[role="dialog"]:has([data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
   /**
    * The compositions-list CTA. The document is explicit that no button says "New Composition":
    *
@@ -61,9 +61,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Studio New Composition button visible (doc step)":
     '[data-test-id="cs-click-btn-primary-action-compositions-list-new-composition"], button:has-text("New Template"), button:has-text("New Section")',
   "Studio Create Linked Composition primary button visible (doc step)":
-    '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create Linked Composition")',
+    '[role="dialog"]:has([data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create Linked Composition")',
   "Studio Create a Freeform Composition link visible (doc step)":
-    '[role="dialog"]:has([data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
+    '[role="dialog"]:has([data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]) button:has-text("Create a Freeform Composition")',
   "Studio composition form Create button visible (doc step)":
     '[role="dialog"]:has([data-test-id="cs-modal-title-create-linked-composition"]) [data-test-id="cs-click-btn-primary-action-composition-form-create-composition"], [role="dialog"]:has([data-test-id="cs-modal-title-create-freeform-composition"]) [data-test-id="cs-click-btn-primary-action-composition-form-create-composition"]',
   /** composition-main-header.html — canvas toolbar primary Deploy. */

@@ -16034,7 +16034,7 @@ export async function performAction(
         if (fid === "manage-a-composition-part-1" && step.target === "Studio Create Linked Composition primary button (doc step)") {
           const dlg = page
             .locator('[role="dialog"]')
-            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-composition"]') })
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]') })
             .first();
           await expect(dlg).toBeVisible({ timeout: t0 });
           let btn = dlg.getByRole("button", { name: /^Create Linked Composition$/i }).first();
@@ -16066,7 +16066,7 @@ export async function performAction(
         if (fid === "manage-a-composition-part-2" && step.target === "Studio Create a Freeform Composition link (doc step)") {
           const dlg = page
             .locator('[role="dialog"]')
-            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-new-composition"]') })
+            .filter({ has: page.locator('[data-test-id="cs-modal-title-create-connected-template"], [data-test-id="cs-modal-title-create-new-composition"]') })
             .first();
           await expect(dlg).toBeVisible({ timeout: t0 });
           let btn = dlg.getByRole("button", { name: /^Create a Freeform Composition$/i }).first();
