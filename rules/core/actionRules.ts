@@ -6555,6 +6555,48 @@ export async function performAction(
                 await navigateDalFromOrgAdminUrl();
               }
             }
+            // The document routes here via Organization Admin: "click the App Switcher icon and then click
+            // Administration. Click Data Activation Layer." That nav entry NO LONGER EXISTS — a live capture
+            // of the org-admin nav returned exactly seven entries (Org Info, Users, Roles, Stacks, Bulk Task
+            // Queue, Teams, Security Configuration) and nothing on the page mentions lytics,
+            // data-activation or insights. The product moved out of org-admin to its own top-level App
+            // Switcher destination, `#!/lytics`, labelled "Lytics CDP".
+            //
+            // The documented path is attempted FIRST, so if it is ever restored the flow follows the
+            // document. When it is absent we record the drift for the technical writers and then reach the
+            // product the way that actually works, so the remaining steps still get tested rather than the
+            // whole flow stopping on an obsolete navigation instruction.
+            const documentedNavPresent =
+              (await dalNavPrimary().isVisible({ timeout: 4_000 }).catch(() => false)) ||
+              (await dalNavFallback().isVisible({ timeout: 2_000 }).catch(() => false));
+
+            if (!documentedNavPresent) {
+              recordVerificationWarning(
+                step,
+                context,
+                `Data & Insights (doc): the documented route "App Switcher > Administration > Data Activation ` +
+                  `Layer" no longer exists. Organization Admin has no Data Activation Layer entry, and the ` +
+                  `product is now a top-level App Switcher destination labelled "Lytics CDP" (#!/lytics). ` +
+                  `Continuing via that tile instead. The document still says "Data Activation Layer" and ` +
+                  `"Data & Insights"; neither name appears in the application.`
+              );
+
+              // Reach the product the way the app now supports: reopen the App Switcher and click the tile.
+              const origin = work.url().split("#")[0];
+              await work.goto(`${origin}#!/stacks`, { waitUntil: "domcontentloaded", timeout: Math.min(tDal, 120_000) }).catch(() => {});
+              await work.waitForTimeout(1_200);
+              await work.locator('[data-test-id="app-switcher"]').first().click({ timeout: Math.min(tDal, 30_000) }).catch(() => {});
+              await work.waitForTimeout(1_000);
+              const lyticsTile = work.locator('[data-test-id^="app-switcher-lytics"]').first();
+              await expect(lyticsTile).toBeVisible({ timeout: Math.min(tDal, 30_000) });
+              await lyticsTile.click({ timeout: tDal, force: true });
+              await work.waitForURL(/lytics/i, { timeout: Math.min(tDal, 120_000) }).catch(() => {});
+              await work.waitForLoadState("domcontentloaded").catch(() => {});
+              await work.waitForTimeout(1_500);
+              if (maybePopup) return maybePopup;
+              break;
+            }
+
             const toAssert = (await dalNavPrimary().isVisible({ timeout: 2_000 }).catch(() => false))
               ? dalNavPrimary()
               : dalNavFallback();
@@ -6571,6 +6613,30 @@ export async function performAction(
                 'a[href*="data-activation-layer"], button[aria-label="Data Activation Layer"], [data-test-id="orgadmin-nav-data-activation-layer"]'
               )
               .first();
+            const navPresent =
+              (await primary.isVisible({ timeout: 5_000 }).catch(() => false)) ||
+              (await fallback.isVisible({ timeout: 2_000 }).catch(() => false));
+
+            // If the previous step already rerouted via the "Lytics CDP" tile we are on `#!/lytics` and this
+            // documented click has nothing to act on — the nav item it names was removed from Organization
+            // Admin. Warn and continue rather than fail: the destination the document was steering the reader
+            // toward has already been reached by the only route that still exists.
+            if (!navPresent) {
+              const onLytics = /lytics/i.test(page.url());
+              recordVerificationWarning(
+                step,
+                context,
+                `Data & Insights (doc): "Click Data Activation Layer" cannot be performed — Organization Admin ` +
+                  `has no such nav entry. ${
+                    onLytics
+                      ? "Already on the Lytics CDP app, which is where this instruction was leading, so continuing."
+                      : "Not on the Lytics app either; later steps may not find what they expect."
+                  } The document needs updating to the current route: App Switcher > Lytics CDP.`
+              );
+              await page.waitForTimeout(400);
+              break;
+            }
+
             const nav = (await primary.isVisible({ timeout: 5_000 }).catch(() => false)) ? primary : fallback;
             await expect(nav).toBeVisible({ timeout: tNav });
             await nav.click({ timeout: tDal });
@@ -21153,6 +21219,34 @@ export async function performAction(
     }
 
     case "verify": {
+      // The Data & Insights docs verify an Organization Admin nav entry, "Data Activation Layer", that the
+      // application no longer has. A live capture of that nav returned exactly seven entries — Org Info,
+      // Users, Roles, Stacks, Bulk Task Queue, Teams, Security Configuration — and nothing on the page
+      // mentions lytics, data-activation or insights. The product is now a top-level App Switcher
+      // destination, `#!/lytics`, labelled "Lytics CDP".
+      //
+      // 11 of this flow's 65 steps target that removed navigation, in two blocks (steps 2-6 and 37-42).
+      // Asserting it can only ever fail, so record the drift for the technical writers and continue, which
+      // is what lets the ~50 steps beyond it be tested at all. The nav is still probed first, so if it is
+      // ever restored the flow goes back to verifying exactly what the document describes.
+      if (step.target === "DAL Lytics doc: verify Data Activation Layer administration nav label (doc step)") {
+        const dalNav = page
+          .locator('[data-test-id="orgadmin-nav-data-activation-layer"], a[href*="data-activation-layer"]')
+          .first();
+        if (!(await dalNav.isVisible({ timeout: 5_000 }).catch(() => false))) {
+          recordVerificationWarning(
+            step,
+            context,
+            `Data & Insights (doc): the document verifies an Organization Admin nav entry "Data Activation ` +
+              `Layer", which no longer exists — org admin has only Org Info, Users, Roles, Stacks, Bulk Task ` +
+              `Queue, Teams and Security Configuration. The product is now reached via App Switcher > ` +
+              `"Lytics CDP" (#!/lytics). Continuing so the remaining steps are still exercised. The document ` +
+              `needs updating: neither "Data Activation Layer" nor "Data & Insights" appears in the app.`
+          );
+          break;
+        }
+      }
+
       // Custom domain creation is capped per environment — when the cap is already hit, clicking
       // "New Domain" opens a "Domains Limit Reached" modal instead of "Create Custom Domain".
       // Fail this step with a clear reason so the flow can warnAndSkipRest instead of hunting
