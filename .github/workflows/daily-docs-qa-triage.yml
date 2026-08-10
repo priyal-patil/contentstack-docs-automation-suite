@@ -1,0 +1,299 @@
+# =============================================================================
+# Daily docs QA triage  —  REPORT ONLY
+# =============================================================================
+#
+# Harvests each project's most recent scheduled run, classifies every failed URL, and posts one
+# summary. It writes nothing: no commits, no PRs, no selector edits.
+#
+# WHY REPORT-ONLY, DELIBERATELY.
+#
+# Across a full manual sweep of four projects the healing agent healed nothing that mattered. Every
+# genuine failure resolved to infrastructure, test data, a mis-scoped selector map, or documentation
+# drift. The five heals it did propose were WEAKER selectors — a container <ul> in place of the
+# specific menu item — and three of those were on flows that had already PASSED on retry. An
+# auto-PR loop today would degrade working selectors nightly.
+#
+# The value in that sweep came from CLASSIFICATION, not from healing: it is what surfaced a product
+# renamed in the app but not the docs, a flow reporting success while importing nothing, and three
+# separate mis-scoped selector maps. This workflow automates exactly that part.
+#
+# BEFORE ENABLING AUTO-PR, these must land (all identified by that sweep):
+#   1. The retry-pass fix (core/healing/runOutcome.ts) — without it the agent works flows that passed.
+#   2. resolveTarget: ~606 steps search the page for their own internal target string. No heal can fix
+#      that, so the agent would churn on them every night.
+#   3. Blank pages under parallel load — three flows failed with 39-byte HTML, then all passed serially.
+#      Spurious failures become spurious heal attempts.
+#
+# Cost note: this only downloads and analyses existing artifacts. It runs no browsers and re-runs no
+# flows, so a full sweep across every project is minutes, not hours.
+# =============================================================================
+
+name: Daily docs QA triage (report only)
+
+on:
+  schedule:
+    # 07:30 UTC — after the overnight project runs have finished.
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: "Comma-separated subset to triage (default: all)"
+        required: false
+        default: ""
+        type: string
+      lookback_days:
+        description: "Ignore runs older than this many days"
+        required: false
+        default: "2"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: daily-docs-qa-triage
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    name: Triage ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # One project's missing artifact must not hide the others' findings.
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { project: BrandKit,          workflow: brandkit-scheduled.yml,          artifact: brandkit }
+          - { project: Personalize,       workflow: personalize-scheduled.yml,       artifact: personalize }
+          - { project: Studio,            workflow: studio-scheduled.yml,            artifact: studio }
+          - { project: Data-and-Insights, workflow: data-and-insights-scheduled.yml, artifact: data-and-insights }
+          - { project: Developer-Hub,     workflow: developer-hub-scheduled.yml,     artifact: developer-hub }
+          - { project: Launch,            workflow: launch-scheduled.yml,            artifact: launch }
+          - { project: Marketplace,       workflow: marketplace-scheduled.yml,       artifact: marketplace }
+          - { project: Administration,    workflow: administration-scheduled.yml,    artifact: administration }
+          - { project: Analytics,         workflow: analytics-scheduled.yml,         artifact: analytics }
+          - { project: AgentOS,           workflow: agentos-scheduled.yml,           artifact: agentos }
+          - { project: CMS,               workflow: cms-batch1-scheduled.yml,        artifact: cms-batch1 }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      # No browsers: this reads saved reports and DOM snapshots only.
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Should this project be triaged?
+        id: filter
+        env:
+          ONLY: ${{ github.event.inputs.projects }}
+        run: |
+          if [ -z "$ONLY" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if printf '%s' "$ONLY" | tr ',' '\n' | grep -qix "${{ matrix.project }}"; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::${{ matrix.project }} not in the requested subset — skipped"
+          fi
+
+      # Find the most recent COMPLETED run. Deliberately not restricted to failures: a run can be
+      # green overall and still carry per-step doc warnings, which are the highest-signal output.
+      - name: Locate the latest scheduled run
+        id: run
+        if: steps.filter.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LOOKBACK: ${{ github.event.inputs.lookback_days || '2' }}
+        run: |
+          set -euo pipefail
+          latest=$(gh run list --workflow "${{ matrix.workflow }}" --status completed \
+                    --limit 1 --json databaseId,createdAt,conclusion 2>/dev/null || echo '[]')
+          id=$(printf '%s' "$latest" | jq -r '.[0].databaseId // empty')
+          created=$(printf '%s' "$latest" | jq -r '.[0].createdAt // empty')
+          concl=$(printf '%s' "$latest" | jq -r '.[0].conclusion // empty')
+
+          if [ -z "$id" ]; then
+            echo "::warning::no completed run found for ${{ matrix.workflow }}"
+            echo "found=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+
+          # Stale runs produce stale findings, which erode trust in the report faster than no report.
+          age_days=$(( ( $(date -u +%s) - $(date -u -d "$created" +%s) ) / 86400 ))
+          if [ "$age_days" -gt "$LOOKBACK" ]; then
+            echo "::warning::latest ${{ matrix.project }} run is ${age_days}d old (> ${LOOKBACK}d) — skipping as stale"
+            echo "found=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+
+          echo "found=true"      >> "$GITHUB_OUTPUT"
+          echo "id=$id"          >> "$GITHUB_OUTPUT"
+          echo "conclusion=$concl" >> "$GITHUB_OUTPUT"
+          echo "::notice::${{ matrix.project }}: run $id ($concl, ${age_days}d old)"
+
+      - name: Download that run's reports
+        id: dl
+        if: steps.run.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p harvest
+          # Artifact name carries the run attempt, which we do not know — match on the prefix.
+          name=$(gh api "repos/${{ github.repository }}/actions/runs/${{ steps.run.outputs.id }}/artifacts" \
+                   --jq '.artifacts[].name' | grep -m1 "^${{ matrix.artifact }}-reports-" || true)
+          if [ -z "$name" ]; then
+            echo "::warning::${{ matrix.project }}: run ${{ steps.run.outputs.id }} has no ${{ matrix.artifact }}-reports-* artifact"
+            echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          gh run download "${{ steps.run.outputs.id }}" -n "$name" -D harvest
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::downloaded $name"
+
+      # `--dry-run` is not merely a default here: with no --commit and no --pr the agent cannot write
+      # anything outside the workspace, and the workspace is discarded with the runner.
+      - name: Classify the failed URLs
+        id: classify
+        if: steps.dl.outputs.ok == 'true'
+        env:
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          DEFAULT_STACK: ${{ secrets.DEFAULT_STACK }}
+          PLAYWRIGHT_HEADLESS: "1"
+          # Wording mismatches are warnings, not failures: a step whose element was found but whose
+          # label differs is a documentation finding, and stopping there hides everything after it.
+          STRICT_DOC_VERIFICATION: "false"
+          # Consumed by the summariser below.
+          P: ${{ matrix.project }}
+          RID: ${{ steps.run.outputs.id }}
+          OUT: triage-${{ matrix.project }}.json
+        run: |
+          set -uo pipefail
+          npx ts-node --transpile-only scripts/healFailedFlows.ts \
+            --reportDir harvest \
+            --project "${{ matrix.project }}" \
+            --dry-run \
+            --max-attempts 1 \
+            --doc-sequence 2>&1 | tee "triage-${{ matrix.project }}.log" || true
+
+          S=harvest/healing/healing-summary.json
+          if [ -f "$S" ]; then
+            node -e '
+              const s = require("./harvest/healing/healing-summary.json");
+              const c = s.counts || {};
+              const writer = (s.docDriftWarnings || []).filter(w =>
+                ["doc-confirms-flow", "doc-matches-app"].includes(w?.docCheck?.verdict)).length;
+              const out = {
+                project: process.env.P,
+                runId: process.env.RID,
+                targets: c.targets ?? 0,
+                healable: c.healed ?? 0,
+                genuine: c.genuine ?? 0,
+                fixtures: c.fixtureFailures ?? 0,
+                preconditions: c.preconditionFailures ?? 0,
+                skipped: c.skipped ?? 0,
+                flaky: (s.flakyPassedOnRetry || []).length,
+                writerFindings: writer,
+                coverage: (s.docCoverageFindings || []).length,
+              };
+              require("fs").writeFileSync(process.env.OUT, JSON.stringify(out, null, 1));
+              console.log(JSON.stringify(out));
+            '
+          else
+            echo "::warning::${{ matrix.project }}: no healing-summary.json produced"
+          fi
+
+      - name: Upload this project's triage
+        if: always() && steps.dl.outputs.ok == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-${{ matrix.project }}-${{ github.run_id }}
+          path: |
+            harvest/healing/**
+            triage-*.log
+            triage-*.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  summarise:
+    name: Post the summary
+    needs: triage
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: triage-*-${{ github.run_id }}
+          path: all
+          merge-multiple: true
+
+      - name: Build the digest
+        id: digest
+        run: |
+          set -uo pipefail
+          shopt -s nullglob
+          files=(all/**/triage-*.json all/triage-*.json)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "text=No triage data produced — every project was skipped or had no artifact." >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node -e '
+            const fs = require("fs"), path = require("path");
+            const rows = [];
+            const walk = d => fs.readdirSync(d, {withFileTypes:true}).forEach(e => {
+              const p = path.join(d, e.name);
+              if (e.isDirectory()) return walk(p);
+              if (/^triage-.*\.json$/.test(e.name)) { try { rows.push(JSON.parse(fs.readFileSync(p,"utf8"))); } catch {} }
+            });
+            walk("all");
+            rows.sort((a,b) => (b.writerFindings-a.writerFindings) || (b.genuine-a.genuine));
+            const t = n => String(n ?? 0).padStart(3);
+            let out = "*Daily docs QA triage — report only, nothing was changed*\n```\n";
+            out += "project             fails  writer  drift  fixture  precond  flaky\n";
+            for (const r of rows) {
+              out += (r.project||"?").padEnd(20) + t(r.targets) + "   " + t(r.writerFindings)
+                   + "   " + t(r.healable) + "   " + t(r.fixtures) + "     " + t(r.preconditions)
+                   + "   " + t(r.flaky) + "\n";
+            }
+            out += "```\n";
+            const w = rows.reduce((n,r)=>n+(r.writerFindings||0),0);
+            out += w
+              ? `*${w} finding(s) for technical writers* — see the per-project triage artifacts.\n`
+              : "_No writer-facing documentation findings today._\n";
+            out += "_`writer` = doc/app mismatch a writer should fix. `drift` = recoverable locator drift. "
+                 + "`flaky` = failed then passed on retry, excluded from the failure count._";
+            fs.writeFileSync("digest.txt", out);
+            console.log(out);
+          '
+          { echo "text<<__EOF__"; cat digest.txt; echo "__EOF__"; } >> "$GITHUB_OUTPUT"
+
+      # Slack is best-effort, but its failure must be VISIBLE: a silent `|| true` here previously hid an
+      # inactive bot token for weeks, so nobody knew the reports had stopped arriving.
+      - name: Post to Slack
+        if: env.SLACK_BOT_TOKEN != ''
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ vars.SLACK_DOCS_QA_CHANNEL }}
+        run: |
+          set -uo pipefail
+          resp=$(curl -sS -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H 'Content-type: application/json; charset=utf-8' \
+            --data "$(jq -n --arg c "$SLACK_CHANNEL" --arg t "${{ steps.digest.outputs.text }}" \
+                        '{channel:$c, text:$t, unfurl_links:false}')")
+          ok=$(printf '%s' "$resp" | jq -r '.ok')
+          if [ "$ok" != "true" ]; then
+            echo "::error::Slack delivery failed: $(printf '%s' "$resp" | jq -r '.error // "unknown"')"
+            exit 1
+          fi
+
+      - name: Also put it in the run summary
+        if: always()
+        run: |
+          { echo "## Daily docs QA triage"; echo; echo '```'; cat digest.txt 2>/dev/null || echo "(no digest)"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
