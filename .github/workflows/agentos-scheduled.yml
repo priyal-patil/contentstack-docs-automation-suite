@@ -52,6 +52,11 @@ jobs:
       PW_WORKERS: "6"
       PW_SLOWMO: "0"
       PW_FLOW_MAX_MINUTES: "15"
+      # Leave a 30-min buffer under timeout-minutes so Playwright can be sent
+      # SIGTERM and flush a partial flows-results.json before the job is
+      # force-cancelled (which would otherwise kill it mid-write, leaving no
+      # report and skipping Slack/dashboard downstream).
+      PW_RUN_MAX_MINUTES: "210"
       SKIP_SLACK: "1"
       REPORT_DIR: ${{ github.workspace }}/reports/agentos-${{ github.run_id }}-${{ github.run_attempt }}
 
@@ -193,7 +198,7 @@ jobs:
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
-          git commit -m "Publish docs-contentstack-ai-automation/agentos report ($GITHUB_RUN_ID)" || exit 0
+          git commit -m "Publish contentstack-docs-automation-suite/agentos report ($GITHUB_RUN_ID)" || exit 0
           for i in 1 2 3 4 5; do
             git push origin main && break
             git pull --rebase origin main
