@@ -1,6 +1,6 @@
-# Contentstack Docs → Playwright Automation — Framework Handoff
+# Contentstack Docs Automation Suite — Framework Handoff
 
-**Repository:** `docs-contentstack-ai-automation` (Contentstack AI / docs automation)
+**Repository:** `contentstack-docs-automation-suite` (Contentstack Docs Automation Suite; renamed from `docs-contentstack-ai-automation`)
 
 Use this document as a single briefing for another assistant (e.g. Claude) or a new contributor. It describes purpose, layout, execution, reporting, and conventions.
 

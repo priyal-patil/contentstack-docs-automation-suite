@@ -218,7 +218,7 @@ function resolveDurationSeconds(): number | null {
 function resolveRunUrl(): string {
   if (process.env.RUN_URL) return process.env.RUN_URL;
   const serverUrl = process.env.GITHUB_SERVER_URL || "https://github.com";
-  const repo = process.env.GITHUB_REPOSITORY || "priyal-patil/docs-contentstack-ai-automation";
+  const repo = process.env.GITHUB_REPOSITORY || "priyal-patil/contentstack-docs-automation-suite";
   const runId = process.env.GITHUB_RUN_ID || "";
   return `${serverUrl}/${repo}/actions/runs/${runId}`;
 }
@@ -312,7 +312,7 @@ function main(): void {
 
   const docLinks = [...new Set(rows.map((r) => r.documentUrl).filter((u): u is string => !!u))];
 
-  const project = "docs-contentstack-ai-automation";
+  const project = "contentstack-docs-automation-suite";
   const stagedReportFiles = new Set<string>();
 
   // items[]: EVERY checked flow (pass or fail), superset of failedItems. Prefer
@@ -381,7 +381,7 @@ function main(): void {
   const report: DashboardReport = {
     schemaVersion: 1,
     project,
-    projectLabel: "Docs Contentstack AI Automation",
+    projectLabel: "Contentstack Docs Automation Suite",
     suite,
     suiteLabel,
     runId,
