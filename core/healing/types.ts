@@ -139,6 +139,15 @@ export type HealResult = {
   /** Set when `outcome === "genuine-failure"`. */
   genuineFailureReason?: string;
   closestCandidates?: Candidate[];
+  /**
+   * Earlier steps of the SAME flow that were fixed on the way to a green run.
+   *
+   * A flow can carry several stale selectors. The loop fixes the first, advances to the next failure,
+   * and so on; those intermediate fixes stay on disk so each later step's prefix replay exercises them.
+   * Present only on a `healed` outcome — if the flow never went green they are rolled back, so there is
+   * nothing to report.
+   */
+  alsoFixedSteps?: Array<{ stepNumber: number; selector: string }>;
 };
 
 export type HealConfig = {

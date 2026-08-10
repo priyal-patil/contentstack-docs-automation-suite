@@ -239,6 +239,16 @@ export async function repairLoop(
   let closest: Candidate[] = [];
   let envFailures = 0;
 
+  // Selector fixes for EARLIER steps of this flow that are confirmed to advance it but have not yet
+  // produced a fully green flow. They stay on disk so each later step's prefix replay exercises them,
+  // and are rolled back together if the flow ultimately does not finish.
+  const staged: Array<{ stepIndex: number; selector: string; revert: () => void }> = [];
+  const rollbackStaged = () => {
+    // Reverse order: each revert restores a whole-file snapshot, so the earliest must be applied last.
+    for (const s of [...staged].reverse()) s.revert();
+    staged.length = 0;
+  };
+
   while (true) {
     const used = spent.get(resumeStep) ?? 0;
     if (used >= budget) break;
@@ -446,8 +456,26 @@ export async function repairLoop(
         clearDocStepFailures();
       }
 
-      // Keep the write only on a confirmed heal outside dry-run; otherwise leave the tree untouched.
-      if (!record.remainderPassed || cfg.dryRun) revertFile();
+      // Keep the write when the flow is confirmed green, and ALSO when this step is now fixed but a
+      // LATER step failed — because the loop is about to retarget that later step, and its prefix
+      // replay re-runs this one. Reverting here made progressive advancement unable to finish:
+      // step 11 was healed, the fix was thrown away, the loop moved to step 15, and step 15's prefix
+      // replay then failed at step 11 again. A flow with two broken selectors could never go green,
+      // which is why healing never compounded across a flow.
+      //
+      // Staged writes are not permanent. If the loop later gives up — budget spent, no candidate, or a
+      // genuine doc/app mismatch — every staged write is rolled back (see `rollbackStaged` below), so a
+      // flow that does not finish leaves the tree exactly as it was found.
+      const advancing =
+        !record.remainderPassed &&
+        typeof failedDownstreamAt === "number" &&
+        failedDownstreamAt > resumeStep;
+
+      if (cfg.dryRun || (!record.remainderPassed && !advancing)) {
+        revertFile();
+      } else if (advancing) {
+        staged.push({ stepIndex: resumeStep, selector: chosen.selector, revert: revertFile });
+      }
 
       const saved = await saveAttemptSnapshot(page, {
         snapshotDir: cfg.snapshotDir,
@@ -461,6 +489,12 @@ export async function repairLoop(
       if (record.remainderPassed) {
         attempts.push(record);
         deps.audit.attempt(target.flowId, record);
+        if (staged.length) {
+          log(
+            `✅ ${target.flowId}: flow green after fixing ${staged.length + 1} step(s) — ` +
+              [...staged.map((s) => s.stepIndex + 1), resumeStep + 1].join(", ")
+          );
+        }
         const result: HealResult = {
           target,
           outcome: "healed",
@@ -470,6 +504,9 @@ export async function repairLoop(
           writtenTo: cfg.dryRun ? undefined : written.file,
           resolvedBy: chosen.strategy,
           closestCandidates: closest,
+          // Earlier steps of the same flow fixed on the way here. Reported so the commit message and
+          // the summary can say the flow needed several fixes, not just the last one.
+          alsoFixedSteps: staged.map((s) => ({ stepNumber: s.stepIndex + 1, selector: s.selector })),
         };
         deps.audit.targetFinished(result);
         return result;
@@ -492,6 +529,17 @@ export async function repairLoop(
     } finally {
       await context.close().catch(() => {});
     }
+  }
+
+  // The loop finished without a green flow. Every fix staged on the way here is rolled back, so a flow
+  // that did not fully pass leaves no partial selector edits behind — matching the rule that only a
+  // completely green flow gets committed.
+  if (staged.length) {
+    log(
+      `↩️  ${target.flowId}: rolling back ${staged.length} staged fix(es) — the flow never went green ` +
+        `(step${staged.length > 1 ? "s" : ""} ${staged.map((s) => s.stepIndex + 1).join(", ")})`
+    );
+    rollbackStaged();
   }
 
   // Every attempt hit an environment problem, so we never actually got to look for the element. This
