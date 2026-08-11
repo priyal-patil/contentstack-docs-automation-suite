@@ -143,6 +143,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 1 reports
@@ -210,14 +211,19 @@ jobs:
             --suite cms-batch1 \
             --suiteLabel "CMS Batch 1" \
             --out /tmp/dashboard-cms-batch1.json \
+            --reportsOutDir /tmp/reports-cms-batch1 \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-cms-batch1.json
+          if [ -d /tmp/reports-cms-batch1 ]; then
+            node scripts/publish.js /tmp/dashboard-cms-batch1.json:/tmp/reports-cms-batch1
+          else
+            node scripts/publish.js /tmp/dashboard-cms-batch1.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
-          git commit -m "Publish docs-contentstack-ai-automation/cms-batch1 report ($GITHUB_RUN_ID)" || exit 0
+          git commit -m "Publish contentstack-docs-automation-suite/cms-batch1 report ($GITHUB_RUN_ID)" || exit 0
           for i in 1 2 3 4 5; do
             git push origin main && break
             git pull --rebase origin main
@@ -313,6 +319,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 2 reports
@@ -380,14 +387,19 @@ jobs:
             --suite cms-batch2 \
             --suiteLabel "CMS Batch 2" \
             --out /tmp/dashboard-cms-batch2.json \
+            --reportsOutDir /tmp/reports-cms-batch2 \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-cms-batch2.json
+          if [ -d /tmp/reports-cms-batch2 ]; then
+            node scripts/publish.js /tmp/dashboard-cms-batch2.json:/tmp/reports-cms-batch2
+          else
+            node scripts/publish.js /tmp/dashboard-cms-batch2.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
-          git commit -m "Publish docs-contentstack-ai-automation/cms-batch2 report ($GITHUB_RUN_ID)" || exit 0
+          git commit -m "Publish contentstack-docs-automation-suite/cms-batch2 report ($GITHUB_RUN_ID)" || exit 0
           for i in 1 2 3 4 5; do
             git push origin main && break
             git pull --rebase origin main
@@ -482,6 +494,7 @@ jobs:
             npx ts-node scripts/generateCmsExcelReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateCmsDashboardHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts    --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Batch 3 reports
@@ -549,14 +562,19 @@ jobs:
             --suite cms-batch3 \
             --suiteLabel "CMS Batch 3" \
             --out /tmp/dashboard-cms-batch3.json \
+            --reportsOutDir /tmp/reports-cms-batch3 \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-cms-batch3.json
+          if [ -d /tmp/reports-cms-batch3 ]; then
+            node scripts/publish.js /tmp/dashboard-cms-batch3.json:/tmp/reports-cms-batch3
+          else
+            node scripts/publish.js /tmp/dashboard-cms-batch3.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
-          git commit -m "Publish docs-contentstack-ai-automation/cms-batch3 report ($GITHUB_RUN_ID)" || exit 0
+          git commit -m "Publish contentstack-docs-automation-suite/cms-batch3 report ($GITHUB_RUN_ID)" || exit 0
           for i in 1 2 3 4 5; do
             git push origin main && break
             git pull --rebase origin main

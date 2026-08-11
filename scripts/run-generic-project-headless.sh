@@ -47,7 +47,16 @@ if [[ "$DOCS_AUDIT_BACKGROUND" == "1" ]]; then
 fi
 
 set +e
-npx playwright test tests/flows.spec.ts --project=flows -g "Project=$PROJECT" 2>&1 | tee -a "$REPORT_DIR/playwright.log"
+# Send SIGTERM (not the CI job's hard SIGKILL) with time to spare before the
+# job-level timeout-minutes, so Playwright can still flush flows-results.json
+# for whatever flows completed instead of leaving no report at all.
+RUN_MAX_MINUTES="${PW_RUN_MAX_MINUTES:-0}"
+if [[ "$RUN_MAX_MINUTES" -gt 0 ]]; then
+  timeout --signal=SIGTERM "${RUN_MAX_MINUTES}m" \
+    npx playwright test tests/flows.spec.ts --project=flows -g "Project=$PROJECT" 2>&1 | tee -a "$REPORT_DIR/playwright.log"
+else
+  npx playwright test tests/flows.spec.ts --project=flows -g "Project=$PROJECT" 2>&1 | tee -a "$REPORT_DIR/playwright.log"
+fi
 PW_EXIT=${PIPESTATUS[0]}
 set -e
 

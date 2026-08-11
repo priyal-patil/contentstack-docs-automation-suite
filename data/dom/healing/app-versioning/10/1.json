@@ -1,0 +1,1290 @@
+[
+  {
+    "tag": "div",
+    "role": "status",
+    "id": "signup-verify-entry-shell",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings {{ M614798b2 General UI Locations Webhooks OAuth Hosting App Manifest Advanced Variables Mappings Rewrites Manage Basic Information Version Logs Basic Information Version 3 You are currently …",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Settings {{ M614798b2",
+    "id": "topnav",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings {{ M614798b2 General UI Locations Webhooks OAuth Hosting App Manifest Advanced Variables Mappings Rewrites Manage Basic Information Version Logs Basic Information Version 3 You are currently …",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "link",
+    "id": "TopNavbar__content__product__button__with_svg",
+    "classes": [
+      "Button",
+      "TopNavbar__content__product__button__with_svg",
+      "flex-v-center",
+      "Button--tertiary",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-developer hub-button",
+    "ariaLabel": "developer hub",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TopNavbar__content__product__button-svg-logo",
+      "flex-v-center"
+    ],
+    "testId": "TopNavbar__content__product__button-svg-logo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductLogoDeveloperHub",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Settings",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/developerhub/app/6a6ffa46a6cef606680979f9/info",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Settings",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button__isSelected",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "developerhub-nav-settings",
+    "ariaLabel": "Settings",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductSettings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "cs-polaris-access-gate-stack-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "stackListHeaderNewPolaris",
+    "classes": [
+      "flex-h-center",
+      "flex-right",
+      "orch-agent-icon-container-stack-list",
+      "orch-agent-icon-container-stack-list-new-nav"
+    ],
+    "ariaLabel": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-polaris-icon-new",
+    "name": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "org-notifications",
+      "header__list--notification",
+      "header__list--notification__no--sidenav",
+      "with__app__switcher",
+      "flex-v-center",
+      "flex-h-center"
+    ],
+    "testId": "cs-notification-bellicon",
+    "ariaLabel": "Notification",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Notification__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-notification-bell-icon",
+    "name": "NotificationAlert",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "help-center-dropdown__trigger"
+    ],
+    "testId": "cs-help-center",
+    "ariaLabel": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "HelpLarge__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "HelpExtraLarge",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "app__switcher__v2"
+    ],
+    "testId": "app-switcher",
+    "ariaLabel": "App Switcher",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "app-switcher-toolbar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "AppDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [],
+    "testId": "cs-user-profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "role": "button",
+    "text": "{{",
+    "classes": [
+      "user-profile-tab-index"
+    ],
+    "ariaLabel": "User Profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M614798b2",
+    "id": "breadcrumb",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Settings {{ M614798b2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M614798b2",
+    "classes": [
+      "Breadcrumb--v2-main-wrapper"
+    ],
+    "testId": "cs-breadcrumb",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M614798b2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M614798b2",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "Breadcrumb--v2__unlink-last-item",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M614798b2",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "DeveloperTools",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M614798b2",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M614798b2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "M614798b2",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "M614798b2",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "General UI Locations Webhooks OAuth Hosting App Manifest Advanced Variables Mappings Rewrites Manage Basic Information Version Logs Basic Information Version 3 …",
+    "id": "content",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Settings {{ M614798b2 General UI Locations Webhooks OAuth Hosting App Manifest Advanced Variables Mappings Rewrites Manage Basic Information Version Logs Basic Information Version 3 You are currently …",
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "cHbJEZvtMilWZgFKQB8o",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Basic Information",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "_qY5W8RjmIyCu2bbMBUA"
+    ],
+    "ariaLabel": "Collapse sidebar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "expand-collapse-button",
+    "classes": [
+      "fUjg_hiSh2YhXpu0lsif",
+      "o__D6RXDqab8NwX8BjES"
+    ],
+    "testId": "expand-collapse-button",
+    "ariaLabel": "Collapse sidebar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "General UI Locations Webhooks OAuth Hosting App Manifest Advanced Variables Mappings Rewrites Manage Basic Information Version Logs Basic Information Version 3 You are currently viewing version 3. Cli…",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Basic Information Version 3",
+    "classes": [
+      "PageLayout__head"
+    ],
+    "testId": "cs-leftnavheader-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Basic Information Version 3 You are currently viewing version 3. Clicking Restore will save this instance as the latest version 5 Assigned Information The uneditable details of an app, such as the App…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "id": "PageLayout-hamburger",
+    "classes": [
+      "PageLayout__head__hamburger"
+    ],
+    "testId": "cs-leftnavheader-hamburger",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Basic Information Version 3",
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "Hamburger",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Basic Information Version 3",
+    "classes": [
+      "PageHeader"
+    ],
+    "testId": "cs-page-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Basic Information Version 3",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Basic Information",
+    "classes": [
+      "PageTitle"
+    ],
+    "testId": "cs-page-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Basic Information",
+    "visible": true
+  },
+  {
+    "tag": "h2",
+    "role": "heading",
+    "text": "Basic Information",
+    "classes": [
+      "AppSectionTitle--title"
+    ],
+    "testId": "page-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>h2:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Basic Information",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Version 3",
+    "id": "cs-dropdown-e498",
+    "classes": [
+      "Dropdown--hover",
+      "Dropdown",
+      "Dropdown--primary",
+      "Dropdown--position-bottom",
+      "Dropdown__v2"
+    ],
+    "testId": "cs-dropdown",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Version 3",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Version 3",
+    "classes": [
+      "Dropdown__header__value"
+    ],
+    "testId": "cs-dropdown-value",
+    "title": "Version 3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Version 3",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "ml-4",
+      "Dropdown__chevron",
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretDownNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Version 3",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "SidebarWindow",
+      "flex"
+    ],
+    "testId": "cs-sidebar-window",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "SidebarWindowSingle__tab-item"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "app-info-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "Information",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "You are currently viewing version 3. Clicking Restore will save this instance as the latest version 5",
+    "classes": [
+      "Info",
+      "version_info",
+      "Info--attention"
+    ],
+    "testId": "cs-Info",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "You are currently viewing version 3. Clicking Restore will save this instance as the latest version 5",
+    "visible": true
+  },
+  {
+    "tag": "h6",
+    "text": "Assigned Information",
+    "classes": [
+      "title"
+    ],
+    "testId": "basic-info-assigned-information-section-heading",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>h6:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Assigned Information",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation.",
+    "classes": [
+      "subheading",
+      "p1",
+      "regular"
+    ],
+    "testId": "basic-info-assigned-information-section-sub-heading",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Assigned Information The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation.",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "App UID",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Assigned Information The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation. App UID Status Private Type Organization App Version 3",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TextInput",
+      "App_info_section_field__uid-input",
+      "TextInput--full",
+      "TextInput--disabled",
+      "TextInput__read-only",
+      "TextInput__read-only-disabled"
+    ],
+    "testId": "basic-info-app-uid",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Lock",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "TextInput__input",
+      "TextInput__v2"
+    ],
+    "placeholder": "Type something...",
+    "type": "text",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "ClipBoard"
+    ],
+    "testId": "cs-clipboard",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Copy__icon",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "basic-info-copy-icon",
+    "name": "Copy",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Status Private",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field",
+      "App_info_status_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Assigned Information The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation. App UID Status Private Type Organization App Version 3",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Status",
+    "classes": [
+      "field-label-info"
+    ],
+    "testId": "basic-info-status-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Status Private",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>p:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Status",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "basic-info-status-info-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "info-icon",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "Information",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Private",
+    "classes": [
+      "field_value",
+      "input_container"
+    ],
+    "testId": "basic-info-app-status",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Status Private",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Type Organization App",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field",
+      "App_info_status_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Assigned Information The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation. App UID Status Private Type Organization App Version 3",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Type",
+    "classes": [
+      "field-label-info"
+    ],
+    "testId": "basic-info-type-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Type Organization App",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>p:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Type",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "basic-info-type-info-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "info-icon",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "Information",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Organization App",
+    "classes": [
+      "field_value",
+      "input_container"
+    ],
+    "testId": "basic-info-app-type",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Type Organization App",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Version 3",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field",
+      "App_info_status_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "Assigned Information The uneditable details of an app, such as the App UID, type, and visibility, are defined at the time of its creation. App UID Status Private Type Organization App Version 3",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "Version",
+    "classes": [
+      "field-label-info"
+    ],
+    "testId": "basic-info-version-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Version 3",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>p:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Version",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "info-icon",
+      "Icon--tiny"
+    ],
+    "testId": "basic-info-version-info-icon",
+    "name": "Information",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>p:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "3",
+    "classes": [],
+    "testId": "basic-info-app-version",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "3",
+    "visible": true
+  },
+  {
+    "tag": "h6",
+    "text": "Editable Information",
+    "classes": [
+      "title"
+    ],
+    "testId": "basic-info-editable-information-section-heading",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>h6:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Editable Information",
+    "visible": true
+  },
+  {
+    "tag": "p",
+    "text": "The editable information of an app such as its name, description, and icon.",
+    "classes": [
+      "subheading",
+      "p1",
+      "regular"
+    ],
+    "testId": "basic-info-editable-information-section-sub-heading",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>p:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Editable Information The editable information of an app such as its name, description, and icon.",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Name * 9 / 20",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Editable Information The editable information of an app such as its name, description, and icon. Name * 9 / 20 Description 0 / 120 App icon Upload a new file Minimum dimension should be 512 x 512 pixe…",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Name *",
+    "classes": [
+      "FieldLabel",
+      "field-label-info"
+    ],
+    "testId": "basic-info-name-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name * 9 / 20",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "text": "*",
+    "classes": [
+      "FieldLabel__required-text",
+      "false"
+    ],
+    "testId": "basic-info-name-label-required",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>label:nth-of-type(1)>span:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Name *",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "9 / 20",
+    "classes": [
+      "TextInput",
+      "App_info__input-name",
+      "TextInput--large",
+      "TextInput--disabled",
+      "TextInput--with-count"
+    ],
+    "testId": "cs-text-input",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Name * 9 / 20",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "TextInput__input",
+      "TextInput__v2"
+    ],
+    "testId": "basic-info-name",
+    "ariaLabel": "appName",
+    "name": "appName",
+    "placeholder": "Enter a name for the app",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "9 / 20",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "text": "9 / 20",
+    "classes": [
+      "TextInput__char-count"
+    ],
+    "testId": "cs-text-input-char-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "9 / 20",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Description 0 / 120",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Editable Information The editable information of an app such as its name, description, and icon. Name * 9 / 20 Description 0 / 120 App icon Upload a new file Minimum dimension should be 512 x 512 pixe…",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "Description",
+    "classes": [
+      "FieldLabel",
+      "field-label-info"
+    ],
+    "testId": "basic-info-description-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description 0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "0 / 120",
+    "classes": [
+      "Textarea",
+      "App_info__input-desc",
+      "Textarea--large",
+      "Textarea--disabled",
+      "Textarea--with-count"
+    ],
+    "testId": "cs-text-area",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description 0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "textarea",
+    "role": "textbox",
+    "id": "description",
+    "classes": [
+      "Textarea__textarea",
+      "Textarea__v2"
+    ],
+    "testId": "basic-info-description",
+    "ariaLabel": "description",
+    "name": "description",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>textarea:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "0 / 120",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "FieldResize",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "App icon Upload a new file Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image ba…",
+    "classes": [
+      "Field",
+      "Field--full",
+      "App_info_section_field"
+    ],
+    "testId": "cs-field",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Editable Information The editable information of an app such as its name, description, and icon. Name * 9 / 20 Description 0 / 120 App icon Upload a new file Minimum dimension should be 512 x 512 pixe…",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "text": "App icon",
+    "classes": [
+      "FieldLabel",
+      "field-label-info",
+      "field-label-app-icon"
+    ],
+    "testId": "basic-info-app-icon-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "App icon Upload a new file Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "App_icon_container",
+      "App_icon_containerV2"
+    ],
+    "testId": "icon-container",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Upload a new file Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Upload a new file",
+    "classes": [
+      "Button",
+      "App_icon__upload",
+      "Button--tertiary",
+      "Button--state-disabled",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "basic-info-upload-cta",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Upload a new file Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "Upload",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Upload a new file",
+    "visible": true
+  },
+  {
+    "tag": "li",
+    "role": "listitem",
+    "text": "Minimum dimension should be 512 x 512 pixels.",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>li:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "li",
+    "role": "listitem",
+    "text": "Image should be in PNG format",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>li:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "li",
+    "role": "listitem",
+    "text": "Image size should be less than 1 MB.",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>li:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "li",
+    "role": "listitem",
+    "text": "Transparent image backgrounds are preferred",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>li:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [],
+    "name": "appLogo",
+    "type": "file",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(4)>div:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Upload a new file Minimum dimension should be 512 x 512 pixels. Image should be in PNG format Image size should be less than 1 MB. Transparent image backgrounds are preferred",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Cancel Yes, Restore",
+    "classes": [
+      "Button__group"
+    ],
+    "testId": "cs-button-group",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Cancel Yes, Restore",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Cancel",
+    "classes": [
+      "Button",
+      "Button--light",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Cancel Yes, Restore",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Yes, Restore",
+    "classes": [
+      "Button",
+      "Button--primary",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--v2"
+    ],
+    "testId": "cs-button",
+    "ariaLabel": "aria-button",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Cancel Yes, Restore",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "Restore",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Yes, Restore",
+    "visible": true
+  }
+]

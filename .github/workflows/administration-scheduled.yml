@@ -112,6 +112,7 @@ jobs:
           if [[ -f "$REPORT_DIR/flows-results.json" ]]; then
             npx ts-node scripts/generateDashboardReport.ts --reportDir "$REPORT_DIR" 2>&1 || true
             npx ts-node scripts/generateUnifiedReport.ts   --reportDir "$REPORT_DIR" 2>&1 || true
+            npx ts-node scripts/generateAllFlowReportsHtml.ts --reportDir "$REPORT_DIR" 2>&1 || true
           fi
 
       - name: Upload Administration reports
@@ -180,14 +181,19 @@ jobs:
             --suite administration \
             --suiteLabel "Administration" \
             --out /tmp/dashboard-administration.json \
+            --reportsOutDir /tmp/reports-administration \
             2>&1 || { echo "::warning::publishToDashboard.ts failed"; exit 0; }
           git clone "https://x-access-token:${GH_TOKEN}@github.com/priyal-patil/docs-automation-dashboard-data.git" /tmp/dashboard-data
           cd /tmp/dashboard-data
-          node scripts/publish.js /tmp/dashboard-administration.json
+          if [ -d /tmp/reports-administration ]; then
+            node scripts/publish.js /tmp/dashboard-administration.json:/tmp/reports-administration
+          else
+            node scripts/publish.js /tmp/dashboard-administration.json
+          fi
           git config user.name "dashboard-publisher"
           git config user.email "actions@users.noreply.github.com"
           git add -A
-          git commit -m "Publish docs-contentstack-ai-automation/administration report ($GITHUB_RUN_ID)" || exit 0
+          git commit -m "Publish contentstack-docs-automation-suite/administration report ($GITHUB_RUN_ID)" || exit 0
           for i in 1 2 3 4 5; do
             git push origin main && break
             git pull --rebase origin main

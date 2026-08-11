@@ -29431,18 +29431,23 @@ export async function performAction(
               warnMissing("expected.labelEquals is missing for documented Usage by Stacks column.");
               break;
             }
-            const stacksHeading = page.getByRole("heading", { name: /^Usage by Stacks$/i }).first();
+            let stacksHeading = page.getByRole("heading", { name: /^Usage by Stacks$/i }).first();
+            if (!(await stacksHeading.isVisible({ timeout: Math.min(t, 8_000) }).catch(() => false))) {
+              stacksHeading = page.getByText(/^Usage by Stacks$/i, { exact: true }).first();
+            }
             await stacksHeading.scrollIntoViewIfNeeded().catch(() => {});
             let tbl: Locator | null = null;
             if (await stacksHeading.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
               const byStackNameHeader = page
-                .locator("table")
+                .locator("table, [role='table'], [role='grid'], [class*='Table']")
                 .filter({ has: page.getByRole("columnheader", { name: /^Stack Name$/i }) })
                 .first();
               if (await byStackNameHeader.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
                 tbl = byStackNameHeader;
               } else {
-                const following = stacksHeading.locator("xpath=following::table[1]").first();
+                const following = stacksHeading
+                  .locator("xpath=following::*[self::table or @role='table' or @role='grid' or contains(@class,'Table')][1]")
+                  .first();
                 if (await following.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
                   tbl = following;
                 }
@@ -29563,18 +29568,23 @@ export async function performAction(
             warnMissing("expected.labelEquals is missing for documented Usage by Brand Kit column.");
             break;
           }
-          const bkHeading = page.getByRole("heading", { name: /^Usage by Brand Kit$/i }).first();
+          let bkHeading = page.getByRole("heading", { name: /^Usage by Brand Kit$/i }).first();
+          if (!(await bkHeading.isVisible({ timeout: Math.min(t, 8_000) }).catch(() => false))) {
+            bkHeading = page.getByText(/^Usage by Brand Kit$/i, { exact: true }).first();
+          }
           await bkHeading.scrollIntoViewIfNeeded().catch(() => {});
           let tbl: Locator | null = null;
           if (await bkHeading.isVisible({ timeout: Math.min(t, 15_000) }).catch(() => false)) {
             const byNameCol = page
-              .locator("table")
+              .locator("table, [role='table'], [role='grid'], [class*='Table']")
               .filter({ has: page.getByRole("columnheader", { name: /^Brand Kit Name$/i }) })
               .first();
             if (await byNameCol.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
               tbl = byNameCol;
             } else {
-              const following = bkHeading.locator("xpath=following::table[1]").first();
+              const following = bkHeading
+                .locator("xpath=following::*[self::table or @role='table' or @role='grid' or contains(@class,'Table')][1]")
+                .first();
               if (await following.isVisible({ timeout: Math.min(t, 12_000) }).catch(() => false)) {
                 tbl = following;
               }

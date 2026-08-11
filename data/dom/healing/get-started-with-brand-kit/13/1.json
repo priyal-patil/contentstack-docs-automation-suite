@@ -1,0 +1,1199 @@
+[
+  {
+    "tag": "div",
+    "role": "status",
+    "id": "signup-verify-entry-shell",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-BK-9fc23 Rulesets Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voi…",
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Knowledge Vault Settings {{ AUTO-BK-9fc23 Rulesets",
+    "id": "topnav",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-BK-9fc23 Rulesets Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voi…",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "link",
+    "id": "TopNavbar__content__product__button__with_svg",
+    "classes": [
+      "Button",
+      "TopNavbar__content__product__button__with_svg",
+      "flex-v-center",
+      "Button--tertiary",
+      "Button--size-large",
+      "Button--v2"
+    ],
+    "testId": "cs-brand kit-button",
+    "ariaLabel": "brand kit",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "TopNavbar__content__product__button-svg-logo",
+      "flex-v-center"
+    ],
+    "testId": "TopNavbar__content__product__button-svg-logo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductLogoBrandKit",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Rulesets",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/cs34f9c38daabb4a/rulesets",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Rulesets",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button__isSelected",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-rulesets",
+    "ariaLabel": "Rulesets",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "EnvironmentColor",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Knowledge Vault",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/cs34f9c38daabb4a/knowledge-vault",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Knowledge Vault",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-knowledge-vault",
+    "ariaLabel": "Knowledge Vault",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "KnowledgeVaultSecondary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Knowledge Vault",
+    "visible": true
+  },
+  {
+    "tag": "a",
+    "role": "link",
+    "text": "Settings",
+    "classes": [
+      "active"
+    ],
+    "href": "/#!/brand-kit/brand-kits/cs34f9c38daabb4a/settings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "Settings",
+    "classes": [
+      "Button",
+      "TopNavbar__content__items__list__redirect--button",
+      "Button--tertiary",
+      "Button--size-small",
+      "Button--v2"
+    ],
+    "testId": "brandkit-nav-settings",
+    "ariaLabel": "Settings",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "TopNavbar__Icon-margin-r4",
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "ProductSettings",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(3)>a:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Settings",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [],
+    "testId": "cs-polaris-access-gate-stack-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "id": "stackListHeaderNewPolaris",
+    "classes": [
+      "flex-h-center",
+      "flex-right",
+      "orch-agent-icon-container-stack-list",
+      "orch-agent-icon-container-stack-list-new-nav"
+    ],
+    "ariaLabel": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-polaris-icon-new",
+    "name": "Polaris",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "org-notifications",
+      "header__list--notification",
+      "header__list--notification__no--sidenav",
+      "with__app__switcher",
+      "flex-v-center",
+      "flex-h-center"
+    ],
+    "testId": "cs-notification-bellicon",
+    "ariaLabel": "Notification",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Notification__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-notification-bell-icon",
+    "name": "NotificationAlert",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "help-center-dropdown__trigger"
+    ],
+    "testId": "cs-help-center",
+    "ariaLabel": "Help",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "HelpLarge__icon",
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "HelpExtraLarge",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "classes": [
+      "app__switcher__v2"
+    ],
+    "testId": "app-switcher",
+    "ariaLabel": "App Switcher",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "app-switcher-toolbar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "AppDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [],
+    "testId": "cs-user-profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "role": "button",
+    "text": "{{",
+    "classes": [
+      "user-profile-tab-index"
+    ],
+    "ariaLabel": "User Profile",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "{{",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "{{",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-BK-9fc23 Rulesets",
+    "id": "breadcrumb",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-BK-9fc23 Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-BK-9fc23 Rulesets",
+    "classes": [
+      "Breadcrumb--v2-main-wrapper"
+    ],
+    "testId": "cs-breadcrumb",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-BK-9fc23 Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-BK-9fc23",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "undefined",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-0",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-BK-9fc23 Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "BrandKitLogo",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-BK-9fc23",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-BK-9fc23",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "AUTO-BK-9fc23",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-BK-9fc23",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretRight",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "AUTO-BK-9fc23",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets",
+    "classes": [
+      "Breadcrumb--v2__item",
+      "Breadcrumb--v2__unlink-last-item",
+      "undefined"
+    ],
+    "testId": "cs-breadcrumb-link-1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "AUTO-BK-9fc23 Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets",
+    "classes": [
+      "truncate-text"
+    ],
+    "testId": "cs-truncate",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish…",
+    "id": "content",
+    "classes": [],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Knowledge Vault Settings {{ AUTO-BK-9fc23 Rulesets Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voi…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish…",
+    "classes": [
+      "PageLayout",
+      "PageLayout--primary",
+      "PageLayout--primary--no__sidenav",
+      "PageLayout--primary--breadcrumb__margin",
+      "ruleset-page-layout",
+      "PageLayout--primary--v2"
+    ],
+    "testId": "cs-page-layout",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upl…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Rulesets Voice Profiles Brand Voice Characteristics 0",
+    "classes": [
+      "PageLayout__leftSidebar",
+      "PageLayout--primary--breadcrumb__margin",
+      "PageLayout__leftSidebar--show"
+    ],
+    "testId": "cs-page-layout-leftSidebar",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Rulesets Voice Profiles Brand Voice Characteristics 0 Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upl…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Voice Profiles Brand Voice Characteristics 0",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Rulesets Voice Profiles Brand Voice Characteristics 0",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "button",
+    "text": "Voice Profiles Brand Voice Characteristics 0",
+    "classes": [
+      "ruleset-nav-card",
+      "selected"
+    ],
+    "testId": "brand-kit-click-btn-secondary-action-voice-profiles",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Voice Profiles Brand Voice Characteristics 0",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small",
+      "Icon--active"
+    ],
+    "testId": "cs-icon",
+    "name": "Right",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(4)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or…",
+    "classes": [
+      "PageLayout__body",
+      "PageLayout__body--no__sideNav"
+    ],
+    "testId": "cs-page-layout-contentBody",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI b…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Voice Profiles New Voice Profile",
+    "classes": [
+      "PageLayout__head"
+    ],
+    "testId": "cs-leftnavheader-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Voice Profiles New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "id": "PageLayout-hamburger",
+    "classes": [
+      "PageLayout__head__hamburger"
+    ],
+    "testId": "cs-leftnavheader-hamburger",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Voice Profiles New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--tiny"
+    ],
+    "testId": "cs-icon",
+    "name": "CaretLeft",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Voice Profiles New Voice Profile",
+    "classes": [
+      "PageHeader"
+    ],
+    "testId": "cs-page-header",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Voice Profiles New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Voice Profiles",
+    "classes": [
+      "PageTitle"
+    ],
+    "testId": "cs-page-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Voice Profiles",
+    "visible": false
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "New Voice Profile",
+    "classes": [
+      "Button",
+      "Button--primary",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--v2"
+    ],
+    "testId": "brand-kit-click-btn-primary-action-voice-profiles-list-add-voice-profile",
+    "ariaLabel": "New Voice Profile",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Plus",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let o…",
+    "classes": [
+      "profiles-table-entries"
+    ],
+    "testId": "voice-profiles-list",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let o…",
+    "classes": [],
+    "testId": "cs-table",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "Search",
+      "Search--full",
+      "Search--primary"
+    ],
+    "testId": "cs-search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "classes": [],
+    "testId": "cs-search-icon",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Search__search-icon",
+      "Icon--mini"
+    ],
+    "testId": "cs-icon",
+    "name": "Search",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "textbox",
+    "classes": [
+      "Search__input",
+      "regular-corners"
+    ],
+    "testId": "cs-search-input-field",
+    "ariaLabel": "Search",
+    "placeholder": "Search Voice Profile",
+    "type": "primary",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "classes": [
+      "TablePanel__list-count",
+      "flex-v-center"
+    ],
+    "testId": "cs-table-list-count",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "classes": [
+      "Button",
+      "ml-10",
+      "refresh-wrapper",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-refresh-icon",
+    "ariaLabel": "Refresh List",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Refresh",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>label:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "table",
+    "text": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let o…",
+    "classes": [
+      "Table",
+      "TableColumnSticky",
+      "TableWithRowAction",
+      "TableFreezeCheckbox"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "rowgroup",
+    "text": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let o…",
+    "classes": [
+      "Table__rowgroup"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "row",
+    "text": "Title Description Modified At Actions",
+    "classes": [
+      "Table__head__row",
+      "Table__head__row_action",
+      "Table__head_rowwidth"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "classes": [
+      "Table-select-head",
+      "flex-v-center",
+      "freezed"
+    ],
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "tippy-wrapper"
+    ],
+    "testId": "cs-tooltip",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "label",
+    "id": "rowSelect",
+    "classes": [
+      "Checkbox",
+      "Checkbox--state-disabled"
+    ],
+    "testId": "cs-checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "input",
+    "role": "checkbox",
+    "id": "rowSelect",
+    "classes": [],
+    "title": "Bulk select Items",
+    "type": "checkbox",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>input:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-icon",
+    "name": "CheckBoxActiveNew",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": false
+  },
+  {
+    "tag": "span",
+    "classes": [
+      "Checkbox__label"
+    ],
+    "testId": "cs-checkbox-label",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>label:nth-of-type(1)>span:nth-of-type(3)",
+    "siblingIndex": 2,
+    "visible": false
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Title",
+    "classes": [
+      "Table__head__column",
+      "name-column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Title",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--1",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "not-sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--1",
+    "ariaLabel": "Title sort toggle",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Title",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "NoSort",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Description",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)",
+    "siblingIndex": 2,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Description",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--2",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Description",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Modified At",
+    "classes": [
+      "Table__head__column",
+      "Table__head__cell--sorted",
+      "Table__head__column__hover"
+    ],
+    "testId": "cs-table-head-cell--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)",
+    "siblingIndex": 3,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Modified At",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-head-text--3",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Modified At",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "presentation",
+    "classes": [
+      "Button",
+      "sortingIcon-wrapper",
+      "sorted",
+      "Button--size-small",
+      "Button--icon-alignment-left",
+      "Button--icon",
+      "Button--v2",
+      "Button--icon-hover-secondary"
+    ],
+    "testId": "cs-table-head-cell-sort--3",
+    "ariaLabel": "Modified At sort by descending",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Modified At",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--small"
+    ],
+    "testId": "cs-icon",
+    "name": "SortingDesc",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(4)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "role": "columnheader",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column",
+      "Table__head__column__hover",
+      "Table__head__cell--tableRowAction"
+    ],
+    "testId": "cs-table-row-action-column-cell--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)",
+    "siblingIndex": 4,
+    "surroundingText": "Title Description Modified At Actions",
+    "visible": true
+  },
+  {
+    "tag": "span",
+    "role": "presentation",
+    "text": "Actions",
+    "classes": [
+      "Table__head__column-text"
+    ],
+    "testId": "cs-table-row-action-column-text--4",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(5)>span:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Actions",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or sta…",
+    "classes": [
+      "Table__centerWrapper"
+    ],
+    "testId": "cs-table-center-wrapper",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or sta…",
+    "classes": [
+      "EmptyStateWrapper",
+      "flex-center",
+      "EmptyStateWrapper--emptyStateV2"
+    ],
+    "testId": "cs-empty-state",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start from scratch manually. New Voice Prof…",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--original"
+    ],
+    "testId": "cs-empty-state-module-image",
+    "name": "NoDataEmptyState",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start from scratch manually. New Voice Prof…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Set Up Your Voice Profile",
+    "classes": [
+      "EmptyState__title"
+    ],
+    "testId": "cs-empty-state-title",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start from scratch manually. New Voice Prof…",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "text": "Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start from scratch manually. …",
+    "classes": [
+      "EmptyState__description"
+    ],
+    "testId": "cs-empty-state-desctiption",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI build your Voice Profile, or start from scratch manually. New Voice Prof…",
+    "visible": true
+  },
+  {
+    "tag": "button",
+    "role": "button",
+    "text": "New Voice Profile",
+    "classes": [
+      "Button",
+      "add-profile-icon-button",
+      "Button--primary",
+      "Button--size-large",
+      "Button--icon-alignment-left",
+      "Button--v2"
+    ],
+    "testId": "cs-new-profile",
+    "ariaLabel": "New Voice Profile",
+    "type": "button",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "svg",
+    "classes": [
+      "Icon--v2",
+      "Icon--medium"
+    ],
+    "testId": "cs-icon",
+    "name": "Plus",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(1)>button:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>svg:nth-of-type(1)",
+    "siblingIndex": 0,
+    "surroundingText": "New Voice Profile",
+    "visible": true
+  },
+  {
+    "tag": "div",
+    "classes": [
+      "PageLayout__body--left-drawer"
+    ],
+    "testId": "cs-page-layout-leftDrawer",
+    "domPath": "html>body:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>main:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(1)>div:nth-of-type(2)",
+    "siblingIndex": 1,
+    "surroundingText": "Voice Profiles New Voice Profile Title Description Modified At Actions Set Up Your Voice Profile Establish your brand's voice. Provide a link, upload a file, or select existing entries to let our AI b…",
+    "visible": true
+  }
+]

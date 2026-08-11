@@ -1,10 +1,128 @@
-## Contentstack Docs → Playwright Automation
+# Contentstack Docs Automation Suite
 
-This repo executes **documentation flows** as generic JSON step sequences, with selector overrides layered by **shared → project → module → flow**.
+Automated validation of Contentstack's **UI documentation** — every doc that tells a
+reader to click something. Each documented procedure becomes a JSON **flow**, and
+Playwright performs it against the real app, one step per documented step.
+
+Covers 11 product areas: CMS, Launch, Personalize, Marketplace, Studio, AgentOS,
+Administration, Developer Hub, Analytics, Brand Kit, and Data & Insights.
 
 **Important:** We run **only the steps defined in the flow** (from the document). We do **not** add or infer steps. The goal is to find **missing or wrong steps in the docs**: if the doc says "click New" but the app has no "New" button on that page, the run fails and we report it so technical writers can fix the document.
 
-### Document-step failure report (for technical writers)
+> Part of a family of three independent docs-automation projects (this one,
+> [Developer Resources](https://github.com/priyal-patil/Developer-Resources) for
+> executable docs, and [API Docs Automation](https://github.com/priyal-patil/api-docs-automation)
+> for the API reference). Shared ground rules, credential sources, and QA-org
+> gotchas are in the common guide in this repo:
+> [`DOCS-AUTOMATION-COMMON.md`](DOCS-AUTOMATION-COMMON.md).
+
+---
+
+## The contract (read this before changing anything)
+
+- **The doc is the spec, never the app.** A flow's `expected.labelEquals` may only be
+  changed to wording that appears in the source document. Copying the app's label
+  makes the test green and destroys the finding. If the doc names no label, the
+  honest outcome is a warning — not an app-sourced value.
+- **Wrong wording warns; an impossible step fails.** A renamed label or minor wording
+  mismatch is a warning and the flow continues. A step that cannot be performed fails.
+- **Selector healing exists only** so stale locators don't drown the real signal
+  (`scripts/healFailedFlows.ts`, `core/healing/*`). It is not licence to heal a finding.
+- **Every bug report needs three parts:** what's wrong, why (root cause, confirmed by
+  running it), and the specific fix — the doc text that should change.
+
+---
+
+## Getting started
+
+### Prerequisites
+
+| | |
+|---|---|
+| **Node.js 20+** | CI uses 20 |
+| **Playwright browsers** | `npx playwright install` |
+| **A Contentstack QA-org account** | with access to the stack you set as `DEFAULT_STACK` |
+
+### Install
+
+```bash
+git clone https://github.com/priyal-patil/contentstack-docs-automation-suite.git
+cd contentstack-docs-automation-suite
+npm install
+npx playwright install
+cp .env.example .env      # then fill it in
+```
+
+### Fill in `.env`
+
+`.env` is gitignored; `.env.example` is the committed key list.
+
+| Key | Value |
+|---|---|
+| `CS_EMAIL` | QA-org login email **(required)** |
+| `CS_PASSWORD` | QA-org login password **(required)** |
+| `DEFAULT_STACK` | Stack name the flows run against **(required)** |
+| `CS_APP_ORIGIN` | Optional; defaults to `https://app.contentstack.com` |
+| `STAG_DOCS_USERNAME` / `STAG_DOCS_PASSWORD` | Optional; basic-auth for staging docs pages |
+
+### Your first run
+
+Do **not** start with a full project sweep — CMS alone runs for hours. Prove your
+credentials with a single flow, headed so you can watch it:
+
+```bash
+npx playwright test tests/flows.spec.ts -g "Project=CMS Module=content-models" --headed
+```
+
+If that drives the app and produces `reports/latest/`, you're set up. Then scale to
+a module, then a project.
+
+### Useful run scopes
+
+```bash
+npm run test:cms                    # all CMS flows
+npm run test:cms:content-models     # one module
+npm run test:cms:batch1             # CMS split into batches (batch1/2/3)
+npm run test:launch
+npm run test:personalize
+npm run test:administration
+npm run test:agentos
+npm run test:data-and-insights
+```
+
+`package.json` has ~100 scripts; most are `<project>`, `<project>:<module>`, and
+`:headed` variants of the same thing. Anything you can't find a script for, target
+directly with `-g`:
+
+```bash
+npx playwright test tests/flows.spec.ts -g "Project=CMS"
+npx playwright test tests/flows.spec.ts -g "<flow-id>"
+```
+
+### Flags that change pass/fail
+
+Two of these default in a way that surprises people:
+
+| Flag | Effect |
+|---|---|
+| `STRICT_DOC_VERIFICATION` | Defaults to **strict** (in `rules/core/actionRules.ts`), so label mismatches *throw* instead of warning. Set `false` to get the warn-don't-fail policy — and expect it to expose real defects that strict mode was hiding behind a naming complaint. |
+| `FORCE_RELOGIN=true` | `auth.json` lives at the **repo root** (not `data/`) and `global-setup.ts` can save it **empty** while the fast path only checks that the file exists — so a stale run can carry an unauthenticated context. Pass this for standalone probes. |
+
+### Debugging a failure
+
+**Diagnose from the saved DOM or screenshot, never from the error message.** In this
+repo the error text is actively misleading — "product not found in App Switcher" was
+a test id gaining an `-mfe` suffix; "Toggle/checkbox not found" was a `/switch/`
+selector matching "App **Switch**er". And a `click` step passing means only that a
+click was *dispatched* — a flow whose last step is a click can report success having
+done nothing.
+
+See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) and
+[`FRAMEWORK-HANDOFF.md`](FRAMEWORK-HANDOFF.md) for the deeper walkthrough.
+
+---
+
+## Document-step failure report (for technical writers)
 
 When a step fails (e.g. element not found), the run records:
 
@@ -15,7 +133,7 @@ When a step fails (e.g. element not found), the run records:
 
 After all flow tests, see **`reports/latest/doc-step-failures.json`**. Each entry means: *this document URL failed at this step because the element could not be located* — the document may be missing a step or describing the wrong UI. Generic steps (e.g. "Content Models", "New Content Type") are fine when they match the app; document-specific steps must be correct or they will appear in this report.
 
-### Folder structure (project-wise)
+## Folder structure (project-wise)
 
 ```
 contentstack-ai-automation/
@@ -44,7 +162,7 @@ contentstack-ai-automation/
   tests/
 ```
 
-### How flows run
+## How flows run
 
 - `tests/flows.spec.ts` auto-discovers:
   - New flows: `projects/**/flows/*.flow.json`
@@ -58,7 +176,7 @@ contentstack-ai-automation/
   4) `projects/<project>/<module>/selectors/<id>.selectors.ts` (optional)
   5) legacy `rules/overrides/**` (backwards compatible)
 
-### Run commands
+## Run commands (flow-level)
 
 - **All CMS flows**:
 
@@ -79,7 +197,7 @@ npm run test:cms
 npm run test:cms:content-models
 ```
 
-### Add a new flow manually
+## Add a new flow manually
 
 1) Create:
 - `projects/<Project>/<module>/flows/<id>.flow.json`
@@ -91,7 +209,7 @@ npm run test:cms:content-models
 npx playwright test tests/flows.spec.ts -g "<id>"
 ```
 
-### Bulk import (URL ingestion)
+## Bulk import (URL ingestion)
 
 Create an input file as JSON:
 
@@ -112,7 +230,7 @@ This generates:
 - `projects/<project>/<module>/selectors/<id>.selectors.ts` (stub if missing)
 - updates `projects/<project>/<module>/index.ts`
 
-### GitHub Actions (CMS scheduled) + Slack reports
+## GitHub Actions (CMS scheduled) + Slack reports
 
 Workflow: **`.github/workflows/cms-daily-scheduled.yml`** (writes **`.env`** from secrets before `npm run test:cms:foreground`).
 
@@ -149,7 +267,7 @@ curl -sS -X POST \
   -d '{"event_type":"cms-daily-7am-ist","client_payload":{"source":"external-cron"}}'
 ```
 
-Replace **`OWNER/REPO`** (e.g. **`priyal-patil/docs-contentstack-ai-automation`**). **`event_type`** must be exactly **`cms-daily-7am-ist`** (matches **`.github/workflows/cms-daily-scheduled.yml`**).
+Replace **`OWNER/REPO`** (e.g. **`priyal-patil/contentstack-docs-automation-suite`**). **`event_type`** must be exactly **`cms-daily-7am-ist`** (matches **`.github/workflows/cms-daily-scheduled.yml`**).
 
 The workflow still keeps **`schedule: '30 1 * * *'`** as **backup**. If both fire the same calendar minute you may occasionally get **two** short CMS runs — either remove **`schedule`** after the external cron is stable, or keep both and accept duplicates (`concurrency` does **not** cancel in-flight).
 

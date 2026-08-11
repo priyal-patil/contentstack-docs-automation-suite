@@ -1,7 +1,7 @@
 {
   "name": "contentstack-ai-automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Contentstack Docs Automation Suite",
   "main": "index.js",
   "scripts": {
     "test": "playwright test",

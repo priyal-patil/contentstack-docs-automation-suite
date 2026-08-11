@@ -59,6 +59,23 @@ function readJson<T>(p: string): T | null {
 
 type DashboardFailedItem = { name: string; detail: string; docLink: string };
 
+type DashboardItemStatus = "pass" | "fail" | "warning" | "skipped";
+
+type DashboardItem = {
+  name: string;
+  status: DashboardItemStatus;
+  detail: string | null;
+  docLink: string;
+  reportUrl?: string;
+};
+
+type DashboardWarning = {
+  name: string;
+  detail: string;
+  docLink: string;
+  reportUrl?: string;
+};
+
 type DashboardReport = {
   schemaVersion: 1;
   project: string;
@@ -81,7 +98,95 @@ type DashboardReport = {
   };
   failedItems: DashboardFailedItem[];
   docLinks: string[];
+  items?: DashboardItem[];
+  warnings?: DashboardWarning[];
 };
+
+/**
+ * Maps this repo's actual Playwright/url-run-summary status strings to the
+ * shared dashboard schema's item status enum ("pass" | "fail" | "warning" | "skipped").
+ * Confirmed status values seen in real url-run-summary.json output: "passed",
+ * "failed", "timedOut" (no "skipped"/"interrupted" seen in the sample inspected,
+ * but urlRunSummaryAndSlack.ts's own counting logic handles them, so mapped here too).
+ * NOTE: this repo never produces a raw "warning" flow status — a flow that passed
+ * but also has step warnings stays status "pass" here; its warnings are surfaced
+ * separately via the `warnings[]` array, not by promoting the item's status.
+ * A human should double check this mapping against a broader sample of runs.
+ */
+function mapFlowStatusToItemStatus(status: string): DashboardItemStatus {
+  switch (status) {
+    case "passed":
+      return "pass";
+    case "skipped":
+      return "skipped";
+    case "failed":
+    case "timedOut":
+    case "interrupted":
+      return "fail";
+    default:
+      return "fail";
+  }
+}
+
+/**
+ * Recursively locates the per-flow Playwright HTML report for `flowId` under
+ * `reportDir/playwright-parts`. Confirmed two different folder conventions in
+ * the wild (`playwright-parts/<flowId>-retry-run/<flowId>-report.html` and
+ * `playwright-parts/module-<name>/<flowId>-report.html`), so this walks the
+ * whole tree looking for the filename rather than hardcoding either pattern.
+ */
+function findFlowReportHtml(reportDir: string, flowId: string): string | undefined {
+  const root = path.join(reportDir, "playwright-parts");
+  if (!fs.existsSync(root)) return undefined;
+  const target = `${flowId}-report.html`;
+
+  const stack: string[] = [root];
+  while (stack.length) {
+    const dir = stack.pop()!;
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(full);
+      } else if (entry.isFile() && entry.name === target) {
+        return full;
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Stages a copy of `srcHtmlPath` into `reportsOutDir` as a flat file named
+ * `<flowId>-report.html` (no subfolders — matches what scripts/publish.js in
+ * docs-automation-dashboard-data expects to copy into data/<project>/<suite>/reports/).
+ * Returns the repo-relative reportUrl to use in the normalized JSON, or undefined
+ * if no reports dir was requested / no HTML file was found for this flow.
+ */
+function stageFlowReportHtml(
+  reportsOutDir: string | undefined,
+  project: string,
+  suite: string,
+  reportDir: string,
+  flowId: string,
+  staged: Set<string>
+): string | undefined {
+  if (!reportsOutDir || !flowId) return undefined;
+  const src = findFlowReportHtml(reportDir, flowId);
+  if (!src) return undefined;
+  const fileName = `${flowId}-report.html`;
+  if (!staged.has(fileName)) {
+    fs.mkdirSync(reportsOutDir, { recursive: true });
+    fs.copyFileSync(src, path.join(reportsOutDir, fileName));
+    staged.add(fileName);
+  }
+  return `data/${project}/${suite}/reports/${fileName}`;
+}
 
 /** Parse a "(12m 24s)" / "(1h 2m 3s)" style duration tail out of a human label, in seconds. */
 function parseDurationLabelToSeconds(label: string | undefined): number | null {
@@ -113,7 +218,7 @@ function resolveDurationSeconds(): number | null {
 function resolveRunUrl(): string {
   if (process.env.RUN_URL) return process.env.RUN_URL;
   const serverUrl = process.env.GITHUB_SERVER_URL || "https://github.com";
-  const repo = process.env.GITHUB_REPOSITORY || "priyal-patil/docs-contentstack-ai-automation";
+  const repo = process.env.GITHUB_REPOSITORY || "priyal-patil/contentstack-docs-automation-suite";
   const runId = process.env.GITHUB_RUN_ID || "";
   return `${serverUrl}/${repo}/actions/runs/${runId}`;
 }
@@ -125,6 +230,7 @@ function main(): void {
   const suite = getArg(argv, "--suite") || process.env.DASHBOARD_SUITE;
   const suiteLabel = getArg(argv, "--suiteLabel") || process.env.DASHBOARD_SUITE_LABEL || suite;
   const outPath = getArg(argv, "--out");
+  const reportsOutDir = getArg(argv, "--reportsOutDir") || process.env.DASHBOARD_REPORTS_OUT_DIR;
 
   if (!suite || !suiteLabel) {
     // eslint-disable-next-line no-console
@@ -206,13 +312,76 @@ function main(): void {
 
   const docLinks = [...new Set(rows.map((r) => r.documentUrl).filter((u): u is string => !!u))];
 
+  const project = "contentstack-docs-automation-suite";
+  const stagedReportFiles = new Set<string>();
+
+  // items[]: EVERY checked flow (pass or fail), superset of failedItems. Prefer
+  // url-run-summary.json's own `flows` array (already written earlier in the same
+  // job by urlRunSummaryAndSlack.ts, same reportDir) since it's the exact source
+  // this task asked to reuse; fall back to the `rows` already derived above from
+  // raw Playwright JSON + flow-meta if that file is missing/malformed so this adapter
+  // still degrades gracefully instead of throwing.
+  let items: DashboardItem[] | undefined;
+  try {
+    const summaryPath = path.join(reportDir, "url-run-summary.json");
+    const summary = readJson<{ flows?: Array<{ flowId: string; status: string; documentUrl?: string; error?: string }> }>(
+      summaryPath
+    );
+    const summaryFlows = summary?.flows;
+    const sourceRows =
+      Array.isArray(summaryFlows) && summaryFlows.length > 0
+        ? summaryFlows.map((f) => ({ flowId: f.flowId, status: f.status, documentUrl: f.documentUrl || "", error: f.error }))
+        : rows;
+
+    if (sourceRows.length > 0) {
+      items = sourceRows.map((r) => {
+        const status = mapFlowStatusToItemStatus(r.status);
+        const reportUrl = stageFlowReportHtml(reportsOutDir, project, suite, reportDir, r.flowId, stagedReportFiles);
+        return {
+          name: r.documentUrl || r.flowId,
+          status,
+          detail: status === "pass" || status === "skipped" ? null : (r.error || "").slice(0, 500) || null,
+          docLink: r.documentUrl || "",
+          ...(reportUrl ? { reportUrl } : {}),
+        };
+      });
+    }
+  } catch {
+    /* items[] is optional — degrade gracefully rather than fail the whole publish */
+  }
+
+  // warnings[]: flat list from doc-step-warnings.json's `warnings` array (every
+  // individual warning, not deduped per-flow like the totals.warnings count above).
+  let dashboardWarnings: DashboardWarning[] | undefined;
+  try {
+    const warningsPath = path.join(reportDir, "doc-step-warnings.json");
+    const warningsData = readJson<{ warnings?: Array<{ documentUrl?: string; flowId?: string; warningMessage?: string }> }>(
+      warningsPath
+    );
+    if (Array.isArray(warningsData?.warnings) && warningsData.warnings.length > 0) {
+      dashboardWarnings = warningsData.warnings.map((w) => {
+        const reportUrl = w.flowId
+          ? stageFlowReportHtml(reportsOutDir, project, suite, reportDir, w.flowId, stagedReportFiles)
+          : undefined;
+        return {
+          name: w.documentUrl || w.flowId || "",
+          detail: w.warningMessage || "",
+          docLink: w.documentUrl || "",
+          ...(reportUrl ? { reportUrl } : {}),
+        };
+      });
+    }
+  } catch {
+    /* warnings[] is optional — degrade gracefully rather than fail the whole publish */
+  }
+
   const runId = process.env.GITHUB_RUN_ID || "";
   const runUrl = resolveRunUrl();
 
   const report: DashboardReport = {
     schemaVersion: 1,
-    project: "docs-contentstack-ai-automation",
-    projectLabel: "Docs Contentstack AI Automation",
+    project,
+    projectLabel: "Contentstack Docs Automation Suite",
     suite,
     suiteLabel,
     runId,
@@ -223,7 +392,14 @@ function main(): void {
     totals: { total, passed, failed, skipped, warnings, timedOut, interrupted },
     failedItems,
     docLinks,
+    ...(items && items.length > 0 ? { items } : {}),
+    ...(dashboardWarnings && dashboardWarnings.length > 0 ? { warnings: dashboardWarnings } : {}),
   };
+
+  if (reportsOutDir && stagedReportFiles.size > 0) {
+    // eslint-disable-next-line no-console
+    console.log(`✅ Staged ${stagedReportFiles.size} per-flow report HTML file(s) into ${reportsOutDir}`);
+  }
 
   const json = JSON.stringify(report, null, 2);
   if (outPath) {
