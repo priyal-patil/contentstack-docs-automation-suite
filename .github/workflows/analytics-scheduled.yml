@@ -56,7 +56,7 @@ jobs:
       # SIGTERM and flush a partial flows-results.json before the job is
       # force-cancelled (which would otherwise kill it mid-write, leaving no
       # report and skipping Slack/dashboard downstream).
-      PW_RUN_MAX_MINUTES: "45"
+      PW_RUN_MAX_MINUTES: "75"
       SKIP_SLACK: "1"
       REPORT_DIR: ${{ github.workspace }}/reports/analytics-${{ github.run_id }}-${{ github.run_attempt }}
 
