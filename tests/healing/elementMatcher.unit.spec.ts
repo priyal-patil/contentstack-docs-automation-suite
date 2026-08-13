@@ -44,6 +44,7 @@ import {
   docPhrasesFromLocator,
   isFrameworkContainerWord,
   sameIgnoringIconGlyph,
+  appReadingIsSubstantiated,
 } from "../../core/healing/docVerifier";
 
 const FIXTURES = path.resolve(__dirname, "../../data/fixtures/healing");
@@ -746,6 +747,70 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     // An exact match is still picked up.
     const exact = referenceFromSelector('[data-test-id="new-app-cta"]', "x");
     expect(exact?.testId).toBe("new-app-cta");
+  });
+});
+
+test.describe("a doc is only called wrong on substantiated evidence", () => {
+  test("an app reading that exists on the page substantiates a finding", () => {
+    // The one confirmed writer-actionable defect found in a full sweep: the app really does render
+    // "view hosting" where the doc says "View Hosting Settings". This must keep reporting.
+    const html = `<html><body><main><button data-test-id="cs-button">view hosting</button></main></body></html>`;
+    expect(appReadingIsSubstantiated(html, "view hosting")).toBe(true);
+
+    const c = reconcile({
+      docText: "click View Hosting Settings to open hosting.",
+      docUrl: "https://x",
+      expectedByFlow: "View Hosting Settings",
+      seenInApp: "view hosting",
+      kind: "label-mismatch",
+      appReadingSubstantiated: true,
+    });
+    expect(c.verdict).toBe("doc-confirms-flow");
+    expect(c.recommendation).toContain("OUT OF DATE");
+  });
+
+  test("an app reading absent from the page does NOT become a doc finding", () => {
+    // 11 Aug 2026: two Personalize pages were reported as 'says "Select Value" but the app shows "value"'.
+    // No element on the saved page had that label — the only "Select Value" was inside a CSS comment.
+    const html = `<html><head><style>/* the Attribute row's "Select Value" text input */</style></head>
+      <body><main><label data-test-id="cs-field-label">Audience Name</label></main></body></html>`;
+    expect(appReadingIsSubstantiated(html, "value")).toBe(false);
+
+    const c = reconcile({
+      docText: "The Attribute row has a Select Value text input.",
+      docUrl: "https://x",
+      expectedByFlow: "Select Value",
+      seenInApp: "value",
+      kind: "label-mismatch",
+      appReadingSubstantiated: false,
+    });
+    expect(c.verdict).toBe("unsubstantiated-app-reading");
+    expect(renderDocCheck(c)).not.toContain("OUT OF DATE");
+    expect(c.recommendation).toContain("Do not edit the document");
+  });
+
+  test("a common word must not substantiate itself from surrounding prose", () => {
+    // Substring-of-page-text would match here; exact-accessible-name must not.
+    const html = `<html><body><p>Enter a value for each attribute in the value column.</p></body></html>`;
+    expect(appReadingIsSubstantiated(html, "value")).toBe(false);
+  });
+
+  test("aria-label, title and placeholder all count as evidence", () => {
+    expect(appReadingIsSubstantiated(`<input aria-label="Search Voice Profile">`, "search voice profile")).toBe(true);
+    expect(appReadingIsSubstantiated(`<input placeholder="Enter a name">`, "Enter a name")).toBe(true);
+    expect(appReadingIsSubstantiated(`<span title="Delete">x</span>`, "delete")).toBe(true);
+  });
+
+  test("with no saved DOM the verdict is unchanged — absence of evidence is not evidence", () => {
+    const c = reconcile({
+      docText: "click View Hosting Settings to open hosting.",
+      docUrl: "https://x",
+      expectedByFlow: "View Hosting Settings",
+      seenInApp: "view hosting",
+      kind: "label-mismatch",
+      // appReadingSubstantiated deliberately omitted
+    });
+    expect(c.verdict).toBe("doc-confirms-flow");
   });
 });
 

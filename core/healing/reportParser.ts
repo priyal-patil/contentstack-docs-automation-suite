@@ -26,6 +26,7 @@ import {
   docPhrasesFromLocator,
   type DocCheck,
   type DriftKind,
+  appReadingIsSubstantiated,
 } from "./docVerifier";
 
 const REPO_ROOT = path.resolve(__dirname, "../..");
@@ -287,6 +288,7 @@ export function parseFailureDrift(
       action: String(f.action ?? ""),
       target: String(f.target ?? ""),
       warningMessage: String(f.errorMessage ?? ""),
+      snapshotPath: findSavedSnapshot(project, String(flow.module ?? ""), String(f.flowId ?? ""), Number(f.stepNumber ?? (Number(f.stepIndex ?? 0) + 1)), reportDir),
       flowPath,
       stepIndex: f.stepIndex ?? (f.stepNumber ?? 1) - 1,
     });
@@ -326,6 +328,11 @@ export type DocDriftWarning = {
   docCheck?: DocCheck;
   /** Absolute path of the flow definition, so a doc-sourced label correction can be applied. */
   flowPath?: string;
+  /**
+   * Saved failure DOM for this step, when the run kept one. Used to check that the app-side label the
+   * warning quotes actually exists on the page, before any claim is made about the document.
+   */
+  snapshotPath?: string;
   /** Zero-based step index within that flow. */
   stepIndex?: number;
 };
@@ -393,6 +400,7 @@ export function parseWarningReport(
       action: String(w.action ?? ""),
       target: String(w.target ?? ""),
       warningMessage: String(w.warningMessage ?? ""),
+      snapshotPath: findSavedSnapshot(project, moduleName, String(w.flowId ?? ""), Number(w.stepNumber ?? (Number(w.stepIndex ?? 0) + 1)), reportDir),
       flowPath,
       stepIndex: Number(w.stepIndex ?? Number(w.stepNumber ?? 1) - 1),
     });
@@ -458,6 +466,18 @@ export async function verifyWarningsAgainstDocs(
     const label = parseLabelMismatch(w.warningMessage);
     const container = parseContainerMismatch(w.warningMessage);
 
+    // Check the app-side reading against the page that was saved at this step. `undefined` when no DOM was
+    // kept — the caller then behaves exactly as before rather than guessing.
+    let appReadingSubstantiated: boolean | undefined;
+    const readback = label?.got ?? container?.resolved;
+    if (readback && w.snapshotPath && fs.existsSync(w.snapshotPath)) {
+      try {
+        appReadingSubstantiated = appReadingIsSubstantiated(fs.readFileSync(w.snapshotPath, "utf8"), readback);
+      } catch {
+        appReadingSubstantiated = undefined;
+      }
+    }
+
     // For a plain "not found", the flow's own expectation is the best statement of what the doc claims.
     const expectedByFlow = label?.expected ?? container?.expected;
     const seenInApp = label?.got ?? container?.resolved;
@@ -477,6 +497,7 @@ export async function verifyWarningsAgainstDocs(
         expectedByFlow,
         expectedCandidates,
         seenInApp,
+        appReadingSubstantiated,
         kind,
       }),
     });
