@@ -1545,7 +1545,28 @@ async function readLocatorValue(el: Locator): Promise<string> {
   return textVal;
 }
 
-function saveCapturedDocValue(key: string, value: string, context?: ActionContext) {
+// Every value captured from a doc step is a live credential (stack API keys,
+// delivery/preview/management tokens). doc-captured-values.json is written into
+// REPORT_DIR, which is uploaded as a run artifact from a PUBLIC repo — artifacts
+// there are downloadable by anyone, so the raw values must never reach it.
+// A management token plus a stack API key is full read/write CMS access.
+//
+// Enough of the value is kept to correlate a run against the UI (and to see that
+// a value WAS captured, which is what the flows assert on), but not enough to use.
+function redactCapturedValue(value: string): string {
+  const v = (value || "").trim();
+  if (v.length <= 10) return "*".repeat(v.length);
+  return `${v.slice(0, 6)}…${v.slice(-4)} [redacted, ${v.length} chars]`;
+}
+
+function saveCapturedDocValue(key: string, rawValue: string, context?: ActionContext) {
+  // Mask in the run log too: Actions redacts only exact full-value matches, so
+  // this must happen before the value can be echoed anywhere downstream.
+  if (process.env.CI && rawValue) {
+    // eslint-disable-next-line no-console
+    console.log(`::add-mask::${rawValue}`);
+  }
+  const value = redactCapturedValue(rawValue);
   const reportDir = process.env.REPORT_DIR || path.resolve(process.cwd(), "reports/latest");
   if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir, { recursive: true });
   const outPath = path.join(reportDir, "doc-captured-values.json");
@@ -1561,6 +1582,7 @@ function saveCapturedDocValue(key: string, value: string, context?: ActionContex
   current.values = current.values || {};
   current.values[key] = {
     value,
+    redacted: true,
     documentUrl: context?.documentUrl || "(no source URL)",
     flowId: context?.flowId || "unknown-flow",
     stepNumber: Number.isFinite(context?.stepIndex as number) ? (context!.stepIndex as number) + 1 : undefined,
