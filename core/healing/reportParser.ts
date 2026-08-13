@@ -99,20 +99,68 @@ function findSavedSnapshot(
   return candidates.find((p) => fs.existsSync(p));
 }
 
+/**
+ * Gather failures from a sharded run.
+ *
+ * CMS runs each flow in its own Playwright part and leaves the results under
+ * `playwright-parts/<flowId>-retry-run/doc-step-failures.json` — 117 such files in the 11 Aug batch-2 run —
+ * with no consolidated file at the top level. This merges them into the same shape the top-level file has,
+ * so everything downstream is unchanged.
+ *
+ * Exported for testing; `parseFailureReport` calls it only when the top-level file is absent, so a project
+ * that writes both is unaffected.
+ */
+export function collectShardedFailures(dir: string): RawFailure[] {
+  const partsDir = path.join(dir, "playwright-parts");
+  if (!fs.existsSync(partsDir)) return [];
+
+  const out: RawFailure[] = [];
+  let files = 0;
+  for (const entry of fs.readdirSync(partsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const p = path.join(partsDir, entry.name, "doc-step-failures.json");
+    if (!fs.existsSync(p)) continue;
+    try {
+      const parsed = JSON.parse(fs.readFileSync(p, "utf8"));
+      const rows: RawFailure[] = Array.isArray(parsed) ? parsed : (parsed.failures ?? []);
+      out.push(...rows);
+      files += 1;
+    } catch {
+      // A single unreadable shard must not lose the other 116.
+    }
+  }
+  if (files) {
+    // eslint-disable-next-line no-console
+    console.log(`ℹ️  merged ${out.length} failure record(s) from ${files} sharded part(s) under playwright-parts/`);
+  }
+  return out;
+}
+
 export function parseFailureReport(
   reportDir: string,
   opts?: { projectFilter?: string; flowFilter?: string[] }
 ): HealTarget[] {
-  const file = path.isAbsolute(reportDir)
-    ? path.join(reportDir, "doc-step-failures.json")
-    : path.join(REPO_ROOT, reportDir, "doc-step-failures.json");
+  const dir = path.isAbsolute(reportDir) ? reportDir : path.join(REPO_ROOT, reportDir);
+  const file = path.join(dir, "doc-step-failures.json");
 
-  if (!fs.existsSync(file)) {
-    throw new Error(`No doc-step-failures.json found at ${file}`);
+  let raw: RawFailure[];
+  if (fs.existsSync(file)) {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    raw = Array.isArray(parsed) ? parsed : (parsed.failures ?? []);
+  } else {
+    // CMS shards its run one directory per flow under `playwright-parts/<flowId>-retry-run/`, each with its
+    // OWN doc-step-failures.json, and never writes a consolidated file. Every other project writes one at
+    // the top level, so the agent simply threw "No doc-step-failures.json found" and did no work at all on
+    // the largest project in the repo — 215 URLs in batch 2 alone, 97 of them failing. It would have failed
+    // that way every night, on the first line of work, silently.
+    raw = collectShardedFailures(dir);
+    if (!raw.length) {
+      throw new Error(
+        `No doc-step-failures.json at ${file}, and no shard files under ${path.join(dir, "playwright-parts")} ` +
+          `either. Nothing to triage — check that the report artifact downloaded completely.`
+      );
+    }
   }
-
-  const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
-  const raw: RawFailure[] = Array.isArray(parsed) ? parsed : (parsed.failures ?? []);
 
   // Earliest real failure per flow.
   const earliest = new Map<string, RawFailure>();
