@@ -531,15 +531,23 @@ export async function repairLoop(
     }
   }
 
-  // The loop finished without a green flow. Every fix staged on the way here is rolled back, so a flow
-  // that did not fully pass leaves no partial selector edits behind — matching the rule that only a
-  // completely green flow gets committed.
+  // The loop finished without a green flow, but individual steps along the way WERE fixed: each staged
+  // entry is a step that used to fail and, after the write, passed under a real replay. Those are kept.
+  //
+  // This is a deliberate change of rule. Earlier the whole set was rolled back unless the flow went fully
+  // green, on the principle that only a completely green flow should be committed. The instruction now is
+  // to keep progress: "if the complete steps passed successfully OR any of the steps passed which were
+  // failing earlier, then the code for that url should be committed". A step-level fix is verified
+  // progress — the replay proved that step now passes — so discarding it throws away real work and means a
+  // flow with several stale selectors can never be repaired incrementally across nights.
+  //
+  // Dry-run still keeps nothing: `revertFile()` is called inline in that mode, so `staged` stays empty.
   if (staged.length) {
     log(
-      `↩️  ${target.flowId}: rolling back ${staged.length} staged fix(es) — the flow never went green ` +
-        `(step${staged.length > 1 ? "s" : ""} ${staged.map((s) => s.stepIndex + 1).join(", ")})`
+      `📌 ${target.flowId}: keeping ${staged.length} verified step fix(es) — step${staged.length > 1 ? "s" : ""} ` +
+        `${staged.map((s) => s.stepIndex + 1).join(", ")} now pass, though the flow still stops later at ` +
+        `step ${resumeStep + 1}. These are committable progress.`
     );
-    rollbackStaged();
   }
 
   // Every attempt hit an environment problem, so we never actually got to look for the element. This
@@ -561,10 +569,21 @@ export async function repairLoop(
     outcome: "genuine-failure",
     attempts,
     genuineFailureReason:
-      attempts.some((a) => a.chosen)
+      (attempts.some((a) => a.chosen)
         ? `A candidate was found and applied but the flow still did not complete after ${attempts.length} attempt(s).`
-        : `No element candidate cleared the confidence threshold (${cfg.confidenceThreshold}) in ${attempts.length} attempt(s).`,
+        : `No element candidate cleared the confidence threshold (${cfg.confidenceThreshold}) in ${attempts.length} attempt(s).`) +
+      (staged.length
+        ? ` Note: ${staged.length} earlier step(s) WERE fixed and kept (step ${staged
+            .map((s) => s.stepIndex + 1)
+            .join(", ")}), so this flow made real progress even though it still stops at step ${resumeStep + 1}.`
+        : ""),
     closestCandidates: closest,
+    // Kept so the driver can commit verified step-level progress even when the flow is not fully green.
+    alsoFixedSteps: staged.map((s) => ({ stepNumber: s.stepIndex + 1, selector: s.selector })),
+    writtenTo:
+      staged.length && !cfg.dryRun
+        ? flowSelectorPath(target.project, target.module, target.flowId)
+        : undefined,
   };
   deps.audit.targetFinished(result);
   return result;
