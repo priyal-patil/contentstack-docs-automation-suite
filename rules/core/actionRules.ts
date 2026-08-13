@@ -1587,8 +1587,42 @@ async function resolveTarget(page: Page, target: string, flow?: any): Promise<Lo
     return page.locator(mapped).first();
   }
 
-  const exactRe = new RegExp(`^${escapeRegex(target)}$`, "i");
-  const looseRe = new RegExp(escapeRegex(target), "i");
+  // Strip the repo's internal decorations before treating the target as UI text — the `(doc step)` suffix
+  // and any `<Doc name> doc:` prefix. The `select` arm already did this; this path did not, so it searched
+  // real pages for strings no page can contain.
+  const decision = fieldLabelFromTarget(target);
+
+  if (!decision.usable) {
+    // The target is an internal identifier, so no role or text lookup can ever match it. Previously this
+    // fell through to `getByText(target, { exact: true })`, which produced failures like
+    //
+    //   getByText('App Switcher icon in the top navigation bar', { exact: true })
+    //   getByText('Polaris planning state (doc step)', { exact: true })
+    //
+    // Those read like a legitimate search that happened to miss, so they were investigated as app or doc
+    // problems. They cannot match by construction. Measured across the repo, ~606 click/verify steps are in
+    // this state; all 13 flows in AgentOS `contentstack-management-actions` died on step 1 this way, and
+    // `get-started-with-polaris` spent 16 consecutive steps "verifying" nothing.
+    //
+    // This returns a locator that still cannot match — deliberately, because the step genuinely has no
+    // selector — but whose TEXT NAMES THE CAUSE, so the failure message says what to fix instead of looking
+    // like app drift. It must not throw: two verify call sites resolve through here and then use
+    // `isVisible().catch(() => false)` to warn-and-continue, and a throw would turn those warnings into
+    // hard failures.
+    const hint = `${flow?.project ?? "<project>"}/${flow?.module ?? "<module>"}/selectors/${flow?.id ?? "<flowId>"}.selectors.ts`;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `⚠️  no selector mapped for "${target}" — its target is an internal identifier (${decision.reason}), ` +
+        `so it cannot be found by text. Add it to projects/${hint} (or the module/project map if shared). ` +
+        `NOTE: a key defined in another flow's .selectors.ts is not visible here — overrides merge as ` +
+        `shared -> legacy -> project -> module -> flow.`
+    );
+    return page.locator(`[data-missing-selector="add to projects/${hint}"]`).first();
+  }
+
+  const uiName = decision.uiName;
+  const exactRe = new RegExp(`^${escapeRegex(uiName)}$`, "i");
+  const looseRe = new RegExp(escapeRegex(uiName), "i");
 
   let el = page.getByRole("button", { name: exactRe }).first();
   if (await el.count().catch(() => 0)) return el;
@@ -1602,7 +1636,7 @@ async function resolveTarget(page: Page, target: string, flow?: any): Promise<Lo
   el = page.getByRole("link", { name: looseRe }).first();
   if (await el.count().catch(() => 0)) return el;
 
-  return page.getByText(target, { exact: true }).first();
+  return page.getByText(uiName, { exact: true }).first();
 }
 
 async function ensureWithin(page: Page, el: Locator, expectedWithin: string, strict = false) {
