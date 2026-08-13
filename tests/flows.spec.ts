@@ -21,8 +21,19 @@ const ranFlowIds = new Set<string>();
 const legacyFlowsDir = path.resolve(__dirname, "../flows");
 const projectsDir = path.resolve(__dirname, "../projects");
 
+/**
+ * Stages that are scaffolding rather than part of a run: `debugtemp` flows exist
+ * to force a failure while debugging a selector, and `draft` flows target docs
+ * that aren't published yet. `stage` is otherwise only used for ordering and
+ * grouping, so without this guard any such file left under projects/ is executed
+ * — and fails — on every scheduled run, failing the whole job with it.
+ * Set INCLUDE_NONRUNNABLE_STAGES=1 to run them deliberately.
+ */
+const NON_RUNNABLE_STAGES = new Set(["debugtemp", "draft"]);
+
 function loadFlows(): any[] {
   const all: any[] = [];
+  const includeNonRunnable = process.env.INCLUDE_NONRUNNABLE_STAGES === "1";
 
   function walk(dir: string) {
     if (!fs.existsSync(dir)) return;
@@ -41,6 +52,12 @@ function loadFlows(): any[] {
       ) {
         const raw = fs.readFileSync(p, "utf-8");
         const flow = JSON.parse(raw);
+
+        if (!includeNonRunnable && NON_RUNNABLE_STAGES.has(String(flow.stage || "main").toLowerCase())) {
+          // eslint-disable-next-line no-console
+          console.log(`⏭️  Skipping ${flow.id || path.basename(p)} (stage "${flow.stage}" is not runnable)`);
+          continue;
+        }
 
         // If flow is missing project/module, infer from path: projects/<project>/<module>/flows/<id>.flow.json
         if (!flow.project && p.includes(`${path.sep}projects${path.sep}`)) {
