@@ -1792,7 +1792,14 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
 }
 
 function normalizeLabelText(s: string): string {
-  return (s || "").replace(/\s+/g, " ").trim().toLowerCase();
+  // Docs often write "+ Button Label" to describe an icon+text button, but the
+  // DOM usually renders only the text (the "+" is an SVG icon, not a glyph).
+  // Strip a leading "+" so that doc wording still matches the rendered label.
+  return (s || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\+\s*/, "")
+    .toLowerCase();
 }
 
 async function extractElementLabel(el: Locator): Promise<string> {
