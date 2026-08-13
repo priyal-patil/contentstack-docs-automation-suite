@@ -65,10 +65,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Cache npm dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload CMS Taxonomy reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-taxonomy-reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: reports/cms-taxonomy-${{ github.run_id }}-${{ github.run_attempt }}
@@ -174,7 +174,7 @@ jobs:
 
       - name: Upload Playwright HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-taxonomy-playwright-html-${{ github.run_id }}-${{ github.run_attempt }}
           path: reports/cms-taxonomy-${{ github.run_id }}-${{ github.run_attempt }}/html
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-taxonomy-failure-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/**/test-failed-*.png
@@ -230,7 +230,7 @@ jobs:
       - name: Report email — send
         if: always() && steps.email_gate.outputs.enabled == 'true' && steps.email_body.outcome == 'success'
         continue-on-error: true
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@4226df7daafa6fc901a43789c49bf7ab309066e7 # v3
         with:
           server_address: ${{ secrets.REPORT_EMAIL_SMTP_HOST }}
           server_port: ${{ steps.email_gate.outputs.server_port }}

@@ -87,10 +87,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Cache npm dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -148,7 +148,7 @@ jobs:
 
       - name: Upload Batch 1 reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch1-reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: reports/cms-batch1-${{ github.run_id }}-${{ github.run_attempt }}
@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch1-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/**/test-failed-*.png
@@ -258,10 +258,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Cache npm dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -324,7 +324,7 @@ jobs:
 
       - name: Upload Batch 2 reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch2-reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: reports/cms-batch2-${{ github.run_id }}-${{ github.run_attempt }}
@@ -333,7 +333,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch2-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/**/test-failed-*.png
@@ -433,10 +433,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Cache npm dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -499,7 +499,7 @@ jobs:
 
       - name: Upload Batch 3 reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch3-reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: reports/cms-batch3-${{ github.run_id }}-${{ github.run_attempt }}
@@ -508,7 +508,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cms-batch3-screenshots-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/**/test-failed-*.png
