@@ -59,7 +59,61 @@ export function describesAControl(s: string): boolean {
   return CONTROL_KIND.test(t);
 }
 
+/**
+ * Is the app-side reading actually supported by the page we saw?
+ *
+ * `seenInApp` is scraped out of an error string — `Label validation failed: expected "X" … got "Y"` — so on
+ * its own it carries no evidence that "Y" was ever a real label on a real element. It is whatever
+ * `extractElementLabel()` returned for whichever element the locator happened to resolve, which may be an
+ * inner input, a wrapper, or nothing much at all.
+ *
+ * That produced two false writer-facing findings on 11 Aug 2026, on two different Personalize pages:
+ *
+ *   "THE DOC IS OUT OF DATE. It says "Select Value" but the app shows "value". Update the doc wording."
+ *
+ * The saved DOM contained ZERO elements with that label. The only occurrence of "Select Value" anywhere was
+ * inside a CSS comment. Two correct pages would have been sent to a technical writer.
+ *
+ * The test is EXACT match against some element's accessible name — its trimmed text, aria-label, title or
+ * placeholder — and deliberately not substring-of-page-text, because a common word like "value" appears by
+ * chance somewhere in any large page and would substantiate itself.
+ *
+ * This is evidence-based rather than shape-based on purpose. An earlier attempt used string shape ("the app
+ * string is a fragment of the doc's, so it must be a partial extraction") and that suppressed a REAL
+ * finding — doc "View Hosting Settings" vs app "view hosting", the one confirmed writer-actionable defect
+ * found in a full sweep. Containment cannot tell a mis-read element from a genuinely truncated label;
+ * whether the string exists on the page can.
+ */
+export function appReadingIsSubstantiated(html: string, seenInApp: string | undefined): boolean {
+  const needle = (seenInApp ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  if (!needle) return false;
+
+  const $ = cheerio.load(html);
+  $("script, style, noscript").remove();
+
+  for (const attr of ["aria-label", "title", "placeholder", "alt"]) {
+    let hit = false;
+    $(`[${attr}]`).each((_i, el) => {
+      const v = ($(el).attr(attr) ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+      if (v === needle) hit = true;
+    });
+    if (hit) return true;
+  }
+
+  // An element whose own trimmed text IS the string. Checked on leaf-ish elements so a whole page's text
+  // cannot accidentally match a short word.
+  let textHit = false;
+  $("button, a, label, span, div, h1, h2, h3, h4, h5, h6, td, th, li, p, legend, option").each((_i, el) => {
+    if (textHit) return;
+    const t = $(el).text().replace(/\s+/g, " ").trim().toLowerCase();
+    if (t === needle) textHit = true;
+  });
+  return textHit;
+}
+
 export type DocVerdict =
+  /** The app-side reading could not be found on the saved page, so no claim about the doc is made. */
+  | "unsubstantiated-app-reading"
   /** The two sides are the same string — a framework artefact, not drift. */
   | "no-drift"
   /** The doc literally contains what the flow expects, so the app is what changed. */
@@ -274,8 +328,13 @@ export function reconcile(args: {
   /** What the app actually shows, when known. */
   seenInApp?: string;
   kind: DriftKind;
+  /**
+   * Whether `seenInApp` was found as a real element label on the saved page.
+   * `true` substantiated · `false` contradicted · `undefined` no saved DOM was available to check.
+   */
+  appReadingSubstantiated?: boolean;
 }): DocCheck {
-  const { docText, docUrl, docError, seenInApp, kind } = args;
+  const { docText, docUrl, docError, seenInApp, kind, appReadingSubstantiated } = args;
   const allCandidates = [args.expectedByFlow, ...(args.expectedCandidates ?? [])].filter(
     (s): s is string => !!s && s.trim().length > 0 && !isFrameworkContainerWord(s)
   );
@@ -376,6 +435,25 @@ export function reconcile(args: {
         (allCandidates.length ? `, only the internal identifier "${allCandidates[0]}"` : ``) +
         `. Add \`expected.labelEquals\` (or a \`:has-text()\` predicate to the selector) so the step can be ` +
         `compared with the document at all.`,
+    };
+  }
+
+  // The app-side reading was checked against the saved page and NOT found there. Without it, only one side
+  // of the comparison is known, so no claim about the document can be made. Returned before any verdict
+  // that would name the doc as wrong. See `appReadingIsSubstantiated`.
+  if (appReadingSubstantiated === false && seenInApp) {
+    return {
+      verdict: "unsubstantiated-app-reading",
+      kind,
+      severity: "warning",
+      docUrl,
+      expectedByFlow: args.expectedByFlow,
+      seenInApp,
+      recommendation:
+        `NOT A DOCUMENTATION FINDING (yet) — the run reported the app showing "${seenInApp}", but no element ` +
+        `with that label exists on the page saved at this step. The reading is unsubstantiated: the locator ` +
+        `most likely resolved to the wrong element. Give the step a selector that resolves the labelled ` +
+        `element, then re-check. Do not edit the document on this evidence.`,
     };
   }
 
