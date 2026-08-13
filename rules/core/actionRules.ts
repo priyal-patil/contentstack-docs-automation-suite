@@ -19161,6 +19161,8 @@ export async function performAction(
         (String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" ||
           String(flow?.id || "").toLowerCase() === "create-personalized-content" ||
           String(flow?.id || "").toLowerCase() === "create-an-entry-variant" ||
+          isPersonalizeE2eAbTestGuideUnifiedFlow(flow) ||
+          isPersonalizeE2eAbTestGuidePart(flow, 8) ||
           String(flow?.id || "").toLowerCase() === "create-a-brand-kit" ||
           String(flow?.id || "").toLowerCase() === "create-a-voice-profile" ||
           String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" ||
@@ -23175,7 +23177,9 @@ export async function performAction(
           }
 
           if (
-            fidPv === "create-personalize-project" &&
+            (fidPv === "create-personalize-project" ||
+              isPersonalizeE2eAbTestGuidePart(flow, 1) ||
+              isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
             step.target === "Create Personalize Project doc: verify Create Project button in modal (doc step)"
           ) {
             const dlg = personalizeProjectModalVerify();
