@@ -371,6 +371,30 @@ async function main(): Promise<void> {
         continue;
       }
 
+      // PARTIAL PROGRESS IS STILL COMMITTABLE.
+      //
+      // A flow can carry several stale selectors. The repair loop fixes one, advances, and stops when it
+      // meets a step it cannot recover — so the outcome is not "healed" even though earlier steps were
+      // fixed and each was verified by a real replay. `alsoFixedSteps` carries those.
+      //
+      // The rule is to commit a URL when the whole flow passes OR when any step that used to fail now
+      // passes, so these are queued for commit alongside the fully-green ones. The genuine failure is
+      // still reported: the flow is not fixed, it is closer, and the remaining step is a real finding.
+      if (result.alsoFixedSteps?.length && !cfg.dryRun && result.writtenTo) {
+        log(
+          `📌 partial progress: step(s) ${result.alsoFixedSteps.map((s) => s.stepNumber).join(", ")} now pass ` +
+            `(${path.relative(REPO_ROOT, result.writtenTo)}) — committing the progress, still reporting the ` +
+            `step that blocks the flow`
+        );
+        healed.push({
+          result,
+          chain: result.alsoFixedSteps.map((s) => s.selector).join(", "),
+          file: result.writtenTo,
+        });
+        // Deliberately NOT `continue` — fall through so the unresolved step is still classified and
+        // reported. Committing progress must not suppress the finding.
+      }
+
       log(`❌ genuine failure — ${result.genuineFailureReason}`);
       genuine.push(await buildGenuineFailureReport(result));
     }
