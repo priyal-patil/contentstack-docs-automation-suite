@@ -34,6 +34,7 @@ import { checkFixtureFailure, extractFixtureToken } from "../../core/healing/fix
 import { checkPrecondition, checkActionTimedOutAfterVerify } from "../../core/healing/preconditionCheck";
 import { extractDocSteps, compareDocSequence } from "../../core/healing/docSequence";
 import { readFlowOutcomes, describeOutcome } from "../../core/healing/runOutcome";
+import { collectShardedFailures } from "../../core/healing/reportParser";
 import { applyFlowLabelUpdate, assertFlowWritable } from "../../core/healing/flowJsonWriter";
 import {
   reconcile,
@@ -745,6 +746,56 @@ test.describe("the matcher must search for a DOC-FACING label (regression)", () 
     // An exact match is still picked up.
     const exact = referenceFromSelector('[data-test-id="new-app-cta"]', "x");
     expect(exact?.testId).toBe("new-app-cta");
+  });
+});
+
+test.describe("a sharded run is still readable", () => {
+  const TMP = path.resolve(__dirname, "../../reports/__tmp-shard-test__");
+
+  test.afterAll(() => fs.rmSync(TMP, { recursive: true, force: true }));
+
+  test("failures are merged from playwright-parts/ when no top-level file exists", () => {
+    // CMS runs each flow in its own Playwright part and writes no consolidated doc-step-failures.json.
+    // The real 11 Aug batch-2 run had 117 such shards and 195 records; the agent threw "No
+    // doc-step-failures.json found" and did no work at all on the repo's largest project.
+    const parts = path.join(TMP, "playwright-parts");
+    for (const [flowId, step] of [
+      ["publish-an-entry", 7],
+      ["edit-an-asset", 3],
+    ] as const) {
+      const d = path.join(parts, `${flowId}-retry-run`);
+      fs.mkdirSync(d, { recursive: true });
+      fs.writeFileSync(
+        path.join(d, "doc-step-failures.json"),
+        JSON.stringify({
+          failures: [
+            {
+              documentUrl: `https://www.contentstack.com/docs/${flowId}`,
+              flowId,
+              stepNumber: step + 1,
+              stepIndex: step,
+              action: "click",
+              target: `${flowId} target (doc step)`,
+              errorMessage: "not found",
+            },
+          ],
+        })
+      );
+    }
+    // A malformed shard must not lose the readable ones.
+    const bad = path.join(parts, "broken-retry-run");
+    fs.mkdirSync(bad, { recursive: true });
+    fs.writeFileSync(path.join(bad, "doc-step-failures.json"), "{ not json");
+
+    const rows = collectShardedFailures(TMP);
+    expect(rows.length).toBe(2);
+    expect(rows.map((r) => r.flowId).sort()).toEqual(["edit-an-asset", "publish-an-entry"]);
+  });
+
+  test("no shards and no top-level file gives an actionable error, not a silent zero", () => {
+    const empty = path.join(TMP, "nothing");
+    fs.mkdirSync(empty, { recursive: true });
+    expect(collectShardedFailures(empty)).toEqual([]);
   });
 });
 
