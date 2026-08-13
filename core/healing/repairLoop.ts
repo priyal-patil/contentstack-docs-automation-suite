@@ -194,6 +194,47 @@ export async function repairLoop(
 
   deps.audit.targetStarted(target.flowId, target.stepNumber, target.target, budget);
 
+  // The ORIGINAL run's error can say plainly that the run was killed rather than that anything was wrong
+  // with the page. "Target page, context or browser has been closed" means the harness tore the browser
+  // down mid-flow — almost always the per-flow time cap on a long flow. That says nothing about the
+  // documentation, the selector, or the app.
+  //
+  // Until now only the LIVE page was inspected for environment problems (see `environmentFailure`), and
+  // the original error text was never consulted. So `get-started-with-brand-kit` — 77 steps, killed by the
+  // cap at step 14 — was classified by the shape of its target string and reported as "no usable search
+  // term". That is a wrong answer to a question that was never the right one: the step has an expectation
+  // (`rowContains: "AUTO-BK-"`), and it failed because the browser vanished.
+  //
+  // Checked FIRST, before the search-term gate, because an infrastructure kill outranks every other
+  // classification and must never reach the writers' report.
+  {
+    const err = String(target.errorMessage ?? "");
+    const infra =
+      /Target (?:page|closed|crashed)|context or browser has been closed|browser has been closed|Target closed|Protocol error|Session closed|has been closed/i.test(
+        err
+      )
+        ? "the browser/page was closed mid-run (usually the per-flow time cap on a long flow)"
+        : /Test timeout of \d+ms exceeded|exceeded timeout of \d+ms for the whole/i.test(err)
+          ? "the run exceeded its time budget"
+          : undefined;
+
+    if (infra) {
+      const result: HealResult = {
+        target,
+        outcome: "environment-failure",
+        attempts,
+        genuineFailureReason:
+          `Could not evaluate the step: ${infra}. The original error was "${err.slice(0, 160)}". ` +
+          `No conclusion about the documentation — this flow needs to finish before it can be judged. ` +
+          `Flow length: ${flow.steps?.length ?? "?"} steps.`,
+        closestCandidates: [],
+      };
+      log(`🌐 ${target.flowId} step ${target.stepNumber}: ${infra} — not a doc or selector finding`);
+      deps.audit.targetFinished(result);
+      return result;
+    }
+  }
+
   // A heal needs something to search WITH: either a doc-facing label, or a stable attribute carried in
   // the failed selector. With neither, the fuzzy tier ends up comparing an internal identifier against
   // real accessible names, matches nothing, and the result is misreported as genuine doc/app drift.
