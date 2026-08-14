@@ -1,0 +1,163 @@
+# =============================================================================
+# Nightly dashboard data sync
+# =============================================================================
+#
+# Copies the aggregated report data from `docs-automation-dashboard-data` into `docs-automation-dashboard`,
+# so the dashboard shows last night's results.
+#
+# WHY IT LIVES IN THIS REPO. The same job used to run in `docs-automation-dashboard-data`, and it has failed
+# on EVERY run since 5 Aug 2026 — 85 successes, then a hard stop. Its jobs execute zero steps, meaning they
+# never start, which is what a blocked Actions allowance looks like rather than anything wrong with the sync:
+# the repo config is intact and the same script works when run by hand. That repo is PRIVATE, so its minutes
+# are metered.
+#
+# THIS repo is PUBLIC, so standard-runner minutes are free and unlimited. Running the copy here removes the
+# billing dependency entirely, without making any repository public and without depending on a laptop being
+# switched on. The dashboard repo stays private; it only receives commits and never runs Actions.
+#
+# THE ONE TRADE, AND HOW IT IS CONTAINED. Reaching two private repositories from a public one needs a token,
+# and that token is a secret in a public repository. GitHub does not expose secrets to pull requests from
+# forks, so the realistic risk is a future workflow in this repo with a careless trigger. `DASHBOARD_SYNC_TOKEN`
+# must therefore be a FINE-GRAINED personal access token, limited to exactly:
+#
+#   Repositories : priyal-patil/docs-automation-dashboard-data, priyal-patil/docs-automation-dashboard
+#   Permissions  : Contents → Read and write   (nothing else — no Actions, no metadata writes, no org scope)
+#   Expiry       : set one, and diarise the renewal
+#
+# Scoped that way, a leak exposes two QA-data repositories rather than an account. Do NOT use a classic PAT
+# here: classic tokens carry `repo` across everything the account can see.
+#
+# The data itself is deliberately NOT published. Making the data repo public was considered and rejected: its
+# history carries 1,278 committed HTML reports containing captured page markup, plus the QA login email in 5
+# commits. Publishing 330 commits of that is irreversible, whereas a narrowly-scoped token is rotatable.
+# =============================================================================
+
+name: Nightly dashboard sync
+
+on:
+  schedule:
+    # 05:30 UTC = 11:00 IST. The project runs finish between 21:20 and 04:00 UTC, and the CMS full run is the
+    # last to land, so this sits comfortably after all of them.
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report what would change without pushing"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+# Read-only for this repo's own contents; everything cross-repo goes through the fine-grained token.
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-dashboard-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fail early and clearly if the token is missing
+        env:
+          TOKEN: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::DASHBOARD_SYNC_TOKEN is not set. Create a FINE-GRAINED PAT limited to" \
+                 "docs-automation-dashboard-data and docs-automation-dashboard with Contents: read/write," \
+                 "then add it as a repository secret. Without it this job cannot reach either private repo."
+            exit 1
+          fi
+
+      # Source of truth: every project publishes its report data here.
+      - name: Check out the data repo
+        uses: actions/checkout@v4
+        with:
+          repository: priyal-patil/docs-automation-dashboard-data
+          token: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          path: data-repo
+          # Full history is not needed to read the current data, and a shallow clone keeps this fast.
+          fetch-depth: 1
+
+      - name: Check out the dashboard repo
+        uses: actions/checkout@v4
+        with:
+          repository: priyal-patil/docs-automation-dashboard
+          token: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          path: dashboard-repo
+          fetch-depth: 1
+
+      # A stale source is worth saying out loud. If the projects' own publish step breaks, this job would
+      # otherwise cheerfully sync three-day-old data and look successful — which is how the previous outage
+      # went unnoticed for nine days.
+      - name: Report how fresh the source data is
+        id: freshness
+        run: |
+          set -uo pipefail
+          newest=$(find data-repo/data -name 'latest.json' -exec sh -c \
+            'grep -ho "\"timestamp\": *\"[^\"]*\"" "$1" | head -1' _ {} \; 2>/dev/null \
+            | sed 's/.*"timestamp": *"//;s/"$//' | sort -r | head -1)
+          count=$(find data-repo/data -name 'latest.json' 2>/dev/null | wc -l | tr -d ' ')
+          echo "newest=$newest" >> "$GITHUB_OUTPUT"
+          echo "::notice::source has $count latest.json file(s); newest entry $newest"
+          if [ -n "$newest" ]; then
+            age_h=$(( ( $(date -u +%s) - $(date -u -d "$newest" +%s) ) / 3600 ))
+            echo "::notice::newest source data is ${age_h}h old"
+            if [ "$age_h" -gt 30 ]; then
+              echo "::warning::Source data is ${age_h}h old — the PROJECTS' publish step is likely failing," \
+                   "not just this sync. The dashboard will be updated with what exists, but investigate upstream."
+            fi
+          fi
+
+      - name: Copy the data across
+        run: |
+          set -euo pipefail
+          rm -rf dashboard-repo/data
+          cp -R data-repo/data dashboard-repo/data
+
+      - name: Commit and push if anything changed
+        working-directory: dashboard-repo
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -uo pipefail
+          git config user.name "docs-automation nightly sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A data
+
+          if git diff --cached --quiet; then
+            echo "::notice::No data changes to sync — the dashboard is already current."
+            exit 0
+          fi
+
+          added=$(git diff --cached --name-status | grep -c '^A' || true)
+          modified=$(git diff --cached --name-status | grep -c '^M' || true)
+          echo "::notice::${added} file(s) added, ${modified} modified"
+
+          if [ "${DRY_RUN:-false}" = "true" ]; then
+            echo "::notice::dry run — not pushing"
+            git diff --cached --name-status | head -20
+            exit 0
+          fi
+
+          git commit -q -m "Sync data from docs-automation-dashboard-data ($(date -u +%Y-%m-%dT%H:%M:%SZ))
+
+          ${added} added, ${modified} modified. Newest source entry: ${{ steps.freshness.outputs.newest }}.
+          Synced by the nightly job in contentstack-docs-automation-suite (public repo → free Actions minutes),
+          replacing sync-to-dashboard.yml in the private data repo, which has failed since 5 Aug 2026."
+          git push
+          echo "::notice::pushed $(git rev-parse --short HEAD)"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Nightly dashboard sync"
+            echo
+            echo "- Newest source entry: \`${{ steps.freshness.outputs.newest }}\`"
+            echo "- Runs in this PUBLIC repo, so Actions minutes are free — no billing dependency."
+            echo "- The dashboard repo stays private and never runs Actions."
+          } >> "$GITHUB_STEP_SUMMARY"
