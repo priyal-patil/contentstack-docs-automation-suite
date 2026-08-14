@@ -22,10 +22,19 @@
 #
 #   Repositories : priyal-patil/docs-automation-dashboard-data, priyal-patil/docs-automation-dashboard
 #   Permissions  : Contents → Read and write   (nothing else — no Actions, no metadata writes, no org scope)
-#   Expiry       : set one, and diarise the renewal
+#   Expiry       : 366 days, the maximum a fine-grained token allows. Diarise the renewal — when it lapses
+#                  the symptom is jobs failing at startup, which is exactly the outage this replaced.
 #
 # Scoped that way, a leak exposes two QA-data repositories rather than an account. Do NOT use a classic PAT
 # here: classic tokens carry `repo` across everything the account can see.
+#
+# For context on the trade: this repository already holds CS_PASSWORD, SLACK_BOT_TOKEN and
+# REPORT_EMAIL_SMTP_PASSWORD as secrets, so a narrowly-scoped contents-only token is a marginal addition
+# rather than a new class of exposure. If none of it should be here, that is a broader review than this job.
+#
+# A deploy key is the stricter alternative and never expires — one key per repository, read-only or write.
+# It needs two keys and SSH-based checkouts, so it was not chosen for the first cut, but it is the option to
+# reach for if renewing a token annually is unwelcome.
 #
 # The data itself is deliberately NOT published. Making the data repo public was considered and rejected: its
 # history carries 1,278 committed HTML reports containing captured page markup, plus the QA login email in 5
@@ -61,14 +70,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Fail early and clearly if the token is missing
+      # Prefers a purpose-made fine-grained token, but falls back to the DASHBOARD_DATA_TOKEN this repo
+      # already carries — so the sync can start working without any new secret being created. If that older
+      # token only reaches the data repo, the dashboard checkout below fails with a message saying exactly
+      # that, which is a far clearer signal than a job that dies at startup.
+      - name: Resolve the token
+        id: tok
         env:
-          TOKEN: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          PREFERRED: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          FALLBACK: ${{ secrets.DASHBOARD_DATA_TOKEN }}
         run: |
-          if [ -z "$TOKEN" ]; then
-            echo "::error::DASHBOARD_SYNC_TOKEN is not set. Create a FINE-GRAINED PAT limited to" \
-                 "docs-automation-dashboard-data and docs-automation-dashboard with Contents: read/write," \
-                 "then add it as a repository secret. Without it this job cannot reach either private repo."
+          if [ -n "$PREFERRED" ]; then
+            echo "::add-mask::$PREFERRED"
+            echo "value=$PREFERRED" >> "$GITHUB_OUTPUT"
+            echo "::notice::using DASHBOARD_SYNC_TOKEN"
+          elif [ -n "$FALLBACK" ]; then
+            echo "::add-mask::$FALLBACK"
+            echo "value=$FALLBACK" >> "$GITHUB_OUTPUT"
+            echo "::warning::DASHBOARD_SYNC_TOKEN is not set — falling back to DASHBOARD_DATA_TOKEN." \
+                 "That works only if it also has Contents: write on docs-automation-dashboard. Prefer a" \
+                 "fine-grained PAT scoped to just the two data repos, with a 1-year expiry."
+          else
+            echo "::error::Neither DASHBOARD_SYNC_TOKEN nor DASHBOARD_DATA_TOKEN is set. Create a" \
+                 "FINE-GRAINED PAT limited to docs-automation-dashboard-data and docs-automation-dashboard" \
+                 "with Contents: read/write and a 1-year expiry, then add it as DASHBOARD_SYNC_TOKEN."
             exit 1
           fi
 
@@ -77,16 +102,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: priyal-patil/docs-automation-dashboard-data
-          token: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          token: ${{ steps.tok.outputs.value }}
           path: data-repo
           # Full history is not needed to read the current data, and a shallow clone keeps this fast.
           fetch-depth: 1
 
+      # If this step fails with a 403/404, the token can read the data repo but cannot write the dashboard —
+      # widen it to include docs-automation-dashboard with Contents: write.
       - name: Check out the dashboard repo
         uses: actions/checkout@v4
         with:
           repository: priyal-patil/docs-automation-dashboard
-          token: ${{ secrets.DASHBOARD_SYNC_TOKEN }}
+          token: ${{ steps.tok.outputs.value }}
           path: dashboard-repo
           fetch-depth: 1
 
