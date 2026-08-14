@@ -97,6 +97,7 @@
     "crawl:dashboard": "ts-node scripts/generateCrawlDashboard.ts",
     "crawl:open": "npm run crawl:dashboard && open reports/crawl-dashboard/dashboard.html",
     "test:all": "PW_FLOW_MAX_MINUTES=${PW_FLOW_MAX_MINUTES:-15} playwright test tests/docs.spec.ts tests/flows.spec.ts --project=default --project=flows",
+    "test:report-unit": "ts-node --transpile-only tests/report/parseFlowSpecTitle.unit.ts",
     "report:merge": "ts-node core/report/mergeResults.ts",
     "report:dashboard": "ts-node scripts/generateDashboardReport.ts",
     "report:unified": "ts-node scripts/generateUnifiedReport.ts",
