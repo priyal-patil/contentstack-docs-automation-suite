@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { Page, expect, Locator } from "@playwright/test";
 import { recordDocStepWarning } from "../../core/docStepFailureReporter";
+import { fieldLabelFromTarget, missingSelectorMessage } from "../../core/fieldLabelFromTarget";
 import {
   getUsersRolesChainRolePrimaryLabel,
   getUsersRolesChainUnique,
@@ -35665,16 +35666,62 @@ export async function performAction(
         }
       }
 
-      // Fallback: resilient input resolver
-      const byLabel = page.getByLabel(new RegExp(escapeRegex(step.target), "i")).first();
-      const byPlaceholder = page.getByPlaceholder(new RegExp(escapeRegex(step.target), "i")).first();
-      const byNameAttrExact = page.locator(`input[name="${step.target}"], textarea[name="${step.target}"]`).first();
+      // Fallback: resilient input resolver.
+      //
+      // This runs when no selector override resolved for the step. It used to interpolate the RAW
+      // `step.target` into all four resolvers, which meant an internal identifier was searched for as
+      // though it were UI text:
+      //
+      //   getByLabel(/Personalize New Project Name field \(doc step\)/i)
+      //     .or(getByPlaceholder(/Personalize New Project Name field \(doc step\)/i))
+      //     .or(locator('input[name="Personalize New Project Name field (doc step)"]'))
+      //
+      // No page can contain a field labelled "… (doc step)", so every such step failed 100% of the time
+      // with a 30s timeout and a wall of locator text that read like app drift. Measured across the repo,
+      // 258 `enter` steps were in exactly this state — 137 with no selector key defined anywhere, and 121
+      // whose key existed but sat in a file the flow cannot reach (the merge order below). Launch was
+      // 62/72 and Data-and-Insights 14/14, while Administration, BrandKit, Marketplace and Studio were
+      // clean, which is what showed this to be filing discipline rather than anything inherent.
+      //
+      // Two changes. First, strip the repo's internal decorations — the `(doc step)` suffix and any
+      // `<Doc name> doc:` prefix — as the `select` case above already does, so a target whose remainder
+      // IS a real label ("Name (doc step)" -> "Name") can resolve. Second, refuse to guess when the
+      // remainder still looks like an internal identifier, and say exactly which file needs the key
+      // instead of timing out against something that cannot exist.
+      const decision = fieldLabelFromTarget(step.target);
+      const uiName = decision.uiName;
+
+      if (!decision.usable) {
+        throw new Error(
+          missingSelectorMessage({
+            target: step.target,
+            project: String((flow as any)?.project || ""),
+            module: String((flow as any)?.module || ""),
+            flowId: String((flow as any)?.id || ""),
+            reason: decision.reason,
+          })
+        );
+      }
+
+      const byLabel = page.getByLabel(new RegExp(escapeRegex(uiName), "i")).first();
+      const byPlaceholder = page.getByPlaceholder(new RegExp(escapeRegex(uiName), "i")).first();
+      // CSS attribute selectors are not regexes — the value must be raw text with quotes escaped, not
+      // regex-escaped, or the backslashes become part of the string being matched.
+      const cssValue = uiName.replace(/["\\]/g, "\\$&");
+      const byNameAttrExact = page.locator(`input[name="${cssValue}"], textarea[name="${cssValue}"]`).first();
       const byNameAttrLoose = page
-        .locator(`input[name*="${escapeRegex(step.target)}" i], textarea[name*="${escapeRegex(step.target)}" i]`)
+        .locator(`input[name*="${cssValue}" i], textarea[name*="${cssValue}" i]`)
         .first();
 
       const inputEl = byLabel.or(byPlaceholder).or(byNameAttrExact).or(byNameAttrLoose).first();
-      await expect(inputEl).toBeVisible({ timeout: 30_000 });
+      await expect(
+        inputEl,
+        `${String((flow as any)?.id || "flow")}: no selector resolved for enter step "${step.target}"; ` +
+          `fell back to searching for "${uiName}" as a field label/placeholder/name and found nothing. ` +
+          `Add a selector key to projects/${String((flow as any)?.project || "<project>")}/` +
+          `${String((flow as any)?.module || "<module>")}/selectors/` +
+          `${String((flow as any)?.id || "<flowId>")}.selectors.ts.`
+      ).toBeVisible({ timeout: 30_000 });
       if (isAppend) {
         const current = (await readLocatorValue(inputEl).catch(() => "")) || "";
         await inputEl.fill(`${current}${appendText}`);
