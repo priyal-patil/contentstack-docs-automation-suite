@@ -156,7 +156,7 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *Personalize — ${PERSONALIZE_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 23 flows | 4 workers. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *Personalize — ${PERSONALIZE_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 23 flows | 4 workers. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || echo "::error title=Slack delivery failed::chat.postMessage did not return ok:true. Reports were not posted. Check SLACK_BOT_TOKEN and that the bot is installed and in the channel."
           fi
 
       - name: Publish report to dashboard (Personalize)

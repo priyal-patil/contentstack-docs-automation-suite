@@ -186,7 +186,7 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 1 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 21 create flows | 1 worker. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 1 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 21 create flows | 1 worker. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || echo "::error title=Slack delivery failed::chat.postMessage did not return ok:true. Reports were not posted. Check SLACK_BOT_TOKEN and that the bot is installed and in the channel."
           fi
 
       - name: Publish report to dashboard (CMS Batch 1)
@@ -362,7 +362,7 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 218 flows | 1 worker/module | 20 modules. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 2 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 218 flows | 1 worker/module | 20 modules. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || echo "::error title=Slack delivery failed::chat.postMessage did not return ok:true. Reports were not posted. Check SLACK_BOT_TOKEN and that the bot is installed and in the channel."
           fi
 
       - name: Publish report to dashboard (CMS Batch 2)
@@ -537,7 +537,7 @@ jobs:
             curl -sS -X POST "https://slack.com/api/chat.postMessage" \
               -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 38 flows (30 delete + 8 trash) | variable workers per phase. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || true
+              --data "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"text\":\"${ICON} *CMS Batch 3 — ${CMS_STEP_OUTCOME:-unknown}* | Duration: ${DURATION} | 38 flows (30 delete + 8 trash) | variable workers per phase. <${RUN_URL}|Open run>\"}" | grep -q '"ok":true' || echo "::error title=Slack delivery failed::chat.postMessage did not return ok:true. Reports were not posted. Check SLACK_BOT_TOKEN and that the bot is installed and in the channel."
           fi
 
       - name: Publish report to dashboard (CMS Batch 3)
