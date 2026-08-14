@@ -6425,7 +6425,7 @@ export async function performAction(
           if (step.target === "DAL Lytics doc: App Switcher Data and Insights product (doc step)") {
             const opener = page.locator('[data-test-id="app-switcher"]').first();
             const body = page.locator('[data-test-id="app-switcher-body"]').first();
-            const lytPre = page.locator('[data-test-id="app-switcher-lytics"]').first();
+            const lytPre = page.locator('[data-test-id^="app-switcher-lytics"]').first();
             const alreadyOpen =
               (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
               (await lytPre.isVisible({ timeout: 600 }).catch(() => false));
@@ -6436,9 +6436,9 @@ export async function performAction(
             }
             await body.waitFor({ state: "visible", timeout: Math.min(tDal, 30_000) }).catch(() => {});
             const candidates: Locator[] = [
-              page.locator('[data-test-id="app-switcher-lytics"]').first(),
+              page.locator('[data-test-id^="app-switcher-lytics"]').first(),
               page.getByRole("button", { name: /^Data & Insights$/i }).first(),
-              page.locator('.app__switcher__body__v2 [data-test-id="app-switcher-lytics"]').first(),
+              page.locator('.app__switcher__body__v2 [data-test-id^="app-switcher-lytics"]').first(),
               page
                 .locator('[data-test-id="app-switcher-body"]')
                 .locator('[data-test-id="app-switcher-product-title"]')
@@ -6829,7 +6829,7 @@ export async function performAction(
           if (step.target === "DAL Lytics doc: App Switcher Data and Insights product (doc step)") {
             const opener = page.locator('[data-test-id="app-switcher"]').first();
             const body = page.locator('[data-test-id="app-switcher-body"]').first();
-            const lytPre = page.locator('[data-test-id="app-switcher-lytics"]').first();
+            const lytPre = page.locator('[data-test-id^="app-switcher-lytics"]').first();
             const alreadyOpen =
               (await body.isVisible({ timeout: 600 }).catch(() => false)) ||
               (await lytPre.isVisible({ timeout: 600 }).catch(() => false));
@@ -6842,9 +6842,9 @@ export async function performAction(
               .waitFor({ state: "visible", timeout: Math.min(tDal, 30_000) })
               .catch(() => {});
             const candidates: Locator[] = [
-              page.locator('[data-test-id="app-switcher-lytics"]').first(),
+              page.locator('[data-test-id^="app-switcher-lytics"]').first(),
               page.getByRole("button", { name: /^Data & Insights$/i }).first(),
-              page.locator('.app__switcher__body__v2 [data-test-id="app-switcher-lytics"]').first(),
+              page.locator('.app__switcher__body__v2 [data-test-id^="app-switcher-lytics"]').first(),
               page.locator('[data-test-id="app-switcher-body"]').locator('[data-test-id="app-switcher-product-title"]').filter({ hasText: /^Data & Insights$/i }).first(),
             ];
             let clicked = false;
