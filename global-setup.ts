@@ -73,15 +73,28 @@ export default async () => {
   const email = mustGetEnv("CS_EMAIL");
   const password = mustGetEnv("CS_PASSWORD");
 
-  await page.goto(appUrl("/#!/stacks"), { waitUntil: "commit", timeout: 120_000 });
+  await page.goto(appUrl("/#!/stacks"), { waitUntil: "domcontentloaded", timeout: 120_000 });
+
+  // The redirect to /#!/login is client-side and lands AFTER navigation commits, so the
+  // URL has to be given time to settle. Checking it too early reports "already logged in",
+  // saves a storage state with zero cookies, and every later run silently starts logged out.
+  await page
+    .waitForURL(/#!\/(login|stacks)/i, { timeout: 30_000 })
+    .catch(() => {});
+  await page.waitForTimeout(2_000);
 
   // If already authenticated, /#!/stacks stays in stack context.
   // If unauthenticated, Contentstack redirects to /#!/login.
   if (!page.url().includes("/#!/login")) {
-    await page.context().storageState({ path: storagePath });
-    console.log("✅ Saved auth state to:", storagePath);
-    await browser.close();
-    return;
+    const state = await page.context().storageState();
+    if (state.cookies.length === 0 && state.origins.length === 0) {
+      console.log("ℹ️ Session looked valid but carries no cookies — logging in properly.");
+    } else {
+      await page.context().storageState({ path: storagePath });
+      console.log("✅ Saved auth state to:", storagePath);
+      await browser.close();
+      return;
+    }
   }
 
   // Inputs (prefer label, fall back to common attributes)
@@ -155,8 +168,13 @@ export default async () => {
 
   await expect(page).not.toHaveURL(/#!\/login/i, { timeout: 90_000 });
 
-  await page.context().storageState({ path: storagePath });
-  console.log("✅ Saved auth state to:", storagePath);
+  const finalState = await page.context().storageState({ path: storagePath });
+  if (finalState.cookies.length === 0) {
+    throw new Error(
+      `Login appeared to succeed but auth.json has 0 cookies (${storagePath}). Every later run would start logged out.`
+    );
+  }
+  console.log(`✅ Saved auth state to: ${storagePath} (${finalState.cookies.length} cookies)`);
 
   await browser.close();
 };
