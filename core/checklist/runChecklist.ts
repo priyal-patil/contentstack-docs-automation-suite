@@ -275,7 +275,13 @@ async function checkScrollSpy(page: Page, facts: PageFacts): Promise<CheckResult
         .evaluate((id) => {
           const el = document.getElementById(id);
           if (!el) return false;
-          el.scrollIntoView({ block: "center" });
+          // block:"start", not "center". Scroll-spy activates when a section's top crosses
+          // near the top of the viewport; centring it leaves the top far below that line.
+          // On a page whose sections are clustered in the first screenful (manage-preferences:
+          // 3 sections inside 400px of a 2613px page) centring moved the scroll only 88→396px
+          // and the first entry stayed active throughout — reported as "no scroll-spy" on a
+          // page where it demonstrably works.
+          el.scrollIntoView({ block: "start" });
           return true;
         }, sectionId)
         .catch(() => false);
