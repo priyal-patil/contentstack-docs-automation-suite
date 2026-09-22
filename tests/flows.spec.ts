@@ -416,6 +416,28 @@ test.afterAll(() => {
     console.log(`\n⚠️ Doc-step warnings (for technical writers): ${warnPath}`);
   }
 
+  // Manifest of the flows that actually ran, with the doc URL each was derived from.
+  // scripts/run-docs-full-pass.sh reads this to audit exactly those pages (checklist +
+  // style guide) and to pair each flow with its page audit in the combined report.
+  const ranManifest = {
+    generatedAt: new Date().toISOString(),
+    description:
+      "Flows executed in this run and the doc URL each was derived from. Consumed by run-docs-full-pass.sh.",
+    flows: [...ranFlowIds]
+      .map((flowId) => {
+        const flow = flows.find((f: any) => String(f.id || "") === flowId);
+        return {
+          flowId,
+          project: String(flow?.project || ""),
+          module: String(flow?.module || ""),
+          docUrl: String(flow?.source || ""),
+          stepsExecuted: true,
+        };
+      })
+      .filter((f) => f.docUrl),
+  };
+  fs.writeFileSync(path.join(reportDir, "ran-flows.json"), JSON.stringify(ranManifest, null, 2), "utf-8");
+
   // Generate HTML flow report for each flow that ran; print link and open
   const reportPaths: string[] = [];
   for (const flowId of ranFlowIds) {

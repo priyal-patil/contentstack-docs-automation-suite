@@ -9,13 +9,13 @@
       "Bash(python3 -c ' *)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d,indent=2\\)\\)\")",
       "Bash(awk '{print $5, $9}')",
-      "Bash(python3 -m json.tool /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/docs-contentstack-ai-automation/projects/Administration/organizations/flows/invite-users-to-organization.flow.json)",
+      "Bash(python3 -m json.tool /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-docs-automation-suite/projects/Administration/organizations/flows/invite-users-to-organization.flow.json)",
       "Bash(gh workflow *)",
       "WebFetch(domain:www.contentstack.com)",
-      "Bash(mkdir -p /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/docs-contentstack-ai-automation/projects/Administration/teams/flows /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/docs-contentstack-ai-automation/projects/Administration/teams/selectors)"
+      "Bash(mkdir -p /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-docs-automation-suite/projects/Administration/teams/flows /Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-docs-automation-suite/projects/Administration/teams/selectors)"
     ],
     "additionalDirectories": [
-      "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/docs-contentstack-ai-automation/projects/Administration/teams"
+      "/Users/priyal.patil/Desktop/PriyalAutomation/DocumentAutomationPlaywright/contentstack-docs-automation-suite/projects/Administration/teams"
     ]
   }
 }

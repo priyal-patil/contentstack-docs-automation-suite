@@ -54,7 +54,25 @@ export default async () => {
     fs.rmSync(docStepWorkerDir, { recursive: true, force: true });
   }
 
+  // Public-docs runs (the docs-checklist / docs-audit projects) never touch the app, so
+  // they must not be blocked by an app login — the QA account's authtokens get evicted
+  // regularly. SKIP_LOGIN=1 writes an empty storage state and returns.
+  if (process.env.SKIP_LOGIN === "1") {
+    const p = path.resolve(process.cwd(), "auth.json");
+    if (!fs.existsSync(p)) fs.writeFileSync(p, JSON.stringify({ cookies: [], origins: [] }), "utf-8");
+    console.log("ℹ️ SKIP_LOGIN=1 — no app login performed (public docs run).");
+    return;
+  }
+
   const storagePath = path.resolve(process.cwd(), "auth.json");
+
+  // SKIP_LOGIN=1: suites that audit published pages anonymously (docs-checklist, docs-audit)
+  // must not attempt an app login. Without this, a locked or rate-limited QA account blocks a
+  // page audit that never needed credentials — and each run adds another failed login attempt.
+  if (process.env.SKIP_LOGIN === "1") {
+    console.log("ℹ️ SKIP_LOGIN=1 — no app login attempted (page-audit suites do not need one).");
+    return;
+  }
 
   // Fast-path: reuse existing auth state unless explicitly forced to re-login.
   if (process.env.FORCE_RELOGIN !== "true" && fs.existsSync(storagePath)) {

@@ -1,0 +1,206 @@
+{
+  "id": "find-and-replace-entries-in-bulk",
+  "project": "CMS",
+  "module": "entries",
+  "stage": "main",
+  "source": "https://www.contentstack.com/docs/headless-cms/find-and-replace-entries-in-bulk",
+  "type": "executable",
+  "use": [
+    "login"
+  ],
+  "steps": [
+    {
+      "action": "click",
+      "target": "Headless CMS",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "click",
+      "target": "Any Stack Card (doc step)",
+      "timeoutMs": 120000
+    },
+    {
+      "action": "verify",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Entries",
+        "labelMatch": "contains"
+      },
+      "note": "Doc step 1 is only \"Go to your stack and open the Entries list\" - it does not state where Entries sits, so no position/container is asserted here."
+    },
+    {
+      "action": "click",
+      "target": "Entries (doc step)",
+      "timeoutMs": 90000
+    },
+    {
+      "action": "input",
+      "target": "Entries list filter box (doc step 2)",
+      "value": "JSON"
+    },
+    {
+      "action": "click",
+      "target": "Entries list filter submit (doc step 2)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "click",
+      "target": "First entry checkbox (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "click",
+      "target": "Second entry checkbox (doc step)",
+      "timeoutMs": 60000
+    },
+    {
+      "action": "verify",
+      "target": "Find and Replace in bulk-actions bar (doc step 3)",
+      "timeoutMs": 30000,
+      "expected": {
+        "within": "Bulk actions bar (doc step 3)",
+        "withinStrict": true,
+        "labelEquals": "Find and Replace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Find and Replace in bulk-actions bar (doc step 3)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Find and Replace dialog (doc step 3)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Find and Replace",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Match trigger (doc step 4)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "verify",
+      "target": "Match type Contains (doc step 4)",
+      "timeoutMs": 20000,
+      "expected": {
+        "labelEquals": "Contains",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Match type Contains (doc step 4)",
+      "timeoutMs": 20000
+    },
+    {
+      "action": "input",
+      "target": "Find field (doc step 4)",
+      "value": "JSON"
+    },
+    {
+      "action": "input",
+      "target": "Replace With field (doc step 5)",
+      "value": "JSON RTE"
+    },
+    {
+      "action": "click",
+      "target": "Preview Changes button (doc step 6)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Preview Matching Results heading (doc step 7)",
+      "timeoutMs": 45000,
+      "expected": {
+        "labelEquals": "Preview Matching Results",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Preview results table headers (doc step 7)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Entry",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Preview result rows (doc step 7)",
+      "timeoutMs": 45000,
+      "expected": {
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "warn",
+      "target": "View Updates link (doc step 7)",
+      "timeoutMs": 10000,
+      "note": "Doc step 7: 'select View Updates to see the before-and-after for an entry'. No such control exists; the before/after is shown inline in the Updates column."
+    },
+    {
+      "action": "click",
+      "target": "Apply Selected Changes button (doc step 9)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Replace Text dialog title (doc step 10)",
+      "timeoutMs": 30000,
+      "expected": {
+        "labelEquals": "Replace Text",
+        "labelMatch": "contains",
+        "modalTitle": "Replace Text"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Replace Text summary line (doc step 10)",
+      "timeoutMs": 20000,
+      "expected": {
+        "labelEquals": "Replace text in",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Add to a Release section (doc step 10)",
+      "timeoutMs": 20000,
+      "expected": {
+        "labelEquals": "Add to a Release",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "click",
+      "target": "Replace Text confirm button (doc step 10)",
+      "timeoutMs": 30000
+    },
+    {
+      "action": "verify",
+      "target": "Bulk Tasks panel (doc step 11)",
+      "timeoutMs": 90000,
+      "expected": {
+        "labelEquals": "Bulk Tasks",
+        "labelMatch": "contains"
+      }
+    },
+    {
+      "action": "verify",
+      "target": "Tasks Completed state (doc step 11)",
+      "timeoutMs": 180000,
+      "expected": {
+        "labelEquals": "Tasks Completed",
+        "labelMatch": "contains"
+      }
+    }
+  ],
+  "notes": "Find='JSON' -> Replace With='JSON RTE' entered in the doc's step 4 and step 5 fields. Doc step 2's filter is used to reach entries that contain the search term. NOT IDEMPOTENT: fixture titles already read 'JSON RTE Entry <hash>', so applying this turns them into 'JSON RTE RTE Entry <hash>'. Undo with Find='JSON RTE RTE', Replace With='JSON RTE'."
+}

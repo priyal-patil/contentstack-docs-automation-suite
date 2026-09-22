@@ -1,0 +1,148 @@
+{
+  "url": "https://www.contentstack.com/docs/studio/deploy-a-composition",
+  "finalUrl": "https://www.contentstack.com/docs/studio/save-vs-deploy-a-composition",
+  "httpStatus": 200,
+  "title": "Save vs. Deploy a Composition",
+  "lastUpdated": null,
+  "headings": [
+    {
+      "level": 2,
+      "text": "Save"
+    },
+    {
+      "level": 3,
+      "text": "Save frequency"
+    },
+    {
+      "level": 2,
+      "text": "Deploy"
+    },
+    {
+      "level": 3,
+      "text": "Pre-deploy checklist"
+    },
+    {
+      "level": 3,
+      "text": "When Deploy isn't immediate"
+    },
+    {
+      "level": 2,
+      "text": "Live Preview during the cycle"
+    },
+    {
+      "level": 2,
+      "text": "Deployment workflow at a glance"
+    },
+    {
+      "level": 2,
+      "text": "Common pitfalls"
+    },
+    {
+      "level": 2,
+      "text": "Best practices"
+    },
+    {
+      "level": 2,
+      "text": "See also"
+    }
+  ],
+  "orderedSteps": [
+    {
+      "index": 1,
+      "text": "Save your latest edits. Deploy publishes what's saved, not what's on screen.",
+      "section": "Pre-deploy checklist"
+    },
+    {
+      "index": 2,
+      "text": "Preview thoroughly. Switch the Preview Entry to a few different entries (linked templates) to confirm bindings resolve across different content.",
+      "section": "Pre-deploy checklist"
+    },
+    {
+      "index": 3,
+      "text": "Check the connected entry is published too. A linked template can deploy fine, but if its connected entry isn't published in the target environment, the page renders without entry data.",
+      "section": "Pre-deploy checklist"
+    },
+    {
+      "index": 4,
+      "text": "Verify the environment. Make sure you're deploying to the right environment, as the canvas's Preview Environment might differ from your target.",
+      "section": "Pre-deploy checklist"
+    }
+  ],
+  "bullets": [
+    "The composition's UI tree + bindings + metadata persist to the Contentstack stack",
+    "Authors and developers see your changes when they reload Studio",
+    "Visitors don't see your changes yet, the published version is what they get",
+    "Live Preview viewers (anyone with the preview pipe wired) do see your changes in real time",
+    "After each significant component drop or rebind",
+    "Before switching to a different composition",
+    "Before stepping away from the canvas",
+    "The current saved state is queued for publishing",
+    "Contentstack's publish workflow runs (any review / approval steps your stack has configured)",
+    "Once published, the composition becomes the live version for the target environment",
+    "Visitor-facing routes (<StudioComponent />) on that environment now render this version",
+    "Approval workflows: the deploy may be queued for review by another team member before publishing",
+    "Scheduled publishes: you can schedule the deploy for a future date/time",
+    "Rolling deploys: some stacks deploy across multiple environments in sequence",
+    "Authors editing the composition see updates in their canvas in real time (within Studio)",
+    "Anyone with Live Preview wired in your app sees updates as content changes",
+    "Templates: what gets deployed",
+    "Install Live Preview: the preview pipe",
+    "Verify end to end: confirm a deploy went through"
+  ],
+  "boldLabels": [
+    "Save",
+    "Deploy",
+    "don't",
+    "Terminology note",
+    "Save your latest edits.",
+    "Preview thoroughly.",
+    "Check the connected entry is published too.",
+    "Verify the environment.",
+    "Approval workflows",
+    "Scheduled publishes",
+    "Rolling deploys",
+    "draft",
+    "Save often, deploy deliberately.",
+    "Don't deploy from the canvas while authors are still editing.",
+    "Use Live Preview to validate before deploying.",
+    "Test the connected entry's URL.",
+    "Coordinate with Contentstack's publishing workflow."
+  ],
+  "namedLabels": [
+    "Save",
+    "Deploy",
+    "Terminology note",
+    "Approval workflows",
+    "Scheduled publishes",
+    "Rolling deploys",
+    "draft"
+  ],
+  "conditionalSections": [
+    "When Deploy isn't immediate"
+  ],
+  "labelSections": {
+    "Save": [],
+    "Deploy": [
+      "Deploy"
+    ],
+    "Terminology note": [
+      "Deploy"
+    ],
+    "Approval workflows": [
+      "When Deploy isn't immediate"
+    ],
+    "Scheduled publishes": [
+      "When Deploy isn't immediate"
+    ],
+    "Rolling deploys": [
+      "When Deploy isn't immediate"
+    ],
+    "draft": [
+      "Live Preview during the cycle"
+    ]
+  },
+  "codeBlockCount": 0,
+  "text": "Two distinct actions on the canvas, with different meanings.\n\nAction\tWhat it does\tWhere it goes\nSave\tPersists your current edits to the composition record in Contentstack\tStays in draft state, not yet visible to visitors\nDeploy\tPublishes the composition through your stack's publishing workflow to a target environment\tBecomes visible to visitors on that environment\n\nYou'll Save often (every meaningful change). You'll Deploy when the composition is ready for the next environment in your release flow.\n\nSave\nlink\n\nThe Save button is in the canvas toolbar's right cluster, next to Deploy.\n\nWhat happens on Save:\n\nThe composition's UI tree + bindings + metadata persist to the Contentstack stack\nAuthors and developers see your changes when they reload Studio\nVisitors don't see your changes yet, the published version is what they get\nLive Preview viewers (anyone with the preview pipe wired) do see your changes in real time\n\nFor Sections specifically, Save also opens the Expose Props modal if there are component prop candidates that haven't been classified yet. You either expose or skip them.\n\nSave frequency\nlink\n\nSave liberally. Studio doesn't auto-save by default; closing the canvas with unsaved edits loses them. Most authors save:\n\nAfter each significant component drop or rebind\nBefore switching to a different composition\nBefore stepping away from the canvas\n\nThere's no penalty for frequent saves, they're cheap.\n\nDeploy\nlink\n\nThe Deploy button sits next to Save. Clicking it opens the Deploy modal: pick which environments to publish to, decide whether to send referenced entries along with the composition, and confirm.\n\nClick to enlarge\n\nTerminology note: The modal says \"Deploy Template\" for both compositions and sections; they use the same flow.\n\nOnce you confirm, the composition is queued for publishing through your stack's workflow to the selected environments.\n\nWhat happens on Deploy:\n\nThe current saved state is queued for publishing\nContentstack's publish workflow runs (any review / approval steps your stack has configured)\nOnce published, the composition becomes the live version for the target environment\nVisitor-facing routes (<StudioComponent />) on that environment now render this version\n\nA deployed template at its real URL renders the composition with no Studio chrome:\n\nClick to enlarge\n\nThis is the success state to check after every Deploy. If your route renders this clean, the deploy and routing are correct end-to-end.\n\nPre-deploy checklist\nlink\n\nBefore deploying:\n\nSave your latest edits. Deploy publishes what's saved, not what's on screen.\nPreview thoroughly. Switch the Preview Entry to a few different entries (linked templates) to confirm bindings resolve across different content.\nCheck the connected entry is published too. A linked template can deploy fine, but if its connected entry isn't published in the target environment, the page renders without entry data.\nVerify the environment. Make sure you're deploying to the right environment, as the canvas's Preview Environment might differ from your target.\nWhen Deploy isn't immediate\nlink\n\nThese are optional stack configurations; none of them block the Deploy action itself. If your stack has publishing rules:\n\nApproval workflows: the deploy may be queued for review by another team member before publishing\nScheduled publishes: you can schedule the deploy for a future date/time\nRolling deploys: some stacks deploy across multiple environments in sequence\n\nYour stack's publishing configuration determines what happens. Check Contentstack's publishing docs for the specifics.\n\nLive Preview during the cycle\nlink\n\nLive Preview connects your running app to Contentstack so that:\n\nAuthors editing the composition see updates in their canvas in real time (within Studio)\nAnyone with Live Preview wired in your app sees updates as content changes\n\nThis works against the draft state (preview environment), not the published state. To verify what visitors see post-deploy, use the published environment in a non-preview-token-equipped session, i.e. a regular browser hitting your live URL.\n\nDetail: Install Live Preview\n\nDeployment workflow at a glance\nlink\n\nClick to enlarge\n\nCommon pitfalls\nlink\nSymptom\tCause\tFix\nDeployed but visitors see old content\tYour CDN / app is caching the old composition\tCheck cache TTLs; force a revalidation if your app uses ISR / SSG\nDeployed but the page is blank\tConnected entry isn't published in the target environment\tPublish the entry too\nDeploy \"succeeded\" but composition didn't change\tA pending publish task hasn't run yet (approval queue, schedule)\tCheck your stack's publish queue\nLive Preview shows updates but Deploy doesn't\tDeploy went through but cached HTML hasn't refreshed\tHard refresh the visitor page, or trigger your site's revalidation\nVisitors see Live Preview chrome\tLive Preview SDK initialised on the visitor's session\tConfirm enable: true only in preview contexts, not in production builds\nBest practices\nlink\n\nSave often, deploy deliberately. Save is a draft milestone. Deploy is a release event. Treat them differently.\n\nDon't deploy from the canvas while authors are still editing. If multiple people are working on the same composition, coordinate the deploy: the version deployed is whatever was last saved.\n\nUse Live Preview to validate before deploying. Visitors see what Live Preview shows (minus the editing chrome). If something looks wrong in Live Preview, it looks wrong post-deploy too.\n\nTest the connected entry's URL. For linked templates, the URL the visitor hits depends on the entry's URL field and the template's URL pattern. After deploy, hit a real entry's URL to confirm routing works.\n\nCoordinate with Contentstack's publishing workflow. Studio doesn't replace your stack's publishing rules. If you have approvals, Studio's Deploy still goes through them.\n\nSee also\nlink\nTemplates: what gets deployed\nInstall Live Preview: the preview pipe\nVerify end to end: confirm a deploy went through",
+  "contentHash": "1e0a0efffc3214fd148d4468a3cd67b65f4b93310ff002a80976b2e007dde07d",
+  "fetchedAt": "2026-08-13T08:10:02.108Z"
+}
