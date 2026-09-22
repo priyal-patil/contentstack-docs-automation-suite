@@ -1814,7 +1814,14 @@ async function ensureWithin(page: Page, el: Locator, expectedWithin: string, str
 }
 
 function normalizeLabelText(s: string): string {
-  return (s || "").replace(/\s+/g, " ").trim().toLowerCase();
+  // Docs often write "+ Button Label" to describe an icon+text button, but the
+  // DOM usually renders only the text (the "+" is an SVG icon, not a glyph).
+  // Strip a leading "+" so that doc wording still matches the rendered label.
+  return (s || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\+\s*/, "")
+    .toLowerCase();
 }
 
 async function extractElementLabel(el: Locator): Promise<string> {
@@ -15910,11 +15917,11 @@ export async function performAction(
           if (!stack) {
             throw new Error("DEFAULT_STACK must be set in .env for Studio create-a-project (doc: select Contentstack stack).");
           }
-          const menu = page.locator(".Select__menu, [role='listbox']").last();
+          const menu = page.locator(".Portal__menu, .Select__menu, [role='listbox']").last();
           await expect(menu).toBeVisible({ timeout: t0 });
           const needle = stack.slice(0, Math.min(28, stack.length));
           const opt = menu
-            .locator("[role=option], .Select__option")
+            .locator("[role=option], .Portal__option, .Select__option")
             .filter({ hasText: new RegExp(escapeRegex(needle), "i") })
             .first();
           if (await opt.isVisible({ timeout: 8_000 }).catch(() => false)) {
@@ -15965,9 +15972,7 @@ export async function performAction(
         }
 
         if (
-          (fid === "manage-a-composition-part-1" ||
-            fid === "manage-a-composition-part-2" ||
-            fid === "deploy-a-composition") &&
+          (fid === "manage-a-composition-part-1" || fid === "manage-a-composition-part-2") &&
           step.target === "Studio first project card open compositions (doc step)"
         ) {
           const link = page.locator('a.projectList__link-T53is2, a[href*="/studio/projects/"][href*="/compositions"]').first();
@@ -15975,17 +15980,6 @@ export async function performAction(
           await link.click({ timeout: t0 });
           await page.waitForURL(/\/compositions/i, { timeout: t0 }).catch(() => {});
           await page.waitForTimeout(600);
-          break;
-        }
-        if (fid === "deploy-a-composition" && step.target === "Studio compositions list first row open editor (doc step)") {
-          const row = page.locator('[data-test-id^="cs-table-body-row"]').first();
-          await expect(row).toBeVisible({ timeout: t0 });
-          await row.scrollIntoViewIfNeeded().catch(() => {});
-          const openTarget = row.locator(".title-WHtpt5, .titleCellWrapper-yKpBqL").first();
-          await expect(openTarget).toBeVisible({ timeout: t0 });
-          await openTarget.click({ timeout: t0 });
-          await page.waitForTimeout(1_200);
-          await page.waitForURL(/\/studio\/projects\/.+\/(compositions\/)?[^/]+/i, { timeout: Math.min(t0, 60_000) }).catch(() => {});
           break;
         }
         if (fid === "deploy-a-composition" && step.target === "Studio canvas editor Deploy button (doc step)") {
@@ -15996,7 +15990,7 @@ export async function performAction(
           await page.waitForTimeout(700);
           break;
         }
-        if (fid === "deploy-a-composition" && step.target === "Studio Publish Composition first environment checkbox (doc step)") {
+        if (fid === "deploy-a-composition" && step.target === "Studio Deploy modal pick environment (doc step)") {
           const modal = page.getByRole("dialog").filter({ has: page.locator('[data-test-id="cs-modal-title-publish-composition"]') }).first();
           await expect(modal).toBeVisible({ timeout: t0 });
           const box = modal.locator(".environment-selection-modal__body-checkbox label[data-test-id='cs-checkbox']").first();
@@ -16005,7 +15999,7 @@ export async function performAction(
           await page.waitForTimeout(450);
           break;
         }
-        if (fid === "deploy-a-composition" && step.target === "Studio Publish Composition modal Publish button (doc step)") {
+        if (fid === "deploy-a-composition" && step.target === "Studio Deploy modal confirm (doc step)") {
           const btn = page.locator('[data-testid="publish-modal__action_proceed"]').first();
           await expect(btn).toBeVisible({ timeout: t0 });
           await expect(btn).toBeEnabled({ timeout: Math.min(t0, 45_000) });
@@ -19189,6 +19183,8 @@ export async function performAction(
         (String(flow?.id || "").toLowerCase() === "get-started-with-brand-kit" ||
           String(flow?.id || "").toLowerCase() === "create-personalized-content" ||
           String(flow?.id || "").toLowerCase() === "create-an-entry-variant" ||
+          isPersonalizeE2eAbTestGuideUnifiedFlow(flow) ||
+          isPersonalizeE2eAbTestGuidePart(flow, 8) ||
           String(flow?.id || "").toLowerCase() === "create-a-brand-kit" ||
           String(flow?.id || "").toLowerCase() === "create-a-voice-profile" ||
           String(flow?.id || "").toLowerCase() === "edit-a-voice-profile" ||
@@ -23203,7 +23199,9 @@ export async function performAction(
           }
 
           if (
-            fidPv === "create-personalize-project" &&
+            (fidPv === "create-personalize-project" ||
+              isPersonalizeE2eAbTestGuidePart(flow, 1) ||
+              isPersonalizeE2eAbTestGuideUnifiedFlow(flow)) &&
             step.target === "Create Personalize Project doc: verify Create Project button in modal (doc step)"
           ) {
             const dlg = personalizeProjectModalVerify();
@@ -36016,6 +36014,10 @@ export async function performAction(
       if (url === "{{DEVELOPER_HUB_LIST_URL}}") {
         const origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
         url = `${origin}/#!/developerhub`;
+      }
+      if (url === "{{STUDIO_HOST_URL}}") {
+        const origin = (process.env.CS_APP_ORIGIN || "https://app.contentstack.com").replace(/\/+$/, "");
+        url = `${origin}/#!/studio`;
       }
       if (url === "{{GET_STARTED_WORKFLOWS_ENTRY_URL}}") {
         url = (process.env.GET_STARTED_WORKFLOWS_ENTRY_URL || "").trim();

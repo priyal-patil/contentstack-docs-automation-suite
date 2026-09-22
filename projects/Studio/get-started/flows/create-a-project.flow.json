@@ -6,10 +6,9 @@
   "source": "https://www.contentstack.com/docs/studio/create-a-project",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Doc: Open Studio via App Switcher, New Project, modal (Name, Description, Select Stack). Expand Advanced Settings; set Content Type Name and Content Type UID for the compositions content type (DOM: create-new-studio-project-m.html cs-accordion). UID uses {unique25} (lowercase, no spaces). Stack must match DEFAULT_STACK in .env.",
+  "automationNotes": "Doc step 1 says 'Open Studio in your browser (your Studio host, e.g. app.contentstack.com/#!/studio)' — navigates directly to {{STUDIO_HOST_URL}} (CS_APP_ORIGIN + #!/studio) rather than via App Switcher, matching the doc literally. Doc step 3 'Provide a project name' → Name field only; doc never mentions a Description field, so no Description step is included. Doc step 4 'Connect it to your Contentstack stack: pick the stack' is generic (no named field label in the doc), so the flow just searches for the stack control and picks DEFAULT_STACK — no strict label verification against wording the doc doesn't use. Expand Advanced Settings; set Content Type Name and Content Type UID for the compositions content type (DOM: create-new-studio-project-m.html cs-accordion). UID uses {unique25} (lowercase, no spaces). Stack must match DEFAULT_STACK in .env.",
   "steps": [
-    { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },
+    { "action": "navigate", "target": "{{STUDIO_HOST_URL}}", "timeoutMs": 60000 },
     {
       "action": "verify",
       "target": "Studio Projects page heading (doc step)",
@@ -20,7 +19,7 @@
       "action": "verify",
       "target": "Studio New Project primary button (doc step)",
       "timeoutMs": 60000,
-      "expected": { "labelEquals": "New Project", "labelMatch": "contains" }
+      "expected": { "labelEquals": "+ New Project", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Studio New Project primary button (doc step)", "timeoutMs": 60000 },
     {
@@ -45,23 +44,6 @@
       "target": "Studio New Project Name field (doc step)",
       "value": "Doc Studio Project {unique5}"
     },
-    {
-      "action": "verify",
-      "target": "Studio New Project Description field label (doc step)",
-      "timeoutMs": 60000,
-      "expected": { "labelEquals": "Description", "labelMatch": "contains" }
-    },
-    {
-      "action": "enter",
-      "target": "Studio New Project Description field (doc step)",
-      "value": "Automation description {unique5}"
-    },
-    {
-      "action": "verify",
-      "target": "Studio New Project Select Stack field label (doc step)",
-      "timeoutMs": 60000,
-      "expected": { "labelEquals": "Contentstack Stack", "labelMatch": "contains" }
-    },
     { "action": "click", "target": "Studio New Project Select Stack control (doc step)", "timeoutMs": 60000 },
     { "action": "click", "target": "Studio New Project pick DEFAULT_STACK option (doc step)", "timeoutMs": 90000 },
     {
@@ -75,7 +57,7 @@
       "action": "verify",
       "target": "Studio New Project Content Type Name field label (doc step)",
       "timeoutMs": 60000,
-      "expected": { "labelEquals": "Content Type Name", "labelMatch": "contains" }
+      "expected": { "labelEquals": "Content type name", "labelMatch": "contains" }
     },
     {
       "action": "verify",

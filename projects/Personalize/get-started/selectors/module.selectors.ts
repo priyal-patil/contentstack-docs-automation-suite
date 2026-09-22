@@ -6,7 +6,7 @@
  * Add **`.../selectors/<flow-id>.selectors.ts`** only for get-started–specific targets.
  */
 
-import { CLICK_SELECTORS as CLICK_CREATE_PROJECT } from "../../set-up-personalize/selectors/create-personalize-project.selectors";
+import { CLICK_SELECTORS as CLICK_CREATE_PROJECT, INPUT_SELECTORS as INPUT_CREATE_PROJECT } from "../../set-up-personalize/selectors/create-personalize-project.selectors";
 import { CLICK_SELECTORS as CLICK_AB_TEST, INPUT_SELECTORS as INPUT_AB_TEST } from "../../set-up-personalize/selectors/create-ab-test-experience.selectors";
 import { CLICK_SELECTORS as CLICK_EVENT, INPUT_SELECTORS as INPUT_EVENT } from "../../set-up-personalize/selectors/create-event.selectors";
 import { CLICK_SELECTORS as CLICK_EDIT_EXP, INPUT_SELECTORS as INPUT_EDIT_EXP } from "../../set-up-personalize/selectors/edit-experience.selectors";
@@ -27,6 +27,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
 };
 
 export const INPUT_SELECTORS: Record<string, string> = {
+  ...INPUT_CREATE_PROJECT,
   ...INPUT_AB_TEST,
   ...INPUT_EVENT,
   ...INPUT_EDIT_EXP,

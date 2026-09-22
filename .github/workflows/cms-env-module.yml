@@ -23,7 +23,11 @@ on:
         options: ["false", "true"]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.repository }}
+  # Repo-wide (not per-workflow) on purpose: every workflow here authenticates against the
+  # same shared CS_EMAIL/CS_PASSWORD account, and concurrent sessions from different workflows
+  # (different runner IPs) was one of the signals tripping Contentstack's account-lock
+  # protection. This serializes account access across ALL of them, not just within one workflow.
+  group: contentstack-account-access-${{ github.repository }}
   cancel-in-progress: false
 
 defaults:
@@ -64,6 +68,19 @@ jobs:
       # -------------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Compute daily auth-cache bucket
+        id: cs_auth_date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      # Shared across all scheduled workflows for the day so each one doesn't perform its own
+      # independent login against the same CS_EMAIL/CS_PASSWORD account — many concurrent/
+      # repeated logins per day was triggering Contentstack's account-lock protection.
+      - name: Restore cached Contentstack auth state
+        uses: actions/cache@v4
+        with:
+          path: auth.json
+          key: cs-auth-v1-${{ steps.cs_auth_date.outputs.date }}
 
       # -------------------------------------------------------------------
       # 2) npm cache + install

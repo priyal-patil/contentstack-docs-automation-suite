@@ -1,0 +1,118 @@
+# =============================================================================
+# Contentstack Auth — warm shared session cache
+#
+# Problem this solves: every scheduled workflow's "Restore cached Contentstack
+# auth state" step (actions/cache@v4) only *saves* the cache in its post step,
+# which runs at job end — after the full test/report/upload sequence (often
+# 15-30+ min). If two workflows in the same UTC-date bucket start close
+# together, the second one still hits a cache miss and logs in independently,
+# because the first hasn't finished (and therefore hasn't saved) yet. That
+# repeated/concurrent login volume against the single shared CS_EMAIL account
+# is what was tripping Contentstack's account-lock protection.
+#
+# Fix: a small dedicated job that does nothing but log in and immediately
+# save auth.json to the shared cache (no test run, no report steps in the
+# way), scheduled a few minutes before each day's first real workflow in a
+# given UTC-date bucket. Every other workflow's own restore step then finds a
+# warm cache before it needs to log in itself.
+#
+# Two waves per day (see the workflow crons across this repo):
+#   - Pre-midnight UTC wave (administration, cms-full-trigger, agentos,
+#     analytics, brandkit, data-and-insights): first job starts ~21:45 UTC.
+#   - Post-midnight UTC wave (developer-hub, cms-tokens, marketplace,
+#     personalize, studio): first job starts 00:00 UTC.
+# =============================================================================
+
+name: Contentstack Auth — warm shared session cache
+
+on:
+  schedule:
+    # 21:30 UTC — ~15 min before the pre-midnight wave's first job (administration, 21:45 UTC)
+    - cron: "30 21 * * *"
+    # 23:50 UTC — ~10 min before the post-midnight wave's first job (developer-hub, 00:00 UTC)
+    - cron: "50 23 * * *"
+  workflow_dispatch:
+
+concurrency:
+  # Repo-wide (not per-workflow) on purpose: every workflow here authenticates against the
+  # same shared CS_EMAIL/CS_PASSWORD account, and concurrent sessions from different workflows
+  # (different runner IPs) was one of the signals tripping Contentstack's account-lock
+  # protection. This serializes account access across ALL of them, not just within one workflow.
+  group: contentstack-account-access-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+jobs:
+  warm-auth:
+    name: Log in once and cache auth.json for today's wave
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.0-noble
+      options: --user root
+    timeout-minutes: 10
+    env:
+      CI: "true"
+      PLAYWRIGHT_HEADLESS: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env for automation
+        env:
+          CS_APP_ORIGIN: ${{ secrets.CS_APP_ORIGIN }}
+          CS_EMAIL: ${{ secrets.CS_EMAIL }}
+          CS_PASSWORD: ${{ secrets.CS_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${CS_EMAIL:?secret CS_EMAIL is required}"
+          : "${CS_PASSWORD:?secret CS_PASSWORD is required}"
+          {
+            echo "CS_APP_ORIGIN=${CS_APP_ORIGIN:-https://app.contentstack.com}"
+            echo "CS_EMAIL=${CS_EMAIL}"
+            echo "CS_PASSWORD=${CS_PASSWORD}"
+          } > .env
+          chmod 600 .env
+          echo "✓ .env written"
+
+      - name: Compute daily auth-cache bucket
+        id: cs_auth_date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached Contentstack auth state
+        id: cs_auth_restore
+        uses: actions/cache/restore@v4
+        with:
+          path: auth.json
+          key: cs-auth-v1-${{ steps.cs_auth_date.outputs.date }}
+
+      - name: Log in (or validate cached session)
+        run: npx ts-node scripts/warm-auth.ts
+
+      - name: Save auth.json to shared cache
+        # Runs immediately after login, before any heavy test job could start —
+        # unlike the per-workflow restore steps, which only save at job end.
+        # Skipped when the restore step above already hit this exact key
+        # (nothing changed, and re-saving an existing key would just warn).
+        if: steps.cs_auth_restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: auth.json
+          key: cs-auth-v1-${{ steps.cs_auth_date.outputs.date }}

@@ -6,18 +6,8 @@
   "source": "https://www.contentstack.com/docs/studio/deploy-a-composition",
   "type": "executable",
   "use": ["login"],
-  "automationNotes": "Doc 'Deploy a Composition': App Switcher → Studio → project → compositions list → select composition → Deploy → select environment → publish. DOM: data/dom/Studio/composition-list-page.html, composition-main-header.html, publish-composition.html. Requires a deployable composition (doc: local project).",
+  "automationNotes": "Doc-only steps (no navigation invented — doc never describes how to reach the canvas, so this flow starts from wherever `use: [\"login\"]` leaves off and expects the Deploy button to already be visible; if it isn't, that itself documents the doc's missing prerequisite). Doc text verbatim: 'The Deploy button sits next to Save. Clicking it opens the Deploy modal: pick which environments to publish to, decide whether to send referenced entries along with the composition, and confirm.' Modal title per doc: 'Deploy Template'. Doc never names the confirm control 'Publish' — that label was an assumption in the old flow and has been removed; environment pick and confirm are generic actions with no strict label verification.",
   "steps": [
-    { "action": "click", "target": "App Switcher icon (doc step)", "timeoutMs": 60000 },
-    { "action": "click", "target": "Studio (doc step)", "timeoutMs": 60000 },
-    {
-      "action": "verify",
-      "target": "Studio Projects page heading (doc step)",
-      "timeoutMs": 60000,
-      "expected": { "labelEquals": "Studio Projects", "labelMatch": "contains" }
-    },
-    { "action": "click", "target": "Studio first project card open compositions (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Studio compositions list first row open editor (doc step)", "timeoutMs": 90000 },
     {
       "action": "verify",
       "target": "Studio canvas editor Deploy button visible (doc step)",
@@ -25,13 +15,13 @@
       "expected": { "labelEquals": "Deploy", "labelMatch": "contains" }
     },
     { "action": "click", "target": "Studio canvas editor Deploy button (doc step)", "timeoutMs": 90000 },
-    { "action": "click", "target": "Studio Publish Composition first environment checkbox (doc step)", "timeoutMs": 60000 },
     {
       "action": "verify",
-      "target": "Studio Publish Composition modal Publish button visible (doc step)",
+      "target": "Studio Deploy modal heading (doc step)",
       "timeoutMs": 60000,
-      "expected": { "labelEquals": "Publish", "labelMatch": "contains" }
+      "expected": { "within": "Modal", "modalTitle": "Deploy Template", "labelEquals": "Deploy Template", "labelMatch": "contains" }
     },
-    { "action": "click", "target": "Studio Publish Composition modal Publish button (doc step)", "timeoutMs": 120000 }
+    { "action": "click", "target": "Studio Deploy modal pick environment (doc step)", "timeoutMs": 60000 },
+    { "action": "click", "target": "Studio Deploy modal confirm (doc step)", "timeoutMs": 120000 }
   ]
 }
