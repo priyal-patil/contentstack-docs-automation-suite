@@ -22,6 +22,30 @@ function mustGetEnv(name: string): string {
   return v.trim();
 }
 
+/**
+ * Cookie count and URL alone are unreliable signals: the app sets non-auth cookies (analytics/CSRF)
+ * on first load, and the client-side redirect to /#!/login can lag the initial navigation. The only
+ * trustworthy signal is whether a post-login app UI marker (matches shared/steps/login.step.ts) is
+ * actually visible.
+ */
+async function isAuthenticatedAppShell(page: import("@playwright/test").Page): Promise<boolean> {
+  const appUiMarker = page
+    .locator(
+      '[data-test-id="cs-cms-button"], [data-test-id*="stack-card" i], [data-test-id="cms-nav-entries"], [data-test-id="cms-nav-content-models"]'
+    )
+    .first();
+  const loginUiMarker = page
+    .locator('input[type="email"], input[name="email"], input#email, [data-test-id="cs-login-email"]')
+    .first();
+
+  for (let n = 0; n < 15; n++) {
+    if (await loginUiMarker.isVisible().catch(() => false)) return false;
+    if (await appUiMarker.isVisible().catch(() => false)) return true;
+    await page.waitForTimeout(1_000);
+  }
+  return false;
+}
+
 export default async () => {
   // Reset per-run doc-step JSONL so getDocStepFailures() does not merge failures from earlier Playwright invocations (same 2h window).
   const reportDir = process.env.REPORT_DIR || path.resolve(process.cwd(), "reports/latest");
@@ -46,8 +70,8 @@ export default async () => {
         });
         const context = await browser.newContext({ storageState: storagePath });
         const page = await context.newPage();
-        await page.goto(appUrl("/#!/stacks"), { waitUntil: "commit", timeout: 120_000 });
-        const stillLoggedIn = !/#!\/login/i.test(page.url());
+        await page.goto(appUrl("/#!/stacks"), { waitUntil: "domcontentloaded", timeout: 120_000 });
+        const stillLoggedIn = await isAuthenticatedAppShell(page);
         await context.close();
         await browser.close();
 
@@ -75,26 +99,15 @@ export default async () => {
 
   await page.goto(appUrl("/#!/stacks"), { waitUntil: "domcontentloaded", timeout: 120_000 });
 
-  // The redirect to /#!/login is client-side and lands AFTER navigation commits, so the
-  // URL has to be given time to settle. Checking it too early reports "already logged in",
-  // saves a storage state with zero cookies, and every later run silently starts logged out.
-  await page
-    .waitForURL(/#!\/(login|stacks)/i, { timeout: 30_000 })
-    .catch(() => {});
-  await page.waitForTimeout(2_000);
-
-  // If already authenticated, /#!/stacks stays in stack context.
-  // If unauthenticated, Contentstack redirects to /#!/login.
-  if (!page.url().includes("/#!/login")) {
-    const state = await page.context().storageState();
-    if (state.cookies.length === 0 && state.origins.length === 0) {
-      console.log("ℹ️ Session looked valid but carries no cookies — logging in properly.");
-    } else {
-      await page.context().storageState({ path: storagePath });
-      console.log("✅ Saved auth state to:", storagePath);
-      await browser.close();
-      return;
-    }
+  // The redirect to /#!/login is client-side and lands AFTER navigation commits, and the app
+  // sets non-auth cookies (analytics/CSRF) on first load regardless of login state — so neither
+  // URL nor cookie count is a trustworthy "already logged in" signal. Wait for a real post-login
+  // app UI marker instead.
+  if (await isAuthenticatedAppShell(page)) {
+    await page.context().storageState({ path: storagePath });
+    console.log("✅ Saved auth state to:", storagePath);
+    await browser.close();
+    return;
   }
 
   // Inputs (prefer label, fall back to common attributes)
