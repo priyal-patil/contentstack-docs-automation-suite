@@ -55,6 +55,9 @@ export const CLICK_SELECTORS: Record<string, string> = {
     '[data-testid="new-project-button-header"], [data-test-id="cs-button"][data-testid="new-project-button-header"], button:has-text("New Project"), button:has-text("+ New Project"), [aria-label*="New Project" i]',
   "Create New Project modal heading (doc step)":
     '[role="dialog"] [data-test-id="cs-modal-title"]:has-text("Create New Project"), h3[data-test-id="cs-modal-title"]:has-text("Create New Project"), [data-test-id="cs-modal-title"]:has-text("Create New Project")',
+  /** Staging doc (quick-start-nextjs, stag-www) renames the Create New Project modal — no DOM yet, kept literal to the doc text. */
+  "Deploy Your New Project modal heading (doc step)":
+    '[role="dialog"] [data-test-id="cs-modal-title"]:has-text("Deploy Your New Project"), h3[data-test-id="cs-modal-title"]:has-text("Deploy Your New Project"), [data-test-id="cs-modal-title"]:has-text("Deploy Your New Project")',
   "Import from a Git Repository (doc step)":
     '[data-testid="project-type-card-GITPROVIDER"], [data-test-id="launch-click-btn-primary-action-survey-select-gitprovider-project"], h5:has-text("Import from a Git Repository")',
   /** Create New Project step 1 — file upload path (create-new-project-m.html + file-upload modal). */
@@ -100,6 +103,11 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Launch Git Branch Select control (doc step)":
     'div.Field:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled), div[data-test-id="cs-field"]:has(label:has-text("Git Branch")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled)',
   "Launch select first option (doc step)": '[role="listbox"] [role="option"]:first-child',
+  /** §8.ii Importing from (Mandatory) — staging doc (quick-start-nextjs) renames Git Branch to "Importing from"; no DOM yet. */
+  "Importing from field label (doc step)":
+    'label[data-test-id="cs-field-label"]:has-text("Importing from"), label.FieldLabel:has-text("Importing from")',
+  "Launch Importing from Select control (doc step)":
+    'div.Field:has(label:has-text("Importing from")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled), div[data-test-id="cs-field"]:has(label:has-text("Importing from")) div[data-test-id="cs-select-async"] div.Select__control:not(.Select__control--is-disabled)',
 
   /** §8.v Build and Output Settings (Mandatory) — section heading */
   "Build and Output Settings section (doc step)":
@@ -113,6 +121,16 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "Output Directory field label (doc step)": 'label[data-test-id="cs-field-label"]:has-text("Output Directory")',
   /** Nuxt (and SSR) — Create New Project step 2; doc names Server Command. */
   "Server Command field label (doc step)": 'label[data-test-id="cs-field-label"]:has-text("Server Command")',
+
+  /** Response Mode / Enable Contentstack Authentication — new fields on staging doc (quick-start-nextjs); no DOM yet. */
+  "Response Mode field label (doc step)":
+    'label[data-test-id="cs-field-label"]:has-text("Response Mode"), [data-test-id="cs-heading-tag"]:has-text("Response Mode")',
+  "Streaming response mode option (doc step)":
+    'label:has-text("Streaming"), [role="radio"]:has-text("Streaming"), [data-testid="response-mode-streaming"]',
+  "Buffered response mode option (doc step)":
+    'label:has-text("Buffered"), [role="radio"]:has-text("Buffered"), [data-testid="response-mode-buffered"]',
+  "Enable Contentstack Authentication toggle (doc step)":
+    'label:has-text("Enable Contentstack Authentication"), [data-testid="enable-contentstack-authentication-toggle"]',
 
   /** §8.vi Environment Variables (Optional) */
   "Environment Variables section (doc step)":

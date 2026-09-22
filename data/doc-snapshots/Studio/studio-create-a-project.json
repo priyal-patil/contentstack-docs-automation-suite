@@ -1,0 +1,131 @@
+{
+  "url": "https://www.contentstack.com/docs/studio/create-a-project",
+  "finalUrl": "https://www.contentstack.com/docs/studio/create-a-studio-project",
+  "httpStatus": 200,
+  "title": "Create a Studio Project",
+  "lastUpdated": null,
+  "headings": [
+    {
+      "level": 2,
+      "text": "Create"
+    },
+    {
+      "level": 3,
+      "text": "Multiple Studio projects in one stack"
+    },
+    {
+      "level": 2,
+      "text": "What You'll See After Creating"
+    },
+    {
+      "level": 2,
+      "text": "Configure Your SDK with the Content Type UID"
+    },
+    {
+      "level": 2,
+      "text": "Next"
+    }
+  ],
+  "orderedSteps": [
+    {
+      "index": 1,
+      "text": "Open Studio in your browser (your Studio host, e.g. app.contentstack.com/#!/studio).",
+      "section": "Create"
+    },
+    {
+      "index": 2,
+      "text": "From the Studio Projects landing page, click + New Project.",
+      "section": "Create"
+    },
+    {
+      "index": 3,
+      "text": "Give the project a name (you can rename later).",
+      "section": "Create"
+    },
+    {
+      "index": 4,
+      "text": "Connect it to your Contentstack stack: pick the stack you set up the SDKs against.",
+      "section": "Create"
+    }
+  ],
+  "bullets": [
+    "Content type name: display name, e.g. Marketing Compositions",
+    "Content type UID: machine UID, e.g. marketing_compositions",
+    "Project Details: name, description, project ID (copyable)",
+    "Stack Connection: your stack name with a \"Connected\" badge. The \"Compositions\" content type Studio created shows as Connected too."
+  ],
+  "boldLabels": [
+    "Studio Projects",
+    "+ New Project",
+    "Connect it to your Contentstack stack",
+    "Compositions",
+    "When you need this",
+    "Advanced Settings",
+    "Content type name",
+    "Content type UID",
+    "+ New Template",
+    "General",
+    "Configuration",
+    "Project Details",
+    "Stack Connection",
+    "Why the UID matters at the SDK level."
+  ],
+  "namedLabels": [
+    "Studio Projects",
+    "+ New Project",
+    "Compositions",
+    "Advanced Settings",
+    "Content type name",
+    "Content type UID",
+    "+ New Template",
+    "General",
+    "Configuration",
+    "Project Details",
+    "Stack Connection"
+  ],
+  "conditionalSections": [
+    "Multiple Studio projects in one stack"
+  ],
+  "labelSections": {
+    "Studio Projects": [
+      "Create"
+    ],
+    "+ New Project": [
+      "Create"
+    ],
+    "Compositions": [
+      "Create",
+      "What You'll See After Creating"
+    ],
+    "Advanced Settings": [
+      "Multiple Studio projects in one stack",
+      "Configure Your SDK with the Content Type UID"
+    ],
+    "Content type name": [
+      "Multiple Studio projects in one stack"
+    ],
+    "Content type UID": [
+      "Multiple Studio projects in one stack"
+    ],
+    "+ New Template": [
+      "What You'll See After Creating"
+    ],
+    "General": [
+      "What You'll See After Creating"
+    ],
+    "Configuration": [
+      "What You'll See After Creating"
+    ],
+    "Project Details": [
+      "What You'll See After Creating"
+    ],
+    "Stack Connection": [
+      "What You'll See After Creating",
+      "Configure Your SDK with the Content Type UID"
+    ]
+  },
+  "codeBlockCount": 2,
+  "text": "A Studio project is where authors compose pages. Creating one links your Contentstack stack to Studio and provisions the content type that stores your composition records, and you don't need to model it yourself.\n\nCreate\nlink\nOpen Studio in your browser (your Studio host, e.g. app.contentstack.com/#!/studio).\nFrom the Studio Projects landing page, click + New Project.\n\nClick to enlarge\n\nGive the project a name (you can rename later).\nConnect it to your Contentstack stack: pick the stack you set up the SDKs against.\n\nStudio provisions a dedicated Compositions content type inside the stack. You don't need to model it yourself.\n\nMultiple Studio projects in one stack\nlink\n\nWhen you need this: only if the stack already has a Compositions content type from an earlier Studio project. For a fresh stack, skip ahead to What you'll see after creating.\n\nIf the stack already has a Compositions content type (from an earlier Studio project), Studio surfaces an Advanced Settings section in the create dialog with two extra fields:\n\nContent type name: display name, e.g. Marketing Compositions\nContent type UID: machine UID, e.g. marketing_compositions\n\nYou set both to something unique and Studio creates the new content type alongside the existing one. Each project keeps its own composition records under its own content type.\n\nWhen you wire this project to your app, point studioSdk.init at that exact UID:\n\n1\n2\n3\n4\nstudioSdk.init({\n  stackSdk,\n  contentTypeUid: \"marketing_compositions\",   // matches Advanced Settings UID\n});\n\nYou can have as many Studio projects as you want in the same stack; each one needs its own dedicated content type UID, and the matching contentTypeUid in the SDK init on the route that previews it.\n\nWhat You'll See After Creating\nlink\n\nThe project lands on its Compositions list, empty for a new project, with two tabs (Templates and Sections) and a + New Template button at the top right.\n\nThe project also gains two settings pages:\n\nSettings tab\tUse it for\nGeneral\tProject name, description, project ID, Stack Connection status\nConfiguration\tEnvironment, Language, Canvas URL, Enable Freeform\n\nClick to enlarge\n\nOn the General tab you'll see:\n\nProject Details: name, description, project ID (copyable)\nStack Connection: your stack name with a \"Connected\" badge. The \"Compositions\" content type Studio created shows as Connected too.\n\nIf either badge isn't green, see Troubleshoot, usually it's a stack credential mismatch.\n\nConfigure Your SDK with the Content Type UID\nlink\n\nWhen you installed the Studio SDK earlier, you may have left contentTypeUid blank in studioSdk.init(...). Now you have a project, so add it:\n\n1\n2\n3\n4\nstudioSdk.init({\n  stackSdk:       stack,\n  contentTypeUid: \"compositions\",   // the CT Studio created in your stack\n});\n\nThe UID is \"compositions\" by default. If you picked a custom name in Advanced Settings (e.g. you're running a second project in a stack that already has a Compositions CT), use that UID instead, and check the Stack Connection section on the General tab to confirm.\n\nWhy the UID matters at the SDK level. The Studio SDK reads composition records from this content type. If contentTypeUid is wrong, useCompositionData returns nothing, and every composition fetch comes back empty even though Studio shows compositions exist. A common mistake when running multiple Studio projects on the same canvas app.\n\nNext\nlink\n\nConfigure environment + language + canvas URL",
+  "contentHash": "5cb256312555d4e175d201721ce99161a386ec0b2f01bf144dbbc3223630f557",
+  "fetchedAt": "2026-08-13T08:09:59.923Z"
+}

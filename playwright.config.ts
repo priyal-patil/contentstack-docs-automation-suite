@@ -99,6 +99,29 @@ export default defineConfig({
       },
     },
     {
+      name: "docs-checklist",
+      testMatch: /docs-checklist\.spec\.ts/,
+      use: {
+        headless: true,
+        storageState: "auth.json",
+        // Staging docs (stag-www.contentstack.com) sit behind HTTP basic auth. Playwright only
+        // sends these on a 401 challenge, so setting them here is inert for production URLs.
+        ...(process.env.STAG_DOCS_USERNAME && process.env.STAG_DOCS_PASSWORD
+          ? {
+              httpCredentials: {
+                username: process.env.STAG_DOCS_USERNAME,
+                password: process.env.STAG_DOCS_PASSWORD,
+              },
+            }
+          : {}),
+        // Granted so the "Copy for LLM" check fails for a real reason, not a denied permission.
+        permissions: ["clipboard-read", "clipboard-write"],
+        launchOptions: {},
+        screenshot: "only-on-failure",
+        video: "off",
+      },
+    },
+    {
       name: "crawl",
       testMatch: /crawl\/crawl\.spec\.ts/,
       use: {
@@ -136,6 +159,18 @@ export default defineConfig({
       retries: resolveRetries(),
       use: {
         storageState: "auth.json",
+        // A flow may navigate to its own doc page, and staging docs sit behind HTTP basic
+        // auth. Playwright only sends these on a 401 challenge, so they are inert against
+        // production. Kept identical to the docs-checklist project so a single run can cover
+        // both halves of a staging doc — see scripts/runDocQa.ts.
+        ...(process.env.STAG_DOCS_USERNAME && process.env.STAG_DOCS_PASSWORD
+          ? {
+              httpCredentials: {
+                username: process.env.STAG_DOCS_USERNAME,
+                password: process.env.STAG_DOCS_PASSWORD,
+              },
+            }
+          : {}),
         headless: useHeadless,
         // Headless/CI: fixed 1920×1080. Local headed: null + --start-maximized fills the actual screen.
         viewport: useHeadless ? headlessViewport : null,

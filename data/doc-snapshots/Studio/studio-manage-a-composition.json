@@ -1,0 +1,75 @@
+{
+  "url": "https://www.contentstack.com/docs/studio/manage-a-composition",
+  "finalUrl": "https://www.contentstack.com/docs/studio/composition-concepts",
+  "httpStatus": 200,
+  "title": "Composition Concepts",
+  "lastUpdated": null,
+  "headings": [
+    {
+      "level": 2,
+      "text": "The Composition List"
+    },
+    {
+      "level": 2,
+      "text": "Where Compositions Render"
+    },
+    {
+      "level": 2,
+      "text": "What Else Is in This Chapter"
+    },
+    {
+      "level": 2,
+      "text": "Next"
+    }
+  ],
+  "orderedSteps": [],
+  "bullets": [
+    "Templates tab: pages connected to a content type.",
+    "Sections tab: reusable blocks.",
+    "Canvas URL: the project-level path used for section preview",
+    "Templates",
+    "Sections"
+  ],
+  "boldLabels": [
+    "composition",
+    "Headless principle.",
+    "It does not serve HTML on its own.",
+    "Template",
+    "Section",
+    "Templates",
+    "Sections",
+    "+ New Template",
+    "+ New Section"
+  ],
+  "namedLabels": [
+    "composition",
+    "Template",
+    "Section",
+    "Templates",
+    "Sections",
+    "+ New Template",
+    "+ New Section"
+  ],
+  "conditionalSections": [],
+  "labelSections": {
+    "composition": [],
+    "Template": [],
+    "Section": [],
+    "Templates": [
+      "The Composition List"
+    ],
+    "Sections": [
+      "The Composition List"
+    ],
+    "+ New Template": [
+      "The Composition List"
+    ],
+    "+ New Section": [
+      "The Composition List"
+    ]
+  },
+  "codeBlockCount": 0,
+  "text": "Everything you build in Studio is a composition, a saved layout tree of components and the data bindings that drive them.\n\nHeadless principle. A composition lives in Studio + Contentstack. It does not serve HTML on its own. Your app's framework still serves every page — Studio supplies the composition spec, components, and bindings via sdk.fetchCompositionData(...). A composition with url: \"/blog/post-1\" exists in the CMS, but visitors hitting /blog/post-1 only see content if your app has a route that receives the request and renders <StudioComponent specOptions={...} />.\n\nBy default, one catch-all route in your app handles every URL that Studio compositions map to. See Wire template preview routes for the setup.\n\nCompositions come in two flavors:\n\nFlavor\tWhat it is\tURL\tTied to an entry?\nTemplate\tA full page connected to a content type\tYes, derived from the content type\tYes\nSection\tA reusable block dropped inside a template\tNone, previews on the project's canvas URL\tOptional, via a linked schema (a Contentstack content type that the section binds its props to, see Linked schema)\n\nYou pick the flavor when you create a composition. It decides where the composition can be used, what URL it gets, and what data it can bind to.\n\nThe Composition List\nlink\n\nEvery Studio project has a Compositions list with two tabs.\n\nClick to enlarge\n\nTemplates tab: pages connected to a content type.\nSections tab: reusable blocks.\n\nThe button at the top changes label per tab: + New Template vs + New Section.\n\nClick to enlarge\n\nWhere Compositions Render\nlink\nFlavor\tRendered by\tAt what URL\nTemplate\t<StudioComponent />\tThe catch-all route on your site, default: ONE route handles every URL (app/[[...slug]]/page.tsx for Next.js, <Route path=\"*\"> for React Router). Note: Studio's CDA lookup (which template to render) is separate from your app's route matching — the CDA resolves the composition by URL, then your route renders it.\nSection\t<StudioCanvas /> (Studio iframe) AND embedded inside a template when dropped on a page\tSections have no URL of their own, they live wherever the template that uses them appears\nWhat Else Is in This Chapter\nlink\n\nThe composition concept underlies the whole canvas. Five more pages cover canvas-wide topics that aren't specific to templates or sections:\n\nPage\tCovers\nCanvas URL\tThe project-level path used for section preview\nCMS Binding\tHow component props pull data from Contentstack instead of literal values\nDesign Panel\tRight-panel styling controls, colors, spacing, typography, breakpoints\nLayers\tThe left-panel layer tree, navigate and rename composition structure\nSave vs Deploy\tThe Save, Deploy, published cycle\nNext\nlink\nCanvas URL: the project-level path used for section preview\nTemplates\nSections",
+  "contentHash": "499f228c095e320fb81bd76bf4e2846ba508fd6918079e585514500b4f8655c3",
+  "fetchedAt": "2026-08-13T08:10:04.213Z"
+}
