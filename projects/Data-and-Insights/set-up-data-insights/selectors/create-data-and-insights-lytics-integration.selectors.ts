@@ -66,7 +66,7 @@ export const CLICK_SELECTORS: Record<string, string> = {
   "DAL Lytics doc: verify Update DAL configuration button label (doc step)": '[data-test-id="cs-org-update-lytics-tag"]',
 
   "DAL Lytics doc: verify App Switcher Data and Insights product label (doc step)":
-    '[data-test-id="app-switcher-lytics"]',
+    '[data-test-id^="app-switcher-lytics"]',
 
   "DAL Lytics doc: verify Select An Account modal title (doc step)":
     '[data-test-id="cs-modal-title-select-an-account"]',
