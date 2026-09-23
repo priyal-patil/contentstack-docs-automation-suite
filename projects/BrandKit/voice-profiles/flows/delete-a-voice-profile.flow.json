@@ -55,19 +55,19 @@
       "action": "click",
       "target": "vertical ellipsis",
       "timeoutMs": 90000,
-      "expected": { "rowContains": "AUTO-VP-" }
+      "expected": { "rowContains": "AUTO-VP-IMPORT-DUMMY" }
     },
     {
       "action": "verify",
       "target": "Delete",
       "timeoutMs": 90000,
-      "expected": { "rowContains": "AUTO-VP-", "labelEquals": "Delete", "labelMatch": "contains" }
+      "expected": { "rowContains": "AUTO-VP-IMPORT-DUMMY", "labelEquals": "Delete", "labelMatch": "contains" }
     },
     {
       "action": "click",
       "target": "Delete",
       "timeoutMs": 90000,
-      "expected": { "rowContains": "AUTO-VP-" }
+      "expected": { "rowContains": "AUTO-VP-IMPORT-DUMMY" }
     },
     {
       "action": "verify",
