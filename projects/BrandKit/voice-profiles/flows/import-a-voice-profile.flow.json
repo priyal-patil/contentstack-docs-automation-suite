@@ -95,6 +95,11 @@
       "action": "click",
       "target": "Import Voice Profile Proceed button (doc step)",
       "timeoutMs": 90000
+    },
+    {
+      "action": "verify",
+      "target": "Import Voice Profile success message (doc step)",
+      "timeoutMs": 45000
     }
   ]
 }
